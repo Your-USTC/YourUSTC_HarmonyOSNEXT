@@ -1,2 +1,4 @@
-# YourUSTC_HarmonyOSNEXT
-鸿蒙NEXT版你的科大
+
+# 你的科大 for HarmonyOS NEXT
+
+你的科大 for HarmonyOS NEXT
