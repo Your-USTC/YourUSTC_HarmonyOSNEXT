@@ -43,11 +43,12 @@ struct Index {
    */
   @Builder
   pageStart() {
-    Row() {
+    Column() {
       Text('Start')
         .height(300)
         .fontSize(30)
     }
+    .height('100%')
     .width('100%')
     .justifyContent(FlexAlign.Center)
   }
@@ -57,11 +58,12 @@ struct Index {
    */
   @Builder
   pageFunction() {
-    Row() {
+    Column() {
       Text('Function')
         .height(300)
         .fontSize(30)
     }
+    .height('100%')
     .width('100%')
     .justifyContent(FlexAlign.Center)
   }
@@ -71,11 +73,18 @@ struct Index {
    */
   @Builder
   pageYours() {
-    Row() {
-      Text('Yours')
-        .height(300)
-        .fontSize(30)
+    Column() {
+      Button('测试', { type: ButtonType.Capsule })
+        .buttonStyle(ButtonStyleMode.EMPHASIZED)
+        .controlSize(ControlSize.NORMAL)
+        .fontColor($r('app.color.normal_background'))
+        .backgroundColor($r('app.color.active_text'))
+        .onClick((event: ClickEvent) => {
+          // 按钮被点击后
+
+        })
     }
+    .height('100%')
     .width('100%')
     .justifyContent(FlexAlign.Center)
   }
