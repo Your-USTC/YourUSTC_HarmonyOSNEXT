@@ -11,6 +11,66 @@
     {
       "name": "EntryAbility_label",
       "value": "你的科大"
+    },
+    {
+      "name": "Homepage_url",
+      "value": "https://ustc.edu.cn"
+    },
+    {
+      "name": "EducationalAdministrationSystem_url",
+      "value": "https://jw.ustc.edu.cn"
+    },
+    {
+      "name": "Mail_url",
+      "value": "https://mail.ustc.edu.cn"
+    },
+    {
+      "name": "CourseEvaluationCommunity_url",
+      "value": "https://icourse.club"
+    },
+    {
+      "name": "InternetServiceCenter_url",
+      "value": "https://zczx.ustc.edu.cn"
+    },
+    {
+      "name": "Library_url",
+      "value": "https://lib.ustc.edu.cn"
+    },
+    {
+      "name": "LearningSpaceReservation_url",
+      "value": "http://ic.lib.ustc.edu.cn"
+    },
+    {
+      "name": "SelfServicePrinting_url",
+      "value": "http://ic.lib.ustc.edu.cn"
+    },
+    {
+      "name": "UnifiedAuthenticationSystem_url",
+      "value": "https://passport.ustc.edu.cn"
+    },
+    {
+      "name": "AuthorizedSoftware_url",
+      "value": "http://ms.ustc.edu.cn"
+    },
+    {
+      "name": "OpenSourceSoftwareMirror_url",
+      "value": "https://mirrors.ustc.edu.cn"
+    },
+    {
+      "name": "LUGGitLab_url",
+      "value": "https://git.lug.ustc.edu.cn"
+    },
+    {
+      "name": "SuperComputingCenterGitLab_url",
+      "value": "https://git.ustc.edu.cn"
+    },
+    {
+      "name": "USTCNavigation_url",
+      "value": "https://ustc.life"
+    },
+    {
+      "name": "EducationalAdministrationCenter_url",
+      "value": "https://teach.ustc.edu.cn"
     }
   ]
 }
