@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A68C67F1938F50C65D36405F04D2F686034A12AE5EB4ECFFB651227BCA42D1B183BBCAD51A04F",
+          "keyPassword": "0000001A4D161B5B75F5273903EC4362958E3F91E782CE8439E6A31B4D9105D20DD89F152ED9BD1E02D0",
           "profile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p12",
-          "storePassword": "0000001AE5ABCF56D137432CB571C74D50C89873BAA9B9D1F555514DF97AC32965FCD574D398015B85AC"
+          "storePassword": "0000001ACF92B7FB8A9C5A46BA04C0344D8559CCFD0F18C221139C771B4B27C3285D7B74E13EA3F6C007"
         }
       }
     ],

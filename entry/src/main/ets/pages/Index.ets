@@ -4,21 +4,30 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 @Entry
 @Component
 struct Index {
-  @State currentIndex: number = 0;
+
+  @State currentIndex: number = 0;    // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
 
+  /**
+   * 函数: 构建 Tab 按钮
+   * @param title 按钮文字
+   * @param index 标签索引 (从0开始)
+   * @param selectedImg 按钮图片 (选中时)
+   * @param normalImg 按钮图片 (未选中时)
+   */
   @Builder
   tabBuilder(title: string | Resource, index: number, selectedImg: Resource, normalImg: Resource) {
     Column() {
+      // 按钮图片
       Image(this.currentIndex === index ? selectedImg : normalImg)
         .width(24)
         .height(24)
         .objectFit(ImageFit.Contain)
-
+      // 按钮文字
       Text(title)
         .margin({ top: 4 })
         .fontSize(10)
-        .fontColor(this.currentIndex === index ? '#3388ff' : $r('app.color.normal_text'))
+        .fontColor(this.currentIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
     }
     .justifyContent(FlexAlign.Center)
     .height(52)
@@ -29,33 +38,81 @@ struct Index {
     })
   }
 
+  /**
+   * 页面: 首页
+   */
   @Builder
-  tabContentBuilder(text: string | Resource, index: number, selectedImg: Resource, normalImg: Resource) {
-    TabContent() {
-      Row() {
-        Text(text)
-          .height(300)
-          .fontSize(30)
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.Center)
+  pageStart() {
+    Row() {
+      Text('Start')
+        .height(300)
+        .fontSize(30)
     }
-    .padding({ left: 12, right: 12 })
-    .backgroundColor($r('app.color.normal_background'))
-    .tabBar(this.tabBuilder(text, index, selectedImg, normalImg))
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
   }
 
+  /**
+   * 页面: 功能
+   */
+  @Builder
+  pageFunction() {
+    Row() {
+      Text('Function')
+        .height(300)
+        .fontSize(30)
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  /**
+   * 页面: 你的
+   */
+  @Builder
+  pageYours() {
+    Row() {
+      Text('Yours')
+        .height(300)
+        .fontSize(30)
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  /**
+   * 主程序
+   */
   build() {
     Tabs({
       barPosition: BarPosition.End,
       controller: this.tabsController
     }) {
-      this.tabContentBuilder('1',
-        0, $r('app.media.startIcon'), $r('app.media.foreground'))
-      this.tabContentBuilder('2',
-        1, $r('app.media.startIcon'), $r('app.media.foreground'))
-      this.tabContentBuilder('3',
-        2, $r('app.media.startIcon'), $r('app.media.foreground'))
+
+      /**
+       * Tab: 首页
+       */
+      TabContent() { this.pageStart() }
+      .padding({ left: 12, right: 12 })
+      .backgroundColor($r('app.color.normal_background'))
+      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.startIcon'), $r('app.media.foreground')))
+
+      /**
+       * Tab: 功能
+       */
+      TabContent() { this.pageFunction() }
+      .padding({ left: 12, right: 12 })
+      .backgroundColor($r('app.color.normal_background'))
+      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.startIcon'), $r('app.media.foreground')))
+
+      /**
+       * Tab: 你的
+       */
+      TabContent() { this.pageYours() }
+      .padding({ left: 12, right: 12 })
+      .backgroundColor($r('app.color.normal_background'))
+      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.startIcon'), $r('app.media.foreground')))
+
     }
     .width('100%')
     .backgroundColor($r('app.color.shaded_background'))

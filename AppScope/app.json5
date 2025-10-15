@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.ustcer.myustc",
+    "bundleName": "com.nic.myustc",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",

@@ -11,6 +11,10 @@
     {
       "name": "normal_text",
       "value": "#000000"
+    },
+    {
+      "name": "active_text",
+      "value": "#FF0040C0"
     }
   ]
 }
