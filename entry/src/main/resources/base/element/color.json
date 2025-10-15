@@ -1,8 +1,16 @@
 {
   "color": [
     {
-      "name": "start_window_background",
+      "name": "normal_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "shaded_background",
+      "value": "#FF7FC0FF"
+    },
+    {
+      "name": "normal_text",
+      "value": "#000000"
     }
   ]
 }
