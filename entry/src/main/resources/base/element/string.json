@@ -11,6 +11,18 @@
     {
       "name": "EntryAbility_label",
       "value": "你的科大"
+    },
+    {
+      "name": "page_start",
+      "value": "首页"
+    },
+    {
+      "name": "page_function",
+      "value": "功能"
+    },
+    {
+      "name": "page_yours",
+      "value": "你的"
     }
   ]
 }
