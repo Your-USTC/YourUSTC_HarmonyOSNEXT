@@ -1,12 +1,10 @@
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
 @Entry
 @Component
 struct Index {
 
-  @State currentIndex: number = 0;    // 当前标签索引 (从0开始), 初始值即为默认标签索引
-  private tabsController: TabsController = new TabsController();
+  @State currentIndex: number = 0    // 当前标签索引 (从0开始), 初始值即为默认标签索引
+  private tabsController: TabsController = new TabsController()
 
   /**
    * 函数: 构建 Tab 按钮
@@ -33,8 +31,8 @@ struct Index {
     .height(52)
     .width('100%')
     .onClick(() => {
-      this.currentIndex = index;
-      this.tabsController.changeIndex(this.currentIndex);
+      this.currentIndex = index
+      this.tabsController.changeIndex(this.currentIndex)
     })
   }
 
@@ -74,14 +72,16 @@ struct Index {
   @Builder
   pageYours() {
     Column() {
-      Button('测试', { type: ButtonType.Capsule })
+      Button('Webview 测试', { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.EMPHASIZED)
         .controlSize(ControlSize.NORMAL)
         .fontColor($r('app.color.normal_background'))
         .backgroundColor($r('app.color.active_text'))
         .onClick((event: ClickEvent) => {
-          // 按钮被点击后
-
+          this.getUIContext().getRouter().pushUrl({
+            url: 'pages/Webview',
+            params: $r('app.string.Homepage_url')
+          })
         })
     }
     .height('100%')
@@ -104,7 +104,7 @@ struct Index {
       TabContent() { this.pageStart() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.startIcon'), $r('app.media.foreground')))
+      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
 
       /**
        * Tab: 功能
@@ -112,7 +112,7 @@ struct Index {
       TabContent() { this.pageFunction() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.startIcon'), $r('app.media.foreground')))
+      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
 
       /**
        * Tab: 你的
@@ -120,7 +120,7 @@ struct Index {
       TabContent() { this.pageYours() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.startIcon'), $r('app.media.foreground')))
+      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
 
     }
     .width('100%')
@@ -128,7 +128,6 @@ struct Index {
     .barHeight(52)
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
-      hilog.info(0x0000, 'index', index.toString())
       this.currentIndex = targetIndex
     })
   }
