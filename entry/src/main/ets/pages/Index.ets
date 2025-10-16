@@ -80,7 +80,10 @@ struct Index {
         .onClick((event: ClickEvent) => {
           this.getUIContext().getRouter().pushUrl({
             url: 'pages/Webview',
-            params: $r('app.string.Homepage_url')
+            params: {
+              title: 'Title of page...',
+              url: $r('app.string.Homepage_url'),
+            }
           })
         })
     }
