@@ -2,7 +2,11 @@
   "string": [
     {
       "name": "app_name",
-      "value": "Your_USTC"
+      "value": "你的科大"
+    },
+    {
+      "name": "developer",
+      "value": "NicTeam"
     }
   ]
 }

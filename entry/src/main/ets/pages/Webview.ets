@@ -11,7 +11,7 @@ struct Webview {
       Row() {
         Text('Title here')
           .fontSize(18)
-          .fontColor('#ffffff')
+          .fontColor($r('sys.color.black'))
           .padding({ left: 16 })
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Blank()
@@ -19,7 +19,7 @@ struct Webview {
       .id('header')
       .width('100%')
       .height(96)
-      .backgroundColor('#007DFF')
+      .backgroundColor($r('sys.color.brand'))
       .alignRules({
         top: { anchor: '__container__', align: VerticalAlign.Top },
         left: { anchor: '__container__', align: HorizontalAlign.Start },
