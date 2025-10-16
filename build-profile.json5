@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B3D22A93CE4FDA0EAA401C365F5B6BD210B9358280B224970D4AFA345A438A7AE17F3431572EB1B",
+          "keyPassword": "0000001AD150C793FBB183CA4DA6C71D0BF3A3EFF0F2B4082C58615B08DF9C1C0799C29EBC8DD38709AC",
           "profile": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.p12",
-          "storePassword": "0000001B6D3188D2E61DF1C2F3370C89654C82CE2C6099CCBA427CD570F26AA9DA726699327EE06DF92D9A"
+          "storePassword": "0000001A556D4969B44700A3834739464EE82F90E6D6A3F711D2E137309E0A77BADD4A396B0E4C952EBA"
         }
       }
     ],
