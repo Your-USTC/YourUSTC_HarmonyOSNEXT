@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.cer",
+          "certpath": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001AD150C793FBB183CA4DA6C71D0BF3A3EFF0F2B4082C58615B08DF9C1C0799C29EBC8DD38709AC",
-          "profile": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.p7b",
+          "keyPassword": "0000001B559653910ACEDF9622F675F3BFEE1773E47D7E34E6CE8EA6345EE0F21B26961F16F7819FCD242C",
+          "profile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\youth\\.ohos\\config\\default_YourUSTC_HarmonyOSNEXT_M2OFfWr7N7nwkhO6mMIGzSHXL_yz-A8jin6ec_TNEMQ=.p12",
-          "storePassword": "0000001A556D4969B44700A3834739464EE82F90E6D6A3F711D2E137309E0A77BADD4A396B0E4C952EBA"
+          "storeFile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p12",
+          "storePassword": "0000001B48C95366BD223A1777A85E064B69A6149814927201823E8F69BA4579D293E4ED803FCF3BDFDCAC"
         }
       }
     ],

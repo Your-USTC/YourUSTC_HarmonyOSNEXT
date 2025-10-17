@@ -77,13 +77,15 @@ struct Index {
         .controlSize(ControlSize.NORMAL)
         .fontColor($r('app.color.normal_background'))
         .backgroundColor($r('app.color.active_text'))
-        .onClick((event: ClickEvent) => {
+        .onClick(() => {
           this.getUIContext().getRouter().pushUrl({
             url: 'pages/Webview',
             params: {
               title: 'Title of page...',
               url: $r('app.string.Homepage_url'),
             }
+          }).catch((err: Error) => {
+            console.error(`Router ERROR: [${err.name}] ${err.message}`)
           })
         })
     }
@@ -130,7 +132,7 @@ struct Index {
     .backgroundColor($r('app.color.shaded_background'))
     .barHeight(52)
     .barMode(BarMode.Fixed)
-    .onAnimationStart((index: number, targetIndex: number) => {
+    .onAnimationStart((targetIndex: number) => {
       this.currentIndex = targetIndex
     })
   }
