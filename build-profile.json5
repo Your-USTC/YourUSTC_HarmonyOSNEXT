@@ -1,20 +1,6 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B559653910ACEDF9622F675F3BFEE1773E47D7E34E6CE8EA6345EE0F21B26961F16F7819FCD242C",
-          "profile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\LMC\\.ohos\\config\\default_Your_USTC_9AILdkr0nBw5fiwR0fGYI6NOtv7Q-g2r9N5cjmXAWRc=.p12",
-          "storePassword": "0000001B48C95366BD223A1777A85E064B69A6149814927201823E8F69BA4579D293E4ED803FCF3BDFDCAC"
-        }
-      }
-    ],
+    "signingConfigs": [],
     "products": [
       {
         "name": "default",
