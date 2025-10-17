@@ -1,4 +1,6 @@
 
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
 @Entry
 @Component
 struct Index {
@@ -132,7 +134,8 @@ struct Index {
     .backgroundColor($r('app.color.shaded_background'))
     .barHeight(52)
     .barMode(BarMode.Fixed)
-    .onAnimationStart((targetIndex: number) => {
+    .onAnimationStart((index: number, targetIndex: number) => {
+      hilog.info(0x0000, 'index', index.toString())
       this.currentIndex = targetIndex
     })
   }
