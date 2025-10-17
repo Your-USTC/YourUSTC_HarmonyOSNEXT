@@ -13,6 +13,10 @@
       "value": "#000000"
     },
     {
+      "name": "complementary_normal_text",
+      "value": "#FFFFFF"
+    },
+    {
       "name": "active_text",
       "value": "#FF0040C0"
     }
