@@ -199,6 +199,14 @@
     {
       "name": "AssistantManagementSystem_url",
       "value": "https://tam.cmet.ustc.edu.cn"
+    },
+    {
+      "name": "PersonalCenter_url",
+      "value": "https://id.ustc.edu.cn"
+    },
+    {
+      "name": "DormitoryService_url",
+      "value": "https://zhusu.ustc.edu.cn"
     }
   ]
 }

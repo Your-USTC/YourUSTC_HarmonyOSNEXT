@@ -18,15 +18,21 @@ struct Webview {
   build() {
     Column() {
       Row() {
+        Image($r('app.media.close'))
+          .padding({left: 12})
+          .height(20)
+          .onClick(() => {
+            this.getUIContext().getRouter().back()
+          })
+        Blank()
         Text(this.title)
           .fontSize(18)
           .fontColor($r('app.color.complementary_normal_text'))
-          .padding({ left: 16 })
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Blank()
-        Image($r('app.media.tab_function_unselected')) // Replace with "refresh" icon!
-          .padding({right: 16})
-          .height(36)
+        Image($r('app.media.refresh'))
+          .padding({right: 12})
+          .height(20)
           .onClick(() => {
             this.webviewController.loadUrl(this.url);
           })
