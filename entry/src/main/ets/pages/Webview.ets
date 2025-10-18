@@ -5,7 +5,7 @@ import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
 @Entry
 @Component
 struct Webview {
-  webviewController: webview.WebviewController = new webview.WebviewController();
+  webviewController: webview.WebviewController = new webview.WebviewController()
   @State isDesktop: boolean = false;
   @State title: string = '';
   @State url: string = '';
@@ -67,6 +67,7 @@ struct Webview {
         src: this.url,
         controller: this.webviewController
       })
+        .domStorageAccess(true)
         .javaScriptAccess(true)
         .width('100%')
         .height('100%')

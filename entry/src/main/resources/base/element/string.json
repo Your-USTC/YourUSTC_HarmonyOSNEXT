@@ -29,6 +29,10 @@
       "value": "教务系统"
     },
     {
+      "name": "Schedule",
+      "value": "课程表"
+    },
+    {
       "name": "Homepage_url",
       "value": "https://ustc.edu.cn"
     },
