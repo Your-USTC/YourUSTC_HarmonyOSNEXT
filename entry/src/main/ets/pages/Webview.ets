@@ -1,4 +1,5 @@
-import { webview } from '@kit.ArkWeb';
+
+import { webview } from '@kit.ArkWeb'
 import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
 
 @Entry
@@ -40,7 +41,7 @@ struct Webview {
         Blank()
         Text(this.title)
           .fontSize(18)
-          .fontColor($r('app.color.complementary_normal_text'))
+          .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Blank()
         Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))

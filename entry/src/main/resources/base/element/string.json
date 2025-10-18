@@ -25,6 +25,10 @@
       "value": "你的"
     },
     {
+      "name": "AcademicAffairs",
+      "value": "教务系统"
+    },
+    {
       "name": "Homepage_url",
       "value": "https://ustc.edu.cn"
     },
@@ -207,14 +211,6 @@
     {
       "name": "DormitoryService_url",
       "value": "https://zhusu.ustc.edu.cn"
-    },
-    {
-      "name": "DesktopUA",
-      "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-    },
-    {
-      "name": "MobileUA",
-      "value": "Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"
     }
   ]
 }
