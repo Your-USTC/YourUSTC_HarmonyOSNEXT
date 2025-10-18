@@ -1,13 +1,29 @@
 
-import { hilog } from '@kit.PerformanceAnalysisKit'
-import * as Links from '../constants/Links'
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import * as Links from '../constants/Links';
+import { CheckInTools } from '../utils/CheckIn';
+import { preferences } from '@kit.ArkData';
 
 @Entry
 @Component
 struct Index {
 
-  @State currentIndex: number = 0    // 当前标签索引 (从0开始), 初始值即为默认标签索引
-  private tabsController: TabsController = new TabsController()
+  @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
+  private tabsController: TabsController = new TabsController();
+
+  @State checkInTotal: number = 0;
+  @State checkedInToday: boolean = false;
+  @State checkInContent: string = ''; // 签到后展示的随机内容
+  private pref: preferences.Preferences | null = null;
+
+  aboutToAppear(): void {
+    this.pref = preferences.getPreferencesSync(
+      this.getUIContext().getHostContext(),
+      {name: CheckInTools.PREF_NAME}
+    );
+    this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
+    this.checkedInToday = this.pref.getSync(CheckInTools.LAST_DAY_KEY, '') as string === CheckInTools.getTodayDate();
+  }
 
   /**
    * 函数: 构建 Tab 按钮
@@ -48,6 +64,19 @@ struct Index {
       Text('Start')
         .height(300)
         .fontSize(30)
+
+      // TODO: Design check in UI
+
+      Text(`check in count：${this.checkInTotal}`)
+      Button(this.checkedInToday ? 'checked in' : 'check in')
+        .enabled(!this.checkedInToday)
+        .onClick(() => {
+          const GeneratedDestructArray_1 = CheckInTools.doCheckIn(this.pref);
+          this.checkInTotal = GeneratedDestructArray_1[0];
+          this.checkedInToday = true;
+          this.checkInContent = GeneratedDestructArray_1[1];
+        })
+      Text(this.checkInContent)
     }
     .height('100%')
     .width('100%')
