@@ -1,9 +1,12 @@
-import { webview } from '@kit.ArkWeb';
+
+import { webview } from '@kit.ArkWeb'
+import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
 
 @Entry
 @Component
 struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
+  @State isDesktop: boolean = false;
   @State title: string = '';
   @State url: string = '';
 
@@ -24,28 +27,42 @@ struct Webview {
           .onClick(() => {
             this.getUIContext().getRouter().back()
           })
+        Image($r('app.media.back'))
+          .padding(({left: 12}))
+          .height(16)
+          .onClick(() => {
+            if (this.webviewController.accessBackward()) {
+              this.webviewController.backward();
+            } else {
+              console.log("Cannot go back!");
+              this.getUIContext().getRouter().back();
+            }
+          })
         Blank()
         Text(this.title)
           .fontSize(18)
-          .fontColor($r('app.color.complementary_normal_text'))
+          .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Blank()
+        Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))
+          .padding({right: 12})
+          .height(20)
+          .onClick(() => {
+            this.webviewController.setCustomUserAgent(this.isDesktop ? MOBILE_UA : DESKTOP_UA);
+            this.webviewController.refresh();
+            this.isDesktop = !this.isDesktop;
+          })
         Image($r('app.media.refresh'))
           .padding({right: 12})
           .height(20)
           .onClick(() => {
-            this.webviewController.loadUrl(this.url);
+            this.webviewController.refresh();
           })
       }
       .id('header')
       .width('100%')
       .height(48)
       .backgroundColor($r('app.color.shaded_background'))
-      /*.alignRules({
-        top: { anchor: '__container__', align: VerticalAlign.Top },
-        left: { anchor: '__container__', align: HorizontalAlign.Start },
-        right: { anchor: '__container__', align: HorizontalAlign.End }
-      })*/
       Web({
         src: this.url,
         controller: this.webviewController
@@ -53,11 +70,7 @@ struct Webview {
         .javaScriptAccess(true)
         .width('100%')
         .height('100%')
-        // .alignRules({
-        //   top: { anchor: '__container__', align: VerticalAlign.Top },
-        //   left: { anchor: '__container__', align: HorizontalAlign.Start },
-        //   right: { anchor: '__container__', align: HorizontalAlign.End }
-        // })
+
     }
     .height('100%')
     .width('100%')

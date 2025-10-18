@@ -1,5 +1,6 @@
 
-import { hilog } from '@kit.PerformanceAnalysisKit';
+import { hilog } from '@kit.PerformanceAnalysisKit'
+import * as Links from '../constants/Links'
 
 @Entry
 @Component
@@ -74,7 +75,7 @@ struct Index {
   @Builder
   pageYours() {
     Column() {
-      Button('Webview 测试', { type: ButtonType.Capsule })
+      Button(Links.STUDY_LINK[0].title, { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.EMPHASIZED)
         .controlSize(ControlSize.NORMAL)
         .fontColor($r('app.color.normal_background'))
@@ -82,10 +83,7 @@ struct Index {
         .onClick(() => {
           this.getUIContext().getRouter().pushUrl({
             url: 'pages/Webview',
-            params: {
-              title: 'Title of page...',
-              url: $r('app.string.Homepage_url'),
-            }
+            params: Links.STUDY_LINK[0]
           }).catch((err: Error) => {
             console.error(`Router ERROR: [${err.name}] ${err.message}`)
           })
