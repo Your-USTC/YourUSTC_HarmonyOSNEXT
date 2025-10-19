@@ -22,7 +22,9 @@ struct Index {
       {name: CheckInTools.PREF_NAME}
     );
     this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
-    this.checkedInToday = this.pref.getSync(CheckInTools.LAST_DAY_KEY, '') as string === CheckInTools.getTodayDate();
+    const previousTime = this.pref.getSync(CheckInTools.LAST_DAY_KEY, 1000000000) as number;
+    const currentTime = CheckInTools.getTodayDate();
+    this.checkedInToday = currentTime === previousTime;
   }
 
   /**

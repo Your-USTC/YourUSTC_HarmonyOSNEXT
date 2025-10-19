@@ -1,5 +1,5 @@
 
-export class Link {
+export interface Link {
   title: string | Resource = ''
   url: string | Resource = ''
 }

@@ -11,9 +11,10 @@ export class CheckInTools {
     '多做一道题，老婆会升级！'
   ];
 
-  static getTodayDate(): string {
-    const date: Date = new Date();
-    return date.toString();
+  static getTodayDate(): number {
+    const date = new Date();
+    const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return normalizedDate.getTime();
   }
   static getRandomContent(): string {
     return CheckInTools.CHECK_IN_CONTENT_LIST[Math.floor(Math.random() * CheckInTools.CHECK_IN_CONTENT_LIST.length)];
