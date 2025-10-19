@@ -1,7 +1,7 @@
 
 export interface Link {
-  title: string | Resource = ''
-  url: string | Resource = ''
+  title: string | Resource
+  url: string | Resource
 }
 
 export const STUDY_LINK: Link[] = [
