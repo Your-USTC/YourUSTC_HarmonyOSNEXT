@@ -12,6 +12,7 @@ struct Index {
   private tabsController: TabsController = new TabsController();
 
   @State checkInTotal: number = 0;
+  @State checkInConsecutive: number = 0;
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
   private pref: preferences.Preferences | null = null;
@@ -20,9 +21,10 @@ struct Index {
     this.pref = preferences.getPreferencesSync(
       this.getUIContext().getHostContext(),
       {name: CheckInTools.PREF_NAME}
-    );
+    ); // 载入包含签到信息的首选项
     this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
-    this.checkedInToday = this.pref.getSync(CheckInTools.LAST_DAY_KEY, '') as string === CheckInTools.getTodayDate();
+    this.checkInConsecutive = this.pref.getSync(CheckInTools.CONSECUTIVE_DAYS_KEY, 0) as number;
+    this.checkedInToday = CheckInTools.timeSinceLastCheckIn(this.pref) === 0;
   }
 
   /**
@@ -68,13 +70,15 @@ struct Index {
       // TODO: Design check in UI
 
       Text(`check in count：${this.checkInTotal}`)
+      Text(this.checkedInToday ? `check in consecutive: ${this.checkInConsecutive}` : '')
       Button(this.checkedInToday ? 'checked in' : 'check in')
         .enabled(!this.checkedInToday)
         .onClick(() => {
           const GeneratedDestructArray_1 = CheckInTools.doCheckIn(this.pref);
           this.checkInTotal = GeneratedDestructArray_1[0];
           this.checkedInToday = true;
-          this.checkInContent = GeneratedDestructArray_1[1];
+          this.checkInConsecutive = GeneratedDestructArray_1[1];
+          this.checkInContent = GeneratedDestructArray_1[2];
         })
       Text(this.checkInContent)
     }
