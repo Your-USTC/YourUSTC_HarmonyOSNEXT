@@ -3,6 +3,10 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import * as Links from '../constants/Links';
 import { CheckInTools } from '../utils/CheckIn';
 import { preferences } from '@kit.ArkData';
+import { CommonConstants, ScrollPosition } from '../constants/CommonConstants';
+import { ListDataConstants } from '../constants/ListDataConstants';
+import GridComponent from '../view/GridComponent';
+import { featureGridData, GridData, otherGridDataList } from '../model/GridListDataSources';
 
 @Entry
 @Component
@@ -10,22 +14,6 @@ struct Index {
 
   @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
-
-  @State checkInTotal: number = 0;
-  @State checkInConsecutive: number = 0;
-  @State checkedInToday: boolean = false;
-  @State checkInContent: string = ''; // 签到后展示的随机内容
-  private pref: preferences.Preferences | null = null;
-
-  aboutToAppear(): void {
-    this.pref = preferences.getPreferencesSync(
-      this.getUIContext().getHostContext(),
-      {name: CheckInTools.PREF_NAME}
-    ); // 载入包含签到信息的首选项
-    this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
-    this.checkInConsecutive = this.pref.getSync(CheckInTools.CONSECUTIVE_DAYS_KEY, 0) as number;
-    this.checkedInToday = CheckInTools.timeSinceLastCheckIn(this.pref) === 0;
-  }
 
   /**
    * 函数: 构建 Tab 按钮
@@ -58,6 +46,81 @@ struct Index {
   }
 
   /**
+   * 全局资源: 首页
+   */
+  @State checkInTotal: number = 0;
+  @State checkInConsecutive: number = 0;
+  @State checkedInToday: boolean = false;
+  @State checkInContent: string = ''; // 签到后展示的随机内容
+  private pref: preferences.Preferences | null = null;
+
+  aboutToAppear(): void {
+    this.pref = preferences.getPreferencesSync(
+      this.getUIContext().getHostContext(),
+      {name: CheckInTools.PREF_NAME}
+    ); // 载入包含签到信息的首选项
+    this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
+    this.checkInConsecutive = this.pref.getSync(CheckInTools.CONSECUTIVE_DAYS_KEY, 0) as number;
+    this.checkedInToday = CheckInTools.timeSinceLastCheckIn(this.pref) === 0;
+  }
+
+  /**
+   * 全局资源: 功能
+   */
+  @State listPosition: number = ScrollPosition.start;
+  @State scrollPosition: number = ScrollPosition.start;
+  @State currentListIndex: number = 0;
+  private scrollerForScroll: Scroller = new Scroller();
+  private scrollerForList: Scroller = new Scroller();
+  private scrollerForTitle: Scroller = new Scroller();
+
+  @Builder
+  listBuilder() {
+    Row() {
+      List({ space: CommonConstants.LIST_SPACE_SIZE, scroller: this.scrollerForTitle }) {
+        ForEach(ListDataConstants.TITLE_LIST, (item: string, index) => {
+          ListItem() {
+            Column() {
+              Text(item)
+                .fontColor(this.currentListIndex === index ? $r('app.color.active_text') :
+                  $r('app.color.normal_text'))
+                .fontSize('16fp')
+                .fontWeight(this.currentListIndex === index ? FontWeight.Bold : FontWeight.Normal)
+                .margin({ top: '16vp' })
+
+              if (this.currentListIndex === index) {
+                Divider()
+                  .color($r('app.color.active_text'))
+                  .strokeWidth(CommonConstants.DIVIDER_STROKE_WIDTH)
+                  .width('65vp')
+                  .margin({ top: '7vp' })
+              }
+            }
+            .justifyContent(FlexAlign.Center)
+            .onClick(() => {
+              this.scrollerForList.scrollToIndex(index);
+              this.scrollerForScroll.scrollEdge(Edge.Bottom);
+              this.scrollerForTitle.scrollToIndex(index);
+              this.currentListIndex = index;
+            })
+          }
+        }, (item: string, index: number) => index + JSON.stringify(item))
+      }
+      .width(CommonConstants.FULL_PERCENT)
+      .height('56vp')
+      .listDirection(Axis.Horizontal)
+      .scrollBar(BarState.Off)
+    }
+    .margin({ top: '16vp' })
+    .padding({ left: '28vp', right: '28vp' })
+  }
+
+  /**
+   * 全局资源: 你的
+   */
+
+
+  /**
    * 页面: 首页
    */
   @Builder
@@ -68,6 +131,7 @@ struct Index {
         .fontSize(30)
 
       // TODO: Design check in UI
+      // See. Page Function first, I think.
 
       Text(`check in count：${this.checkInTotal}`)
       Text(this.checkedInToday ? `check in consecutive: ${this.checkInConsecutive}` : '')
@@ -93,13 +157,79 @@ struct Index {
   @Builder
   pageFunction() {
     Column() {
-      Text('Function')
-        .height(300)
-        .fontSize(30)
+      Stack({ alignContent: Alignment.Top }) {
+        Scroll(this.scrollerForScroll) {
+          Column() {
+            GridComponent({ gridData: featureGridData })
+            this.listBuilder();
+            List({ scroller: this.scrollerForList }) {
+              ForEach(otherGridDataList, (item: GridData, index: number) => {
+                GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1 })
+              }, (item: GridData,index:number) =>index+JSON.stringify(item))
+            }
+            .padding({ bottom: '40vp' })
+            .width(CommonConstants.FULL_PERCENT)
+            .edgeEffect(EdgeEffect.None)
+            .scrollBar(BarState.Off)
+            .onReachStart(() => {
+              this.listPosition = ScrollPosition.start;
+            })
+            .onReachEnd(() => {
+              this.listPosition = ScrollPosition.end;
+            })
+            .onScrollIndex((start: number) => {
+              this.currentListIndex = start
+              this.scrollerForTitle.scrollToIndex(this.currentListIndex);
+            })
+            .onScrollFrameBegin((offset: number) => {
+              if (this.currentListIndex === ListDataConstants.TITLE_LIST.length - 1 && offset > 0) {
+                return { offsetRemain: 0 }
+              }
+              if (!((this.listPosition === ScrollPosition.start && offset < 0) ||
+                (this.listPosition === ScrollPosition.end && offset > 0))) {
+                this.listPosition = ScrollPosition.center;
+              }
+              if (this.scrollPosition === ScrollPosition.end &&
+                (this.listPosition != ScrollPosition.start || offset > 0)) {
+                return { offsetRemain: offset };
+              } else {
+                this.scrollerForScroll.scrollBy(0, offset)
+                return { offsetRemain: offset };
+              }
+            })
+            .width(CommonConstants.FULL_PERCENT)
+            .height("calc(100% - 56vp)")
+          }
+        }
+        .scrollBar(BarState.Off)
+        .width(CommonConstants.FULL_PERCENT)
+        .height(CommonConstants.FULL_PERCENT)
+        .edgeEffect(EdgeEffect.Spring)
+        .onWillScroll((yOffset: number) => {
+          if (!((this.scrollPosition === ScrollPosition.start && yOffset < 0)
+            || (this.scrollPosition === ScrollPosition.end && yOffset > 0))) {
+            this.scrollPosition = ScrollPosition.center;
+          }
+        })
+        .onScrollEdge((side: Edge) => {
+          if (side === Edge.Top) {
+            this.scrollPosition = ScrollPosition.start;
+          } else if (side === Edge.Bottom) {
+            this.scrollPosition = ScrollPosition.end;
+          }
+        })
+        .onScrollFrameBegin(offset => {
+          if (this.scrollPosition === ScrollPosition.end) {
+            return { offsetRemain: 0 };
+          } else {
+            return { offsetRemain: offset };
+          }
+        })
+      }
+      .width(CommonConstants.FULL_PERCENT)
+      .height(CommonConstants.FULL_PERCENT)
     }
-    .height('100%')
-    .width('100%')
-    .justifyContent(FlexAlign.Center)
+    .backgroundColor($r('app.color.normal_background'))
   }
 
   /**
@@ -128,7 +258,7 @@ struct Index {
   }
 
   /**
-   * 主程序
+   * Tabs 主控程序
    */
   build() {
     Tabs({
