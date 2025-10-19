@@ -33,7 +33,7 @@ export default struct GridComponent {
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
       .columnsTemplate(CommonConstants.GRID_COLUMNS_TEMPLATE)
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.grid_background'))
 
       if (this.isLastItem) {
         Blank()
