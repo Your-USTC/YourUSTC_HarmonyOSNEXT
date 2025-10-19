@@ -9,23 +9,27 @@ export class GridData {
   }
 }
 
-export const featureGridData: GridData = new GridData($r('app.string.sub_title1'),
+export const featureGridData: GridData = new GridData($r('app.string.ZuiJinShiYong'),
   [
-    $r('app.string.sub_title1_value1'),
-    $r('app.string.sub_title1_value2'),
-    $r('app.string.sub_title1_value3'),
-    $r('app.string.sub_title1_value4'),
-    $r('app.string.sub_title1_value5'),
-    $r('app.string.sub_title1_value6'),
-    $r('app.string.sub_title1_value7')
+    $r('app.string.empty')
   ]);
 
 export const
   otherGridDataList: GridData[] = [
-    new GridData($r('app.string.sub_title2'),
+    new GridData($r('app.string.XueXi'),
       [
-        $r('app.string.sub_title2_value1'),
-        $r('app.string.sub_title2_value2'),
+        $r('app.string.JiaoWuXiTong'),
+        $r('app.string.KeChengBiao'),
+        $r('app.string.KaoShiXinXi'),
+        $r('app.string.WoDeChengJi'),
+        $r('app.string.bbJiaoXuePingTai'),
+        $r('app.string.HanHaiJiaoXueWang'),
+        $r('app.string.JiaoShiChaXun'),
+        $r('app.string.TuShuGuan')
+      ]),
+    new GridData($r('app.string.GongJu'),
+      [
+        $r('app.string.ZhengBanRuanJian'),
         $r('app.string.sub_title2_value3'),
         $r('app.string.sub_title2_value4'),
         $r('app.string.sub_title2_value5'),
@@ -38,12 +42,6 @@ export const
         $r('app.string.sub_title2_value12'),
         $r('app.string.sub_title2_value13'),
         $r('app.string.sub_title2_value14')
-      ]),
-    new GridData($r('app.string.sub_title3'),
-      [
-        $r('app.string.sub_title3_value1'),
-        $r('app.string.sub_title3_value2'),
-        $r('app.string.sub_title3_value3')
       ]),
     new GridData($r('app.string.sub_title4'),
       [

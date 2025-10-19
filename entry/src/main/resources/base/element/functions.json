@@ -1,12 +1,20 @@
 {
   "string": [
     {
-      "name": "sub_title1",
-      "value": "常用服务"
+      "name": "empty",
+      "value": "空"
     },
     {
-      "name": "sub_title2",
-      "value": "预定行程"
+      "name": "ZuiJinShiYong",
+      "value": "最近使用"
+    },
+    {
+      "name": "XueXi",
+      "value": "学习"
+    },
+    {
+      "name": "GongJu",
+      "value": "工具"
     },
     {
       "name": "sub_title3",
@@ -25,40 +33,40 @@
       "value": "拓展业务"
     },
     {
-      "name": "sub_title1_value1",
-      "value": "值机&选座"
+      "name": "JiaoWuXiTong",
+      "value": "教务系统"
     },
     {
-      "name": "sub_title1_value2",
-      "value": "美食预定"
+      "name": "KeChengBiao",
+      "value": "课程表"
     },
     {
-      "name": "sub_title1_value3",
-      "value": "航旅商城"
+      "name": "KaoShiXinXi",
+      "value": "考试信息"
     },
     {
-      "name": "sub_title1_value4",
-      "value": "我的订单"
+      "name": "WoDeChengJi",
+      "value": "我的成绩"
     },
     {
-      "name": "sub_title1_value5",
-      "value": "自助退票"
+      "name": "bbJiaoXuePingTai",
+      "value": "bb教学平台"
     },
     {
-      "name": "sub_title1_value6",
-      "value": "机票兑换"
+      "name": "HanHaiJiaoXueWang",
+      "value": "瀚海教学网"
     },
     {
-      "name": "sub_title1_value7",
-      "value": "我的行程"
+      "name": "JiaoShiChaXun",
+      "value": "教室查询"
     },
     {
-      "name": "sub_title2_value1",
-      "value": "机票预定"
+      "name": "TuShuGuan",
+      "value": "图书馆"
     },
     {
-      "name": "sub_title2_value2",
-      "value": "我的行程"
+      "name": "ZhengBanRuanJian",
+      "value": "正版软件"
     },
     {
       "name": "sub_title2_value3",

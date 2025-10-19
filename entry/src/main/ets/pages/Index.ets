@@ -272,7 +272,7 @@ struct Index {
       TabContent() { this.pageStart() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
+      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
 
       /**
        * Tab: 功能
@@ -280,7 +280,7 @@ struct Index {
       TabContent() { this.pageFunction() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
+      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
 
       /**
        * Tab: 你的
@@ -288,7 +288,7 @@ struct Index {
       TabContent() { this.pageYours() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.tab_function_selected'), $r('app.media.tab_function_unselected')))
+      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
 
     }
     .width('100%')
