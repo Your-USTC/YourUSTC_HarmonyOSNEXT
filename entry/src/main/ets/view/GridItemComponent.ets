@@ -13,6 +13,12 @@ export default struct GridItemComponent {
         Image(this.itemImage)
           .width('40vp')
           .height('40vp')
+          .onClick(() => {
+            this.getUIContext().getPromptAction().showToast({
+              message: '敬请期待',
+              duration: 500
+            })
+          })
         Text(this.itemName)
           .fontSize('12fp')
           .textAlign(TextAlign.Center)

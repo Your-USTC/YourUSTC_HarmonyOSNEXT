@@ -9,6 +9,10 @@
       "value": "#FF7FC0FF"
     },
     {
+      "name": "grid_background",
+      "value": "#FFC0D8FF"
+    },
+    {
       "name": "normal_text",
       "value": "#000000"
     },
