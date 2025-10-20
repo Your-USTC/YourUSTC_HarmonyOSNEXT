@@ -60,9 +60,11 @@ struct Index {
       this.getUIContext().getHostContext(),
       {name: CheckInTools.PREF_NAME}
     ); // 载入包含签到信息的首选项
-    this.checkInTotal = this.pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
-    this.checkInConsecutive = this.pref.getSync(CheckInTools.CONSECUTIVE_DAYS_KEY, 0) as number;
-    this.checkedInToday = CheckInTools.timeSinceLastCheckIn(this.pref) === 0;
+    const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup(this.pref);
+    this.checkInTotal = GeneratedDestructArray_1[0];
+    this.checkInConsecutive = GeneratedDestructArray_1[1];
+    this.checkedInToday = GeneratedDestructArray_1[2];
+    this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
   }
 
   /**
@@ -135,7 +137,7 @@ struct Index {
       // See. Page Function first, I think.
 
       Text(`check in count：${this.checkInTotal}`)
-      Text(this.checkedInToday ? `check in consecutive: ${this.checkInConsecutive}` : '')
+      Text(`check in consecutive: ${this.checkInConsecutive}`)
       Button(this.checkedInToday ? 'checked in' : 'check in')
         .enabled(!this.checkedInToday)
         .onClick(() => {

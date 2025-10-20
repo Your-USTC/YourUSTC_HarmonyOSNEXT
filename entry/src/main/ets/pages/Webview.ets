@@ -30,14 +30,26 @@ struct Webview {
         Image($r('app.media.back'))
           .padding(({left: 12}))
           .height(16)
-          .onClick(() => {
-            if (this.webviewController.accessBackward()) {
-              this.webviewController.backward();
-            } else {
-              console.log("Cannot go back!");
-              this.getUIContext().getRouter().back();
-            }
-          })
+          /*.onClick()*/
+          .parallelGesture(
+            GestureGroup(
+              GestureMode.Exclusive,
+              TapGesture({ count: 1 })
+                .onAction(() => {
+                  if (this.webviewController.accessBackward()) {
+                    this.webviewController.backward();
+                  } else {
+                    console.log("Cannot go back!");
+                    this.getUIContext().getRouter().back();
+                  }
+                }),
+              LongPressGesture()
+                .onAction(() => {
+                  this.webviewController.loadUrl(this.url)
+                })
+            )
+          )
+          .draggable(false)
         Blank()
         Text(this.title)
           .fontSize(18)
