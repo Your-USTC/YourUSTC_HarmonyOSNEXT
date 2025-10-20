@@ -11,3 +11,6 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
+build-profile.json5
+github
+github.pub

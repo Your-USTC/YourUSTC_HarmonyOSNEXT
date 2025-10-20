@@ -1,7 +1,6 @@
 
 import { GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
-import GridItemComponent from './GridItemComponent';
 
 @Component
 export default struct GridComponent {
@@ -11,7 +10,7 @@ export default struct GridComponent {
   build() {
     Column() {
       Row() {
-        Text(this.gridData.groupName)
+        Text(this.gridData.groupName) // 功能界面各组的标题
           .fontSize('20fp')
           .height('30vp')
           .fontWeight(FontWeight.Bold)
@@ -23,7 +22,29 @@ export default struct GridComponent {
 
       Grid() {
         ForEach(this.gridData.gridItemList, (item: string) => {
-          GridItemComponent({ itemName: item })
+          GridItem() {
+            Column() {
+              Image($r('app.media.default_function_icon')) // 待转换成 item - 图片 索引
+                .width('40vp')
+                .height('40vp')
+              Text(item)
+                .fontSize('12fp')
+                .textAlign(TextAlign.Center)
+                .margin({ top: '4vp' })
+                .height('17vp')
+            }
+            .height(CommonConstants.FULL_PERCENT)
+            .justifyContent(FlexAlign.Center)
+          }
+          .height('64vp')
+          .onClick(() => {
+            this.getUIContext().getPromptAction().showToast({
+              message: '敬请期待',
+              duration: 500
+            })
+            // 获取 index
+            console.log(item.toString()) // ???
+          })
         },(item:string,index:number)=>index+JSON.stringify(item))
       }
       .margin({ left: '12vp', right: '12vp', top: '8vp' })

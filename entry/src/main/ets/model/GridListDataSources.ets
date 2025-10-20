@@ -43,10 +43,10 @@ export const
         $r('app.string.sub_title2_value13'),
         $r('app.string.sub_title2_value14')
       ]),
-    new GridData($r('app.string.sub_title4'),
+    new GridData($r('app.string.XueXiao'),
       [
-        $r('app.string.sub_title4_value1'),
-        $r('app.string.sub_title4_value2'),
+        $r('app.string.WangLuoTong'),
+        $r('app.string.TongYiShenFenRenZheng'),
         $r('app.string.sub_title4_value3'),
         $r('app.string.sub_title4_value4'),
         $r('app.string.sub_title4_value5'),

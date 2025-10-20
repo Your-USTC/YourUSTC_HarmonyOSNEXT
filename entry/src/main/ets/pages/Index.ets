@@ -7,6 +7,7 @@ import { CommonConstants, ScrollPosition } from '../constants/CommonConstants';
 import { ListDataConstants } from '../constants/ListDataConstants';
 import GridComponent from '../view/GridComponent';
 import { featureGridData, GridData, otherGridDataList } from '../model/GridListDataSources';
+import { FunctionOrder } from '../utils/FunctionOrder'
 
 @Entry
 @Component
@@ -53,6 +54,7 @@ struct Index {
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
   private pref: preferences.Preferences | null = null;
+  private mostUsed: FunctionOrder = new FunctionOrder();
 
   aboutToAppear(): void {
     this.pref = preferences.getPreferencesSync(
@@ -160,7 +162,9 @@ struct Index {
       Stack({ alignContent: Alignment.Top }) {
         Scroll(this.scrollerForScroll) {
           Column() {
-            GridComponent({ gridData: featureGridData })
+            // 常用区 Grid，使用 mostUsed 记录点击次数
+            GridComponent({ gridData: this.mostUsed.mostUsedGrid })
+            // 常用区下面的所有功能区 GridComponent
             this.listBuilder();
             List({ scroller: this.scrollerForList }) {
               ForEach(otherGridDataList, (item: GridData, index: number) => {
