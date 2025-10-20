@@ -10,6 +10,7 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
+/build-profile.json5
 /GitHub Page - Forked.url
 github
 github.pub
