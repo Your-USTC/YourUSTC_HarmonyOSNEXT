@@ -1,5 +1,4 @@
 
-// import { hilog } from '@kit.PerformanceAnalysisKit';
 import { LINK } from '../constants/Links';
 import { CheckInTools } from '../utils/CheckIn';
 import { preferences } from '@kit.ArkData';
@@ -300,7 +299,6 @@ struct Index {
     .barHeight(52)
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
-      // hilog.info(0x0000, 'index', index.toString())
       this.currentIndex = targetIndex
     })
   }

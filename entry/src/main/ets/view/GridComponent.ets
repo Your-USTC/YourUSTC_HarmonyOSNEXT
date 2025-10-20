@@ -41,9 +41,7 @@ export default struct GridComponent {
           .height('64vp')
           .onClick(() => {
             // 跳转 Webview
-            console.log((this.gridIndex.toString() + '.' + index.toString()).toString()) // debug: 显示 index
             if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
-              console.log(LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString()) // debug: 显示 index 对应网址
               this.getUIContext().getPromptAction().showToast({
                 message: '敬请期待',
                 duration: 500
