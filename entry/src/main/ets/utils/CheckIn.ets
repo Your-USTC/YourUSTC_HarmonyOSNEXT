@@ -5,6 +5,7 @@ export class CheckInTools {
   static LAST_DAY_KEY = 'lastDay';
   static TOTAL_DAYS_KEY = 'totalDays';
   static CONSECUTIVE_DAYS_KEY = 'consecutiveDays';
+  static CONTENT_KEY = 'content';
   private static CHECK_IN_CONTENT_LIST: string[] = [
     '加油数学竞赛生，你拼命的样子真美！', // TODO: Replace with meaningful content
     '把头发扎起来，兜里放几个薄荷糖',
@@ -20,7 +21,7 @@ export class CheckInTools {
     return normalizedDate.getTime();
   }
   static timeSinceLastCheckIn(pref: preferences.Preferences | null): number {
-    if (pref!== null) {
+    if (pref !== null) {
       const previousTime = pref.getSync(CheckInTools.LAST_DAY_KEY, CheckInTools.defaultTimestamp) as number;
       const currentTime = CheckInTools.getTodayDate();
       return currentTime - previousTime;
@@ -29,6 +30,19 @@ export class CheckInTools {
   }
   static getRandomContent(): string {
     return CheckInTools.CHECK_IN_CONTENT_LIST[Math.floor(Math.random() * CheckInTools.CHECK_IN_CONTENT_LIST.length)];
+  }
+
+  static loadCheckInOnStartup(pref: preferences.Preferences | null): [number, number, boolean, string] {
+    if (pref !== null) {
+      const checkInTotal = pref.getSync(CheckInTools.TOTAL_DAYS_KEY, 0) as number;
+      const timeSinceLastCheckIn = CheckInTools.timeSinceLastCheckIn(pref);
+      const checkInConsecutive = timeSinceLastCheckIn <= CheckInTools.millisecondsInADay
+        ? pref.getSync(CheckInTools.CONSECUTIVE_DAYS_KEY, 0) as number : 0; // 超过1天未签到就把“连续签到”计数归零
+      const checkedInToday = timeSinceLastCheckIn === 0;
+      const checkInContent = pref.getSync(CheckInTools.CONTENT_KEY, '') as string;
+      return [checkInTotal, checkInConsecutive, checkedInToday, checkInContent];
+    }
+    return [0, 0, false, ''];
   }
 
   static doCheckIn(pref: preferences.Preferences | null): [number, number, string] {
@@ -42,14 +56,16 @@ export class CheckInTools {
       } else {
         newConsecutive = 1;
       }
+      const randomContent = CheckInTools.getRandomContent();
 
       // 写入首选项并落盘
       pref.putSync(CheckInTools.LAST_DAY_KEY, CheckInTools.getTodayDate());
       pref.putSync(CheckInTools.TOTAL_DAYS_KEY, newTotal);
       pref.putSync(CheckInTools.CONSECUTIVE_DAYS_KEY, newConsecutive);
+      pref.putSync(CheckInTools.CONTENT_KEY, randomContent);
       pref.flushSync();
 
-      return [newTotal, newConsecutive, CheckInTools.getRandomContent()];
+      return [newTotal, newConsecutive, randomContent];
     }
     return [0, 0, ''];
   }
