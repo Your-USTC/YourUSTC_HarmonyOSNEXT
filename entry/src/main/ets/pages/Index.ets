@@ -1,6 +1,6 @@
 
 // import { hilog } from '@kit.PerformanceAnalysisKit';
-import * as Links from '../constants/Links';
+import { LINK } from '../constants/Links';
 import { CheckInTools } from '../utils/CheckIn';
 import { preferences } from '@kit.ArkData';
 import { CommonConstants, ScrollPosition } from '../constants/CommonConstants';
@@ -168,7 +168,7 @@ struct Index {
             this.listBuilder();
             List({ scroller: this.scrollerForList }) {
               ForEach(otherGridDataList, (item: GridData, index: number) => {
-                GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1 })
+                GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1, gridIndex: index })
               }, (item: GridData,index:number) =>index+JSON.stringify(item))
             }
             .padding({ bottom: '40vp' })
@@ -242,7 +242,7 @@ struct Index {
   @Builder
   pageYours() {
     Column() {
-      Button(Links.STUDY_LINK[1].title, { type: ButtonType.Capsule })
+      Button($r("app.string.KeChengBiao"), { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.EMPHASIZED)
         .controlSize(ControlSize.NORMAL)
         .fontColor($r('app.color.normal_background'))
@@ -250,7 +250,7 @@ struct Index {
         .onClick(() => {
           this.getUIContext().getRouter().pushUrl({
             url: 'pages/Webview',
-            params: Links.STUDY_LINK[1]
+            params: LINK.get("0.1")
           }).catch((err: Error) => {
             console.error(`Router ERROR: [${err.name}] ${err.message}`)
           })

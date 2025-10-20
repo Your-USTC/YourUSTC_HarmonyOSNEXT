@@ -4,7 +4,8 @@ export interface Link {
   url: string | Resource
 }
 
-export const STUDY_LINK: Link[] = [
-  { title: $r('app.string.AcademicAffairs'), url: 'https://jw.ustc.edu.cn' },
-  { title: $r('app.string.Schedule'), url: 'https://jw.ustc.edu.cn/for-std/course-table' },
-]
+export let LINK = new Map<string, Link>();
+LINK.set("0.0", { title: $r('app.string.JiaoWuXiTong'), url: 'https://jw.ustc.edu.cn' });
+LINK.set("0.1", { title: $r('app.string.KeChengBiao'), url: 'https://jw.ustc.edu.cn/for-std/course-table'})
+LINK.set("0.2", { title: $r('app.string.KaoShiXinXi'), url: 'https://jw.ustc.edu.cn/for-std/exam-arrange'})
+LINK.set("0.3", { title: $r('app.string.WoDeChengJi'), url: 'https://jw.ustc.edu.cn//for-std/grade/sheet'})

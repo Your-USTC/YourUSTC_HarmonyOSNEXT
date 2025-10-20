@@ -1,11 +1,13 @@
 
 import { GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
+import { LINK } from '../constants/Links';
 
 @Component
 export default struct GridComponent {
   @State gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
+  @State gridIndex: number = 0;
 
   build() {
     Column() {
@@ -21,7 +23,7 @@ export default struct GridComponent {
       .justifyContent(FlexAlign.Start)
 
       Grid() {
-        ForEach(this.gridData.gridItemList, (item: string) => {
+        ForEach(this.gridData.gridItemList, (item: string, index: number) => { // index: 当前GridComponent的索引
           GridItem() {
             Column() {
               Image($r('app.media.default_function_icon')) // 待转换成 item - 图片 索引
@@ -38,12 +40,22 @@ export default struct GridComponent {
           }
           .height('64vp')
           .onClick(() => {
-            this.getUIContext().getPromptAction().showToast({
-              message: '敬请期待',
-              duration: 500
-            })
-            // 获取 index
-            console.log(item.toString()) // ???
+            // 跳转 Webview
+            console.log((this.gridIndex.toString() + '.' + index.toString()).toString()) // debug: 显示 index
+            if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
+              console.log(LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString()) // debug: 显示 index 对应网址
+              this.getUIContext().getPromptAction().showToast({
+                message: '敬请期待',
+                duration: 500
+              })
+            } else { // 已设置对应网址
+              this.getUIContext().getRouter().pushUrl({
+                url: 'pages/Webview',
+                params: LINK.get(this.gridIndex.toString() + '.' + index.toString())
+              }).catch((err: Error) => {
+                console.error(`Router ERROR: [${err.name}] ${err.message}`)
+              })
+            }
           })
         },(item:string,index:number)=>index+JSON.stringify(item))
       }
