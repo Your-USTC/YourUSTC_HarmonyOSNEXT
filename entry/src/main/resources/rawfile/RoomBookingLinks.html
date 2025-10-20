@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>中国科大学习空间预约</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0ff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            margin-top: 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 40px;
+            font-size: 28px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .link-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item a {
+            display: block;
+            padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-item a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .link-item a:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .link-icon {
+            display: inline-block;
+            margin-right: 12px;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        .description {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .link-item {
+            animation: fadeIn 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .link-item:nth-child(1) { animation-delay: 0.1s; }
+        .link-item:nth-child(2) { animation-delay: 0.2s; }
+        .link-item:nth-child(3) { animation-delay: 0.3s; }
+        .link-item:nth-child(4) { animation-delay: 0.4s; }
+        .link-item:nth-child(5) { animation-delay: 0.5s; }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .link-item a {
+                padding: 16px 20px;
+                font-size: 15px;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) {
+            .link-item a:hover {
+                transform: none;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔗 中国科大学习空间预约</h1>
+    <p class="description">点击下方链接预约各场所学习空间</p>
+
+    <div class="links-container">
+        <div class="link-item">
+            <a href="https://ic.lib.ustc.edu.cn/mobile.html#/ic/homePage" target="_blank">
+                <span class="link-icon">✍️</span>
+                西区学习空间预约
+            </a>
+        </div>
+
+        <div class="link-item">
+            <a href="https://roombooking.cmet.ustc.edu.cn/#/sroom" target="_blank">
+                <span class="link-icon">🏠</span>
+                中区青年之家预约
+            </a>
+        </div>
+
+        <div class="link-item">
+            <a href="https://roombooking.cmet.ustc.edu.cn/artscenter/booking/#/croom" target="_blank">
+                <span class="link-icon">🎨</span>
+                中区艺术教学中心
+            </a>
+        </div>
+
+        <div class="link-item">
+            <a href="https://ipb.ustc.edu.cn/main.htm" target="_blank">
+                <span class="link-icon">🏗️</span>
+                中区创新实践基地
+            </a>
+        </div>
+
+        <div class="link-item">
+            <a href="https://hs.lib.ustc.edu.cn/appointment/mobAppointment#/appointment" target="_blank">
+                <span class="link-icon">🚀</span>
+                高新区研讨室预约
+            </a>
+        </div>
+
+        <div class="link-item">
+            <a href="https://roombooking.cmet.ustc.edu.cn/protal/wechat/index.html" target="_blank">
+                <span class="link-icon">🔤</span>
+                外语教学中心预约
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 添加触摸反馈效果
+    document.querySelectorAll('.link-item a').forEach(link => {
+        link.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.98)';
+            this.style.background = 'rgba(255, 255, 255, 0.2)';
+        });
+
+        link.addEventListener('touchend', function() {
+            setTimeout(() => {
+                this.style.transform = '';
+                this.style.background = 'rgba(255, 255, 255, 0.12)';
+            }, 100);
+        });
+    });
+
+    // 防止双击缩放
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+</script>
+</body>
+</html>
