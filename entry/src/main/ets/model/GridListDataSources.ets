@@ -31,7 +31,6 @@ export const
     new GridData($r('app.string.GongJu'),
       [
         $r('app.string.ZhengBanRuanJian'),
-        // $r('app.string.sub_title2_value3'),
         $r('app.string.sub_title2_value4'),
         $r('app.string.sub_title2_value5'),
         $r('app.string.sub_title2_value6'),

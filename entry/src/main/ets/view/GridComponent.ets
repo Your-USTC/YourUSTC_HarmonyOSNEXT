@@ -2,6 +2,7 @@
 import { GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
 import { LINK } from '../constants/Links';
+import * as FunctionOrder from '../utils/FunctionOrder';
 
 @Component
 export default struct GridComponent {
@@ -40,6 +41,8 @@ export default struct GridComponent {
           }
           .height('64vp')
           .onClick(() => {
+            // 点击次数+1
+            FunctionOrder.recordClick(this.gridIndex, index, this.getUIContext().getHostContext())
             // 跳转 Webview
             if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
               this.getUIContext().getPromptAction().showToast({
