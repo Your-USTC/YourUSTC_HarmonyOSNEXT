@@ -9,7 +9,7 @@ export class GridData {
   }
 }
 
-export const featureGridData: GridData = new GridData($r('app.string.ZuiJinShiYong'),
+export const emptyGridData: GridData = new GridData($r('app.string.ZuiJinShiYong'),
   [
     $r('app.string.empty')
   ]);

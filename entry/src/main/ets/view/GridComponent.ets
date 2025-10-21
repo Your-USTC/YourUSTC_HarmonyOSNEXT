@@ -3,10 +3,11 @@ import { GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
+import { gIndex_to_name } from '../constants/grid_index_to_name';
 
 @Component
 export default struct GridComponent {
-  @State gridData: GridData = new GridData('', []);
+  @Prop gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
   @State gridIndex: number = 0;
 
@@ -41,15 +42,26 @@ export default struct GridComponent {
           }
           .height('64vp')
           .onClick(() => {
-            // 点击次数+1
-            FunctionOrder.recordClick(this.gridIndex, index, this.getUIContext().getHostContext())
+            if (this.gridIndex == -1) {
+              let preName: string = FunctionOrder.order[index][0];
+              if (preName != undefined) {
+                FunctionOrder.recordClick(Number(preName.split('.')[0]), Number(preName.split('.')[1]), this.getUIContext().getHostContext())
+                this.getUIContext().getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: LINK.get(preName)
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                })
+              }
+            }
             // 跳转 Webview
-            if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
+            else if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
               this.getUIContext().getPromptAction().showToast({
                 message: '敬请期待',
                 duration: 500
               })
             } else { // 已设置对应网址
+              FunctionOrder.recordClick(this.gridIndex, index, this.getUIContext().getHostContext()) // 点击次数+1
               this.getUIContext().getRouter().pushUrl({
                 url: 'pages/Webview',
                 params: LINK.get(this.gridIndex.toString() + '.' + index.toString())

@@ -1,11 +1,11 @@
 
-import { LINK } from '../constants/Links';
+import * as Links from '../constants/Links';
 import { CheckInTools } from '../utils/CheckIn';
 import { preferences } from '@kit.ArkData';
 import { CommonConstants, ScrollPosition } from '../constants/CommonConstants';
 import { ListDataConstants } from '../constants/ListDataConstants';
 import GridComponent from '../view/GridComponent';
-import { featureGridData, GridData, otherGridDataList } from '../model/GridListDataSources';
+import { emptyGridData, GridData, otherGridDataList } from '../model/GridListDataSources';
 import * as FunctionOrder from '../utils/FunctionOrder'
 
 @Entry
@@ -42,6 +42,7 @@ struct Index {
     .onClick(() => {
       this.currentIndex = index
       this.tabsController.changeIndex(this.currentIndex)
+      this.refreshTabGrid(this.currentIndex)
     })
   }
 
@@ -156,6 +157,19 @@ struct Index {
   /**
    * 页面: 功能
    */
+  @State copyMostUsedFunc: GridData = emptyGridData;
+  onPageShow(): void {
+    this.refreshTabGrid(1)
+  }
+  private async refreshTabGrid(tabIndex: number){
+    switch(tabIndex){
+      case 1:
+        FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
+        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+        break;
+    }
+  }
+
   @Builder
   pageFunction() {
     Column() {
@@ -163,16 +177,13 @@ struct Index {
         Scroll(this.scrollerForScroll) {
           Column() {
             // 常用区 Grid
-            GridComponent({ gridData: featureGridData })
-              .onAppear(() => {
-                FunctionOrder.refreshFunc(this.getUIContext().getHostContext());
-              })
+            GridComponent({ gridData: this.copyMostUsedFunc, gridIndex: -1 })
             // 常用区下面的所有功能区 GridComponent
             this.listBuilder();
             List({ scroller: this.scrollerForList }) {
               ForEach(otherGridDataList, (item: GridData, index: number) => {
                 GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1, gridIndex: index })
-              }, (item: GridData,index:number) =>index+JSON.stringify(item))
+              }, (item: GridData,index:number) => index + JSON.stringify(item))
             }
             .padding({ bottom: '40vp' })
             .width(CommonConstants.FULL_PERCENT)
@@ -253,10 +264,19 @@ struct Index {
         .onClick(() => {
           this.getUIContext().getRouter().pushUrl({
             url: 'pages/Webview',
-            params: LINK.get("0.1")
+            params: Links.LINK.get("0.1")
           }).catch((err: Error) => {
             console.error(`Router ERROR: [${err.name}] ${err.message}`)
           })
+        })
+      Button($r("app.string.ClearFunctionHistory"), { type: ButtonType.Capsule })
+        .buttonStyle(ButtonStyleMode.EMPHASIZED)
+        .controlSize(ControlSize.NORMAL)
+        .fontColor($r('app.color.normal_background'))
+        .backgroundColor($r('app.color.active_text'))
+        .onClick(() => {
+          FunctionOrder.resetFunc(this.getUIContext().getHostContext());
+          this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
         })
     }
     .height('100%')
