@@ -7,7 +7,7 @@ export let order: Array<[string, number]> = [];
 let maxRecord: number = 8;
 
 export function setFunc(toClear: boolean = false): void {
-  // order: 已排序数组。toClear: 是否清空，默认为 false
+  // toClear: 是否清空，默认为 false
   if (toClear) {
     mostUsedFunc = emptyGridData;
     return;

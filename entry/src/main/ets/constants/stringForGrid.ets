@@ -11,7 +11,7 @@ export let gIndex_to_name = new Map<string, ResourceStr>()
   .set('0.7', $r('app.string.TuShuGuan'))
   .set('0.8', $r('app.string.XueXiKongJian'))
 
-export let index_to_pic = new Map<string, ResourceStr>()
+let index_to_pic = new Map<string, ResourceStr>()
   .set('0.0', $r('app.media.tab0_selected')) // 占位符
   .set('0.1', $r('app.media.tab0_unselected'))
 
