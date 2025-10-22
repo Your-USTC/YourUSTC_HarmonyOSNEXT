@@ -3,7 +3,7 @@ import { emptyGridData, GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
-import { gIndex_to_name } from '../constants/stringForGrid';
+import { gIndex_to_pic } from '../constants/stringForGrid';
 import * as tools from '../utils/tools';
 
 @Component
@@ -29,7 +29,7 @@ export default struct GridComponent {
         ForEach(this.gridData.gridItemList, (item: string, index: number) => { // index: 当前GridComponent的索引
           GridItem() {
             Column() {
-              Image($r('app.media.default_function_icon')) // 待转换成 item - 图片 索引
+              Image(gIndex_to_pic(this.gridIndex, index))
                 .width('40vp')
                 .height('40vp')
               Text(item)
@@ -44,7 +44,7 @@ export default struct GridComponent {
           .height('64vp')
           .onClick(() => {
             if (this.gridIndex == -1) {
-              if (FunctionOrder.mostUsedFunc.gridItemList[0] == $r('app.string.empty')) {
+              if (FunctionOrder.order.length <= index) {
                 this.getUIContext().getPromptAction().showToast({
                   message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 7).toString()),
                   // 在 string.ets 里添加时别忘了改 tools.getRandomInt(1, 7)！！
