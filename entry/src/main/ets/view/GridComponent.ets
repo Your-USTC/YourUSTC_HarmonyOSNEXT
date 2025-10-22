@@ -1,9 +1,10 @@
 
-import { GridData } from '../model/GridListDataSources';
+import { emptyGridData, GridData } from '../model/GridListDataSources';
 import { CommonConstants } from '../constants/CommonConstants';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
-import { gIndex_to_name } from '../constants/grid_index_to_name';
+import { gIndex_to_name } from '../constants/stringForGrid';
+import * as tools from '../utils/tools';
 
 @Component
 export default struct GridComponent {
@@ -43,21 +44,31 @@ export default struct GridComponent {
           .height('64vp')
           .onClick(() => {
             if (this.gridIndex == -1) {
-              let preName: string = FunctionOrder.order[index][0];
-              if (preName != undefined) {
-                FunctionOrder.recordClick(Number(preName.split('.')[0]), Number(preName.split('.')[1]), this.getUIContext().getHostContext())
-                this.getUIContext().getRouter().pushUrl({
-                  url: 'pages/Webview',
-                  params: LINK.get(preName)
-                }).catch((err: Error) => {
-                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
+              if (FunctionOrder.mostUsedFunc.gridItemList[0] == $r('app.string.empty')) {
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 7).toString()),
+                  // 在 string.ets 里添加时别忘了改 tools.getRandomInt(1, 7)！！
+                  duration: 500
                 })
+              }
+              else {
+                let preName: string = FunctionOrder.order[index][0];
+                if (preName != undefined) {
+                  FunctionOrder.recordClick(Number(preName.split('.')[0]), Number(preName.split('.')[1]),
+                    this.getUIContext().getHostContext())
+                  this.getUIContext().getRouter().pushUrl({
+                    url: 'pages/Webview',
+                    params: LINK.get(preName)
+                  }).catch((err: Error) => {
+                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                  })
+                }
               }
             }
             // 跳转 Webview
             else if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
               this.getUIContext().getPromptAction().showToast({
-                message: '敬请期待',
+                message: $r('app.string.WorkingOn'),
                 duration: 500
               })
             } else { // 已设置对应网址

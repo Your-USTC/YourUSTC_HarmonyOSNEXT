@@ -1,6 +1,6 @@
 import { preferences } from '@kit.ArkData';
 import { GridData, emptyGridData } from '../model/GridListDataSources';
-import { gIndex_to_name } from '../constants/grid_index_to_name';
+import { gIndex_to_name } from '../constants/stringForGrid';
 
 export let mostUsedFunc: GridData = emptyGridData
 export let order: Array<[string, number]> = [];
