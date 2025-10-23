@@ -1,3 +1,4 @@
+
 import { preferences } from '@kit.ArkData';
 
 export class CheckInTools {

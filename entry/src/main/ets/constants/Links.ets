@@ -12,7 +12,7 @@ export let LINK = new Map<string, Link>()
   .set("0.8", { title: $r('app.string.XueXiKongJian'), url: $rawfile('RoomBookingLinks.html')})
 
 /*
- * 收集的链接
+    收集的链接:
     {
       "name": "Homepage_url",
       "value": "https://ustc.edu.cn"
@@ -196,4 +196,5 @@ export let LINK = new Map<string, Link>()
     {
       "name": "DormitoryService_url",
       "value": "https://zhusu.ustc.edu.cn"
-    }*/
+    }
+*/

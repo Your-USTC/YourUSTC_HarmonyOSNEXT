@@ -1,5 +1,6 @@
+
 import { preferences } from '@kit.ArkData';
-import { GridData, emptyGridData } from '../model/GridListDataSources';
+import { GridData, emptyGridData } from '../constants/GridListDataSources';
 import { gIndex_to_name } from '../constants/stringForGrid';
 
 export let mostUsedFunc: GridData = emptyGridData
