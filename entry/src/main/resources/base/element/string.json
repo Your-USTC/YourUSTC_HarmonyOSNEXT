@@ -59,6 +59,10 @@
     {
       "name": "click_empty_gridData7",
       "value": "嘘——你的足迹将在这里浮现"
+    },
+    {
+      "name": "apply_on_restart",
+      "value": "将在下一次启动应用时生效"
     }
   ]
 }

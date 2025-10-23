@@ -157,7 +157,7 @@ struct Index {
   /**
    * 页面: 功能
    */
-  @State copyMostUsedFunc: GridData = emptyGridData;
+  @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
   onPageShow(): void {
     this.refreshTabGrid(1)
   }
@@ -269,7 +269,7 @@ struct Index {
             console.error(`Router ERROR: [${err.name}] ${err.message}`)
           })
         })
-      Button($r("app.string.ClearFunctionHistory"), { type: ButtonType.Capsule })
+      Button($r("app.string.ClearFunctionHistory"), { type: ButtonType.Normal })
         .buttonStyle(ButtonStyleMode.EMPHASIZED)
         .controlSize(ControlSize.NORMAL)
         .fontColor($r('app.color.normal_background'))
@@ -277,6 +277,10 @@ struct Index {
         .onClick(() => {
           FunctionOrder.resetFunc(this.getUIContext().getHostContext());
           this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+          this.getUIContext().getPromptAction().showToast({
+            message: $r('app.string.apply_on_restart'),
+            duration: 500
+          })
         })
     }
     .height('100%')

@@ -14,6 +14,12 @@ export const emptyGridData: GridData = new GridData($r('app.string.ZuiJinShiYong
     $r('app.string.empty')
   ]);
 
+// 每个grid所含元素个数&grid总数，添加元素时需要更改
+// 不使用.length因为节省时间
+export const eachGridNum: number[] = [9, 1, 2];
+export const totalGridNum: number = 3
+
+// ListDataConstants.ets也要修改！
 export const
   otherGridDataList: GridData[] = [
     new GridData($r('app.string.XueXi'),
@@ -30,43 +36,11 @@ export const
       ]),
     new GridData($r('app.string.GongJu'),
       [
-        $r('app.string.ZhengBanRuanJian'),
-        $r('app.string.sub_title2_value4'),
-        $r('app.string.sub_title2_value5'),
-        $r('app.string.sub_title2_value6'),
-        $r('app.string.sub_title2_value7'),
-        $r('app.string.sub_title2_value8'),
-        $r('app.string.sub_title2_value9'),
-        $r('app.string.sub_title2_value10'),
-        $r('app.string.sub_title2_value11'),
-        $r('app.string.sub_title2_value12'),
-        $r('app.string.sub_title2_value13'),
-        $r('app.string.sub_title2_value14')
+        $r('app.string.ZhengBanRuanJian')
       ]),
     new GridData($r('app.string.XueXiao'),
       [
         $r('app.string.WangLuoTong'),
-        $r('app.string.TongYiShenFenRenZheng'),
-        $r('app.string.sub_title4_value3'),
-        $r('app.string.sub_title4_value4'),
-        $r('app.string.sub_title4_value5'),
-        $r('app.string.sub_title4_value6')
-      ]),
-    new GridData($r('app.string.sub_title5'),
-      [
-        $r('app.string.sub_title5_value1'),
-        $r('app.string.sub_title5_value2'),
-        $r('app.string.sub_title5_value3'),
-        $r('app.string.sub_title5_value4'),
-        $r('app.string.sub_title5_value5'),
-        $r('app.string.sub_title5_value6')]),
-    new GridData($r('app.string.sub_title6'), [
-      $r('app.string.sub_title6_value1'),
-      $r('app.string.sub_title6_value2'),
-      $r('app.string.sub_title6_value3'),
-      $r('app.string.sub_title6_value4'),
-      $r('app.string.sub_title6_value5'),
-      $r('app.string.sub_title6_value6'),
-      $r('app.string.sub_title6_value7'),
-      $r('app.string.sub_title6_value8')]),
+        $r('app.string.TongYiShenFenRenZheng')
+      ])
   ];

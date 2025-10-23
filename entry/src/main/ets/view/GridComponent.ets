@@ -53,8 +53,7 @@ export default struct GridComponent {
               else {
                 let preName: string = FunctionOrder.order[index][0];
                 if (preName != undefined) {
-                  FunctionOrder.recordClick(Number(preName.split('.')[0]), Number(preName.split('.')[1]),
-                    this.getUIContext().getHostContext())
+                  FunctionOrder.recordClick(Number(preName.split('.')[0]), Number(preName.split('.')[1]), this.getUIContext().getHostContext())
                   this.getUIContext().getRouter().pushUrl({
                     url: 'pages/Webview',
                     params: LINK.get(preName)
