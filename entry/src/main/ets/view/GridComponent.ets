@@ -1,6 +1,5 @@
 
-import { emptyGridData, GridData } from '../model/GridListDataSources';
-import { CommonConstants } from '../constants/CommonConstants';
+import { GridData } from '../constants/GridListDataSources';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
 import { gIndex_to_pic } from '../constants/stringForGrid';
@@ -22,7 +21,7 @@ export default struct GridComponent {
           .margin({ top: '16vp' })
       }
       .padding({ left: '24vp' })
-      .width(CommonConstants.FULL_PERCENT)
+      .width('100%')
       .justifyContent(FlexAlign.Start)
 
       Grid() {
@@ -38,7 +37,7 @@ export default struct GridComponent {
                 .margin({ top: '4vp' })
                 .height('17vp')
             }
-            .height(CommonConstants.FULL_PERCENT)
+            .height('100%')
             .justifyContent(FlexAlign.Center)
           }
           .height('64vp')
@@ -89,12 +88,12 @@ export default struct GridComponent {
       .height(this.getGridHeight())
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
-      .columnsTemplate(CommonConstants.GRID_COLUMNS_TEMPLATE)
+      .columnsTemplate('1fr 1fr 1fr 1fr')
       .backgroundColor($r('app.color.grid_background'))
 
       if (this.isLastItem) {
         Blank()
-          .height(CommonConstants.FULL_PERCENT)
+          .height('100%')
       }
     }
   }

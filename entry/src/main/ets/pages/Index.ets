@@ -2,10 +2,10 @@
 import * as Links from '../constants/Links';
 import { CheckInTools } from '../utils/CheckIn';
 import { preferences } from '@kit.ArkData';
-import { CommonConstants, ScrollPosition } from '../constants/CommonConstants';
+import { ScrollPosition } from '../constants/CommonConstants';
 import { ListDataConstants } from '../constants/ListDataConstants';
 import GridComponent from '../view/GridComponent';
-import { emptyGridData, GridData, otherGridDataList } from '../model/GridListDataSources';
+import { emptyGridData, GridData, otherGridDataList } from '../constants/GridListDataSources';
 import * as FunctionOrder from '../utils/FunctionOrder'
 
 @Entry
@@ -80,7 +80,7 @@ struct Index {
   @Builder
   listBuilder() {
     Row() {
-      List({ space: CommonConstants.LIST_SPACE_SIZE, scroller: this.scrollerForTitle }) {
+      List({ space: 16, scroller: this.scrollerForTitle }) {
         ForEach(ListDataConstants.TITLE_LIST, (item: string, index) => {
           ListItem() {
             Column() {
@@ -94,7 +94,7 @@ struct Index {
               if (this.currentListIndex === index) {
                 Divider()
                   .color($r('app.color.active_text'))
-                  .strokeWidth(CommonConstants.DIVIDER_STROKE_WIDTH)
+                  .strokeWidth(2)
                   .width('65vp')
                   .margin({ top: '7vp' })
               }
@@ -109,7 +109,7 @@ struct Index {
           }
         }, (item: string, index: number) => index + JSON.stringify(item))
       }
-      .width(CommonConstants.FULL_PERCENT)
+      .width('100%')
       .height('56vp')
       .listDirection(Axis.Horizontal)
       .scrollBar(BarState.Off)
@@ -186,7 +186,7 @@ struct Index {
               }, (item: GridData,index:number) => index + JSON.stringify(item))
             }
             .padding({ bottom: '40vp' })
-            .width(CommonConstants.FULL_PERCENT)
+            .width('100%')
             .edgeEffect(EdgeEffect.None)
             .scrollBar(BarState.Off)
             .onReachStart(() => {
@@ -215,13 +215,13 @@ struct Index {
                 return { offsetRemain: offset };
               }
             })
-            .width(CommonConstants.FULL_PERCENT)
+            .width('100%')
             .height("calc(100% - 56vp)")
           }
         }
         .scrollBar(BarState.Off)
-        .width(CommonConstants.FULL_PERCENT)
-        .height(CommonConstants.FULL_PERCENT)
+        .width('100%')
+        .height('100%')
         .edgeEffect(EdgeEffect.Spring)
         .onWillScroll((yOffset: number) => {
           if (!((this.scrollPosition === ScrollPosition.start && yOffset < 0)
@@ -244,8 +244,8 @@ struct Index {
           }
         })
       }
-      .width(CommonConstants.FULL_PERCENT)
-      .height(CommonConstants.FULL_PERCENT)
+      .width('100%')
+      .height('100%')
     }
     .backgroundColor($r('app.color.normal_background'))
   }

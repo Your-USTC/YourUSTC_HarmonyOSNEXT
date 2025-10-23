@@ -70,5 +70,3 @@ export const
       $r('app.string.sub_title6_value7'),
       $r('app.string.sub_title6_value8')]),
   ];
-
-
