@@ -4,7 +4,7 @@ import ItemData from '../view/SettingsComponent';
 /**
  * Binds data to components and provides interfaces.
  */
-export class MainViewModel {
+export class SettingsData {
   /**
    * Get swiper image data.
    *
@@ -65,4 +65,4 @@ export class MainViewModel {
   }
 }
 
-export default new MainViewModel();
+export default new SettingsData();

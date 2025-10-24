@@ -5,10 +5,11 @@ import { preferences } from '@kit.ArkData';
 import { ScrollPosition } from '../constants/CommonConstants';
 import { ListDataConstants } from '../constants/ListDataConstants';
 import GridComponent from '../view/GridComponent';
-import { emptyGridData, GridData, otherGridDataList } from '../constants/GridListDataSources';
+import { GridData, otherGridDataList } from '../constants/GridListDataSources';
 import * as FunctionOrder from '../utils/FunctionOrder'
 import ItemData from '../view/SettingsComponent';
-import mainViewModel from '../constants/SettingsSources';
+import SettingsData from '../constants/SettingsSources'
+import TextPickerExample from '../utils/TextPicker';
 
 @Entry
 @Component
@@ -325,7 +326,7 @@ struct Index {
   pageYours() {
     Column() {
       List({ space: 12 }) {
-        ForEach(mainViewModel.getSettingListData(), (item: ItemData[], index: number) => {
+        ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
           ListItemGroup() {
             ForEach(item, (cell: ItemData, cellIndex) => {
               ListItem() {
@@ -334,6 +335,11 @@ struct Index {
               .height('48vp')
               .onClick(() => { // 根据 cell.id 区分设置项
                 switch (cell.id) {
+                  case 1:
+                    // 待添加
+                    FunctionOrder.refreshFunc(this.getUIContext().getHostContext());
+                    this.refreshTabGrid(1);
+                    break;
                   case 2:
                     FunctionOrder.resetFunc(this.getUIContext().getHostContext());
                     this.refreshTabGrid(1);
