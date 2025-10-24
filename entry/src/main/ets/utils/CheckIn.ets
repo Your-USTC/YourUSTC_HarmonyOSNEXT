@@ -8,8 +8,8 @@ export class CheckInTools {
   static CONSECUTIVE_DAYS_KEY = 'consecutiveDays';
   static CONTENT_KEY = 'content';
   private static CHECK_IN_CONTENT_LIST: string[] = [
-    '加油数学竞赛生，你拼命的样子真美！', // TODO: Replace with meaningful content
-    '把头发扎起来，兜里放几个薄荷糖',
+    '加油数学竞赛生，\n你拼命的样子真美！', // TODO: Replace with meaningful content
+    '把头发扎起来，\n兜里放几个薄荷糖',
     '不搞暖昧，上课认真',
     '多做一道题，老婆会升级！'
   ];

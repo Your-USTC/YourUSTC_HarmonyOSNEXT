@@ -18,6 +18,7 @@
         GridListDataSources.ets // 分区和按钮表
         Links.ets               // 链接表
         ListDataConstants.ets   // 分区表
+        SettingsSources.ets     // 设置项表
         stringForGrid.ets       // 按钮信息显示
         UserAgent.ets           // Webview UA 参数
     pages/
@@ -26,9 +27,11 @@
     utils/
         CheckIn.ets             // 签到功能
         FunctionOrder.ets       // 最近使用功能
+        TimeTable.ets           // [json] 获取课表
         tools.ets               // 公共工具区
     view/
         GridComponent.ets       // 功能组件
+        SettingsComponent.ets   // 设置项组件
 ```
 
 ## 隐私政策
