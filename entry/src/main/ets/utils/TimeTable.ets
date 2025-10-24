@@ -1,4 +1,3 @@
-
 export const timeTableQueryJS = `
 function getWeekNumber(str) {
     const parts = str.split(',');
@@ -53,10 +52,12 @@ function getTimeTable() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-let timeTable = getTimeTable(); JSON.stringify(timeTable);
+JSON.stringify(getTimeTable());
+`
+export const timeTableQueryJSShort = `
+JSON.stringify(getTimeTable());
 `
 
 export const startTimeQueryJS = `
-const startTime = new Date(document.getElementById('startDate').innerText);
-startTime.getTime();
+{const startTime = new Date(document.getElementById('startDate').innerText);startTime.getTime().toString();};
 `
