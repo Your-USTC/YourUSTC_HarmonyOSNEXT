@@ -27,7 +27,7 @@
     utils/
         CheckIn.ets             // 签到功能
         FunctionOrder.ets       // 最近使用功能
-        TimeTable.ets           // [json] 获取课表
+        TimeTable.ets           // [JavaScript] 获取课表
         tools.ets               // 公共工具区
     view/
         GridComponent.ets       // 功能组件
