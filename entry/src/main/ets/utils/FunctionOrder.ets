@@ -1,27 +1,34 @@
 
 import { preferences } from '@kit.ArkData';
-import { GridData, emptyGridData, eachGridNum, totalGridNum } from '../constants/GridListDataSources';
+import { GridData, eachGridNum, totalGridNum } from '../constants/GridListDataSources';
 import { gIndex_to_name } from '../constants/stringForGrid';
 
-export let mostUsedFunc: GridData = emptyGridData
+export let mostUsedFunc: GridData = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
 export let order: Array<[string, number]> = [];
 let maxRecord: number = 8;
 
-export function setFunc(toClear: boolean = false): void {
+export function setFunc(curContext: Context | undefined, toClear: boolean = false): void {
   // toClear: 是否清空，默认为 false
   if (toClear) {
-    mostUsedFunc = emptyGridData;
+    mostUsedFunc = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
     return;
   }
+  console.log(mostUsedFunc.gridItemList.length.toString()+'!!');
   mostUsedFunc.gridItemList = [];
-  for(let singleFunc of order) {
+  mostUsedPre = preferences.getPreferencesSync(curContext, options);
+  maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
+  let maxCount: number = 0;
+  for (let singleFunc of order) {
     let index_to_name = gIndex_to_name.get(singleFunc[0]);
-    if (index_to_name === undefined)
+    if (index_to_name === undefined) {
       continue;
+    }
     mostUsedFunc.gridItemList.push(index_to_name);
+    maxCount++;
+    if (maxCount >= maxRecord)
+      break;
   }
 }
-
 
 let mostUsedPre: preferences.Preferences | null = null;
 let options: preferences.Options = { name: 'FunctionOrder' };
@@ -43,29 +50,29 @@ export function recordClick(gridIndex: number, index: number, curContext: Contex
 export function refreshFunc(curContext: Context | undefined): void {
   order = []
   mostUsedPre = preferences.getPreferencesSync(curContext, options);
-  maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
-  let maxCount: number = 0;
   for (let gridIndex = 0; gridIndex < totalGridNum; gridIndex++) {
     for (let index = 0; index < eachGridNum[gridIndex]; index++) {
       let preName: string = gridIndex.toString() + '.' + index;
       if (mostUsedPre.hasSync(preName)) {
         let preTimes: number = mostUsedPre.getSync(preName, 0) as number;
         order.push([preName, preTimes]);
-        maxCount++;
       }
     }
-    if (maxCount >= maxRecord)
-      break;
   }
-  order.sort((a, b) => b[1] - a[1]);
   if (order.length == 0)
-    setFunc(true);
-  else
-    setFunc();
+    setFunc(curContext, true);
+  else {
+    order.sort((a, b) => b[1] - a[1]);
+    setFunc(curContext);
+  }
 }
 
 
 export function resetFunc(curContext: Context | undefined): void { // 重置"最近使用"
   preferences.deletePreferences(curContext, options)
-  setFunc(true);
+  setFunc(curContext, true);
+}
+
+export function setMaxRecord(curContext: Context | undefined): void {
+  mostUsedPre = preferences.getPreferencesSync(curContext, options);
 }

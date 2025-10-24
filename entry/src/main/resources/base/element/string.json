@@ -97,8 +97,8 @@
       "value": "嘘——你的足迹将在这里浮现"
     },
     {
-      "name": "apply_on_restart",
-      "value": "将在再次使用任意功能或下次启动时生效"
+      "name": "have_cleared",
+      "value": "已清空"
     },
     {
       "name": "auto_get_timetable_fail_msg",
