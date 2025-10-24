@@ -1,7 +1,7 @@
 
 import { webview } from '@kit.ArkWeb'
 import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
-import { timeTableQueryJS } from '../utils/TimeTable'
+import { startTimeQueryJS, timeTableQueryJS } from '../utils/TimeTable'
 
 @Entry
 @Component
@@ -58,20 +58,19 @@ struct Webview {
           .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Blank()
-        Image(this.gotTimeTable ? $r('app.media.save') : $r('app.media.get'))
+        Image($r('app.media.get'))
           .padding({right: 12})
           .height(this.isTimeTablePage ? 20 : 0)
           .enabled(this.isTimeTablePage)
           .onClick(() => {
-            if (! this.gotTimeTable) {
-              this.webviewController.runJavaScript(timeTableQueryJS);
-              this.gotTimeTable = true;
-            } else {
-              this.webviewController.runJavaScript('timeTable;', (error, result) => {
-                if (error) {console.error(`课表获取失败`); return;}
-                console.info(`课表是：${result}`);
-              })
-            }
+            this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
+              if (error) {/* TODO: 处理获取课程表失败错误 */ return;}
+              console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+            });
+            this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+              if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
+              console.info(`学期开始的UNIX时间戳是${result}mm`);
+            })
           })
         Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))
           .padding({right: 12})
