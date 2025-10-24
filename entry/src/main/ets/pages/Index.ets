@@ -1,15 +1,14 @@
 
-import { common } from '@kit.AbilityKit'
-import { preferences } from '@kit.ArkData'
-import * as Links from '../constants/Links'
-import { CheckInTools } from '../utils/CheckIn'
-import { ScrollPosition } from '../constants/CommonConstants'
-import { ListDataConstants } from '../constants/ListDataConstants'
-import GridComponent from '../view/GridComponent'
-import { GridData, otherGridDataList } from '../constants/GridListDataSources'
+import * as Links from '../constants/Links';
+import { CheckInTools } from '../utils/CheckIn';
+import { preferences } from '@kit.ArkData';
+import { ScrollPosition } from '../constants/CommonConstants';
+import { ListDataConstants } from '../constants/ListDataConstants';
+import GridComponent from '../view/GridComponent';
+import { GridData, otherGridDataList } from '../constants/GridListDataSources';
 import * as FunctionOrder from '../utils/FunctionOrder'
-import ItemData from '../view/SettingsComponent'
-import SettingsData from '../constants/SettingsSources'
+import ItemData from '../view/SettingsComponent';
+import SettingsData from '../constants/SettingsSources';
 
 @Entry
 @Component
@@ -238,6 +237,8 @@ struct Index {
       case 1:
         FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+        console.log(this.copyMostUsedFunc.gridItemList.length.toString() + 'length')
+        console.log(FunctionOrder.mostUsedFunc.gridItemList.length.toString() + '@@')
         break;
     }
   }
@@ -336,19 +337,38 @@ struct Index {
                 this.settingCell(cell)
               }
               .height('48vp')
-              .onClick(() => { // 根据 cell.id 区分设置项
-                switch (cell.id) {
+              .onClick(() => {
+                switch (cell.id) { // 根据 cell.id 区分设置项
                   case 1:
-                    // 待添加
-                    FunctionOrder.refreshFunc(this.getUIContext().getHostContext());
-                    this.refreshTabGrid(1);
+                    // 选择最近使用
+                    let maxRecordList: string[] = [];
+                    for (let i = 1; i <= 16; i++)
+                      maxRecordList.push(i.toString());
+                    this.getUIContext().showTextPickerDialog({
+                      range: maxRecordList,
+                      defaultPickerItemHeight: 36,
+                      canLoop: false,
+                      onAccept: (value: TextPickerResult) => {
+                          this.getUIContext().getPromptAction().showToast({
+                          message: `已更改为 ${value.value}`,
+                          duration: 200
+                        });
+                        let options: preferences.Options = { name: 'FunctionOrder' };
+                        let maxRecordPre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), options);
+                        maxRecordPre.putSync('maxRecord', Number(value.value));
+                        maxRecordPre.flush();
+                        this.refreshTabGrid(1);
+                      }
+                    })
                     break;
                   case 2:
+                    // 重置最近使用
                     FunctionOrder.resetFunc(this.getUIContext().getHostContext());
                     this.refreshTabGrid(1);
-                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.apply_on_restart'), duration: 500 })
+                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.have_cleared'), duration: 500 })
                     break;
                   case 3:
+                    // （调试）课程表
                     this.getUIContext().getRouter().pushUrl({
                       url: 'pages/Webview',
                       params: Links.LINK.get("0.1")
@@ -384,14 +404,7 @@ struct Index {
         .buttonStyle(ButtonStyleMode.NORMAL)
         .width('80%')
         .fontColor(Color.Red)
-        .onClick(() => {
-          const context = getContext(this) as common.UIAbilityContext;
-          context.terminateSelf((err) => {
-            if (!err) {
-              context.getApplicationContext().killAllProcesses();
-            }
-          })
-        })
+        .onClick(() => {})
     }
     .height('100%')
     .width('100%')
