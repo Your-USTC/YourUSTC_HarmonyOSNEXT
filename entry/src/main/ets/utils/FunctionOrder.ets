@@ -37,7 +37,6 @@ export function recordClick(gridIndex: number, index: number, curContext: Contex
     latestTime++; // 点击次数+1
   mostUsedPre.putSync(preName, latestTime); // 保存新的点击次数
   mostUsedPre.flush(); // 写入最新设置
-  console.log(gridIndex.toString()+'.'+index.toString() + 'clicked' + latestTime.toString());
 }
 
 
@@ -63,10 +62,6 @@ export function refreshFunc(curContext: Context | undefined): void {
     setFunc(true);
   else
     setFunc();
-  console.log('refreshed');
-  console.log(order.length.toString());
-  for (let test of order)
-    console.log(test.toString());
 }
 
 

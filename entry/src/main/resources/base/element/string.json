@@ -21,16 +21,32 @@
       "value": "功能"
     },
     {
-      "name": "page_yours",
-      "value": "你的"
+      "name": "page_settings",
+      "value": "设置"
+    },
+    {
+      "name": "setting_toggle",
+      "value": "开关"
+    },
+    {
+      "name": "about",
+      "value": "关于「你的科大」…"
+    },
+    {
+      "name": "exit_app",
+      "value": "退出「你的科大」APP"
     },
     {
       "name": "ClearFunctionHistory",
-      "value": "清空「最近使用」(待添加 设置最近使用显示上限)"
+      "value": "清空「最近使用」"
+    },
+    {
+      "name": "setMaxRecord",
+      "value": "设置「最近使用」中的显示数量"
     },
     {
       "name": "WorkingOn",
-      "value": "前面的道路，以后再来探索吧"
+      "value": "前面的区域，以后再来探索吧"
     },
     {
       "name": "click_empty_gridData1",
@@ -62,7 +78,7 @@
     },
     {
       "name": "apply_on_restart",
-      "value": "将在下一次启动应用时生效"
+      "value": "将在再次使用任意功能或下次启动时生效"
     }
   ]
 }

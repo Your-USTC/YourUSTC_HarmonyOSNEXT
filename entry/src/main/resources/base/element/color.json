@@ -23,6 +23,14 @@
     {
       "name": "active_text",
       "value": "#FF0040C0"
+    },
+    {
+      "name": "bright_red",
+      "value": "#FA2A2D"
+    },
+    {
+      "name": "button_background_grey",
+      "value": "#E5E8EA"
     }
   ]
 }

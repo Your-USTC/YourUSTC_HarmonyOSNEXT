@@ -7,6 +7,8 @@ import { ListDataConstants } from '../constants/ListDataConstants';
 import GridComponent from '../view/GridComponent';
 import { emptyGridData, GridData, otherGridDataList } from '../constants/GridListDataSources';
 import * as FunctionOrder from '../utils/FunctionOrder'
+import ItemData from '../view/SettingsComponent';
+import mainViewModel from '../constants/SettingsSources';
 
 @Entry
 @Component
@@ -119,7 +121,7 @@ struct Index {
   }
 
   /**
-   * 全局资源: 你的
+   * 全局资源: 设置
    */
 
 
@@ -251,37 +253,99 @@ struct Index {
   }
 
   /**
-   * 页面: 你的
+   * 页面: 设置
    */
+  // changes begin
+  @Builder
+  settingCell(item: ItemData) {
+    Row() {
+      Row({}) {
+        Image(item.img)
+          .height('22vp')
+          .margin({
+            left: '16vp',
+            right: '12vp'
+          })
+        Text(item.title)
+          .fontSize('16fp')
+      }
+
+      if (item.others === undefined) {
+        Image($r('app.media.right_grey'))
+          .width('12vp')
+          .height('24vp')
+      } else {
+        Toggle({ type: ToggleType.Switch, isOn: false })
+      }
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .padding({
+      left: '8vp',
+      right: '22vp'
+    })
+  }
   @Builder
   pageYours() {
     Column() {
-      Button($r("app.string.KeChengBiao"), { type: ButtonType.Capsule })
-        .buttonStyle(ButtonStyleMode.EMPHASIZED)
-        .controlSize(ControlSize.NORMAL)
-        .fontColor($r('app.color.normal_background'))
-        .backgroundColor($r('app.color.active_text'))
-        .onClick(() => {
-          this.getUIContext().getRouter().pushUrl({
-            url: 'pages/Webview',
-            params: Links.LINK.get("0.1")
-          }).catch((err: Error) => {
-            console.error(`Router ERROR: [${err.name}] ${err.message}`)
+      List({ space: 12 }) {
+        ForEach(mainViewModel.getSettingListData(), (item: ItemData[], index: number) => {
+          ListItemGroup() {
+            ForEach(item, (cell: ItemData, cellIndex) => {
+              ListItem() {
+                this.settingCell(cell)
+              }
+              .height('48vp')
+              .onClick(() => { // 根据 cell.id 区分设置项
+                switch (cell.id) {
+                  case 2:
+                    FunctionOrder.resetFunc(this.getUIContext().getHostContext());
+                    this.refreshTabGrid(1);
+                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.apply_on_restart'), duration: 500 })
+                    break;
+                  case 3:
+                    this.getUIContext().getRouter().pushUrl({
+                      url: 'pages/Webview',
+                      params: Links.LINK.get("0.1")
+                    }).catch((err: Error) => {
+                      console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                    })
+                    break;
+                }
+              })
+            })
+          }
+          .divider({
+            strokeWidth: '1vp',
+            color: '#0d000000',
+            startMargin: '42vp',
+            endMargin: '24vp'
           })
-        })
-      Button($r("app.string.ClearFunctionHistory"), { type: ButtonType.Normal })
-        .buttonStyle(ButtonStyleMode.EMPHASIZED)
-        .controlSize(ControlSize.NORMAL)
-        .fontColor($r('app.color.normal_background'))
-        .backgroundColor($r('app.color.active_text'))
-        .onClick(() => {
-          FunctionOrder.resetFunc(this.getUIContext().getHostContext());
-          this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-          this.getUIContext().getPromptAction().showToast({
-            message: $r('app.string.apply_on_restart'),
-            duration: 500
-          })
-        })
+          .backgroundColor($r('app.color.normal_background'))
+          .borderRadius('16vp')
+
+        }, (item: ItemData) => JSON.stringify(item))
+      }
+      .scrollBar(BarState.Off)
+      .width('100%')
+      .padding({
+        top: '4vp',
+        bottom: '4vp'
+      })
+
+      Blank()
+
+      Button($r('app.string.exit_app'), { type: ButtonType.Capsule })
+        .width('90%')
+        .height('40vp')
+        .fontSize('16fp')
+        .fontColor($r('app.color.bright_red'))
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor($r('app.color.button_background_grey'))
+        .margin({ bottom: '16vp' })
+        .onClick(() => {})
+
+      // changes end
     }
     .height('100%')
     .width('100%')
@@ -314,12 +378,12 @@ struct Index {
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
 
       /**
-       * Tab: 你的
+       * Tab: 设置
        */
       TabContent() { this.pageYours() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_yours'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
+      .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
 
     }
     .width('100%')
