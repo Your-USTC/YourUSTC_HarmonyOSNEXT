@@ -1,3 +1,4 @@
+
 export const timeTableQueryJS = `
 function getWeekNumber(str) {
     const parts = str.split(',');
@@ -53,7 +54,7 @@ function getTimeTable() {
 }
 
 let timeTable = getTimeTable(); JSON.stringify(timeTable);
-`;
+`
 
 export const startTimeQueryJS = `
 const startTime = new Date(document.getElementById('startDate').innerText);

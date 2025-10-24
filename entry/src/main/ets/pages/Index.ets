@@ -124,7 +124,35 @@ struct Index {
   /**
    * 全局资源: 设置
    */
+  @Builder
+  settingCell(item: ItemData) {
+    Row() {
+      Row({}) {
+        Image(item.img)
+          .height('22vp')
+          .margin({
+            left: '16vp',
+            right: '12vp'
+          })
+        Text(item.title)
+          .fontSize('16fp')
+      }
 
+      if (item.others === undefined) {
+        Image($r('app.media.right_arrow'))
+          .width('12vp')
+          .height('24vp')
+      } else {
+        Toggle({ type: ToggleType.Switch, isOn: false })
+      }
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .padding({
+      left: '8vp',
+      right: '22vp'
+    })
+  }
 
   /**
    * 页面: 首页
@@ -138,9 +166,9 @@ struct Index {
             Text($r('app.string.daily_checkin'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .margin({ top: 15, bottom: 10 })
           }
           .width('100%')
+          .margin({ top: 15, bottom: 10 })
           .justifyContent(FlexAlign.Center)
 
           Row() {
@@ -149,18 +177,35 @@ struct Index {
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .textShadow({ radius: 1 })
-              .margin({ bottom: 10 })
           }
-          .width('100%')
+          .width('80%')
+          .height(60)
+          .margin({ bottom: 10 })
           .justifyContent(FlexAlign.Center)
 
           Row() {
-            Text($r('app.string.checkin_count', this.checkInTotal))
+            Button(this.checkedInToday ? $r('app.string.checked_in') : $r('app.string.check_in'))
+              .buttonStyle(this.checkedInToday ? ButtonStyleMode.NORMAL : ButtonStyleMode.EMPHASIZED)
+              .enabled(!this.checkedInToday)
+              .onClick(() => {
+                const GeneratedDestructArray_1 = CheckInTools.doCheckIn(this.pref)
+                this.checkInTotal = GeneratedDestructArray_1[0]
+                this.checkedInToday = true
+                this.checkInConsecutive = GeneratedDestructArray_1[1]
+                this.checkInContent = GeneratedDestructArray_1[2]
+              })
+          }
+          .width('90%')
+          .margin({ bottom: 10 })
+          .justifyContent(FlexAlign.Center)
+
+          Row() {
+            Text($r('app.string.checkin_count_d', this.checkInTotal))
               .fontSize(12)
               .align(Alignment.Start)
               .margin({ right: 30 })
 
-            Text($r('app.string.checkin_consecutive', this.checkInConsecutive))
+            Text($r('app.string.checkin_consecutive_d', this.checkInConsecutive))
               .fontSize(12)
               .align(Alignment.End)
               .margin({ left: 30 })
@@ -177,20 +222,8 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .padding({ top: 20, left: 20, right: 20 })
-
-    Column() {
-      Button(this.checkedInToday ? 'checked in' : 'check in')
-        .enabled(!this.checkedInToday)
-        .onClick(() => {
-          const GeneratedDestructArray_1 = CheckInTools.doCheckIn(this.pref);
-          this.checkInTotal = GeneratedDestructArray_1[0];
-          this.checkedInToday = true;
-          this.checkInConsecutive = GeneratedDestructArray_1[1];
-          this.checkInContent = GeneratedDestructArray_1[2];
-        })
-    }
-    .justifyContent(FlexAlign.Center)
+    .margin({ top: 20 })
+    .padding({ top: 20, bottom: 40, left: 20, right: 20 })
   }
 
   /**
@@ -292,36 +325,6 @@ struct Index {
   /**
    * 页面: 设置
    */
-  // changes begin
-  @Builder
-  settingCell(item: ItemData) {
-    Row() {
-      Row({}) {
-        Image(item.img)
-          .height('22vp')
-          .margin({
-            left: '16vp',
-            right: '12vp'
-          })
-        Text(item.title)
-          .fontSize('16fp')
-      }
-
-      if (item.others === undefined) {
-        Image($r('app.media.right_grey'))
-          .width('12vp')
-          .height('24vp')
-      } else {
-        Toggle({ type: ToggleType.Switch, isOn: false })
-      }
-    }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .width('100%')
-    .padding({
-      left: '8vp',
-      right: '22vp'
-    })
-  }
   @Builder
   pageYours() {
     Column() {
@@ -378,19 +381,14 @@ struct Index {
       Blank()
 
       Button($r('app.string.exit_app'), { type: ButtonType.Capsule })
-        .width('90%')
-        .height('40vp')
-        .fontSize('16fp')
-        .fontColor($r('app.color.bright_red'))
-        .fontWeight(FontWeight.Medium)
-        .backgroundColor($r('app.color.button_background_grey'))
-        .margin({ bottom: '16vp' })
+        .buttonStyle(ButtonStyleMode.NORMAL)
+        .width('80%')
+        .fontColor(Color.Red)
         .onClick(() => {})
-
-      // changes end
     }
     .height('100%')
     .width('100%')
+    .padding({ top: 20, bottom: 20 })
     .justifyContent(FlexAlign.Center)
   }
 

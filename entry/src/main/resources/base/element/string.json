@@ -25,6 +25,26 @@
       "value": "设置"
     },
     {
+      "name": "daily_checkin",
+      "value": "每日签到"
+    },
+    {
+      "name": "check_in",
+      "value": "签到"
+    },
+    {
+      "name": "checked_in",
+      "value": "已签到"
+    },
+    {
+      "name": "checkin_count_d",
+      "value": "签到总天数：%d"
+    },
+    {
+      "name": "checkin_consecutive_d",
+      "value": "连续签到天数：%d"
+    },
+    {
       "name": "setting_toggle",
       "value": "开关"
     },
@@ -35,18 +55,6 @@
     {
       "name": "exit_app",
       "value": "退出「你的科大」APP"
-    },
-    {
-      "name": "daily_checkin",
-      "value": "每日签到"
-    },
-    {
-      "name": "checkin_count",
-      "value": "签到总天数：%d"
-    },
-    {
-      "name": "checkin_consecutive",
-      "value": "连续签到天数：%d"
     },
     {
       "name": "ClearFunctionHistory",
