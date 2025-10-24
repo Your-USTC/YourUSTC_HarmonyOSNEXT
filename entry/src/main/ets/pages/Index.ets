@@ -130,16 +130,55 @@ struct Index {
    */
   @Builder
   pageStart() {
+    List({ space: 10 }) {
+      ListItem() {
+        Column() {
+          Row() {
+            Text($r('app.string.daily_checkin'))
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+              .margin({ top: 15, bottom: 10 })
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+
+          Row() {
+            Text(this.checkInContent)
+              .fontColor($r('app.color.active_text'))
+              .fontSize(20)
+              .fontWeight(FontWeight.Bold)
+              .textShadow({ radius: 1 })
+              .margin({ bottom: 10 })
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+
+          Row() {
+            Text($r('app.string.checkin_count', this.checkInTotal))
+              .fontSize(12)
+              .align(Alignment.Start)
+              .margin({ right: 30 })
+
+            Text($r('app.string.checkin_consecutive', this.checkInConsecutive))
+              .fontSize(12)
+              .align(Alignment.End)
+              .margin({ left: 30 })
+          }
+          .width('90%')
+          .margin({ bottom: 10 })
+          .justifyContent(FlexAlign.Center)
+        }
+        .justifyContent(FlexAlign.Center)
+      }
+      .width('100%')
+      .borderRadius(20)
+      .backgroundColor($r('app.color.grid_background'))
+    }
+    .width('100%')
+    .height('100%')
+    .padding({ top: 20, left: 20, right: 20 })
+
     Column() {
-      Text('Start')
-        .height(300)
-        .fontSize(30)
-
-      // TODO: Design check in UI
-      // See. Page Function first, I think.
-
-      Text(`check in count：${this.checkInTotal}`)
-      Text(`check in consecutive: ${this.checkInConsecutive}`)
       Button(this.checkedInToday ? 'checked in' : 'check in')
         .enabled(!this.checkedInToday)
         .onClick(() => {
@@ -149,10 +188,7 @@ struct Index {
           this.checkInConsecutive = GeneratedDestructArray_1[1];
           this.checkInContent = GeneratedDestructArray_1[2];
         })
-      Text(this.checkInContent)
     }
-    .height('100%')
-    .width('100%')
     .justifyContent(FlexAlign.Center)
   }
 

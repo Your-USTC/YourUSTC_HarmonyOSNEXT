@@ -37,6 +37,18 @@
       "value": "退出「你的科大」APP"
     },
     {
+      "name": "daily_checkin",
+      "value": "每日签到"
+    },
+    {
+      "name": "checkin_count",
+      "value": "签到总天数：%d"
+    },
+    {
+      "name": "checkin_consecutive",
+      "value": "连续签到天数：%d"
+    },
+    {
       "name": "ClearFunctionHistory",
       "value": "清空「最近使用」"
     },
