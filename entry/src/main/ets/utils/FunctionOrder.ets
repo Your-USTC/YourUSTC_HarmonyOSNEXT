@@ -13,7 +13,6 @@ export function setFunc(curContext: Context | undefined, toClear: boolean = fals
     mostUsedFunc = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
     return;
   }
-  console.log(mostUsedFunc.gridItemList.length.toString()+'!!');
   mostUsedFunc.gridItemList = [];
   mostUsedPre = preferences.getPreferencesSync(curContext, options);
   maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
@@ -69,10 +68,10 @@ export function refreshFunc(curContext: Context | undefined): void {
 
 
 export function resetFunc(curContext: Context | undefined): void { // 重置"最近使用"
-  preferences.deletePreferences(curContext, options)
-  setFunc(curContext, true);
-}
-
-export function setMaxRecord(curContext: Context | undefined): void {
   mostUsedPre = preferences.getPreferencesSync(curContext, options);
+  maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
+  preferences.deletePreferences(curContext, options)
+  mostUsedPre.putSync('maxRecord', maxRecord);
+  mostUsedPre.flush();
+  setFunc(curContext, true);
 }

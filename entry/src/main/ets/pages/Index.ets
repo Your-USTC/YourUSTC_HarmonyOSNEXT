@@ -238,8 +238,6 @@ struct Index {
       case 1:
         FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-        console.log(this.copyMostUsedFunc.gridItemList.length.toString() + 'length')
-        console.log(FunctionOrder.mostUsedFunc.gridItemList.length.toString() + '@@')
         break;
     }
   }
@@ -343,7 +341,7 @@ struct Index {
                   case 1:
                     // 选择最近使用
                     let maxRecordList: string[] = [];
-                    for (let i = 1; i <= 16; i++)
+                    for (let i = 1; i <= 20; i++) // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
                       maxRecordList.push(i.toString());
                     this.getUIContext().showTextPickerDialog({
                       range: maxRecordList,
@@ -459,7 +457,7 @@ struct Index {
     .barHeight(52)
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
-      this.currentIndex = targetIndex
+      this.currentIndex = targetIndex;
     })
   }
 }
