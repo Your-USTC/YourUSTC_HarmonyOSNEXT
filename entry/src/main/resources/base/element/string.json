@@ -25,6 +25,18 @@
       "value": "你的"
     },
     {
+      "name": "daily_checkin",
+      "value": "每日签到"
+    },
+    {
+      "name": "checkin_count",
+      "value": "签到总天数：%d"
+    },
+    {
+      "name": "checkin_consecutive",
+      "value": "连续签到天数：%d"
+    },
+    {
       "name": "ClearFunctionHistory",
       "value": "清空「最近使用」(待添加 设置最近使用显示上限)"
     },
