@@ -1,14 +1,15 @@
 
-import * as Links from '../constants/Links';
-import { CheckInTools } from '../utils/CheckIn';
-import { preferences } from '@kit.ArkData';
-import { ScrollPosition } from '../constants/CommonConstants';
-import { ListDataConstants } from '../constants/ListDataConstants';
-import GridComponent from '../view/GridComponent';
-import { GridData, otherGridDataList } from '../constants/GridListDataSources';
+import { common } from '@kit.AbilityKit'
+import * as Links from '../constants/Links'
+import { CheckInTools } from '../utils/CheckIn'
+import { preferences } from '@kit.ArkData'
+import { ScrollPosition } from '../constants/CommonConstants'
+import { ListDataConstants } from '../constants/ListDataConstants'
+import GridComponent from '../view/GridComponent'
+import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 import * as FunctionOrder from '../utils/FunctionOrder'
-import ItemData from '../view/SettingsComponent';
-import SettingsData from '../constants/SettingsSources';
+import ItemData from '../view/SettingsComponent'
+import SettingsData from '../constants/SettingsSources'
 
 @Entry
 @Component
@@ -404,7 +405,14 @@ struct Index {
         .buttonStyle(ButtonStyleMode.NORMAL)
         .width('80%')
         .fontColor(Color.Red)
-        .onClick(() => {})
+        .onClick(() => {
+          const context = getContext(this) as common.UIAbilityContext
+          context.terminateSelf((err) => {
+            if (!err) {
+              context.getApplicationContext().killAllProcesses()
+            }
+          })
+        })
     }
     .height('100%')
     .width('100%')
