@@ -1,7 +1,7 @@
 
 import { webview } from '@kit.ArkWeb'
 import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
-import { startTimeQueryJS, timeTableQueryJS } from '../utils/TimeTable'
+import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
 
 @Entry
 @Component
@@ -41,7 +41,6 @@ struct Webview {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
-                    console.log("Cannot go back!");
                     this.getUIContext().getRouter().back();
                   }
                 }),
@@ -60,17 +59,26 @@ struct Webview {
         Blank()
         Image($r('app.media.get'))
           .padding({right: 12})
-          .height(this.isTimeTablePage ? 20 : 0)
-          .enabled(this.isTimeTablePage)
+          .height(this.isTimeTablePage && !this.gotTimeTable ? 20 : 0)
+          .enabled(this.isTimeTablePage && !this.gotTimeTable)
           .onClick(() => {
-            this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
-              if (error) {/* TODO: 处理获取课程表失败错误 */ return;}
+            const uiContext: UIContext = this.getUIContext();
+            this.webviewController.runJavaScript(timeTableQueryJSShort, (error, result) => {
+              if (error) {
+                uiContext.getPromptAction().showToast({ message: $r('app.string.get_timetable_err_msg'), duration: 2000 });
+                return;
+              }
+              if (result === 'null') {
+                uiContext.getPromptAction().showToast({ message: $r('app.string.auto_get_timetable_fail_msg'), duration: 3500 });
+                return;
+              }
+              this.gotTimeTable = true;
               console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
             });
             this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
               if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
-              console.info(`学期开始的UNIX时间戳是${result}mm`);
-            })
+              console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+            });
           })
         Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))
           .padding({right: 12})
@@ -96,6 +104,29 @@ struct Webview {
         .height('100%')
         .onPageBegin(() => {
           this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-t');
+        })
+        .onPageEnd(() => {
+          if (this.isTimeTablePage && !this.gotTimeTable) {
+            const uiContext: UIContext = this.getUIContext();
+            setTimeout(() => {
+              this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
+                if (error) {
+                  uiContext.getPromptAction().showToast({ message: $r('app.string.get_timetable_err_msg'), duration: 2000 });
+                  return;
+                }
+                if (result === 'null') {
+                  uiContext.getPromptAction().showToast({ message: $r('app.string.auto_get_timetable_fail_msg'), duration: 3500 });
+                  return;
+                }
+                this.gotTimeTable = true;
+                console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+              });
+              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
+                console.info(`学期开始的UNIX时间戳是${result}mm`);
+              });
+            }, 1000);
+          }
         })
     }
     .height('100%')

@@ -99,6 +99,14 @@
     {
       "name": "apply_on_restart",
       "value": "将在再次使用任意功能或下次启动时生效"
+    },
+    {
+      "name": "auto_get_timetable_fail_msg",
+      "value": "课表自动获取失败！当网页加载完毕可尝试手动获取"
+    },
+    {
+      "name": "get_timetable_err_msg",
+      "value": "课程表获取出现错误！"
     }
   ]
 }
