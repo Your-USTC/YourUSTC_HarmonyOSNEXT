@@ -1,13 +1,21 @@
 export const timeTableQueryJS = `
-function pressButton(XPath) {
-    document.evaluate(XPath,
-        document,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null).singleNodeValue.click();
+function getWeekNumber(str) {
+    const parts = str.split(',');
+    const result = [];
+    for (const part of parts) {
+        if (part.includes('-')) {
+            const [start, end] = part.split('-').map(Number);
+            for (let i = start; i <= end; i++) {
+                result.push(i);
+            }
+        } else {
+            result.push(Number(part));
+        }
+    }
+    return result;
 }
 
-function executeProgram() {
+function getTimeTable() {
     const timeTable = document.evaluate(
         "/html/body/div[2]/div[3]/div/div/table",
         document,
@@ -26,14 +34,17 @@ function executeProgram() {
                     return false;
                 })
                 try {
-                    const className = target.querySelector(".title").innerText;
-                    const teacherList = target.querySelectorAll(".teacher .name");
-                    const teacherName = Array.from(teacherList).map(element => element.innerText).join(", ");
                     const startTime = target.querySelector(".start").innerText;
                     const endTime = target.querySelector(".end").innerText;
-                    const timeSpan = target.querySelector(".timespan").innerText;
-                    classesOfDay.push([className, teacherName, startTime, endTime, timeSpan]);
-                } catch (error) { }
+                    const classList = Array.from(target.querySelectorAll(".c")).map(element => [
+                        element.querySelector(".title").innerText,
+                            Array.from(element.querySelectorAll(".teacher .name")).map(elem => elem.innerText).join(", "),
+                            getWeekNumber(element.querySelector(".time .week").innerText),
+                            element.querySelector(".timespan").innerText,
+                            element.querySelector(".classroom .name").innerText.trim()
+                    ]);
+                    classesOfDay.push([startTime, endTime, classList]);
+                } catch (error) { console.log(error.message); }
             }
         }
         return classesOfDay;
@@ -41,52 +52,10 @@ function executeProgram() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-function waitForDOMChange() {
-    return new Promise((resolve) => {
-        const observer = new MutationObserver(() => {
-            observer.disconnect();
-            resolve();
-        });
-        observer.observe(document, { childList: true, subtree: true, attributes: true });
-    });
-}
-
-async function main() {
-    pressButton('/html/body/div[2]/div[2]/div[3]/button[2]');
-    await waitForDOMChange();
-    return JSON.stringify(executeProgram());
-}
-
-function showMessage(messageShown) {
-    const box = document.createElement('div');
-    box.id = 'console-tip-box';
-    box.innerHTML = messageShown;
-
-    Object.assign(box.style, {
-        position: 'fixed',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
-        padding: '10px 14px',
-        background: '#0f0',
-        color: '#000',
-        fontSize: '14px',
-        borderRadius: '6px',
-        boxShadow: '0 2px 8px rgba(0,0,0,.3)',
-        zIndex: '999999',
-        transition: 'opacity .3s',
-        opacity: '0'
-    });
-
-    document.body.appendChild(box);
-    requestAnimationFrame(() => box.style.opacity = '1');
-
-    setTimeout(() => {
-        box.style.opacity = '0';
-        box.addEventListener('transitionend', () => box.remove(), { once: true });
-    }, 3000);
-}
-
-let timeTable = '';
-main().then(result => { timeTable = result; showMessage('课表获取成功！') });
+let timeTable = getTimeTable(); JSON.stringify(timeTable);
 `;
+
+export const startTimeQueryJS = `
+const startTime = new Date(document.getElementById('startDate').innerText);
+startTime.getTime();
+`
