@@ -59,10 +59,14 @@ struct Index {
   private pref: preferences.Preferences | null = null;
 
   aboutToAppear(): void {
-    this.pref = preferences.getPreferencesSync(
-      this.getUIContext().getHostContext(),
-      {name: CheckInTools.PREF_NAME}
-    ); // 载入包含签到信息的首选项
+    try {
+      this.pref = preferences.getPreferencesSync(
+        this.getUIContext().getHostContext(),
+        { name: CheckInTools.PREF_NAME }
+      ); // 载入包含签到信息的首选项
+    } catch (error) {
+      console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
+    }
     const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup(this.pref);
     this.checkInTotal = GeneratedDestructArray_1[0];
     this.checkInConsecutive = GeneratedDestructArray_1[1];
@@ -121,13 +125,26 @@ struct Index {
     .padding({ left: '28vp', right: '28vp' })
   }
 
+  @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
+  onPageShow(): void {
+    this.refreshTabGrid(1)
+  }
+  private async refreshTabGrid(tabIndex: number){
+    switch(tabIndex){
+      case 1:
+        FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
+        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+        break;
+    }
+  }
+
   /**
    * 全局资源: 设置
    */
   @Builder
   settingCell(item: ItemData) {
     Row() {
-      Row({}) {
+      Row() {
         Image(item.img)
           .height('22vp')
           .margin({
@@ -160,6 +177,7 @@ struct Index {
   @Builder
   pageStart() {
     List({ space: 10 }) {
+      // 每日签到
       ListItem() {
         Column() {
           Row() {
@@ -203,21 +221,49 @@ struct Index {
             Text($r('app.string.checkin_count_d', this.checkInTotal))
               .fontSize(12)
               .align(Alignment.Start)
-              .margin({ right: 30 })
 
             Text($r('app.string.checkin_consecutive_d', this.checkInConsecutive))
               .fontSize(12)
               .align(Alignment.End)
-              .margin({ left: 30 })
           }
           .width('90%')
           .margin({ bottom: 10 })
-          .justifyContent(FlexAlign.Center)
+          .justifyContent(FlexAlign.SpaceBetween)
         }
         .justifyContent(FlexAlign.Center)
       }
       .width('100%')
       .borderRadius(20)
+      .backgroundColor($r('app.color.grid_background'))
+
+      // 你的课表
+      ListItem() {
+        Column() {
+          Row() {
+            Text($r('app.string.your_timetable'))
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+
+            Image($r('app.media.right_arrow'))
+              .width('12vp')
+              .height('24vp')
+          }
+          .width('100%')
+          .margin({ top: 15, bottom: 10 })
+          .padding({ left: 15, right: 10 })
+          .justifyContent(FlexAlign.SpaceBetween)
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
+              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+          })
+
+
+        }
+        .justifyContent(FlexAlign.Center)
+      }
+      .width('100%')
+      .borderRadius(20)
+      .margin({ top: 5 })
       .backgroundColor($r('app.color.grid_background'))
     }
     .width('100%')
@@ -229,19 +275,6 @@ struct Index {
   /**
    * 页面: 功能
    */
-  @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
-  onPageShow(): void {
-    this.refreshTabGrid(1)
-  }
-  private async refreshTabGrid(tabIndex: number){
-    switch(tabIndex){
-      case 1:
-        FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
-        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-        break;
-    }
-  }
-
   @Builder
   pageFunction() {
     Column() {
@@ -348,14 +381,24 @@ struct Index {
                       defaultPickerItemHeight: 36,
                       canLoop: false,
                       onAccept: (value: TextPickerResult) => {
+                        try {
                           this.getUIContext().getPromptAction().showToast({
-                          message: `已更改为 ${value.value}`,
-                          duration: 200
-                        });
+                            message: `已更改为 ${value.value}`,
+                            duration: 200
+                          });
+                        } catch (error) {
+                          console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
+                        }
                         let options: preferences.Options = { name: 'FunctionOrder' };
-                        let maxRecordPre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), options);
-                        maxRecordPre.putSync('maxRecord', Number(value.value));
-                        maxRecordPre.flush();
+                        try {
+                          let maxRecordPre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), options);
+                          maxRecordPre.putSync('maxRecord', Number(value.value));
+                          maxRecordPre.flush().catch((error: Error) => {
+                            console.error(`Flush ERROR: [${error.name}] ${error.message}`);
+                          });
+                        } catch (error) {
+                          console.error(`Preference load ERROR: [${error.name}] ${error.message}`);
+                        }
                         this.refreshTabGrid(1);
                       }
                     })
@@ -364,7 +407,13 @@ struct Index {
                     // 重置最近使用
                     FunctionOrder.resetFunc(this.getUIContext().getHostContext());
                     this.refreshTabGrid(1);
-                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.have_cleared'), duration: 500 })
+                    try {
+                      this.getUIContext()
+                        .getPromptAction()
+                        .showToast({ message: $r('app.string.have_cleared'), duration: 500 })
+                    } catch (error) {
+                      console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
+                    }
                     break;
                   case 3:
                     // （调试）课程表
@@ -407,7 +456,9 @@ struct Index {
           const context = getContext(this) as common.UIAbilityContext
           context.terminateSelf((err) => {
             if (!err) {
-              context.getApplicationContext().killAllProcesses()
+              context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+              })
             }
           })
         })

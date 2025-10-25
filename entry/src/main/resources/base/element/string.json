@@ -45,6 +45,10 @@
       "value": "连续签到天数：%d"
     },
     {
+      "name": "your_timetable",
+      "value": "你的课表"
+    },
+    {
       "name": "setting_toggle",
       "value": "开关"
     },
