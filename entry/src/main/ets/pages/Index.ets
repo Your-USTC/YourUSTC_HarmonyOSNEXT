@@ -222,13 +222,14 @@ struct Index {
               .fontSize(12)
               .align(Alignment.Start)
 
+            Blank()
+
             Text($r('app.string.checkin_consecutive_d', this.checkInConsecutive))
               .fontSize(12)
               .align(Alignment.End)
           }
-          .width('90%')
+          .width('80%')
           .margin({ bottom: 10 })
-          .justifyContent(FlexAlign.SpaceBetween)
         }
         .justifyContent(FlexAlign.Center)
       }
@@ -240,9 +241,13 @@ struct Index {
       ListItem() {
         Column() {
           Row() {
-            Text($r('app.string.your_timetable'))
+            Blank()
+
+            Text($r('app.string.your_schedule'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
+
+            Blank()
 
             Image($r('app.media.right_arrow'))
               .width('12vp')
@@ -250,14 +255,13 @@ struct Index {
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
-          .padding({ left: 15, right: 10 })
-          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ left: 27, right: 15 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
           })
 
-
+          // TODO: 今日课程 或 当前课程
         }
         .justifyContent(FlexAlign.Center)
       }
