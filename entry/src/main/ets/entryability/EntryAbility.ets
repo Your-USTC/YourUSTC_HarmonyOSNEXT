@@ -1,8 +1,18 @@
-import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
+import {
+  abilityAccessCtrl,
+  AbilityConstant, common, ConfigurationConstant,
+  PermissionRequestResult,
+  Permissions, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { calendarManager } from '@kit.CalendarKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
+
+// 日历相关
+export let calendarMgr: calendarManager.CalendarManager | null = null;
+export let mContext: common.UIAbilityContext | null = null;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -29,6 +39,17 @@ export default class EntryAbility extends UIAbility {
       }
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
     });
+
+    // 日历相关
+    mContext = this.context;
+    const permissions: Permissions[] = ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR'];
+    let atManager = abilityAccessCtrl.createAtManager();
+    atManager.requestPermissionsFromUser(mContext, permissions).then((result: PermissionRequestResult) => {
+      console.info(`成功获取权限: ${JSON.stringify(result)}`);
+      calendarMgr = calendarManager.getCalendarManager(mContext);
+    }).catch((error: BusinessError) => {
+      console.error(`获取权限失败。Code: ${error.code}, message: ${error.message}`);
+    })
   }
 
   onWindowStageDestroy(): void {

@@ -62,11 +62,11 @@
     },
     {
       "name": "about",
-      "value": "关于「你的科大」…"
+      "value": "关于「你的科大」App…"
     },
     {
       "name": "exit_app",
-      "value": "退出「你的科大」APP"
+      "value": "\uDB80\uDC36  退出「你的科大」"
     },
     {
       "name": "ClearFunctionHistory",
@@ -75,6 +75,10 @@
     {
       "name": "setMaxRecord",
       "value": "设置「最近使用」中的显示数量"
+    },
+    {
+      "name": "add_class_notification",
+      "value": "向日历写入上课提醒"
     },
     {
       "name": "WorkingOn",
@@ -119,6 +123,38 @@
     {
       "name": "get_timetable_err_msg",
       "value": "课程表获取出现错误！"
+    },
+    {
+      "name": "write_calendar_permission_reason",
+      "value": "用于写入上课提醒"
+    },
+    {
+      "name": "read_calendar_permission_reason",
+      "value": "用于检测是否已写入上课提醒"
+    },
+    {
+      "name": "EntryFormAbility_desc",
+      "value": "form_description"
+    },
+    {
+      "name": "EntryFormAbility_label",
+      "value": "form_label"
+    },
+    {
+      "name": "class_schedule_daily_desc",
+      "value": "显示今天和明天的课程"
+    },
+    {
+      "name": "class_schedule_daily_display_name",
+      "value": "课程表"
+    },
+    {
+      "name": "card_list_title",
+      "value": "Title"
+    },
+    {
+      "name": "card_list_content",
+      "value": "Introduction"
     }
   ]
 }

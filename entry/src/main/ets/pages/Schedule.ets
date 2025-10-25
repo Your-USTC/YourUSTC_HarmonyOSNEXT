@@ -1,4 +1,11 @@
 
+export interface classAttribute {
+  name: string,
+  teacher: string,
+  location: string,
+  id: string
+}
+
 @Entry
 @Component
 struct Schedule {

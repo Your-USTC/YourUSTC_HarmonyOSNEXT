@@ -1,16 +1,50 @@
 
 import { common } from '@kit.AbilityKit'
+import { preferences } from '@kit.ArkData'
+import { calendarManager } from '@kit.CalendarKit'
+import { BusinessError } from '@kit.BasicServicesKit';
+import { classAttribute } from './Schedule'
 import * as Links from '../constants/Links'
 import { CheckInTools } from '../utils/CheckIn'
-import { preferences } from '@kit.ArkData'
+import ItemData from '../view/SettingsComponent'
+import GridComponent from '../view/GridComponent'
+import * as FunctionOrder from '../utils/FunctionOrder'
+import SettingsData from '../constants/SettingsSources'
+import { calendarMgr } from '../entryability/EntryAbility'
 import { ScrollPosition } from '../constants/CommonConstants'
 import { ListDataConstants } from '../constants/ListDataConstants'
-import GridComponent from '../view/GridComponent'
 import { GridData, otherGridDataList } from '../constants/GridListDataSources'
-import * as FunctionOrder from '../utils/FunctionOrder'
-import ItemData from '../view/SettingsComponent'
-import SettingsData from '../constants/SettingsSources'
 
+// 日历初始化
+let calendar: calendarManager.Calendar | undefined = undefined;
+// 指定日历账户信息
+const calendarAccount: calendarManager.CalendarAccount = {
+  name: 'YourUSTC.class_notification',
+  type: calendarManager.CalendarType.LOCAL,
+  // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
+  displayName: "你的科大上课提醒"
+};
+// 日历配置信息：是否提醒及颜色
+const calendarConfig: calendarManager.CalendarConfig = { enableReminder: true, color: '#bcc7df' };
+export let calendarAccess: boolean = false;
+// 创建日历账户
+calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+  console.info(`创建日历数据成功->${JSON.stringify(data)}`);
+  calendar = data;
+  calendarAccess = true; // 确保日历账户创建成功后，再进行相关日程的管理
+  // 设置日历配置信息，打开日程提醒、设置日历账户颜色
+  calendar.setConfig(calendarConfig).then(() => {
+    console.info(`设置config成功->${JSON.stringify(calendarConfig)}`);
+  }).catch((err: BusinessError) => {
+    console.error(`设置config失败。Code: ${err.code}, message: ${err.message}`);
+  });
+  // ...
+}).catch((error: BusinessError) => {
+  console.error(`创建日历对象失败。Code: ${error.code}, message: ${error.message}`);
+});
+
+
+// 主界面UI
 @Entry
 @Component
 struct Index {
@@ -427,6 +461,34 @@ struct Index {
                     }).catch((err: Error) => {
                       console.error(`Router ERROR: [${err.name}] ${err.message}`)
                     })
+                    break;
+                  case 4:
+                    let eventId : number | undefined = undefined;
+                    let classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2'};
+                    // 获取课程详情
+                    // .....待更新
+                    // 获取课程详情
+                    const date = new Date();
+                    const event: calendarManager.Event = {
+                      title: `${classInfo.name} ${classInfo.location}`, // 日程标题
+                      type: calendarManager.EventType.NORMAL, // 日程类型
+                      startTime: date.getTime(), // 日程开始时间
+                      endTime: date.getTime() + 60 * 60 * 1000, // 日程结束时间
+                      reminderTime: [10], // 距开始时间提前10分钟提醒
+                      recurrenceRule: { // 日程重复规则
+                        recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
+                        count: 100, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                        interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
+                        expire: date.getTime() + 60 * 60 * 1000 * 3, // 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+                        excludedDates: [date.getTime() + 60 * 60 * 1000 * 2] // 日程排除日期，将该日期从重复日程中排除掉
+                      }
+                    };
+                    if (calendar != undefined) {
+                      calendar.addEvent(event).then((data: number) => {
+                        console.info(`Succeeded in adding event, id -> ${data}`);
+                        eventId = data;
+                      });
+                    }
                     break;
                 }
               })

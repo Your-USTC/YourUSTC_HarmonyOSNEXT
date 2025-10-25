@@ -55,10 +55,10 @@ export class SettingsData {
       ],
       [
         new ItemData(3, $r('app.string.KeChengBiao'), $r('app.media.calendar_badge_clock')),
-        new ItemData(4, $r('app.string.page_function'), $r('app.media.default_function_icon')),
+        new ItemData(4, $r('app.string.add_class_notification'), $r('app.media.alarm_fill')),
       ],
       [
-        new ItemData(5, $r('app.string.about'), $r('app.media.default_function_icon'))
+        new ItemData(5, $r('app.string.about'), $r('app.media.info_circle'))
       ]
     ];
     return settingListData;

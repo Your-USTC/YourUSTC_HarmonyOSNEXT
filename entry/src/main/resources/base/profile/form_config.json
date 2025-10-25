@@ -1,0 +1,26 @@
+{
+  "forms": [
+    {
+      "name": "class_schedule_daily",
+      "displayName": "$string:class_schedule_daily_display_name",
+      "description": "$string:class_schedule_daily_desc",
+      "src": "./ets/class_schedule_daily/pages/Class_schedule_dailyCard.ets",
+      "uiSyntax": "arkts",
+      "window": {
+        "designWidth": 720,
+        "autoDesignWidth": true
+      },
+      "colorMode": "auto",
+      "isDynamic": true,
+      "isDefault": true,
+      "updateEnabled": false,
+      "scheduledUpdateTime": "10:30",
+      "updateDuration": 1,
+      "defaultDimension": "2*4",
+      "supportDimensions": [
+        "2*4",
+        "4*4"
+      ]
+    }
+  ]
+}

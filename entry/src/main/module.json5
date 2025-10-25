@@ -47,13 +47,28 @@
             "resource": "$profile:backup_config"
           }
         ],
+      },
+      {
+        "name": "EntryFormAbility",
+        "srcEntry": "./ets/entryformability/EntryFormAbility.ets",
+        "label": "$string:EntryFormAbility_label",
+        "description": "$string:EntryFormAbility_desc",
+        "type": "form",
+        "metadata": [
+          {
+            "name": "ohos.extension.form",
+            "resource": "$profile:form_config"
+          }
+        ]
       }
     ],
     "requestPermissions": [
       {
         "name": "ohos.permission.INTERNET",
         "usedScene": {
-          "abilities": ["EntryAbility"],
+          "abilities": [
+            "EntryAbility"
+          ],
           "when": "always"
         },
         "reason": "{LoadWebPages}"
@@ -61,10 +76,32 @@
       {
         "name": "ohos.permission.GET_NETWORK_INFO",
         "usedScene": {
-          "abilities": ["EntryAbility"],
+          "abilities": [
+            "EntryAbility"
+          ],
           "when": "always"
         },
         "reason": "{CheckInternetStatus}"
+      },
+      {
+        "name": "ohos.permission.WRITE_CALENDAR",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "always"
+        },
+        "reason": "$string:write_calendar_permission_reason"
+      },
+      {
+        "name": "ohos.permission.READ_CALENDAR",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "always"
+        },
+        "reason": "$string:read_calendar_permission_reason"
       }
     ]
   }

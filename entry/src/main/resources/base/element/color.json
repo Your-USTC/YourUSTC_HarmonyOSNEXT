@@ -23,6 +23,18 @@
     {
       "name": "active_text",
       "value": "#FF0040C0"
+    },
+    {
+      "name": "theme_color",
+      "value": "#bcc7df"
+    },
+    {
+      "name": "card_list_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "list_item_count_background",
+      "value": "#290a59f7"
     }
   ]
 }
