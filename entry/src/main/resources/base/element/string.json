@@ -45,8 +45,16 @@
       "value": "连续签到天数：%d"
     },
     {
-      "name": "your_timetable",
+      "name": "your_schedule",
       "value": "你的课表"
+    },
+    {
+      "name": "local_schedule",
+      "value": "本地课表"
+    },
+    {
+      "name": "online_schedule",
+      "value": "在线课表"
     },
     {
       "name": "setting_toggle",
