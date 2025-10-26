@@ -49,6 +49,10 @@
       "value": "瀚海教学网"
     },
     {
+      "name": "MuKe",
+      "value": "慕课"
+    },
+    {
       "name": "JiaoShiChaXun",
       "value": "教室查询"
     },
@@ -195,6 +199,54 @@
     {
       "name": "TongYiShenFenRenZheng",
       "value": "统一身份认证"
+    },
+    {
+      "name": "JiaoWuChu",
+      "value": "教务处"
+    },
+    {
+      "name": "BenKeZhaoShengWang",
+      "value": "本科招生网"
+    },
+    {
+      "name": "WoKeXueShe",
+      "value": "蜗壳学社"
+    },
+    {
+      "name": "XiaoYuanBaiKe",
+      "value": "校园百科"
+    },
+    {
+      "name": "JiaoXueRiLi",
+      "value": "教学日历"
+    },
+    {
+      "name": "LianXiJiaoMi",
+      "value": "联系教秘"
+    },
+    {
+      "name": "QinYouRuXiao",
+      "value": "亲友入校"
+    },
+    {
+      "name": "XiaoYuanDiTu",
+      "value": "校园地图"
+    },
+    {
+      "name": "XiaoYuanBanChe",
+      "value": "校园班车"
+    },
+    {
+      "name": "YuanXiZhuanYe",
+      "value": "院系专业"
+    },
+    {
+      "name": "QuanJingDiTu",
+      "value": "全景地图"
+    },
+    {
+      "name": "XueGongYiTiHua",
+      "value": "学工一体化"
     }
   ]
 }

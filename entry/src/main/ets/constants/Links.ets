@@ -11,15 +11,16 @@ export let LINK = new Map<string, Link>()
   .set("0.3", { title: $r('app.string.WoDeChengJi'), url: 'https://jw.ustc.edu.cn/for-std/grade/sheet'})
   .set("0.4", { title: $r('app.string.bbJiaoXuePingTai'), url: 'https://www.bb.ustc.edu.cn'})
   .set("0.5", { title: $r('app.string.HanHaiJiaoXueWang'), url: 'http://course.ustc.edu.cn/portal'})
-  .set("0.6", { title: $r('app.string.JiaoShiChaXun'), url: 'https://catalog.ustc.edu.cn/query/lesson'})
-  .set("0.7", { title: $r('app.string.TuShuGuan'), url: 'https://lib.ustc.edu.cn'})
-  .set("0.8", { title: $r('app.string.XueXiKongJian'), url: $rawfile('RoomBookingLinks.html')})
-  .set("0.9", { title: $r('app.string.GuoJiJiaoLiu'), url: 'https://vista.ustc.edu.cn'})
-  .set("0.10", { title: $r('app.string.DaWuShiYanYuYue'), url: 'https://pems.ustc.edu.cn'})
-  .set("0.11", { title: $r('app.string.ZhuJiaoXiTong'), url: 'https://tam.cmet.ustc.edu.cn'})
-  .set("0.12", { title: $r('app.string.PingKeSheQu'), url: 'https://icourse.club'})
-  .set("0.13", { title: $r('app.string.WolframAlpha'), url: 'https://wolframalpha.com'})
-  .set("0.14", { title: $r('app.string.QingChunKeDa'), url: 'https://young.ustc.edu.cn/login/sc-wisdom-group-learning/myproject/SignUp'})
+  .set("0.6", { title: $r('app.string.MuKe'), url: 'https://www.icourse163.org/university/USTC#/c'})
+  .set("0.7", { title: $r('app.string.JiaoShiChaXun'), url: 'https://catalog.ustc.edu.cn/query/lesson'})
+  .set("0.8", { title: $r('app.string.TuShuGuan'), url: 'https://lib.ustc.edu.cn'})
+  .set("0.9", { title: $r('app.string.XueXiKongJian'), url: $rawfile('RoomBookingLinks.html')})
+  .set("0.10", { title: $r('app.string.GuoJiJiaoLiu'), url: 'https://vista.ustc.edu.cn'})
+  .set("0.11", { title: $r('app.string.DaWuShiYanYuYue'), url: 'https://pems.ustc.edu.cn'})
+  .set("0.12", { title: $r('app.string.ZhuJiaoXiTong'), url: 'https://tam.cmet.ustc.edu.cn'})
+  .set("0.13", { title: $r('app.string.PingKeSheQu'), url: 'https://icourse.club'})
+  .set("0.14", { title: $r('app.string.WolframAlpha'), url: 'https://wolframalpha.com'})
+  .set("0.15", { title: $r('app.string.WoKeXueShe'), url: 'https://ot.ustc.edu.cn/'})
   .set("1.0", { title: $r('app.string.YingXinWang'), url: 'http://welcome.ustc.edu.cn'})
   .set("1.1", { title: $r('app.string.KeDaYouXiang'), url: 'http://mail.ustc.edu.cn'})
   .set("1.2", { title: $r('app.string.ZiZhuDaYin'), url: 'http://ic.lib.ustc.edu.cn'})
@@ -34,6 +35,7 @@ export let LINK = new Map<string, Link>()
   .set("1.11", { title: $r('app.string.USTCDaoHang'), url: 'https://ustc.life'})
   .set("1.12", { title: $r('app.string.ZhiHuiMenHu'), url: 'http://i.ustc.edu.cn'})
   .set("1.13", { title: $r('app.string.WangLuoZhuCeZhongXin'), url: 'https://zczx.ustc.edu.cn'})
+  .set("1.14", { title: $r('app.string.QingChunKeDa'), url: 'https://young.ustc.edu.cn/login/sc-wisdom-group-learning/myproject/SignUp'})
   .set("2.0", { title: $r('app.string.KeDaVPN'), url: 'https://wvpn.ustc.edu.cn'})
   .set("2.1", { title: $r('app.string.WangLuoQiDong'), url: 'https://pxe.ustc.edu.cn'})
   .set("2.2", { title: $r('app.string.ZhengBanRuanJian'), url: 'https://software.ustc.edu.cn'})
@@ -46,56 +48,12 @@ export let LINK = new Map<string, Link>()
   .set("2.9", { title: $r('app.string.WenDangXieZuo'), url: 'https://latex.ustc.edu.cn'})
   .set("3.0", { title: $r('app.string.TongYiShenFenRenZheng'), url: 'https://passport.ustc.edu.cn'})
   .set("3.1", { title: $r('app.string.LiFanXiaoDengJi'), url: 'https://lfxdj.ustc.edu.cn'})
-
-
-/*
-    收集的链接:
-    {
-      "name": "EducationalAdministrationCenter_url",
-      "value": "https://teach.ustc.edu.cn"
-    },
-    {
-      "name": "AdmissionsOffice_url",
-      "value": "https://zsb.ustc.edu.cn"
-    },
-    {
-      "name": "WokeStudyingSociety_url",
-      "value": "https://ot.ustc.edu.cn"
-    },
-    {
-      "name": "AdmissionRain_url",
-      "value": "https://adrain.ustclug.org"
-    },
-    {
-      "name": "SecretaryInformation_url",
-      "value": "https://www.teach.ustc.edu.cn/service/svc-student/4427.html"
-    },
-    {
-      "name": "FacultyAndMajorSummary_url",
-      "value": "https://www.teach.ustc.edu.cn/education/239.html"
-    },
-    {
-      "name": "TeachingCalendar_url",
-      "value": "https://www.teach.ustc.edu.cn/calendar/19081.html"
-    },
-    {
-      "name": "RelativesAndFriendsAppointment_url",
-      "value": "https://passport.ustc.edu.cn/login?service=http%3A%2F%2Fbwcqyrx.ustc.edu.cn%2Fweixin%2Fvalidate"
-    },
-    {
-      "name": "CampusMap_url",
-      "value": "https://map.ustc.edu.cn"
-    },
-    {
-      "name": "CampusPanorama_url",
-      "value": "https://vr.shouxi360.com/c/pNiHHxiHjPg.html"
-    },
-    {
-      "name": "SchoolBusQuery_url",
-      "value": "https://weixine.ustc.edu.cn/ustcqy/mobile/busTimetable_gov"
-    },
-    {
-      "name": "PersonalCenter_url",
-      "value": "https://id.ustc.edu.cn"
-    }
-*/
+  .set("3.2", { title: $r('app.string.QinYouRuXiao'), url: 'https://passport.ustc.edu.cn/login?service=http%3A%2F%2Fbwcqyrx.ustc.edu.cn%2Fweixin%2Fvalidate'})
+  .set("3.3", { title: $r('app.string.JiaoWuChu'), url: 'https://teach.ustc.edu.cn'})
+  .set("3.4", { title: $r('app.string.YuanXiZhuanYe'), url: 'https://www.teach.ustc.edu.cn/education/239.html'})
+  .set("3.5", { title: $r('app.string.LianXiJiaoMi'), url: 'https://www.teach.ustc.edu.cn/service/svc-student/4427.html'})
+  .set("3.6", { title: $r('app.string.XueGongYiTiHua'), url: 'https://xgyth.ustc.edu.cn'})
+  .set("3.7", { title: $r('app.string.XiaoYuanDiTu'), url: 'https://map.ustc.edu.cn'})
+  .set("3.8", { title: $r('app.string.QuanJingDiTu'), url: 'https://vr.shouxi360.com/c/pNiHHxiHjPg.html'})
+  .set("3.9", { title: $r('app.string.XiaoYuanBaiKe'), url: 'https://baike.ustc.edu.cn'})
+  .set("3.10", { title: $r('app.string.XiaoYuanBanChe'), url: 'https://weixine.ustc.edu.cn/ustcqy/mobile/busTimetable_gov'})
