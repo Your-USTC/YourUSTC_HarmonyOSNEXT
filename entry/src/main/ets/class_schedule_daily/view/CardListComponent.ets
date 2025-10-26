@@ -37,11 +37,11 @@ export struct CardListComponent {
           Row() {
             Row() {
               Text(this.cardListParameter.title)
-                .fontSize($r('app.float.list_title_font_size'))
+                .fontSize(18)
                 .fontWeight(FontWeight.Bold)
-                .height($r('app.float.list_title_height'))
+                .height(24)
                 .fontColor(this.cardListParameter.titleColor)
-                .padding({ right: $r('app.float.list_title_padding_right') })
+                .padding({ right: 4 })
                 .maxLines(MAX_LINES)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -49,25 +49,25 @@ export struct CardListComponent {
                 Text(this.cardListParameter.itemCount > this.maxQuantity ? '99+' :
                   this.cardListParameter.itemCount + '')
                   .textAlign(TextAlign.Center)
-                  .fontSize($r('app.float.item_count_font_size'))
+                  .fontSize(10)
                   .fontWeight(FontWeight.Medium)
                   .fontColor(this.cardListParameter.itemCountColor)
                   .backgroundColor(this.cardListParameter.itemCountBackgroundColor)
-                  .width($r('app.float.item_count_width'))
-                  .height($r('app.float.item_count_height'))
-                  .borderRadius($r('app.float.item_count_radius'))
+                  .width(24)
+                  .height(16)
+                  .borderRadius(8)
               }
             }.layoutWeight(LAYOUT_WEIGHT)
 
             Image(this.cardListParameter.logo)
-              .width($r('app.float.list_logo_size'))
-              .height($r('app.float.list_logo_size'))
-              .margin({ left: $r('app.float.icon_margin') })
+              .width(20)
+              .height(20)
+              .margin({ left: 28 })
           }
           .width(this.fullWidthPercent)
           .alignItems(VerticalAlign.Top)
           .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: $r('app.float.list_row_padding_bottom') })
+          .padding({ bottom: 4 })
 
           List() {
             this.customBuilderParam();
@@ -83,11 +83,11 @@ export struct CardListComponent {
           if (this.cardListParameter.isMask !== undefined) {
             Row()
               .width(this.fullWidthPercent)
-              .height($r('app.float.list_mask_height'))
+              .height(24)
               .linearGradient({
                 direction: GradientDirection.Top,
                 repeating: false,
-                colors: [[this.cardListParameter.maskColor, LINEAR_START_GRADIENT], ['#00ffffff', LINEAR_END_GRADIENT]]
+                colors: [[this.cardListParameter.maskColor, LINEAR_START_GRADIENT], [$r('app.color.transparent'), 1.0]]
               })
               .pixelRound({ bottom: PixelRoundCalcPolicy.FORCE_CEIL })
               .hitTestBehavior(HitTestMode.None)
@@ -95,8 +95,8 @@ export struct CardListComponent {
 
           if (this.cardListParameter.isBottomIcon !== undefined) {
             Image(this.cardListParameter.bottomIcon)
-              .width($r('app.float.bottom_icon_size'))
-              .height($r('app.float.bottom_icon_size'))
+              .width(32)
+              .height(32)
           }
         }
         .width(this.fullWidthPercent)
@@ -104,12 +104,7 @@ export struct CardListComponent {
       .backgroundImage(this.cardListParameter.backgroundImage)
       .backgroundImageSize(this.cardListParameter.backgroundImageSize)
       .backgroundColor(this.cardListParameter.backgroundColor)
-      .padding({
-        top: $r('app.float.list_side_padding'),
-        bottom: $r('app.float.list_side_padding'),
-        left: $r('app.float.list_side_padding'),
-        right: $r('app.float.list_side_padding')
-      })
+      .padding(12)
     }
   }
 }

@@ -1,17 +1,10 @@
+
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
 
-const MAX_LINES = 1;
-
-const STROKE_WIDTH = 0.38;
-
-const LAYOUT_WEIGHT = 1;
-
-const CARD_LENGTH = 10;
-
 function getCardList(): number[] {
   const arr: number[] = [];
-  for (let index = 0; index < CARD_LENGTH; index++) {
+  for (let index = 0; index < 10; index++) {
     arr.push(index);
   }
   return arr;
@@ -58,38 +51,38 @@ struct Class_schedule_dailyCard {
         Row() {
           Column() {
             Text(this.cardListData.title)
-              .maxLines(MAX_LINES)
+              .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .fontSize($r('app.float.item_content_font_size'))
+              .fontSize(12)
               .fontWeight(FontWeight.Medium)
               .fontColor($r('sys.color.black'))
-              .height($r('app.float.item_text_height'))
-              .margin({ top: $r('app.float.item_text_margin') })
+              .height(16)
+              .margin({ top: 5 })
             Text(this.cardListData.content)
-              .maxLines(MAX_LINES)
-              .fontSize($r('app.float.item_content_font_size'))
+              .maxLines(1)
+              .fontSize(12)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .fontWeight(FontWeight.Regular)
-              .height($r('app.float.item_text_height'))
+              .height(16)
 
             Divider()
-              .strokeWidth(STROKE_WIDTH)
+              .strokeWidth(0.38)
               .lineCap(LineCapStyle.Square)
-              .margin({ top: $r('app.float.list_divider_margin') })
+              .margin({ top: 6 })
           }
-          .margin({ right: $r('app.float.list_row_margin') })
+          .margin({ right: 4 })
           .alignItems(HorizontalAlign.Start)
-          .layoutWeight(LAYOUT_WEIGHT)
+          .layoutWeight(1)
 
           Image(this.cardListData.icon)
-            .width($r('app.float.item_image_size'))
-            .height($r('app.float.item_image_size'))
+            .width(32)
+            .height(32)
         }
         .alignItems(VerticalAlign.Center)
         .width(this.fullWidthPercent)
       }
       .width(this.fullWidthPercent)
-      .height($r('app.float.item_height'))
+      .height(44)
     }, (item: number, index) => index + JSON.stringify(item))
   }
 

@@ -1,40 +1,32 @@
 {
   "color": [
     {
+      "name": "transparent",
+      "value": "#00000000"
+    },
+    {
       "name": "normal_background",
       "value": "#FFFFFF"
     },
     {
       "name": "shaded_background",
-      "value": "#FF7FC0FF"
+      "value": "#7FC0FF"
     },
     {
       "name": "grid_background",
-      "value": "#FFD9EAFF"
+      "value": "#D9EAFF"
     },
     {
       "name": "normal_text",
       "value": "#000000"
     },
     {
-      "name": "complementary_normal_text",
-      "value": "#FFFFFF"
-    },
-    {
       "name": "active_text",
-      "value": "#FF0040C0"
-    },
-    {
-      "name": "theme_color",
-      "value": "#bcc7df"
-    },
-    {
-      "name": "card_list_background",
-      "value": "#FFFFFF"
+      "value": "#0040C0"
     },
     {
       "name": "list_item_count_background",
-      "value": "#290a59f7"
+      "value": "#290A59F7"
     }
   ]
 }
