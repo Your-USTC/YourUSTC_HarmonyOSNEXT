@@ -1,7 +1,7 @@
 
 import { preferences } from '@kit.ArkData';
-import { GridData, eachGridNum, totalGridNum } from '../constants/GridListDataSources';
-import { gIndex_to_name } from '../constants/stringForGrid';
+import { GridData, eachGridNum, totalGridNum, index_to_pic } from '../constants/GridListDataSources';
+import { LINK } from '../constants/Links'
 
 export let mostUsedFunc: GridData = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
 export let order: Array<[string, number]> = [];
@@ -18,7 +18,7 @@ export function setFunc(curContext: Context | undefined, toClear: boolean = fals
   maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
   let maxCount: number = 0;
   for (let singleFunc of order) {
-    let index_to_name = gIndex_to_name.get(singleFunc[0]);
+    let index_to_name = LINK.get(singleFunc[0])?.title;
     if (index_to_name === undefined) {
       continue;
     }
@@ -74,4 +74,21 @@ export function resetFunc(curContext: Context | undefined): void { // 重置"最
   mostUsedPre.putSync('maxRecord', maxRecord);
   mostUsedPre.flush();
   setFunc(curContext, true);
+}
+
+
+// 最近使用部分映射
+export function gIndex_to_pic(gridIndex: number, index: number): ResourceStr {
+  if (gridIndex == -1){
+    if (order.length <= index)
+      return $r('app.media.default_function_icon');
+    let preName: string = order[index][0];
+    gridIndex = Number(preName.split('.')[0]);
+    index = Number(preName.split('.')[1]);
+  }
+  let result = index_to_pic.get(gridIndex.toString() + '.' + index.toString());
+  if (result == undefined)
+    return $r('app.media.default_function_icon');
+  else
+    return result;
 }

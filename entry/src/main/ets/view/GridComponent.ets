@@ -2,7 +2,6 @@
 import { GridData } from '../constants/GridListDataSources';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
-import { gIndex_to_pic } from '../constants/stringForGrid';
 import * as tools from '../utils/tools';
 
 @Component
@@ -28,7 +27,7 @@ export default struct GridComponent {
         ForEach(this.gridData.gridItemList, (item: string, index: number) => { // index: 当前GridComponent的索引
           GridItem() {
             Column() {
-              Image(gIndex_to_pic(this.gridIndex, index))
+              Image(FunctionOrder.gIndex_to_pic(this.gridIndex, index))
                 .width('40vp')
                 .height('40vp')
               Text(item)

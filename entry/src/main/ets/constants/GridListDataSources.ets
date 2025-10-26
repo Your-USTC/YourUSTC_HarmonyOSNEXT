@@ -14,6 +14,7 @@ export class GridData {
 export const eachGridNum: number[] = [16, 15, 10, 11];
 export const totalGridNum: number = 4
 
+// 最下面功能图标也要修改！！
 // ListDataConstants.ets也要修改！
 export const
   otherGridDataList: GridData[] = [
@@ -83,3 +84,7 @@ export const
         $r('app.string.XiaoYuanBanChe'),
       ])
   ];
+
+export let index_to_pic = new Map<string, ResourceStr>()
+  .set('0.0', $r('app.media.tab0_selected')) // 占位符
+  .set('0.1', $r('app.media.tab0_unselected'))

@@ -102,7 +102,6 @@ struct Webview {
         .javaScriptAccess(true)
         .width('100%')
         .height('100%')
-        .onControllerAttached(() => {this.webviewController.setCustomUserAgent(MOBILE_UA);})
         .onPageBegin(() => {
           this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-t');
         })
