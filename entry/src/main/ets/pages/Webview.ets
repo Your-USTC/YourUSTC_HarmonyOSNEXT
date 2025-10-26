@@ -3,6 +3,8 @@ import { webview } from '@kit.ArkWeb'
 import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
 
+const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
+
 @Entry
 @Component
 struct Webview {
@@ -19,6 +21,10 @@ struct Webview {
       this.title = params.title ?? '';
       this.url = params.url ?? '';
     }
+    if (desktopUrl.includes(this.url))
+      this.webviewController.setCustomUserAgent(DESKTOP_UA);
+    else
+      this.webviewController.setCustomUserAgent(MOBILE_UA);
   }
 
   build() {
