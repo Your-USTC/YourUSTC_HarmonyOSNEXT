@@ -10,15 +10,19 @@
     },
     {
       "name": "XueXi",
-      "value": "学习"
+      "value": "课程与学习"
     },
     {
       "name": "GongJu",
-      "value": "工具"
+      "value": "服务与工具"
+    },
+    {
+      "name": "XinXiJiShu",
+      "value": "信息技术"
     },
     {
       "name": "XueXiao",
-      "value": "学校"
+      "value": "学校与管理"
     },
     {
       "name": "JiaoWuXiTong",
@@ -53,16 +57,140 @@
       "value": "图书馆"
     },
     {
-      "name": "ZhengBanRuanJian",
-      "value": "正版软件"
-    },
-    {
       "name": "XueXiKongJian",
       "value": "学习空间"
     },
     {
+      "name": "GuoJiJiaoLiu",
+      "value": "国际交流"
+    },
+    {
+      "name": "DaWuShiYanYuYue",
+      "value": "大物实验预约"
+    },
+    {
+      "name": "DaWuShiYanGongJu",
+      "value": "大物实验工具"
+    },
+    {
+      "name": "ZhuJiaoXiTong",
+      "value": "助教系统"
+    },
+    {
+      "name": "PingKeSheQu",
+      "value": "评课社区"
+    },
+    {
+      "name": "WolframAlpha",
+      "value": "Wolfram|Alpha"
+    },
+    {
+      "name": "KeChengZiLiao",
+      "value": "课程资料"
+    },
+    {
+      "name": "QingChunKeDa",
+      "value": "青春科大"
+    },
+    {
+      "name": "YingXinWang",
+      "value": "迎新网"
+    },
+    {
+      "name": "KeDaYouXiang",
+      "value": "科大邮箱"
+    },
+    {
+      "name": "LiFanXiaoDengJi",
+      "value": "离返校登记"
+    },
+    {
+      "name": "ZiZhuDaYin",
+      "value": "自助打印"
+    },
+    {
+      "name": "Nan7JiShi",
+      "value": "南七集市"
+    },
+    {
+      "name": "Nan7LunTan",
+      "value": "南七论坛"
+    },
+    {
+      "name": "YiKaTong",
+      "value": "一卡通"
+    },
+    {
       "name": "WangLuoTong",
       "value": "网络通"
+    },
+    {
+      "name": "XiaoYiYuan",
+      "value": "校医院"
+    },
+    {
+      "name": "XueShengYiBao",
+      "value": "学生医保"
+    },
+    {
+      "name": "ZhuSuFuWu",
+      "value": "住宿服务"
+    },
+    {
+      "name": "KeDaWangPan",
+      "value": "科大云盘"
+    },
+    {
+      "name": "USTCDaoHang",
+      "value": "USTC导航"
+    },
+    {
+      "name": "ZhiHuiMenHu",
+      "value": "智慧门户"
+    },
+    {
+      "name": "WangLuoZhuCeZhongXin",
+      "value": "网络注册中心"
+    },
+    {
+      "name": "ZhengBanRuanJian",
+      "value": "正版软件"
+    },
+    {
+      "name": "KaiYuanJingXiang",
+      "value": "开源镜像"
+    },
+    {
+      "name": "KeDaVPN",
+      "value": "科大VPN"
+    },
+    {
+      "name": "LUGGitlab",
+      "value": "LUG Gitlab"
+    },
+    {
+      "name": "WangLuoQiDong",
+      "value": "网络启动文档"
+    },
+    {
+      "name": "ChaoSuanZhongXinGitlab",
+      "value": "超算中心GitLab"
+    },
+    {
+      "name": "KeDaOJ",
+      "value": "科大OJ"
+    },
+    {
+      "name": "VLABShiYanZhongXin",
+      "value": "VLAB实验中心"
+    },
+    {
+      "name": "JiYuanKeYanPingTai",
+      "value": "计院科研平台"
+    },
+    {
+      "name": "WenDangXieZuo",
+      "value": "文档协作"
     },
     {
       "name": "TongYiShenFenRenZheng",

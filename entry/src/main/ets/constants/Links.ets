@@ -9,141 +9,62 @@ export let LINK = new Map<string, Link>()
   .set("0.1", { title: $r('app.string.KeChengBiao'), url: 'https://jw.ustc.edu.cn/for-std/course-table'})
   .set("0.2", { title: $r('app.string.KaoShiXinXi'), url: 'https://jw.ustc.edu.cn/for-std/exam-arrange'})
   .set("0.3", { title: $r('app.string.WoDeChengJi'), url: 'https://jw.ustc.edu.cn/for-std/grade/sheet'})
+  .set("0.4", { title: $r('app.string.bbJiaoXuePingTai'), url: 'https://www.bb.ustc.edu.cn'})
+  .set("0.5", { title: $r('app.string.HanHaiJiaoXueWang'), url: 'http://course.ustc.edu.cn/portal'})
+  .set("0.6", { title: $r('app.string.JiaoShiChaXun'), url: 'https://catalog.ustc.edu.cn/query/lesson'})
+  .set("0.7", { title: $r('app.string.TuShuGuan'), url: 'https://lib.ustc.edu.cn'})
   .set("0.8", { title: $r('app.string.XueXiKongJian'), url: $rawfile('RoomBookingLinks.html')})
+  .set("0.9", { title: $r('app.string.GuoJiJiaoLiu'), url: 'https://vista.ustc.edu.cn'})
+  .set("0.10", { title: $r('app.string.DaWuShiYanYuYue'), url: 'https://pems.ustc.edu.cn'})
+  .set("0.11", { title: $r('app.string.ZhuJiaoXiTong'), url: 'https://tam.cmet.ustc.edu.cn'})
+  .set("0.12", { title: $r('app.string.PingKeSheQu'), url: 'https://icourse.club'})
+  .set("0.13", { title: $r('app.string.WolframAlpha'), url: 'https://wolframalpha.com'})
+  .set("0.14", { title: $r('app.string.QingChunKeDa'), url: 'https://young.ustc.edu.cn/login/sc-wisdom-group-learning/myproject/SignUp'})
+  .set("1.0", { title: $r('app.string.YingXinWang'), url: 'http://welcome.ustc.edu.cn'})
+  .set("1.1", { title: $r('app.string.KeDaYouXiang'), url: 'http://mail.ustc.edu.cn'})
+  .set("1.2", { title: $r('app.string.ZiZhuDaYin'), url: 'http://ic.lib.ustc.edu.cn'})
+  .set("1.3", { title: $r('app.string.Nan7JiShi'), url: 'https://nan7market.com'})
+  .set("1.4", { title: $r('app.string.Nan7LunTan'), url: 'https://ustcforum.com'})
+  .set("1.5", { title: $r('app.string.WangLuoTong'), url: 'http://wlt.ustc.edu.cn'})
+  .set("1.6", { title: $r('app.string.YiKaTong'), url: 'https://ecard.ustc.edu.cn'})
+  .set("1.7", { title: $r('app.string.XiaoYiYuan'), url: 'https://hospital.ustc.edu.cn/main.htm'})
+  .set("1.8", { title: $r('app.string.XueShengYiBao'), url: 'https://xsybxt.ustc.edu.cn'})
+  .set("1.9", { title: $r('app.string.ZhuSuFuWu'), url: 'https://zhusu.ustc.edu.cn'})
+  .set("1.10", { title: $r('app.string.KeDaWangPan'), url: 'https://pan.ustc.edu.cn'})
+  .set("1.11", { title: $r('app.string.USTCDaoHang'), url: 'https://ustc.life'})
+  .set("1.12", { title: $r('app.string.ZhiHuiMenHu'), url: 'http://i.ustc.edu.cn'})
+  .set("1.13", { title: $r('app.string.WangLuoZhuCeZhongXin'), url: 'https://zczx.ustc.edu.cn'})
+  .set("2.0", { title: $r('app.string.KeDaVPN'), url: 'https://wvpn.ustc.edu.cn'})
+  .set("2.1", { title: $r('app.string.WangLuoQiDong'), url: 'https://pxe.ustc.edu.cn'})
+  .set("2.2", { title: $r('app.string.ZhengBanRuanJian'), url: 'https://software.ustc.edu.cn'})
+  .set("2.3", { title: $r('app.string.KaiYuanJingXiang'), url: 'https://mirrors.ustc.edu.cn'})
+  .set("2.4", { title: $r('app.string.LUGGitlab'), url: 'https://git.lug.ustc.edu.cn'})
+  .set("2.5", { title: $r('app.string.ChaoSuanZhongXinGitlab'), url: 'https://git.ustc.edu.cn'})
+  .set("2.6", { title: $r('app.string.KeDaOJ'), url: 'https://oj.ustc.edu.cn'})
+  .set("2.7", { title: $r('app.string.VLABShiYanZhongXin'), url: 'https://vlab.ustc.edu.cn'})
+  .set("2.8", { title: $r('app.string.JiYuanKeYanPingTai'), url: 'https://cscourse.ustc.edu.cn'})
+  .set("2.9", { title: $r('app.string.WenDangXieZuo'), url: 'https://latex.ustc.edu.cn'})
+  .set("3.0", { title: $r('app.string.TongYiShenFenRenZheng'), url: 'https://passport.ustc.edu.cn'})
+  .set("3.1", { title: $r('app.string.LiFanXiaoDengJi'), url: 'https://lfxdj.ustc.edu.cn'})
+
 
 /*
     收集的链接:
     {
-      "name": "Homepage_url",
-      "value": "https://ustc.edu.cn"
-    },
-    {
-      "name": "EducationalAdministrationSystem_url",
-      "value": "https://jw.ustc.edu.cn"
-    },
-    {
-      "name": "Mail_url",
-      "value": "https://mail.ustc.edu.cn"
-    },
-    {
-      "name": "CourseEvaluationCommunity_url",
-      "value": "https://icourse.club"
-    },
-    {
-      "name": "InternetServiceCenter_url",
-      "value": "https://zczx.ustc.edu.cn"
-    },
-    {
-      "name": "Library_url",
-      "value": "https://lib.ustc.edu.cn"
-    },
-    {
-      "name": "LearningSpaceReservation_url",
-      "value": "http://ic.lib.ustc.edu.cn"
-    },
-    {
-      "name": "SelfServicePrinting_url",
-      "value": "http://ic.lib.ustc.edu.cn"
-    },
-    {
-      "name": "UnifiedAuthenticationSystem_url",
-      "value": "https://passport.ustc.edu.cn"
-    },
-    {
-      "name": "AuthorizedSoftware_url",
-      "value": "http://ms.ustc.edu.cn"
-    },
-    {
-      "name": "OpenSourceSoftwareMirror_url",
-      "value": "https://mirrors.ustc.edu.cn"
-    },
-    {
-      "name": "LUGGitLab_url",
-      "value": "https://git.lug.ustc.edu.cn"
-    },
-    {
-      "name": "SuperComputingCenterGitLab_url",
-      "value": "https://git.ustc.edu.cn"
-    },
-    {
-      "name": "USTCNavigation_url",
-      "value": "https://ustc.life"
-    },
-    {
-      "name": "InformationPortal_url",
-      "value": "https://i.ustc.edu.cn"
-    },
-    {
       "name": "EducationalAdministrationCenter_url",
       "value": "https://teach.ustc.edu.cn"
-    },
-    {
-      "name": "OnlineJudge_url",
-      "value": "https://oj.ustc.edu.cn"
-    },
-    {
-      "name": "UniversityPhysicsExperiments_url",
-      "value": "http://pems.ustc.edu.cn"
-    },
-    {
-      "name": "MoocsPlatform_url",
-      "value": "http://moocs.ustc.edu.cn"
-    },
-    {
-      "name": "EcardManagementSystem_url",
-      "value": "https://ecard.ustc.edu.cn"
-    },
-    {
-      "name": "InternetBootingService_url",
-      "value": "http://pxe.ustc.edu.cn"
     },
     {
       "name": "AdmissionsOffice_url",
       "value": "https://zsb.ustc.edu.cn"
     },
     {
-      "name": "Orientation_url",
-      "value": "https://welcome.ustc.edu.cn"
-    },
-    {
       "name": "WokeStudyingSociety_url",
       "value": "https://ot.ustc.edu.cn"
     },
     {
-      "name": "WebVPN_url",
-      "value": "https://wvpn.ustc.edu.cn"
-    },
-    {
       "name": "AdmissionRain_url",
       "value": "https://adrain.ustclug.org"
-    },
-    {
-      "name": "NanqiMarket_url",
-      "value": "https://nan7market.com"
-    },
-    {
-      "name": "NanqiForum_url",
-      "value": "https://ustcforum.com"
-    },
-    {
-      "name": "EducationalAdministrationOpenQuery_url",
-      "value": "https://catalog.ustc.edu.cn/query/lesson"
-    },
-    {
-      "name": "VLABExperimentsCenter_url",
-      "value": "https://vlab.ustc.edu.cn"
-    },
-    {
-      "name": "SecondaryLessonsSignUp_url",
-      "value": "https://young.ustc.edu.cn/login/sc-wisdom-group-learning/myproject/SignUp"
-    },
-    {
-      "name": "WolframAlpha_url",
-      "value": "https://wolframalpha.com"
-    },
-    {
-      "name": "LeaveReturnSchoolRegistration_url",
-      "value": "https://lfxdj.ustc.edu.cn"
     },
     {
       "name": "SecretaryInformation_url",
@@ -174,27 +95,7 @@ export let LINK = new Map<string, Link>()
       "value": "https://weixine.ustc.edu.cn/ustcqy/mobile/busTimetable_gov"
     },
     {
-      "name": "StudentMedicalCareSystem_url",
-      "value": "https://xsybxt.ustc.edu.cn"
-    },
-    {
-      "name": "HospitalOfUSTC_url",
-      "value": "https://hospital.ustc.edu.cn/main.htm"
-    },
-    {
-      "name": "ClassMaterials_url",
-      "value": "https://share.feixu.site"
-    },
-    {
-      "name": "AssistantManagementSystem_url",
-      "value": "https://tam.cmet.ustc.edu.cn"
-    },
-    {
       "name": "PersonalCenter_url",
       "value": "https://id.ustc.edu.cn"
-    },
-    {
-      "name": "DormitoryService_url",
-      "value": "https://zhusu.ustc.edu.cn"
     }
 */
