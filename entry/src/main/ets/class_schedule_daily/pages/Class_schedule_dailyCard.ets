@@ -15,8 +15,8 @@ function getCardList(): number[] {
 struct Class_schedule_dailyCard {
   readonly cardList: number[] = getCardList();
   @State cardListParameter: CardListParameter = new CardListParameter($r('sys.color.ohos_id_color_background'),
-    $r('app.string.card_list_title'), '', ImageSize.Auto, $r('app.media.startIcon'), true,
-    $r('sys.color.ohos_id_color_background'), true, this.cardList.length, $r('sys.color.ohos_id_color_emphasize'),
+    $r('app.string.card_list_title'), '', ImageSize.Auto, $r('app.media.icon_round'), true,
+    $r('sys.color.ohos_id_color_background'), true, this.cardList.length, $r('sys.color.ohos_id_color_emphasize'),    // TODO: 浅色模式显示有问题，深色没事
     $r('app.color.list_item_count_background'), '', true, $r('app.media.bottom_icon'));
   /*
    * The action type.
