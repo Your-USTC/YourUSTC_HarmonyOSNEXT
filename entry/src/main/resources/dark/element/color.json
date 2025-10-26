@@ -17,12 +17,12 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "complementary_normal_text",
-      "value": "#000000"
-    },
-    {
       "name": "active_text",
       "value": "#3388ff"
+    },
+    {
+      "name": "list_item_count_background",
+      "value": "#29D9EAFF"
     }
   ]
 }
