@@ -11,7 +11,7 @@ export class GridData {
 
 // 每个grid所含元素个数&grid总数，添加元素时需要更改
 // 不使用.length因为节省时间
-export const eachGridNum: number[] = [15, 14, 10, 2];
+export const eachGridNum: number[] = [16, 15, 10, 11];
 export const totalGridNum: number = 4
 
 // ListDataConstants.ets也要修改！
@@ -25,6 +25,7 @@ export const
         $r('app.string.WoDeChengJi'),
         $r('app.string.bbJiaoXuePingTai'),
         $r('app.string.HanHaiJiaoXueWang'),
+        $r('app.string.MuKe'),
         $r('app.string.JiaoShiChaXun'),
         $r('app.string.TuShuGuan'),
         $r('app.string.XueXiKongJian'),
@@ -33,7 +34,7 @@ export const
         $r('app.string.ZhuJiaoXiTong'),
         $r('app.string.PingKeSheQu'),
         $r('app.string.WolframAlpha'),
-        $r('app.string.QingChunKeDa'),
+        $r('app.string.WoKeXueShe')
       ]),
     new GridData($r('app.string.GongJu'),
       [
@@ -51,6 +52,7 @@ export const
         $r('app.string.USTCDaoHang'),
         $r('app.string.ZhiHuiMenHu'),
         $r('app.string.WangLuoZhuCeZhongXin'),
+        $r('app.string.QingChunKeDa'),
       ]),
     new GridData($r('app.string.XinXiJiShu'),
       [
@@ -70,5 +72,14 @@ export const
       [
         $r('app.string.TongYiShenFenRenZheng'),
         $r('app.string.LiFanXiaoDengJi'),
+        $r('app.string.QinYouRuXiao'),
+        $r('app.string.JiaoWuChu'),
+        $r('app.string.YuanXiZhuanYe'),
+        $r('app.string.LianXiJiaoMi'),
+        $r('app.string.XueGongYiTiHua'),
+        $r('app.string.XiaoYuanDiTu'),
+        $r('app.string.QuanJingDiTu'),
+        $r('app.string.XiaoYuanBaiKe'),
+        $r('app.string.XiaoYuanBanChe'),
       ])
   ];
