@@ -13,6 +13,7 @@ struct Schedule {
   build() {
 
     Column() {
+        // Header
         Row() {
           Image($r('app.media.close'))
             .padding({left: 12})
@@ -46,21 +47,17 @@ struct Schedule {
         .height(48)
         .backgroundColor($r('app.color.shaded_background'))
 
+        // 课表
         Grid() {
-          GridItem() {
-            Column() {
-              Text('本地课表\n(命名为Schedule.ets以与TimeTable区分)')
-                .fontSize(30)
-                .fontWeight(FontWeight.Bold)
-                .textAlign(TextAlign.Center)
-            }
-            .justifyContent(FlexAlign.Center)
-          }
-          .backgroundColor($r('app.color.grid_background'))
+          GridItem()
+            .margin(2)
+            .backgroundColor($r('app.color.grid_background'))
+
         }
-        .columnsTemplate('1fr')
-        .rowsTemplate('1fr')
-        .padding({ top: 15, bottom: 35, left: 15, right: 15 })
+        .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')
+        .rowsTemplate('1fr 2fr 2fr 1fr 2fr 3fr 3fr')
+        .margin({ bottom: 20 })
+        .padding(5)
     }
     .height('100%')
     .width('100%')
