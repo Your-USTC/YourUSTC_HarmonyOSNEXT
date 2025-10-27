@@ -3,6 +3,8 @@ import { common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit';
+import * as Schedule from './Schedule';
+import * as tools from '../utils/tools';
 import { classAttribute } from './Schedule'
 import * as Links from '../constants/Links'
 import { CheckInTools } from '../utils/CheckIn'
@@ -397,7 +399,7 @@ struct Index {
    * 页面: 设置
    */
   @Builder
-  pageYours() {
+  pageSettings() {
     Column() {
       List({ space: 12 }) {
         ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
@@ -411,11 +413,8 @@ struct Index {
                 switch (cell.id) { // 根据 cell.id 区分设置项
                   case 1:
                     // 选择最近使用
-                    let maxRecordList: string[] = [];
-                    for (let i = 1; i <= 20; i++) // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
-                      maxRecordList.push(i.toString());
                     this.getUIContext().showTextPickerDialog({
-                      range: maxRecordList,
+                      range: tools.getContArray([[1, 20]], true) as string[], // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
                       defaultPickerItemHeight: 36,
                       canLoop: false,
                       onAccept: (value: TextPickerResult) => {
@@ -452,6 +451,9 @@ struct Index {
                     } catch (error) {
                       console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                     }
+                    const date2 = new Date();
+                    console.log(`当前时间：${date2.getTime().toString()}`);
+                    console.log(`${date2.getTime() + 60 * 60 * 1000 * 3}`);
                     break;
                   case 3:
                     // （调试）课程表
@@ -463,24 +465,51 @@ struct Index {
                     })
                     break;
                   case 4:
+                    // 上课提醒，后续需要加一个循环！！
                     let eventId : number | undefined = undefined;
-                    let classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', weekOfTerm: [2,3,4,6,7,8,9,10,11,12,13,14,15,16], timeSpan: [6,7], location: '3A212', id: 'CS1003.H2'};
-                    // 获取课程详情
-                    // .....待更新
-                    // 获取课程详情
-                    const date = new Date();
+                    // 获取课程详情，需要改为使用preference！！
+                    let classInfo: classAttribute = {
+                      name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+                      weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1
+                    };
+                    const termBeginDate: string = '2025-09-07' + ' 00:00';
+                    // 确保数组有序
+                    classInfo.weekOfTerm.sort((a, b) => a - b);
+                    classInfo.timeSpan.sort((a, b) => a - b);
+                    // 检测是否已写入过
+                    // 检测是否已写入过
+                    // 格式化课程信息
+                    let startTime: number = tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]);
+                    let endTime: number = tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]);
+                    console.log(`${startTime}**${endTime}`);
+                    let excludeDates: number[] = [];
+                    for (let i = 1; i < classInfo.weekOfTerm.length; i++){
+                      for (let j = classInfo.weekOfTerm[i - 1] + 1; j < classInfo.weekOfTerm[i]; j++){
+                        excludeDates.push(tools.getClassTimestamp(termBeginDate, j, classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]));
+                      }
+                    }
+                    console.log(`${excludeDates}`);
+                    // 将课程写入日历
                     const event: calendarManager.Event = {
                       title: `${classInfo.name} ${classInfo.location}`, // 日程标题
                       type: calendarManager.EventType.NORMAL, // 日程类型
-                      startTime: date.getTime(), // 日程开始时间
-                      endTime: date.getTime() + 60 * 60 * 1000, // 日程结束时间
-                      reminderTime: [10], // 距开始时间提前10分钟提醒
+                      // 日程开始时间
+                      startTime: tools.dateTimeToTimestamp(termBeginDate) //学期开始时间
+                        + (classInfo.weekOfTerm[0] - 1) * 604800000 // 第几周
+                        + classInfo.dayOfWeek * 86400000 // 第几天，不-1是因为教务系统中一周从周日开始
+                        + Schedule.commonClassStamp[classInfo.timeSpan[0]][0], // 第几节课开始
+                      // 日程结束时间
+                      endTime: tools.dateTimeToTimestamp(termBeginDate) //学期开始时间
+                        + (classInfo.weekOfTerm[0] - 1) * 604800000 // 第几周
+                        + classInfo.dayOfWeek * 86400000 // 第几天，不-1是因为教务系统中一周从周日开始
+                        + Schedule.commonClassStamp[classInfo.timeSpan[1]][1], // 第几节课结束
+                      reminderTime: [60], // 距开始时间提前60分钟提醒
                       recurrenceRule: { // 日程重复规则
                         recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
-                        count: 100, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                        count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
                         interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
-                        expire: date.getTime() + 60 * 60 * 1000 * 3, // 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
-                        excludedDates: [date.getTime() + 60 * 60 * 1000 * 2] // 日程排除日期，将该日期从重复日程中排除掉
+                        // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+                        excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
                       }
                     };
                     if (calendar != undefined) {
@@ -494,14 +523,13 @@ struct Index {
               })
             })
           }
-          .backgroundColor($r('app.color.grid_background'))
           .divider({
             strokeWidth: '1vp',
             color: '#0d000000',
             startMargin: '42vp',
             endMargin: '24vp'
           })
-          .backgroundColor($r('app.color.normal_background'))
+          .backgroundColor($r('app.color.grid_background'))
           .borderRadius('16vp')
 
         }, (item: ItemData) => JSON.stringify(item))
@@ -564,7 +592,7 @@ struct Index {
       /**
        * Tab: 设置
        */
-      TabContent() { this.pageYours() }
+      TabContent() { this.pageSettings() }
       .padding({ left: 12, right: 12 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
