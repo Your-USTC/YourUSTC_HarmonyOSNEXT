@@ -464,7 +464,7 @@ struct Index {
                     break;
                   case 4:
                     let eventId : number | undefined = undefined;
-                    let classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2'};
+                    let classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', weekOfTerm: [2,3,4,6,7,8,9,10,11,12,13,14,15,16], timeSpan: [6,7], location: '3A212', id: 'CS1003.H2'};
                     // 获取课程详情
                     // .....待更新
                     // 获取课程详情
