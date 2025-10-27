@@ -86,7 +86,7 @@ export default struct GridComponent {
       .padding('12vp')
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
-      .columnsTemplate('repeat(auto-fit, 75)')
+      .columnsTemplate('repeat(auto-fit, 70)')
       .backgroundColor($r('app.color.grid_background'))
 
       if (this.isLastItem) {

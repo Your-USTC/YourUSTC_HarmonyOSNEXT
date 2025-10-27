@@ -104,6 +104,7 @@ struct Index {
     } catch (error) {
       console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
     }
+    Schedule.initSchedulePre(this.getUIContext().getHostContext());
     const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup(this.pref);
     this.checkInTotal = GeneratedDestructArray_1[0];
     this.checkInConsecutive = GeneratedDestructArray_1[1];
@@ -417,7 +418,10 @@ struct Index {
                 switch (cell.id) { // 根据 cell.id 区分设置项
                   case 1:
                     // 选择最近使用
+                    let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'FunctionOrderNum' });
+                    let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
                     this.getUIContext().showTextPickerDialog({
+                      selected: selected1,
                       range: tools.getContArray([[1, 20]], true) as string[], // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
                       defaultPickerItemHeight: 36,
                       canLoop: false,
@@ -430,9 +434,7 @@ struct Index {
                         } catch (error) {
                           console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
                         }
-                        let options: preferences.Options = { name: 'FunctionOrderNum' };
                         try {
-                          let maxRecordPre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), options);
                           maxRecordPre.putSync('maxRecord', Number(value.value));
                           maxRecordPre.flush().catch((error: Error) => {
                             console.error(`Flush ERROR: [${error.name}] ${error.message}`);
@@ -457,24 +459,48 @@ struct Index {
                     }
                     break;
                   case 3:
-                    // （调试）课程表
-                    this.getUIContext().getRouter().pushUrl({
-                      url: 'pages/Webview',
-                      params: Links.LINK.get("0.1")
-                    }).catch((err: Error) => {
-                      console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                    let selected3: number = 0;
+                    switch (Schedule.remindBefore) {
+                      case 10: selected3 = 0; break;
+                      case 20: selected3 = 1; break;
+                      case 30: selected3 = 2; break;
+                      case 45: selected3 = 3; break;
+                      case 60: selected3 = 4; break;
+                      case 90: selected3 = 5; break;
+                      case 120: selected3 = 6; break;
+                    }
+                    // 在上课几分钟前提醒
+                    this.getUIContext().showTextPickerDialog({
+                      selected: selected3,
+                      range: ['上课前 10 分钟', '上课前 20 分钟', "上课前 30 分钟", "上课前 45 分钟", "上课前 1 小时", "上课前 90 分钟", "上课前 2 小时"],
+                      defaultPickerItemHeight: 36,
+                      canLoop: false,
+                      onAccept: (value: TextPickerResult) => {
+                        try {
+                          this.getUIContext().getPromptAction().showToast({
+                            message: `已更改为 ${value.value}`,
+                            duration: 200
+                          });
+                        } catch (error) {
+                          console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
+                        }
+                        let valueData: number[] = [10, 20, 30, 45, 60, 90, 120]
+                        Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
+                        console.log(Schedule.remindBefore.toString());
+                      }
                     })
                     break;
                   case 4:
+                    console.log("clicked setting 4!!");
                     // 上课提醒，后续需要加一个循环！！
                     let eventId : number | undefined = undefined;
                     // 获取课程详情，需要改为使用preference！！
+                    let schedulePre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'ScheduleInfo' });
                     let classInfo: classAttribute = {
                       name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
                       weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1
                     };
                     const termBeginDate: string = '2025-09-07' + ' 00:00';
-                    let remindBefore = 60;
                     // 确保数组有序
                     classInfo.weekOfTerm.sort((a, b) => a - b);
                     classInfo.timeSpan.sort((a, b) => a - b);
@@ -487,14 +513,13 @@ struct Index {
                         excludeDates.push(tools.getClassTimestamp(termBeginDate, j, classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]));
                       }
                     }
-                    console.log(`${excludeDates}`);
                     // 将课程写入日历
                     const event: calendarManager.Event = {
                       title: `${classInfo.name} ${classInfo.location}`, // 日程标题
                       type: calendarManager.EventType.NORMAL, // 日程类型
                       startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
                       endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
-                      reminderTime: [remindBefore], // 距开始时间提前remindBefore分钟提醒
+                      reminderTime: [Schedule.remindBefore], // 距开始时间提前remindBefore分钟提醒
                       recurrenceRule: { // 日程重复规则
                         recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
                         count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。

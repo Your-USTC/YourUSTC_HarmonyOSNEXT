@@ -54,7 +54,7 @@ export class SettingsData {
         new ItemData(2, $r('app.string.ClearFunctionHistory'), $r('app.media.clean')),
       ],
       [
-        new ItemData(3, $r('app.string.KeChengBiao'), $r('app.media.calendar_badge_clock')),
+        new ItemData(3, $r('app.string.remind_before_class'), $r('app.media.calendar_badge_clock')),
         new ItemData(4, $r('app.string.add_class_notification'), $r('app.media.alarm_fill')),
       ],
       [

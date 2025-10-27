@@ -5,8 +5,6 @@
  import { preferences } from '@kit.ArkData';
 
  * step 1: 初始化 preferences
- let schedulePre: preferences.Preferences | null = null;
- schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
 
  * step 2: 删除原有的信息
  preferences.deletePreferences(curContext, { name: 'ScheduleInfo' })
@@ -21,6 +19,7 @@
  let data: 类型 = schedulePre.getSync(名称, 默认值) as 类型;
  * */
 
+import { preferences } from '@kit.ArkData';
 // 课程信息类型
 export interface classAttribute {
   name: string,
@@ -36,6 +35,20 @@ export interface obtainedData {
   timeTable: string;
   startTime: number;
 }
+
+let schedulePre: preferences.Preferences | null = null;
+export let remindBefore: number = 30;
+
+export function initSchedulePre(curContext: Context | undefined) {
+  schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
+  remindBefore = schedulePre.getSync('remindBefore', 30) as number;
+}
+export function setRemindBefore(minute: number) {
+  remindBefore = minute;
+  schedulePre?.putSync('remindBefore', minute);
+  schedulePre?.flush();
+}
+
 // 第几节课 -> 上课时间
 export const commonClassTime: string[][] = [ ['07:21', '11:45'],                                      // 排除[0]
   ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'], // 上午
@@ -47,7 +60,7 @@ export const commonClassStamp: number[][]= [
   [28200000, 30900000], [31200000, 33900000], [35100000, 37800000], [38100000, 40800000], [41000000, 43500000],
   [50400000, 53100000], [53400000, 56100000], [57300000, 60000000], [60300000, 63000000], [63300000, 66000000],
   [70200000, 72900000], [73200000, 75900000], [76200000, 78900000]
-]
+];
 
 @Entry
 @Component

@@ -115,6 +115,10 @@
       "value": "设置「最近使用」中的显示数量"
     },
     {
+      "name": "remind_before_class",
+      "value": "设置上课提醒时间"
+    },
+    {
       "name": "add_class_notification",
       "value": "向日历写入上课提醒"
     },
