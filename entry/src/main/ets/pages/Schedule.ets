@@ -31,6 +31,10 @@ export interface classAttribute {
   id: string
 }
 
+export interface obtainedData {
+  timeTable: string;
+  startTime: number;
+}
 // 第几节课 -> 上课时间
 export const commonClassTime: string[][] = [ ['07:21', '11:45'],                                      // 排除[0]
   ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'], // 上午
@@ -49,6 +53,20 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
+  @State timeTable: string = '';
+  @State termStart: number = 0;
+  onPageShow(): void {
+    try {
+      const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
+      this.timeTable = routerParams.timeTable;
+      this.termStart = routerParams.startTime;
+      console.info(`从页面路由获取了课表：${this.timeTable}`);
+      console.info(`从页面路由获取了开学时间：${this.termStart}`);
+    } catch (err) {
+      console.info("没有从页面路由获取课表和开学时间，需要从首选项读取")
+      /* 从首选项中获取timeTable和termStart */
+    }
+  }
 
   build() {
 
