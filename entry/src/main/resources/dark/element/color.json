@@ -1,6 +1,10 @@
 {
   "color": [
     {
+      "name": "fade",
+      "value": "#FF000000"
+    },
+    {
       "name": "normal_background",
       "value": "#000000"
     },

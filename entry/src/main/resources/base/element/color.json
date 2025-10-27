@@ -5,6 +5,10 @@
       "value": "#00000000"
     },
     {
+      "name": "fade",
+      "value": "#30000000"
+    },
+    {
       "name": "normal_background",
       "value": "#FFFFFF"
     },
