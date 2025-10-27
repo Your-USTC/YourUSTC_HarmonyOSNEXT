@@ -57,6 +57,44 @@
       "value": "在线课表"
     },
     {
+      "name": "morning",
+      "value": "上午"
+    },
+    {
+      "name": "afternoon",
+      "value": "下午"
+    },{
+      "name": "evening",
+      "value": "晚上"
+    },    {
+      "name": "monday",
+      "value": "星期一"
+    },
+    {
+      "name": "tuesday",
+      "value": "星期二"
+    },
+    {
+      "name": "wednesday",
+      "value": "星期三"
+    },
+    {
+      "name": "thursday",
+      "value": "星期四"
+    },
+    {
+      "name": "friday",
+      "value": "星期五"
+    },
+    {
+      "name": "saturday",
+      "value": "星期六"
+    },
+    {
+      "name": "sunday",
+      "value": "星期日"
+    },
+    {
       "name": "setting_toggle",
       "value": "开关"
     },
