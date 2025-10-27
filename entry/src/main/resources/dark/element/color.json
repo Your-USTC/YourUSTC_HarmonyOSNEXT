@@ -6,7 +6,7 @@
     },
     {
       "name": "normal_background",
-      "value": "#000000"
+      "value": "#202020"
     },
     {
       "name": "shaded_background",
@@ -14,7 +14,7 @@
     },
     {
       "name": "grid_background",
-      "value": "#FF001030"
+      "value": "#2B2B2B"
     },
     {
       "name": "normal_text",

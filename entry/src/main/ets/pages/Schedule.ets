@@ -1,17 +1,52 @@
+/* 写完后删除此注释
+ * 存在preference里面的信息
+ * step 0: 导入库
+ import { preferences } from '@kit.ArkData';
 
+ * step 1: 初始化 preferences
+ let schedulePre: preferences.Preferences | null = null;
+ schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
+
+ * step 2: 删除原有的信息
+ preferences.deletePreferences(curContext, { name: 'ScheduleInfo' })
+
+ * step 3: 写入数据
+ schedulePre.putSync(名称，日程详情);
+
+ * step 4: 保存数据
+ schedulePre.flush();
+
+ * step 5: 读取数据
+ let data: 类型 = schedulePre.getSync(名称, 默认值) as 类型;
+ * */
+
+// 课程信息类型
 export interface classAttribute {
   name: string,
   teacher: string,
-  weekOfTerm: number[],
-  timeSpan: number[],
+  weekOfTerm: number[], // 以枚举形式写出哪几周
+  timeSpan: number[], // 应当仅包含开始和结束是第几节课
+  dayOfWeek: number,
   location: string,
-  id: string,
+  id: string
 }
 
 export interface obtainedData {
   timeTable: string;
   startTime: number;
 }
+// 第几节课 -> 上课时间
+export const commonClassTime: string[][] = [ ['07:21', '11:45'],                                      // 排除[0]
+  ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'], // 上午
+  ['14:00', '14:45'], ['14:50', '15:35'], ['15:55', '16:40'], ['16:45', '17:30'], ['17:35', '18:20'], // 下午
+  ['19:30', '20:15'], ['20:20', '21:05'], ['21:10', '21:55']                                          // 晚上
+];
+export const commonClassStamp: number[][]= [
+  [26460000, 42300000],
+  [28200000, 30900000], [31200000, 33900000], [35100000, 37800000], [38100000, 40800000], [41000000, 43500000],
+  [50400000, 53100000], [53400000, 56100000], [57300000, 60000000], [60300000, 63000000], [63300000, 66000000],
+  [70200000, 72900000], [73200000, 75900000], [76200000, 78900000]
+]
 
 // TODO: 接受课程信息
 
