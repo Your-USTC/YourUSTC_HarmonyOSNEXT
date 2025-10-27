@@ -15,6 +15,7 @@ export default struct GridComponent {
       Row() {
         Text(this.gridData.groupName) // 功能界面各组的标题
           .fontSize('20fp')
+          .fontColor($r('app.color.normal_text'))
           .height('30vp')
           .fontWeight(FontWeight.Bold)
           .margin({ top: '16vp' })
@@ -83,10 +84,9 @@ export default struct GridComponent {
       .margin({ left: '12vp', right: '12vp', top: '8vp' })
       .borderRadius('12vp')
       .padding('12vp')
-      .height(this.getGridHeight())
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
-      .columnsTemplate('1fr 1fr 1fr 1fr')
+      .columnsTemplate('repeat(auto-fit, 75)')
       .backgroundColor($r('app.color.grid_background'))
 
       if (this.isLastItem) {
@@ -94,17 +94,5 @@ export default struct GridComponent {
           .height('100%')
       }
     }
-  }
-
-  getGridHeight(): number {
-    //Grid height to be calculated
-    let gridHeight: number = 0;
-    //Total height of grid items in each row.
-    gridHeight += Math.ceil(this.gridData.gridItemList.length / 4) * 68;
-    //Total height of the intervals between grid items.
-    gridHeight += (Math.ceil(this.gridData.gridItemList.length / 4) - 1) * 8;
-    //Top and bottom margins of the grid
-    gridHeight += 12 * 2;
-    return gridHeight;
   }
 }

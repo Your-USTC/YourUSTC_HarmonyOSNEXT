@@ -2,9 +2,10 @@
 import { common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
-import { BusinessError } from '@kit.BasicServicesKit';
-import * as Schedule from './Schedule';
-import * as tools from '../utils/tools';
+import { BusinessError } from '@kit.BasicServicesKit'
+
+import * as Schedule from './Schedule'
+import * as tools from '../utils/tools'
 import { classAttribute } from './Schedule'
 import * as Links from '../constants/Links'
 import { CheckInTools } from '../utils/CheckIn'
@@ -27,7 +28,7 @@ const calendarAccount: calendarManager.CalendarAccount = {
   displayName: "你的科大上课提醒"
 };
 // 日历配置信息：是否提醒及颜色
-const calendarConfig: calendarManager.CalendarConfig = { enableReminder: true, color: '#bcc7df' };
+const calendarConfig: calendarManager.CalendarConfig = { enableReminder: true, color: '#BCC7DF' };
 export let calendarAccess: boolean = false;
 // 创建日历账户
 calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
@@ -189,6 +190,7 @@ struct Index {
           })
         Text(item.title)
           .fontSize('16fp')
+          .fontColor($r('app.color.normal_text'))
       }
 
       if (item.others === undefined) {
@@ -220,6 +222,7 @@ struct Index {
             Text($r('app.string.daily_checkin'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.normal_text'))
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
@@ -282,6 +285,7 @@ struct Index {
             Text($r('app.string.your_schedule'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.normal_text'))
 
             Blank()
 
