@@ -17,7 +17,9 @@ struct Schedule {
   build() {
 
     Column() {
-        // Header
+        /**
+         * Header
+         */
         Row() {
           Image($r('app.media.close'))
             .padding({left: 12})
@@ -51,10 +53,12 @@ struct Schedule {
         .height(48)
         .backgroundColor($r('app.color.shaded_background'))
 
-        // 课表
+        /**
+         * 课表
+         */
         Grid() {
           /**
-           * 行: 表头
+           * 表头
            */
           GridItem({ style: GridItemStyle.NONE }) {
             Text($r('app.string.monday'))
@@ -67,7 +71,7 @@ struct Schedule {
           .columnEnd(2)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -82,7 +86,7 @@ struct Schedule {
           .columnEnd(3)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -97,7 +101,7 @@ struct Schedule {
           .columnEnd(4)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -112,7 +116,7 @@ struct Schedule {
           .columnEnd(5)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -127,7 +131,7 @@ struct Schedule {
           .columnEnd(6)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -142,7 +146,7 @@ struct Schedule {
           .columnEnd(7)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -157,13 +161,10 @@ struct Schedule {
           .columnEnd(8)
           .padding(1)
           .border({
-            width: {left: 1},
+            width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
           })
 
-          /**
-           * 行: 第一节
-           */
           GridItem({ style: GridItemStyle.NONE }) {
             Text($r('app.string.morning'))
               .fontWeight(FontWeight.Bold)
@@ -176,7 +177,7 @@ struct Schedule {
           .padding(1)
           .backgroundColor($r('app.color.grid_background'))
           .border({
-            width: { top: 1 },
+            width: { top: 1, right: 1 },
             color: $r('app.color.grid_border')
           })
 
@@ -191,10 +192,13 @@ struct Schedule {
           .columnEnd(1)
           .padding(1)
           .border({
-            width: { top: 1, left: 1 },
+            width: { top: 1, right: 1 },
             color: $r('app.color.grid_border')
           })
 
+          /**
+           * 课程示例
+           */
           GridItem({ style: GridItemStyle.PLAIN }) {
             Text('1')
               .fontWeight(FontWeight.Bold)
@@ -207,7 +211,7 @@ struct Schedule {
           .padding(1)
           .backgroundColor($r('app.color.shaded_background'))
           .border({
-            width: { top: 1, left: 1 },
+            width: 1,
             color: $r('app.color.grid_border')
           })
         }
