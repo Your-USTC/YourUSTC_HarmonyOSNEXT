@@ -2,8 +2,10 @@
 export interface classAttribute {
   name: string,
   teacher: string,
+  weekOfTerm: number[],
+  timeSpan: number[],
   location: string,
-  id: string
+  id: string,
 }
 
 @Entry
