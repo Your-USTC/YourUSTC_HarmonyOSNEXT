@@ -8,11 +8,30 @@ export interface classAttribute {
   id: string,
 }
 
+export interface obtainedData {
+  timeTable: string;
+  startTime: number;
+}
+
 // TODO: 接受课程信息
 
 @Entry
 @Component
 struct Schedule {
+  @State timeTable: string = '';
+  @State termStart: number = 0;
+  onPageShow(): void {
+    try {
+      const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
+      this.timeTable = routerParams.timeTable;
+      this.termStart = routerParams.startTime;
+      console.info(`从页面路由获取了课表：${this.timeTable}`);
+      console.info(`从页面路由获取了开学时间：${this.termStart}`);
+    } catch (err) {
+      console.info("没有从页面路由获取课表和开学时间，需要从首选项读取")
+      /* 从首选项中获取timeTable和termStart */
+    }
+  }
 
   build() {
 

@@ -2,6 +2,7 @@
 import { webview } from '@kit.ArkWeb'
 import { DESKTOP_UA, MOBILE_UA } from '../constants/UserAgent'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
+import { obtainedData } from '../pages/Schedule'
 
 const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 
@@ -10,10 +11,11 @@ const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController()
   @State isDesktop: boolean = false;
-  @State title: string = '';
-  @State url: string = '';
+  title: string = '';
+  url: string = '';
   @State isTimeTablePage: boolean = false;
   @State gotTimeTable: boolean = false;
+  obtainedData: obtainedData = {timeTable: '', startTime: 0};
 
   aboutToAppear() { // Receive parameters before loading the page
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
@@ -30,7 +32,11 @@ struct Webview {
           .padding({left: 12})
           .height(20)
           .onClick(() => {
-            this.getUIContext().getRouter().back()
+            console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
+            this.getUIContext().getRouter().back({
+              params: this.obtainedData,
+              url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+            })
           })
         Image($r('app.media.back'))
           .padding(({left: 12}))
@@ -43,7 +49,10 @@ struct Webview {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
-                    this.getUIContext().getRouter().back();
+                    this.getUIContext().getRouter().back({
+                      params: this.obtainedData,
+                      url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+                    });
                   }
                 }),
               LongPressGesture()
@@ -76,10 +85,12 @@ struct Webview {
               }
               this.gotTimeTable = true;
               console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+              this.obtainedData.timeTable = result;
             });
             this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
               if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
               console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+              this.obtainedData.startTime = Number(result);
             });
           })
         Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))
@@ -128,10 +139,12 @@ struct Webview {
                 }
                 this.gotTimeTable = true;
                 console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+                this.obtainedData.timeTable = result;
               });
               this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                 if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
                 console.info(`学期开始的UNIX时间戳是${result}mm`);
+                this.obtainedData.startTime = Number(result);
               });
             }, 1000);
           }
