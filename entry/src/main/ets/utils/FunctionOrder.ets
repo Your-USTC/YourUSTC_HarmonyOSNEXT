@@ -6,15 +6,18 @@ import { LINK } from '../constants/Links'
 export let mostUsedFunc: GridData = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
 export let order: Array<[string, number]> = [];
 let maxRecord: number = 8;
+let mostUsedPre: preferences.Preferences | null = null;
+const options: preferences.Options = { name: 'FunctionOrder' };
 
 export function setFunc(curContext: Context | undefined, toClear: boolean = false): void {
   // toClear: 是否清空，默认为 false
   if (toClear) {
     mostUsedFunc = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
+    order = [];
     return;
   }
   mostUsedFunc.gridItemList = [];
-  mostUsedPre = preferences.getPreferencesSync(curContext, options);
+  mostUsedPre = preferences.getPreferencesSync(curContext, { name: 'FunctionOrderNum' });
   maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
   let maxCount: number = 0;
   for (let singleFunc of order) {
@@ -29,8 +32,6 @@ export function setFunc(curContext: Context | undefined, toClear: boolean = fals
   }
 }
 
-let mostUsedPre: preferences.Preferences | null = null;
-let options: preferences.Options = { name: 'FunctionOrder' };
 
 export function recordClick(gridIndex: number, index: number, curContext: Context | undefined): void {
   if (gridIndex == -1) // 常用区 (-1) 不记录
@@ -68,11 +69,7 @@ export function refreshFunc(curContext: Context | undefined): void {
 
 
 export function resetFunc(curContext: Context | undefined): void { // 重置"最近使用"
-  mostUsedPre = preferences.getPreferencesSync(curContext, options);
-  maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
   preferences.deletePreferences(curContext, options)
-  mostUsedPre.putSync('maxRecord', maxRecord);
-  mostUsedPre.flush();
   setFunc(curContext, true);
 }
 

@@ -427,7 +427,7 @@ struct Index {
                         } catch (error) {
                           console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
                         }
-                        let options: preferences.Options = { name: 'FunctionOrder' };
+                        let options: preferences.Options = { name: 'FunctionOrderNum' };
                         try {
                           let maxRecordPre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), options);
                           maxRecordPre.putSync('maxRecord', Number(value.value));
@@ -494,6 +494,7 @@ struct Index {
               })
             })
           }
+          .backgroundColor($r('app.color.grid_background'))
           .divider({
             strokeWidth: '1vp',
             color: '#0d000000',
