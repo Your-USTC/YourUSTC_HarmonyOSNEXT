@@ -23,6 +23,10 @@
     {
       "name": "list_item_count_background",
       "value": "#29D9EAFF"
+    },
+    {
+      "name": "grid_border",
+      "value": "#333333"
     }
   ]
 }
