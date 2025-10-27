@@ -21,10 +21,6 @@ struct Webview {
       this.title = params.title ?? '';
       this.url = params.url ?? '';
     }
-    if (desktopUrl.includes(this.url))
-      this.webviewController.setCustomUserAgent(DESKTOP_UA);
-    else
-      this.webviewController.setCustomUserAgent(MOBILE_UA);
   }
 
   build() {
@@ -108,6 +104,12 @@ struct Webview {
         .javaScriptAccess(true)
         .width('100%')
         .height('100%')
+        .onControllerAttached(() => {
+          if (desktopUrl.includes(this.url))
+            this.webviewController.setCustomUserAgent(DESKTOP_UA);
+          else
+            this.webviewController.setCustomUserAgent(MOBILE_UA);
+        })
         .onPageBegin(() => {
           this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-t');
         })

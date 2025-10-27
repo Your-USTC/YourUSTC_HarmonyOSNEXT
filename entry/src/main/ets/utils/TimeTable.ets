@@ -33,18 +33,15 @@ function getTimeTable() {
                     if (!elem.hasAttribute("style")) { return ++count > dayNumber; }
                     return false;
                 })
-                try {
-                    const startTime = target.querySelector(".start").innerText;
-                    const endTime = target.querySelector(".end").innerText;
-                    const classList = Array.from(target.querySelectorAll(".c")).map(element => [
-                        element.querySelector(".title").innerText,
-                            Array.from(element.querySelectorAll(".teacher .name")).map(elem => elem.innerText).join(", "),
-                            getWeekNumber(element.querySelector(".time .week").innerText),
-                            element.querySelector(".timespan").innerText,
-                            element.querySelector(".classroom .name").innerText.trim()
-                    ]);
-                    classesOfDay.push([startTime, endTime, classList]);
-                } catch (error) { console.log(error.message); }
+                const classList = Array.from(target.querySelectorAll(".c")).map(element => ({
+                    name: element.querySelector(".title").innerText,
+                    teacher: Array.from(element.querySelectorAll(".teacher .name")).map(elem => elem.innerText).join(", "),
+                    weekOfTerm: getWeekNumber(element.querySelector(".time .week").innerText),
+                    timeSpan: getWeekNumber(element.querySelector(".timespan").innerText),
+                    location: element.querySelector(".classroom .name").innerText.trim(),
+                    id: element.querySelector(".number").innerText
+                }));
+                classesOfDay.push(classList);
             }
         }
         return classesOfDay;
