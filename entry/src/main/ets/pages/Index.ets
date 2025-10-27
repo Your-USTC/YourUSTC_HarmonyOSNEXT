@@ -451,9 +451,6 @@ struct Index {
                     } catch (error) {
                       console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                     }
-                    const date2 = new Date();
-                    console.log(`当前时间：${date2.getTime().toString()}`);
-                    console.log(`${date2.getTime() + 60 * 60 * 1000 * 3}`);
                     break;
                   case 3:
                     // （调试）课程表
@@ -473,15 +470,13 @@ struct Index {
                       weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1
                     };
                     const termBeginDate: string = '2025-09-07' + ' 00:00';
+                    let remindBefore = 60;
                     // 确保数组有序
                     classInfo.weekOfTerm.sort((a, b) => a - b);
                     classInfo.timeSpan.sort((a, b) => a - b);
                     // 检测是否已写入过
                     // 检测是否已写入过
-                    // 格式化课程信息
-                    let startTime: number = tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]);
-                    let endTime: number = tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]);
-                    console.log(`${startTime}**${endTime}`);
+                    // 非上课周排除
                     let excludeDates: number[] = [];
                     for (let i = 1; i < classInfo.weekOfTerm.length; i++){
                       for (let j = classInfo.weekOfTerm[i - 1] + 1; j < classInfo.weekOfTerm[i]; j++){
@@ -493,17 +488,9 @@ struct Index {
                     const event: calendarManager.Event = {
                       title: `${classInfo.name} ${classInfo.location}`, // 日程标题
                       type: calendarManager.EventType.NORMAL, // 日程类型
-                      // 日程开始时间
-                      startTime: tools.dateTimeToTimestamp(termBeginDate) //学期开始时间
-                        + (classInfo.weekOfTerm[0] - 1) * 604800000 // 第几周
-                        + classInfo.dayOfWeek * 86400000 // 第几天，不-1是因为教务系统中一周从周日开始
-                        + Schedule.commonClassStamp[classInfo.timeSpan[0]][0], // 第几节课开始
-                      // 日程结束时间
-                      endTime: tools.dateTimeToTimestamp(termBeginDate) //学期开始时间
-                        + (classInfo.weekOfTerm[0] - 1) * 604800000 // 第几周
-                        + classInfo.dayOfWeek * 86400000 // 第几天，不-1是因为教务系统中一周从周日开始
-                        + Schedule.commonClassStamp[classInfo.timeSpan[1]][1], // 第几节课结束
-                      reminderTime: [60], // 距开始时间提前60分钟提醒
+                      startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
+                      endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
+                      reminderTime: [remindBefore], // 距开始时间提前remindBefore分钟提醒
                       recurrenceRule: { // 日程重复规则
                         recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
                         count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
