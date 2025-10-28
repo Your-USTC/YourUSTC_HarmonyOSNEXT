@@ -20,6 +20,8 @@
  * */
 
 import { preferences } from '@kit.ArkData';
+import { example } from '../utils/TimeTable';
+
 // 课程信息类型
 export interface classAttribute {
   name: string,
@@ -65,18 +67,17 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
-  @State timeTable: string = '';
+  timeTable: string = '';
   @State termStart: number = 0;
+  @State parsedSchedule: classAttribute[][][] = []
   onPageShow(): void {
     try {
       const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-      this.timeTable = routerParams.timeTable;
+      this.timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
       this.termStart = routerParams.startTime;
-      console.info(`从页面路由获取了课表：${this.timeTable}`);
-      console.info(`从页面路由获取了开学时间：${this.termStart}`);
+      this.parsedSchedule = JSON.parse(this.timeTable) as classAttribute[][][];
     } catch (err) {
-      console.info("没有从页面路由获取课表和开学时间，需要从首选项读取")
-      /* 从首选项中获取timeTable和termStart */
+      this.parsedSchedule = JSON.parse(example) as classAttribute[][][]; // TODO: 把这行替换成从首选项提取课表
     }
   }
 
@@ -299,6 +300,39 @@ struct Schedule {
         /**
          * 课程示例
          */
+
+        ForEach(this.parsedSchedule, (day: classAttribute[][], indexDay) => {
+          ForEach(day, (course: classAttribute[], indexCourse) => {
+            if (course.length > 0) {
+              GridItem({ style: GridItemStyle.PLAIN }) {
+                Column() {  // TODO: 根据教学周判断显示与否
+                  Text(course[0].name)
+                    .fontWeight(FontWeight.Bold)
+                    .fontSize(12)
+                    .fontColor($r('app.color.normal_text'))
+                    .maxLines(5)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  Text(course[0].location).fontSize(9)
+                  Text(course[0].teacher).fontSize(9)
+                }
+                .width('100%')
+                .height('100%')
+                .justifyContent(FlexAlign.Center)
+              }
+              .rowStart(course[0].timeSpan[0])
+              .rowEnd(course[0].timeSpan[course[0].timeSpan.length - 1])
+              .columnStart(indexDay + 2)
+              .columnEnd(indexDay + 2)
+              .padding(2)
+              .backgroundColor($r('app.color.shaded_background'))
+              .border({
+                width: 1,
+                color: $r('app.color.grid_border')
+              })
+            }
+          })
+        })
+
         GridItem({ style: GridItemStyle.PLAIN }) {
           Column() {
             Text('习近平新时代中国特色社会主义思想概论')
