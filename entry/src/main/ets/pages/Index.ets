@@ -28,8 +28,6 @@ const calendarAccount: calendarManager.CalendarAccount = {
 };
 export let calendarAccess: boolean = false;
 
-function calendarPermissionDenied() {}
-
 
 // 主界面UI
 @Entry
@@ -209,11 +207,10 @@ struct Index {
     this.getUIContext().showAlertDialog({
       title: $r('app.string.error_occurred'),
       subtitle: `${error.message}`,
-      message: $r('app.string.need_calendar_write_permission'),
+      message: $r('app.string.need_calendar_permission'),
       autoCancel: true,
       alignment: DialogAlignment.Bottom,
       gridCount: 4,
-      offset: { dx: 0, dy: -20 },
       primaryButton: {
         value: $r('app.string.cancel'),
         action: () => {
@@ -225,7 +222,6 @@ struct Index {
         style: DialogButtonStyle.HIGHLIGHT,
         value: $r('app.string.goto_system_settings'),
         action: () => {
-          console.log('申请权限中');
           let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
           atManager.requestPermissionOnSetting(this.context, ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR']).then((data: Array<abilityAccessCtrl.GrantStatus>) => {
             console.info(`requestPermissionOnSetting success, result: ${data}`);
@@ -491,16 +487,24 @@ struct Index {
                     }
                     break;
                   case 3:
-                    if (calendar == undefined){
-                      this.showMessage($r('app.string.calendar_null'), 500);
-                    } else {
-                      calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
-                        this.calendar_permission_denied(error);
-                      });
-                      this.showMessage($r('app.string.clear_success'), 500);
-                      calendar = undefined;
-                    }
                     // 清除日历中的所有课程信息
+                    calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+                      calendar = data;
+                      if (calendar == undefined){
+                        this.showMessage($r('app.string.calendar_null'), 500);
+                      } else {
+                        calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
+                          this.calendar_permission_denied(error);
+                        });
+                        this.showMessage($r('app.string.clear_success'), 500);
+                        calendar = undefined;
+                      }
+                    }).catch((err: BusinessError) => {
+                      if (err.message == 'GetCalendar failed!')
+                        this.showMessage($r('app.string.clear_success'), 500);
+                      else
+                        this.calendar_permission_denied(err);
+                    });
                     break;
                   case 4:
                     let selected3: number = 0;
@@ -523,16 +527,13 @@ struct Index {
                       onAccept: (value: TextPickerResult) => {
                         // 删除日程
                         if (calendar != undefined)
-                          calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
-                            this.calendar_permission_denied(error);
-                          });
+                          calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
                         calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
                           calendar = data;
                           // 确保日历账户创建成功后，再进行后续相关操作
                           // 上课提醒，后续需要加一个循环！！
                           let eventId: number | undefined = undefined;
                           // 获取课程详情，需要改为使用preference！！
-                          let schedulePre: preferences.Preferences | null = preferences.getPreferencesSync(this.context, { name: 'ScheduleInfo' });
                           let classInfo: classAttribute = {
                             name: '计算机程序设计',
                             teacher: '李卫海',
@@ -559,44 +560,42 @@ struct Index {
                             //获取日历账户
                             calendarMgr?.getCalendar(calendarAccount, (err, data) => {
                               if (err) {
-                                console.error(`Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
+                                this.calendar_permission_denied(err);
                               } else {
                                 const config: calendarManager.CalendarConfig = {
                                   enableReminder: true, // 打开日程提醒
                                   color: '#BCC7DF' // 设置日历账户颜色
                                 };
                                 data.setConfig(config).then(() => { // 设置日历配置信息
-                                  console.info(`Succeeded in setting config, data->${JSON.stringify(config)}`);
+                                  let valueData: number[] = [-1, 10, 20, 30, 45, 60, 90, 120]
+                                  Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
+                                  if (value.index == 0)
+                                    this.showMessage('已更改为 不提醒', 500);
+                                  else
+                                    this.showMessage(`已更改为 在${value.value}提醒`, 500);
+                                  const event: calendarManager.Event = {
+                                    title: `${classInfo.name} ${classInfo.location}`, // 日程标题
+                                    type: calendarManager.EventType.NORMAL, // 日程类型
+                                    startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
+                                      classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
+                                    endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
+                                      classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
+                                    reminderTime: Schedule.remindBefore, // 距开始时间提前remindBefore分钟提醒
+                                    recurrenceRule: {
+                                      // 日程重复规则
+                                      recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
+                                      count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                                      interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
+                                      // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+                                      excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
+                                    }
+                                  };
+                                  if (calendar != undefined)
+                                    calendar.addEvent(event).then((data: number) => {eventId = data;});
                                 }).catch((err: BusinessError) => {
-                                  console.error(`Failed to set config. Code: ${err.code}, message: ${err.message}`);
+                                  this.calendar_permission_denied(err);
                                 })
                               }
-                            });
-                            let valueData: number[] = [-1, 10, 20, 30, 45, 60, 90, 120]
-                            Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
-                            if (value.index == 0)
-                              this.showMessage('已更改为 不提醒', 500);
-                            else
-                              this.showMessage(`已更改为 在${value.value}提醒`, 500);
-                            const event: calendarManager.Event = {
-                              title: `${classInfo.name} ${classInfo.location}`, // 日程标题
-                              type: calendarManager.EventType.NORMAL, // 日程类型
-                              startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
-                                classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
-                              endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
-                                classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
-                              reminderTime: Schedule.remindBefore, // 距开始时间提前remindBefore分钟提醒
-                              recurrenceRule: {
-                                // 日程重复规则
-                                recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
-                                count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
-                                interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
-                                // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
-                                excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
-                              }
-                            };
-                            calendar.addEvent(event).then((data: number) => {
-                              eventId = data;
                             });
                           }
                         }).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
