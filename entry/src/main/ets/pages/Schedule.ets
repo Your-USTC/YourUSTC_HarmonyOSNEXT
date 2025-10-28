@@ -20,7 +20,8 @@
  * */
 
 import { preferences } from '@kit.ArkData';
-import { example } from '../utils/TimeTable';
+import UnifiedPreferences from '../utils//UnifyPreference';
+import { SCHEDULE_KEY } from '../utils//UnifyPreference';
 
 // 课程信息类型
 export interface classAttribute {
@@ -98,8 +99,10 @@ struct Schedule {
       this.timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
       this.termStart = routerParams.startTime;
       this.parsedSchedule = JSON.parse(this.timeTable) as classAttribute[][][];
+      UnifiedPreferences.putSync(SCHEDULE_KEY, this.timeTable);
     } catch (err) {
-      this.parsedSchedule = JSON.parse(example) as classAttribute[][][]; // TODO: 把这行替换成从首选项提取课表
+      this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]'))
+      // this.parsedSchedule = JSON.parse(example) as classAttribute[][][]; // TODO: 把这行替换成从首选项提取课表
     }
   }
 
