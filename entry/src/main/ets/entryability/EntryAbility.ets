@@ -7,6 +7,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { calendarManager } from '@kit.CalendarKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import UnifiedPreferences from '../utils/UnifyPreference';
 
 const DOMAIN = 0x0000;
 
@@ -21,6 +22,7 @@ export default class EntryAbility extends UIAbility {
     } catch (error) {
       console.error('onCreate ERROR: ' + JSON.stringify(error))
     }
+    UnifiedPreferences.init(this.context)
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
