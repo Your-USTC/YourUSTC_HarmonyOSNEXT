@@ -39,11 +39,11 @@ export interface obtainedData {
 }
 
 let schedulePre: preferences.Preferences | null = null;
-export let remindBefore: number = 30;
+export let remindBefore: number = 0;
 
 export function initSchedulePre(curContext: Context | undefined) {
   schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
-  remindBefore = schedulePre.getSync('remindBefore', 30) as number;
+  remindBefore = schedulePre.getSync('remindBefore', 0) as number;
 }
 export function setRemindBefore(minute: number) {
   remindBefore = minute;

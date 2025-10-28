@@ -123,6 +123,22 @@
       "value": "向日历写入上课提醒"
     },
     {
+      "name": "error_occurred",
+      "value": "发生错误"
+    },
+    {
+      "name": "need_calendar_write_permission",
+      "value": "你需要同意「你的科大」的日历修改权限。在此之后，你可能需要重启应用。"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "goto_system_settings",
+      "value": "前往系统设置"
+    },
+    {
       "name": "WorkingOn",
       "value": "前面的区域，以后再来探索吧"
     },

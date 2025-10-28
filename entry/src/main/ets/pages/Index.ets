@@ -1,5 +1,5 @@
 
-import { common } from '@kit.AbilityKit'
+import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
@@ -7,7 +7,6 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
 import { classAttribute } from './Schedule'
-import * as Links from '../constants/Links'
 import { CheckInTools } from '../utils/CheckIn'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
@@ -27,24 +26,7 @@ const calendarAccount: calendarManager.CalendarAccount = {
   // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
   displayName: "你的科大上课提醒"
 };
-// 日历配置信息：是否提醒及颜色
-const calendarConfig: calendarManager.CalendarConfig = { enableReminder: true, color: '#BCC7DF' };
 export let calendarAccess: boolean = false;
-// 创建日历账户
-calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-  console.info(`创建日历数据成功->${JSON.stringify(data)}`);
-  calendar = data;
-  calendarAccess = true; // 确保日历账户创建成功后，再进行相关日程的管理
-  // 设置日历配置信息，打开日程提醒、设置日历账户颜色
-  calendar.setConfig(calendarConfig).then(() => {
-    console.info(`设置config成功->${JSON.stringify(calendarConfig)}`);
-  }).catch((err: BusinessError) => {
-    console.error(`设置config失败。Code: ${err.code}, message: ${err.message}`);
-  });
-  // ...
-}).catch((error: BusinessError) => {
-  console.error(`创建日历对象失败。Code: ${error.code}, message: ${error.message}`);
-});
 
 
 // 主界面UI
@@ -94,17 +76,18 @@ struct Index {
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
   private pref: preferences.Preferences | null = null;
+  private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   aboutToAppear(): void {
     try {
       this.pref = preferences.getPreferencesSync(
-        this.getUIContext().getHostContext(),
+        this.context,
         { name: CheckInTools.PREF_NAME }
       ); // 载入包含签到信息的首选项
     } catch (error) {
       console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
     }
-    Schedule.initSchedulePre(this.getUIContext().getHostContext());
+    Schedule.initSchedulePre(this.context);
     const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup(this.pref);
     this.checkInTotal = GeneratedDestructArray_1[0];
     this.checkInConsecutive = GeneratedDestructArray_1[1];
@@ -170,7 +153,7 @@ struct Index {
   private async refreshTabGrid(tabIndex: number){
     switch(tabIndex){
       case 1:
-        FunctionOrder.refreshFunc(this.getUIContext().getHostContext()); // 刷新点击次数显示
+        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
         break;
     }
@@ -418,7 +401,7 @@ struct Index {
                 switch (cell.id) { // 根据 cell.id 区分设置项
                   case 1:
                     // 选择最近使用
-                    let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'FunctionOrderNum' });
+                    let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
                     let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
                     this.getUIContext().showTextPickerDialog({
                       selected: selected1,
@@ -429,7 +412,7 @@ struct Index {
                         try {
                           this.getUIContext().getPromptAction().showToast({
                             message: `已更改为 ${value.value}`,
-                            duration: 200
+                            duration: 500
                           });
                         } catch (error) {
                           console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
@@ -448,7 +431,7 @@ struct Index {
                     break;
                   case 2:
                     // 重置最近使用
-                    FunctionOrder.resetFunc(this.getUIContext().getHostContext());
+                    FunctionOrder.resetFunc(this.context);
                     this.refreshTabGrid(1);
                     try {
                       this.getUIContext()
@@ -459,82 +442,154 @@ struct Index {
                     }
                     break;
                   case 3:
+                    break;
+                  case 4:
                     let selected3: number = 0;
                     switch (Schedule.remindBefore) {
-                      case 10: selected3 = 0; break;
-                      case 20: selected3 = 1; break;
-                      case 30: selected3 = 2; break;
-                      case 45: selected3 = 3; break;
-                      case 60: selected3 = 4; break;
-                      case 90: selected3 = 5; break;
-                      case 120: selected3 = 6; break;
+                      case 10: selected3 = 1; break;
+                      case 20: selected3 = 2; break;
+                      case 30: selected3 = 3; break;
+                      case 45: selected3 = 4; break;
+                      case 60: selected3 = 5; break;
+                      case 90: selected3 = 6; break;
+                      case 120: selected3 = 7; break;
                     }
                     // 在上课几分钟前提醒
                     this.getUIContext().showTextPickerDialog({
                       selected: selected3,
-                      range: ['上课前 10 分钟', '上课前 20 分钟', "上课前 30 分钟", "上课前 45 分钟", "上课前 1 小时", "上课前 90 分钟", "上课前 2 小时"],
+                      range: ['不提醒（删除日程）', '上课前 10 分钟', '上课前 20 分钟', "上课前 30 分钟",
+                        "上课前 45 分钟", "上课前 1 小时", "上课前 90 分钟", "上课前 2 小时"],
                       defaultPickerItemHeight: 36,
                       canLoop: false,
                       onAccept: (value: TextPickerResult) => {
-                        try {
-                          this.getUIContext().getPromptAction().showToast({
-                            message: `已更改为 ${value.value}`,
-                            duration: 200
+                        // 删除日程
+                        calendarMgr?.deleteCalendar(calendar);
+                        if (value.index > 0)
+                          calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+                            calendar = data;
+                            // 确保日历账户创建成功后，再进行后续相关操作
+                            // 上课提醒，后续需要加一个循环！！
+                            let eventId: number | undefined = undefined;
+                            // 获取课程详情，需要改为使用preference！！
+                            let schedulePre: preferences.Preferences | null = preferences.getPreferencesSync(this.context, { name: 'ScheduleInfo' });
+                            let classInfo: classAttribute = {
+                              name: '计算机程序设计',
+                              teacher: '李卫海',
+                              location: '3A212',
+                              id: 'CS1003.H2',
+                              weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[],
+                              timeSpan: [6, 7],
+                              dayOfWeek: 1
+                            };
+                            const termBeginDate: string = '2025-09-07' + ' 00:00';
+                            // 确保数组有序
+                            classInfo.weekOfTerm.sort((a, b) => a - b);
+                            classInfo.timeSpan.sort((a, b) => a - b);
+                            // 非上课周排除
+                            let excludeDates: number[] = [];
+                            for (let i = 1; i < classInfo.weekOfTerm.length; i++) {
+                              for (let j = classInfo.weekOfTerm[i - 1] + 1; j < classInfo.weekOfTerm[i]; j++) {
+                                excludeDates.push(tools.getClassTimestamp(termBeginDate, j, classInfo.dayOfWeek,
+                                  Schedule.commonClassStamp[classInfo.timeSpan[0]][0]));
+                              }
+                            }
+                            // 将课程写入日历
+                            const event: calendarManager.Event = {
+                              title: `${classInfo.name} ${classInfo.location}`, // 日程标题
+                              type: calendarManager.EventType.NORMAL, // 日程类型
+                              startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
+                                classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
+                              endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0],
+                                classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
+                              reminderTime: [Schedule.remindBefore], // 距开始时间提前remindBefore分钟提醒
+                              recurrenceRule: {
+                                // 日程重复规则
+                                recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
+                                count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                                interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
+                                // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+                                excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
+                              }
+                            };
+                            if (calendar != undefined) {
+                              //获取日历账户
+                              calendarMgr?.getCalendar(calendarAccount, (err, data) => {
+                                if (err) {
+                                  console.error(`Failed to get calendar, Code is ${err.code}, message is ${err.message}`);
+                                } else {
+                                  const config: calendarManager.CalendarConfig = {
+                                    enableReminder: true, // 打开日程提醒
+                                    color: '#BCC7DF' // 设置日历账户颜色
+                                  };
+                                  data.setConfig(config).then(() => { // 设置日历配置信息
+                                    console.info(`Succeeded in setting config, data->${JSON.stringify(config)}`);
+                                  }).catch((err: BusinessError) => {
+                                    console.error(`Failed to set config. Code: ${err.code}, message: ${err.message}`);
+                                  })
+                                }
+                              });
+                              calendar.addEvent(event).then((data: number) => {
+                                let valueData: number[] = [0, 10, 20, 30, 45, 60, 90, 120]
+                                Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
+                                this.getUIContext().getPromptAction().showToast({
+                                  message: `已更改为 在${value.value}提醒`,
+                                  duration: 500
+                                });
+                                eventId = data;
+                              });
+                            }
+                          }).catch((error: BusinessError) => {
+                            this.getUIContext().showAlertDialog({
+                              title: $r('app.string.error_occurred'),
+                              subtitle: `${error.message}`,
+                              message: $r('app.string.need_calendar_write_permission'),
+                              autoCancel: true,
+                              alignment: DialogAlignment.Bottom,
+                              gridCount: 4,
+                              offset: { dx: 0, dy: -20 },
+                              primaryButton: {
+                                value: $r('app.string.cancel'),
+                                action: () => {
+                                  console.info('已取消');
+                                } },
+                              secondaryButton: {
+                                enabled: true,
+                                defaultFocus: true,
+                                style: DialogButtonStyle.HIGHLIGHT,
+                                value: $r('app.string.goto_system_settings'),
+                                action: () => {
+                                  console.log('申请权限中');
+                                  let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
+                                  atManager.requestPermissionOnSetting(this.context, ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR']).then((data: Array<abilityAccessCtrl.GrantStatus>) => {
+                                    console.info(`requestPermissionOnSetting success, result: ${data}`);
+                                  }).catch((err: BusinessError) => {
+                                    console.error(`requestPermissionOnSetting fail, code: ${err.code}, message: ${err.message}`);
+                                  });
+                                }
+                              },
+                              cancel: () => { console.info('Closed callbacks'); },
+                              onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+                                console.info(`reason= ${dismissDialogAction.reason}`);
+                                console.info('AlertDialog onWillDismiss');
+                                if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
+                                  dismissDialogAction.dismiss();
+                                }
+                                if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
+                                  dismissDialogAction.dismiss();
+                                }
+                              }
+                            })
                           });
-                        } catch (error) {
-                          console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
+                        else {
+                          Schedule.setRemindBefore(0);
+                          this.getUIContext().getPromptAction().showToast({
+                            message: `已删除日程`,
+                            duration: 500
+                          });
                         }
-                        let valueData: number[] = [10, 20, 30, 45, 60, 90, 120]
-                        Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
-                        console.log(Schedule.remindBefore.toString());
                       }
                     })
-                    break;
-                  case 4:
-                    console.log("clicked setting 4!!");
-                    // 上课提醒，后续需要加一个循环！！
-                    let eventId : number | undefined = undefined;
-                    // 获取课程详情，需要改为使用preference！！
-                    let schedulePre: preferences.Preferences | null = preferences.getPreferencesSync(this.getUIContext().getHostContext(), { name: 'ScheduleInfo' });
-                    let classInfo: classAttribute = {
-                      name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-                      weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1
-                    };
-                    const termBeginDate: string = '2025-09-07' + ' 00:00';
-                    // 确保数组有序
-                    classInfo.weekOfTerm.sort((a, b) => a - b);
-                    classInfo.timeSpan.sort((a, b) => a - b);
-                    // 检测是否已写入过
-                    // 检测是否已写入过
-                    // 非上课周排除
-                    let excludeDates: number[] = [];
-                    for (let i = 1; i < classInfo.weekOfTerm.length; i++){
-                      for (let j = classInfo.weekOfTerm[i - 1] + 1; j < classInfo.weekOfTerm[i]; j++){
-                        excludeDates.push(tools.getClassTimestamp(termBeginDate, j, classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]));
-                      }
-                    }
-                    // 将课程写入日历
-                    const event: calendarManager.Event = {
-                      title: `${classInfo.name} ${classInfo.location}`, // 日程标题
-                      type: calendarManager.EventType.NORMAL, // 日程类型
-                      startTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[0]][0]), // 日程开始时间
-                      endTime: tools.getClassTimestamp(termBeginDate, classInfo.weekOfTerm[0], classInfo.dayOfWeek, Schedule.commonClassStamp[classInfo.timeSpan[1]][1]), // 日程结束时间
-                      reminderTime: [Schedule.remindBefore], // 距开始时间提前remindBefore分钟提醒
-                      recurrenceRule: { // 日程重复规则
-                        recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
-                        count: classInfo.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
-                        interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
-                        // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
-                        excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
-                      }
-                    };
-                    if (calendar != undefined) {
-                      calendar.addEvent(event).then((data: number) => {
-                        console.info(`Succeeded in adding event, id -> ${data}`);
-                        eventId = data;
-                      });
-                    }
-                    break;
+                  break;
                 }
               })
             })
