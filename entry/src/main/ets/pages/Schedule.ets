@@ -12,7 +12,7 @@
  * step 3: 写入数据
  schedulePre.putSync(名称，日程详情);
 
- * step 4: 保存数据
+ * step 4: TODO: 保存数据
  schedulePre.flush();
 
  * step 5: 读取数据
@@ -26,8 +26,8 @@ import { example } from '../utils/TimeTable';
 export interface classAttribute {
   name: string,
   teacher: string,
-  weekOfTerm: number[], // 以枚举形式写出哪几周
-  timeSpan: number[], // 应当仅包含开始和结束是第几节课
+  weekOfTerm: number[],    // 以枚举形式写出哪几周
+  timeSpan: number[],      // 应当仅包含开始和结束是第几节课
   dayOfWeek: number,
   location: string,
   id: string
@@ -298,21 +298,23 @@ struct Schedule {
         })
 
         /**
-         * 课程示例
+         * 课程内容
          */
-
         ForEach(this.parsedSchedule, (day: classAttribute[][], indexDay) => {
           ForEach(day, (course: classAttribute[], indexCourse) => {
-            if (course.length > 0) {
+            // TODO: 根据教学周判断显示与否👇
+            if (course.length > 0 && true) {
               GridItem({ style: GridItemStyle.PLAIN }) {
-                Column() {  // TODO: 根据教学周判断显示与否
+                Column() {
                   Text(course[0].name)
                     .fontWeight(FontWeight.Bold)
                     .fontSize(12)
                     .fontColor($r('app.color.normal_text'))
                     .maxLines(5)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
+
                   Text(course[0].location).fontSize(9)
+
                   Text(course[0].teacher).fontSize(9)
                 }
                 .width('100%')
@@ -332,41 +334,12 @@ struct Schedule {
             }
           })
         })
-
-        GridItem({ style: GridItemStyle.PLAIN }) {
-          Column() {
-            Text('习近平新时代中国特色社会主义思想概论')
-              .fontWeight(FontWeight.Bold)
-              .fontSize(12)
-              .fontColor($r('app.color.normal_text'))
-              .maxLines(5)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-            Text('3C302')
-              .fontSize(9)
-
-            Text('赵立璐')
-              .fontSize(9)
-          }
-          .width('100%')
-          .height('100%')
-          .justifyContent(FlexAlign.Center)
-        }
-        .rowStart(1)
-        .rowEnd(2)
-        .columnStart(2)
-        .columnEnd(2)
-        .padding(2)
-        .backgroundColor($r('app.color.shaded_background'))
-        .border({
-          width: 1,
-          color: $r('app.color.grid_border')
-        })
       }
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
       .rowsTemplate('1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
       .margin({ bottom: 30 })
       .padding(5)
+
     }
     .height('100%')
     .width('100%')
