@@ -57,6 +57,10 @@
       "value": "在线课表"
     },
     {
+      "name": "week_of_term_no_d",
+      "value": "第 %d 周"
+    },
+    {
       "name": "morning",
       "value": "上午"
     },
