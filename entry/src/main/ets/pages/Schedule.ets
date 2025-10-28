@@ -42,21 +42,43 @@ let schedulePre: preferences.Preferences | null = null;
 export let remindBefore: number = 0;
 
 export function initSchedulePre(curContext: Context | undefined) {
-  schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
-  remindBefore = schedulePre.getSync('remindBefore', 0) as number;
+  try {
+    schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
+    remindBefore = schedulePre.getSync('remindBefore', 0) as number;
+  } catch (error) {
+    console.error(`Get preferences sync ERROR: [${error.name}] ${error.message}`)
+  }
 }
+
 export function setRemindBefore(minute: number) {
   remindBefore = minute;
-  schedulePre?.putSync('remindBefore', minute);
-  schedulePre?.flush();
+  try {
+    schedulePre?.putSync('remindBefore', minute);
+  } catch (error) {
+    console.error(`put sync ERROR: [${error.name}] ${error.message}`)
+  }
+  schedulePre?.flush()
+    .catch((error: Error) => {
+      console.error(`flush ERROR: [${error.name}] ${error.message}`)
+    })
 }
 
 // 第几节课 -> 上课时间
-export const commonClassTime: string[][] = [ ['07:21', '11:45'],                                      // 排除[0]
-  ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'], // 上午
-  ['14:00', '14:45'], ['14:50', '15:35'], ['15:55', '16:40'], ['16:45', '17:30'], ['17:35', '18:20'], // 下午
-  ['19:30', '20:15'], ['20:20', '21:05'], ['21:10', '21:55']                                          // 晚上
+function getClassIndex(): number[] {
+  const arr: number[] = [];
+  for (let i = 1; i <= 13; i++) {
+    arr.push(i);
+  }
+  return arr;
+}
+
+export const commonClassTime: string[][] = [
+  ['07:21', '11:45'],    // 排除[0]
+  ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'],    // 上午
+  ['14:00', '14:45'], ['14:50', '15:35'], ['15:55', '16:40'], ['16:45', '17:30'], ['17:35', '18:20'],    // 下午
+  ['19:30', '20:15'], ['20:20', '21:05'], ['21:10', '21:55']    // 晚上
 ];
+
 export const commonClassStamp: number[][]= [
   [26460000, 42300000],
   [28200000, 30900000], [31200000, 33900000], [35100000, 37800000], [38100000, 40800000], [41000000, 43500000],
@@ -115,10 +137,60 @@ struct Schedule {
             })
           })
       }
-      .id('header')
       .width('100%')
       .height(48)
       .backgroundColor($r('app.color.shaded_background'))
+
+      /**
+       * 周数信息与翻页
+       */
+      Row() {
+        Text('2025-09-07' + ' ~ ' + '2025-09-13')    // TODO: 获取一周首末日
+          // 注意网页中周日的日期最早，周六最迟
+          .id('week_of_term_span')
+          .fontWeight(FontWeight.Bold)
+          .fontSize(14)
+
+        Blank()
+
+        Image($r('app.media.last_page'))
+          .height(18)
+          .width(40)
+          .objectFit(ImageFit.Contain)
+          .onClick(() => {
+            // TODO: 上一周
+            this.getUIContext().getPromptAction().showToast({
+              message: '上一周',
+              duration: 500
+            })
+          })
+
+        Text($r('app.string.week_of_term_no_d', 1))    // TODO: 获取当前周数
+          .id('week_of_term_no')
+          .fontWeight(FontWeight.Bold)
+          .fontSize(14)
+
+        Image($r('app.media.next_page'))
+          .height(18)
+          .width(40)
+          .objectFit(ImageFit.Contain)
+          .onClick(() => {
+            // TODO: 下一周
+            this.getUIContext().getPromptAction().showToast({
+              message: '下一周',
+              duration: 500
+            })
+          })
+      }
+      .width('100%')
+      .height(30)
+      .padding({ left: 20, right: 10 })
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor($r('app.color.grid_background'))
+      .border({
+        width: { bottom: 1 },
+        color: $r('app.color.grid_border')
+      })
 
       /**
        * 课表
@@ -280,11 +352,27 @@ struct Schedule {
           color: $r('app.color.grid_border')
         })
 
-        ForEach([1,2,3,4,5,6,7,8,9,10,11,12,13], (item: number) => {
+        ForEach(getClassIndex(), (item: number) => {
           GridItem({ style: GridItemStyle.NONE }) {
-            Text(item.toString())
-              .fontWeight(FontWeight.Bold)
-              .fontSize(12)
+            Column() {
+              Text(commonClassTime[item][0])
+                .fontSize(7)
+
+              Blank()
+
+              Text(item.toString())
+                .fontWeight(FontWeight.Bold)
+                .fontSize(14)
+
+              Blank()
+
+              Text(commonClassTime[item][1])
+                .fontSize(7)
+            }
+            .width('100%')
+            .height('100%')
+            .justifyContent(FlexAlign.Center)
+            .padding({ top: 2, bottom: 2 })
           }
           .rowStart(item)
           .rowEnd(item)
@@ -301,21 +389,27 @@ struct Schedule {
          * 课程内容
          */
         ForEach(this.parsedSchedule, (day: classAttribute[][], indexDay) => {
-          ForEach(day, (course: classAttribute[], indexCourse) => {
+          ForEach(day, (course: classAttribute[]) => {
             // TODO: 根据教学周判断显示与否👇
             if (course.length > 0 && true) {
               GridItem({ style: GridItemStyle.PLAIN }) {
                 Column() {
                   Text(course[0].name)
                     .fontWeight(FontWeight.Bold)
-                    .fontSize(12)
+                    .fontSize(13)
                     .fontColor($r('app.color.normal_text'))
-                    .maxLines(5)
+                    .maxLines(4)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                  Text(course[0].location).fontSize(9)
+                  Text(course[0].location)
+                    .fontSize(9)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.MARQUEE })
 
-                  Text(course[0].teacher).fontSize(9)
+                  Text(course[0].teacher)
+                    .fontSize(9)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.MARQUEE })
                 }
                 .width('100%')
                 .height('100%')
@@ -335,10 +429,11 @@ struct Schedule {
           })
         })
       }
+      .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
       .rowsTemplate('1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
-      .margin({ bottom: 30 })
-      .padding(5)
+      .margin({ bottom: 48 })
+      .padding(0)
 
     }
     .height('100%')
