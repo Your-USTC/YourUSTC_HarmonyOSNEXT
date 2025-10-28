@@ -21,6 +21,7 @@
 
 import { preferences } from '@kit.ArkData';
 import { example } from '../utils/TimeTable';
+import * as tools from '../utils/tools';
 
 // 课程信息类型
 export interface classAttribute {
@@ -39,19 +40,24 @@ export interface obtainedData {
 }
 
 let schedulePre: preferences.Preferences | null = null;
-export let remindBefore: number = 0;
+export let remindBefore: number[] = [];
 
 export function initSchedulePre(curContext: Context | undefined) {
   try {
     schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
-    remindBefore = schedulePre.getSync('remindBefore', 0) as number;
+    remindBefore[0] = schedulePre.getSync('remindBefore', -1) as number;
+    if (remindBefore[0] == -1)
+      remindBefore = [];
   } catch (error) {
     console.error(`Get preferences sync ERROR: [${error.name}] ${error.message}`)
   }
 }
 
 export function setRemindBefore(minute: number) {
-  remindBefore = minute;
+  if (minute == -1)
+    remindBefore = [];
+  else
+    remindBefore[0] = minute;
   try {
     schedulePre?.putSync('remindBefore', minute);
   } catch (error) {
@@ -64,23 +70,13 @@ export function setRemindBefore(minute: number) {
 }
 
 // 第几节课 -> 上课时间
-function getClassIndex(): number[] {
-  const arr: number[] = [];
-  for (let i = 1; i <= 13; i++) {
-    arr.push(i);
-  }
-  return arr;
-}
-
-export const commonClassTime: string[][] = [
-  ['07:21', '11:45'],    // 排除[0]
+export const commonClassTime: string[][] = [['07:21', '11:45'],    // 排除[0]
   ['07:50', '08:35'], ['08:40', '09:25'], ['09:45', '10:30'], ['10:35', '11:20'], ['11:25', '12:05'],    // 上午
   ['14:00', '14:45'], ['14:50', '15:35'], ['15:55', '16:40'], ['16:45', '17:30'], ['17:35', '18:20'],    // 下午
   ['19:30', '20:15'], ['20:20', '21:05'], ['21:10', '21:55']    // 晚上
 ];
 
-export const commonClassStamp: number[][]= [
-  [26460000, 42300000],
+export const commonClassStamp: number[][]= [[26460000, 42300000], // 同上
   [28200000, 30900000], [31200000, 33900000], [35100000, 37800000], [38100000, 40800000], [41000000, 43500000],
   [50400000, 53100000], [53400000, 56100000], [57300000, 60000000], [60300000, 63000000], [63300000, 66000000],
   [70200000, 72900000], [73200000, 75900000], [76200000, 78900000]
@@ -352,7 +348,7 @@ struct Schedule {
           color: $r('app.color.grid_border')
         })
 
-        ForEach(getClassIndex(), (item: number) => {
+        ForEach(tools.getContArray([[1, 13]]), (item: number) => {
           GridItem({ style: GridItemStyle.NONE }) {
             Column() {
               Text(commonClassTime[item][0])
