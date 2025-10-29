@@ -5,8 +5,13 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * 构造连续整数数组
+ * (可以在调用的后面加上 as number[] 或 as string[] )
+ * @param range 取值范围 (例如: 输入 [[1,3],[5,6]], 返回 [1,2,3,5,6] )
+ * @param returnString 返回类型 (默认返回 number[], 为 true 则返回 string[] )
+ */
 export function getContArray(range: number[][], returnString: boolean = false): string[] | number[] {
-  // 返回一个包含range的连续数字的数组（例如[[1,3],[5,6]]返回[1,2,3,5,6]），returnString为true时，返回类型为string[]；否则为number[]。你可以在引用的后面加上as string[]或as number[]
   if (returnString) {
     let res: string[] = [];
     for (let single of range) {

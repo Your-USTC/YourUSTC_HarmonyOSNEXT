@@ -86,5 +86,5 @@ export const
   ];
 
 export let index_to_pic = new Map<string, ResourceStr>()
-  .set('0.0', $r('app.media.tab0_selected')) // 占位符
+  .set('0.0', $r('app.media.tab0_selected'))    // 占位符
   .set('0.1', $r('app.media.tab0_unselected'))

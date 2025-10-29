@@ -5,6 +5,8 @@ export interface Link {
 }
 
 export let LINK = new Map<string, Link>()
+
+  // 课程与学习
   .set("0.0", { title: $r('app.string.JiaoWuXiTong'), url: 'https://jw.ustc.edu.cn' })
   .set("0.1", { title: $r('app.string.KeChengBiao'), url: 'https://jw.ustc.edu.cn/for-std/course-table'})
   .set("0.2", { title: $r('app.string.KaoShiXinXi'), url: 'https://jw.ustc.edu.cn/for-std/exam-arrange'})
@@ -21,6 +23,8 @@ export let LINK = new Map<string, Link>()
   .set("0.13", { title: $r('app.string.PingKeSheQu'), url: 'https://icourse.club'})
   .set("0.14", { title: $r('app.string.WolframAlpha'), url: 'https://wolframalpha.com'})
   .set("0.15", { title: $r('app.string.WoKeXueShe'), url: 'https://ot.ustc.edu.cn/'})
+
+  // 服务与工具
   .set("1.0", { title: $r('app.string.YingXinWang'), url: 'http://welcome.ustc.edu.cn'})
   .set("1.1", { title: $r('app.string.KeDaYouXiang'), url: 'http://mail.ustc.edu.cn'})
   .set("1.2", { title: $r('app.string.ZiZhuDaYin'), url: 'http://ic.lib.ustc.edu.cn'})
@@ -36,6 +40,8 @@ export let LINK = new Map<string, Link>()
   .set("1.12", { title: $r('app.string.ZhiHuiMenHu'), url: 'http://i.ustc.edu.cn'})
   .set("1.13", { title: $r('app.string.WangLuoZhuCeZhongXin'), url: 'https://zczx.ustc.edu.cn'})
   .set("1.14", { title: $r('app.string.QingChunKeDa'), url: 'https://young.ustc.edu.cn/login/sc-wisdom-group-learning/myproject/SignUp'})
+
+  // 信息技术
   .set("2.0", { title: $r('app.string.KeDaVPN'), url: 'https://wvpn.ustc.edu.cn'})
   .set("2.1", { title: $r('app.string.WangLuoQiDong'), url: 'https://pxe.ustc.edu.cn'})
   .set("2.2", { title: $r('app.string.ZhengBanRuanJian'), url: 'https://software.ustc.edu.cn'})
@@ -46,6 +52,8 @@ export let LINK = new Map<string, Link>()
   .set("2.7", { title: $r('app.string.VLABShiYanZhongXin'), url: 'https://vlab.ustc.edu.cn'})
   .set("2.8", { title: $r('app.string.JiYuanKeYanPingTai'), url: 'https://cscourse.ustc.edu.cn'})
   .set("2.9", { title: $r('app.string.WenDangXieZuo'), url: 'https://latex.ustc.edu.cn'})
+
+  // 学校与管理
   .set("3.0", { title: $r('app.string.TongYiShenFenRenZheng'), url: 'https://passport.ustc.edu.cn'})
   .set("3.1", { title: $r('app.string.LiFanXiaoDengJi'), url: 'https://lfxdj.ustc.edu.cn'})
   .set("3.2", { title: $r('app.string.QinYouRuXiao'), url: 'https://passport.ustc.edu.cn/login?service=http%3A%2F%2Fbwcqyrx.ustc.edu.cn%2Fweixin%2Fvalidate'})

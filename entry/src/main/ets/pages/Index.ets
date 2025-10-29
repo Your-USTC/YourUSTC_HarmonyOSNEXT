@@ -6,16 +6,15 @@ import { BusinessError } from '@kit.BasicServicesKit'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
+import * as FunctionOrder from '../utils/FunctionOrder'
 import { classAttribute } from './Schedule'
 import { CheckInTools } from '../utils/CheckIn'
-import ItemData from '../view/SettingsComponent'
-import GridComponent from '../view/GridComponent'
-import * as FunctionOrder from '../utils/FunctionOrder'
-import SettingsData from '../constants/SettingsSources'
 import { calendarMgr } from '../entryability/EntryAbility'
-import { ScrollPosition } from '../constants/CommonConstants'
 import { ListDataConstants } from '../constants/ListDataConstants'
 import { GridData, otherGridDataList } from '../constants/GridListDataSources'
+import ItemData from '../view/SettingsComponent'
+import GridComponent from '../view/GridComponent'
+import SettingsData from '../constants/SettingsSources'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -28,6 +27,12 @@ const calendarAccount: calendarManager.CalendarAccount = {
 };
 export let calendarAccess: boolean = false;
 
+// 滚动条参数
+enum ScrollPosition {
+  start = 0,
+  center = 1,
+  end = 2
+}
 
 // 主界面UI
 @Entry
@@ -405,7 +410,7 @@ struct Index {
         .scrollBar(BarState.Off)
         .width('100%')
         .height('100%')
-        .edgeEffect(EdgeEffect.Spring)
+        .edgeEffect(EdgeEffect.Fade)
         .onWillScroll((yOffset: number) => {
           if (!((this.scrollPosition === ScrollPosition.start && yOffset < 0)
             || (this.scrollPosition === ScrollPosition.end && yOffset > 0))) {
