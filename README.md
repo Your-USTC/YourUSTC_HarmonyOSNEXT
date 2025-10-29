@@ -13,25 +13,37 @@
 
 ```
 /entry/src/main/ets/
-    constants/
-        CommonConstants.ets     // 公共常量区
-        GridListDataSources.ets // 分区和按钮表
-        Links.ets               // 链接表
-        ListDataConstants.ets   // 分区表
-        SettingsSources.ets     // 设置项表
-        stringForGrid.ets       // 按钮信息显示
-        UserAgent.ets           // Webview UA 参数
+
+    /* 应用程序主体 */
+    entryability/
+        EntryAbility.ets        // 应用程序入口点: 获取日历权限
     pages/
         Index.ets               // 首页 (主程序)
         Webview.ets             // 浏览器页面
+        Schedule.ets            // 本地课表页面
     utils/
-        CheckIn.ets             // 签到功能
-        FunctionOrder.ets       // 最近使用功能
-        TimeTable.ets           // [JavaScript] 获取课表
         tools.ets               // 公共工具区
+        UnifyPreference.ets     // 全局传递配置信息功能
+        CheckIn.ets             // 签到功能
+        TimeTable.ets           // [JavaScript] 获取课表功能
+        FunctionOrder.ets       // 最近使用功能
     view/
         GridComponent.ets       // 功能组件
         SettingsComponent.ets   // 设置项组件
+    constants/
+        UserAgent.ets           // Webview UA 参数
+        ListDataConstants.ets   // 分区标题表
+        GridListDataSources.ets // 分区按钮表
+        Links.ets               // 链接表
+        SettingsSources.ets     // 设置项表
+
+    /* 课程表卡片 */
+    entryformability/
+        EntryFormAbility.ets    // 卡片生命周期接口
+    class_schedule_daily/
+        pages/Class_schedule_dailyCard.ets  // 卡片主程序
+        view/CardListComponent.ets          // 卡片框架
+        viewmodel/CardListParameter.ets     // 卡片构造函数
 ```
 
 ## 隐私政策

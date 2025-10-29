@@ -1,43 +1,23 @@
 
+import * as tools from '../../utils/tools';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
 
-function getCardList(): number[] {
-  const arr: number[] = [];
-  for (let index = 0; index < 10; index++) {
-    arr.push(index);
-  }
-  return arr;
+interface CardListItemData {
+  title: ResourceStr;
+  content: ResourceStr;
+  icon?: Resource;
 }
 
 @Entry
 @Component
 struct Class_schedule_dailyCard {
-  readonly cardList: number[] = getCardList();
+  readonly cardList: number[] = tools.getContArray([[0,9]]) as number[];
   @State cardListParameter: CardListParameter = new CardListParameter($r('sys.color.ohos_id_color_background'),
     $r('app.string.card_list_title'), '', ImageSize.Auto, $r('app.media.icon_round'), true,
     $r('app.color.fade'), true, this.cardList.length, $r('sys.color.ohos_id_color_emphasize'),    // TODO: 浅色模式显示有问题，深色没事
     $r('app.color.list_item_count_background'), '', true, $r('app.media.bottom_icon'));
-  /*
-   * The action type.
-   */
-  readonly actionType = 'router';
-  /*
-   * The ability name.
-   */
-  readonly abilityName = 'EntryAbility';
-  /*
-   * The message.
-   */
-  readonly message = 'add detail';
-  /*
-   * The width percentage setting.
-   */
-  readonly fullWidthPercent = '100%';
-  /*
-   * The height percentage setting.
-   */
-  readonly fullHeightPercent = '100%';
+
   readonly cardListData: CardListItemData = {
     title: $r('app.string.card_list_title'),
     content: $r('app.string.card_list_content'),
@@ -79,9 +59,9 @@ struct Class_schedule_dailyCard {
             .height(32)
         }
         .alignItems(VerticalAlign.Center)
-        .width(this.fullWidthPercent)
+        .width('100%')
       }
-      .width(this.fullWidthPercent)
+      .width('100%')
       .height(44)
     }, (item: number, index) => index + JSON.stringify(item))
   }
@@ -92,21 +72,13 @@ struct Class_schedule_dailyCard {
         this.cardListBuilder();
       }
     }
-    .height(this.fullHeightPercent)
+    .height('100%')
     .onClick(() => {
       postCardAction(this, {
-        action: this.actionType,
-        abilityName: this.abilityName,
-        params: {
-          message: this.message
-        }
+        action: 'router',
+        abilityName: 'EntryAbility',
+        params: { message: 'add detail' }
       });
     })
   }
-}
-
-interface CardListItemData {
-  title: ResourceStr;
-  content: ResourceStr;
-  icon?: Resource;
 }
