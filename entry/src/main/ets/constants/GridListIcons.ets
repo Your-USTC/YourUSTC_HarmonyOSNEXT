@@ -10,5 +10,5 @@
  */
 
 export let index_to_pic = new Map<string, ResourceStr>()
-  .set('0.0', $r('app.media.tab0_selected'))
-  .set('0.1', $r('app.media.tab0_unselected'))
+  .set('0.0', $r('app.media.tab0_selected'))      // 教务系统
+  .set('0.1', $r('app.media.tab0_unselected'))    // 课程表
