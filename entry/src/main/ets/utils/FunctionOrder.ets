@@ -1,6 +1,7 @@
 
 import { preferences } from '@kit.ArkData';
-import { GridData, eachGridNum, totalGridNum, index_to_pic } from '../constants/GridListDataSources';
+import { GridData, eachGridNum, totalGridNum } from '../constants/GridListDataSources';
+import { index_to_pic } from '../constants/GridListIcons';
 import { LINK } from '../constants/Links'
 
 export let mostUsedFunc: GridData = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);

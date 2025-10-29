@@ -1,4 +1,14 @@
 
+/**
+ * --- 功能页链接表 ---
+ * 注意:
+ *   GridListDataSources.ets
+ *   Links.ets
+ *   GridListIcons.ets
+ *   ListDataConstants.ets
+ * 必须同步修改!
+ */
+
 export interface Link {
   title: string | Resource
   url: string | Resource
