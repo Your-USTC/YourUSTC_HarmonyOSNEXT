@@ -32,9 +32,10 @@
         SettingsComponent.ets   // 设置项组件
     constants/
         UserAgent.ets           // Webview UA 参数
-        ListDataConstants.ets   // 分区标题表
-        GridListDataSources.ets // 分区按钮表
-        Links.ets               // 链接表
+        GridListDataSources.ets // 功能页按钮表
+        Links.ets               // 功能页链接表
+        GridListIcons.ets       // 功能页图标表
+        ListDataConstants.ets   // 功能页分区标题表
         SettingsSources.ets     // 设置项表
 
     /* 课程表卡片 */
