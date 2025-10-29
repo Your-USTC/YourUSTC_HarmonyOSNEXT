@@ -218,9 +218,8 @@ struct Index {
       gridCount: 4,
       primaryButton: {
         value: $r('app.string.cancel'),
-        action: () => {
-          console.info('已取消');
-        } },
+        action: () => {}
+      },
       secondaryButton: {
         enabled: true,
         defaultFocus: true,
@@ -237,8 +236,6 @@ struct Index {
       },
       cancel: () => { console.info('Closed callbacks'); },
       onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
-        console.info(`reason= ${dismissDialogAction.reason}`);
-        console.info('AlertDialog onWillDismiss');
         if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
           dismissDialogAction.dismiss();
         }

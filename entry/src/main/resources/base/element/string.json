@@ -116,11 +116,11 @@
     },
     {
       "name": "setMaxRecord",
-      "value": "设置「最近使用」中的显示数量"
+      "value": "设置「最近使用」的显示数量"
     },
     {
       "name": "clear_calendar",
-      "value": "清除日历中的所有课程信息"
+      "value": "清除日历中所有课程信息"
     },
     {
       "name": "calendar_null",
@@ -132,7 +132,7 @@
     },
     {
       "name": "add_class_notification",
-      "value": "向日历写入上课提醒"
+      "value": "在日历中新建上课提醒日程；"
     },
     {
       "name": "error_occurred",

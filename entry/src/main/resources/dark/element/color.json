@@ -10,11 +10,11 @@
     },
     {
       "name": "shaded_background",
-      "value": "#002060"
+      "value": "#FF071B58"
     },
     {
       "name": "grid_background",
-      "value": "#000030"
+      "value": "#202020"
     },
     {
       "name": "normal_text",
