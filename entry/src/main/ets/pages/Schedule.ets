@@ -1,24 +1,4 @@
 
-/* 写完后删除此注释
- * 存在preference里面的信息
- * step 0: 导入库
- import { preferences } from '@kit.ArkData';
-
- * step 1: 初始化 preferences
-
- * step 2: 删除原有的信息
- preferences.deletePreferences(curContext, { name: 'ScheduleInfo' })
-
- * step 3: 写入数据
- schedulePre.putSync(名称，日程详情);
-
- * step 4: TODO: 保存数据
- schedulePre.flush();
-
- * step 5: 读取数据
- let data: 类型 = schedulePre.getSync(名称, 默认值) as 类型;
- * */
-
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import UnifiedPreferences from '../utils/UnifyPreference';
@@ -88,9 +68,12 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
-  termStart: number = 0;
   @State parsedSchedule: classAttribute[][][] = [];
-  @State weekDisplayed: number = 6;
+  @State weekDisplayed: number = 0;
+  @State termStart: number = 0;
+  @State weekStart: number = 0;
+  @State weekEnd: number = 0;
+
   onPageShow(): void {
     const currentTime: Date = new Date();
     try {
@@ -101,14 +84,20 @@ struct Schedule {
       UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
       UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
       this.weekDisplayed = Math.ceil((currentTime.getTime() - this.termStart) / millisecondsPerWeek);
-      console.info(`课表 weekdisplayed ${this.weekDisplayed}`)
-      console.info(`课表 weekdisplayed ${currentTime.getTime()}`)
-      console.info(`课表 weekdisplayed ${this.termStart}`)
     } catch (err) {
       this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]'))
       this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
         ? Math.ceil((currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek) : 1;
     }
+    this.weekStart = this.termStart + (this.weekDisplayed - 1) * 604800000;
+    this.weekEnd = this.weekStart + 518400000;
+
+    // TODO: 将 weekStart 和 weekEnd 存入首选项
+    console.info(`课表 weekDisplayed: ${this.weekDisplayed}`)
+    console.info(`课表 currentTime: ${tools.timestampToDateTime(currentTime.getTime())}`)
+    console.info(`课表 termStart: ${tools.timestampToDateTime(this.termStart)}`)
+    console.info(`课表 weekStart: ${tools.timestampToDateTime(this.weekStart)}`)
+    console.info(`课表 weekEnd: ${tools.timestampToDateTime(this.weekEnd)}`)
   }
 
   build() {
@@ -153,8 +142,11 @@ struct Schedule {
        * 周数信息与翻页
        */
       Row() {
-        Text('2025-09-07' + ' ~ ' + '2025-09-13')    // TODO: 获取一周首末日
-          // 注意网页中周日的日期最早，周六最迟
+        Text(
+          tools.timestampToDateTime(this.weekStart)
+            + ' ~ '
+            + tools.timestampToDateTime(this.weekEnd)
+        )
           .id('week_of_term_span')
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
@@ -166,15 +158,14 @@ struct Schedule {
           .width(40)
           .objectFit(ImageFit.Contain)
           .onClick(() => {
-            this.weekDisplayed--;
-            // TODO: 上一周
-            this.getUIContext().getPromptAction().showToast({
-              message: '上一周',
-              duration: 500
-            })
+            if (this.weekDisplayed > 1) {
+              this.weekDisplayed--;
+              this.weekStart -= 604800000;
+              this.weekEnd -= 604800000;
+            }
           })
 
-        Text($r('app.string.week_of_term_no_d', this.weekDisplayed))    // TODO: 获取当前周数
+        Text($r('app.string.week_of_term_no_d', this.weekDisplayed))
           .id('week_of_term_no')
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
@@ -184,12 +175,11 @@ struct Schedule {
           .width(40)
           .objectFit(ImageFit.Contain)
           .onClick(() => {
-            this.weekDisplayed++;
-            // TODO: 下一周
-            this.getUIContext().getPromptAction().showToast({
-              message: '下一周',
-              duration: 500
-            })
+            if (this.weekDisplayed < 20) {
+              this.weekDisplayed++;
+              this.weekStart += 604800000;
+              this.weekEnd += 604800000;
+            }
           })
       }
       .width('100%')
