@@ -29,6 +29,7 @@ export default struct GridComponent {
           GridItem() {
             Column() {
               Image(FunctionOrder.gIndex_to_pic(this.gridIndex, index))
+                .objectFit(ImageFit.Contain)
                 .width('40vp')
                 .height('40vp')
               Text(item)
