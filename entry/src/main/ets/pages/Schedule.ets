@@ -103,8 +103,12 @@ struct Schedule {
     console.info(`课表 weekEnd: ${tools.timestampToDateTime(this.weekEnd)}`)
   }
 
-  build() {
+  ShowClassDetail: CustomDialogController | null = null;
+  aboutToDisappear(): void {
+    this.ShowClassDetail = null;  // 在自定义组件即将析构销毁时将ShowClassDetail置空
+  }
 
+  build() {
     Column() {
       /**
        * Header
@@ -418,6 +422,28 @@ struct Schedule {
                   .height('100%')
                   .justifyContent(FlexAlign.Center)
                 }
+                .onClick(() => {
+                  this.ShowClassDetail = new CustomDialogController({
+                    builder: ClassDetailDialog({
+                      classInfo: lesson
+                    }),
+                    autoCancel: true,
+                    gridCount: 4,
+                    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                      if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                        dismissDialogAction.dismiss();
+                      }
+                      if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                        dismissDialogAction.dismiss();
+                      }
+                    }
+                  })
+                  if (this.ShowClassDetail != null) {
+                    this.ShowClassDetail.open();
+                  }
+                  // this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
+                  //   .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+                })
                 .rowStart(course[0].timeSpan[0])
                 .rowEnd(course[0].timeSpan[course[0].timeSpan.length - 1])
                 .columnStart(indexDay + 2)
@@ -442,5 +468,61 @@ struct Schedule {
     }
     .height('100%')
     .width('100%')
+  }
+}
+
+@CustomDialog
+@Component
+struct ClassDetailDialog {
+  classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1 };
+  controller?: CustomDialogController;
+
+
+  build() {
+    Column() {
+      Text(this.classInfo.name).fontSize(24)
+        .fontWeight("bold")
+        .textAlign(TextAlign.Center);
+      Blank('16');
+
+      Text($r('app.string.class_detail_teacher', (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher)))
+        .textAlign(TextAlign.Start)
+        .width('80%');
+      Text($r('app.string.class_detail_location', (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)))
+        .textAlign(TextAlign.Start)
+        .width('80%');
+      Text($r('app.string.class_detail_id', (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id)))
+        .textAlign(TextAlign.Start)
+        .width('80%');
+      Text($r('app.string.class_detail_time', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))
+        .textAlign(TextAlign.Start)
+        .width('80%');
+      Text($r('app.string.class_detail_weeks', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
+        .textAlign(TextAlign.Start)
+        .width('80%');
+
+      Blank('16');
+      Row() {
+        Button($r('app.string.back'))
+          .onClick(() => {
+            if (this.controller != undefined)
+              this.controller.close();
+          })
+          .width('50%')
+          .buttonStyle(ButtonStyleMode.TEXTUAL);
+        Button($r('app.string.edit'))
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({ url: 'pages/CourseEdit' })
+              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+            if (this.controller != undefined)
+              this.controller.close();
+          })
+          .width('50%')
+          .buttonStyle(ButtonStyleMode.EMPHASIZED);
+      };
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor($r('app.color.grid_background'))
   }
 }

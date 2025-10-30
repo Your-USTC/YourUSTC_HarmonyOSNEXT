@@ -31,6 +31,15 @@ export function getContArray(range: number[][], returnString: boolean = false): 
   }
 }
 
+export function shrinkContArrayToString(array: number[]):string {
+  let res: string = array[0].toString();
+  let i: number;
+  for (i = 1; i < array.length; i++)
+    if (array[i] != array[i - 1] + 1)
+      res = res + `-${array[i - 1]}, ${array[i]}`;
+  return res + `-${array[i - 1]}`;
+}
+
 export function dateTimeToTimestamp(dateTime: string): number {
   const date = new Date(dateTime);
   return Math.floor(date.getTime());

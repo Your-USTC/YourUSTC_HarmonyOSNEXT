@@ -135,6 +135,38 @@
       "value": "在日历中新建上课提醒日程"
     },
     {
+      "name": "edit",
+      "value": "编辑"
+    },
+    {
+      "name": "back",
+      "value": "返回"
+    },
+    {
+      "name": "class_detail_teacher",
+      "value": "教师：%s"
+    },
+    {
+      "name": "class_detail_location",
+      "value": "地点：%s"
+    },
+    {
+      "name": "class_detail_id",
+      "value": "编号：%s"
+    },
+    {
+      "name": "class_detail_time",
+      "value": "时间：第 %s 节课"
+    },
+    {
+      "name": "class_detail_weeks",
+      "value": "周数：%s"
+    },
+    {
+      "name": "temporary_null",
+      "value": "暂无"
+    },
+    {
       "name": "error_occurred",
       "value": "发生错误"
     },
