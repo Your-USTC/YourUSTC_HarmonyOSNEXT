@@ -1,6 +1,6 @@
 export const timeTableQueryJS = `
 function getWeekNumber(str) {
-    const parts = str.split(',');
+    const parts = str.replace(/[^0-9,-]/g, '').split(',');
     const result = [];
     for (const part of parts) {
         if (part.includes('-')) {

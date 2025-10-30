@@ -3,6 +3,8 @@ import { preferences } from '@kit.ArkData';
 
 export const PREF_NAME = 'unified_preference';
 export const SCHEDULE_KEY = 'scheduleInfo';
+export const START_TIME_KEY = 'termStartTime';
+export const millisecondsPerWeek = 604800000;
 
 class UnifiedPreferences {
 
@@ -34,6 +36,15 @@ class UnifiedPreferences {
     } catch (error) {
       console.error(`getSync ERROR: [${error.name}] ${error.message}`);
       return '';
+    }
+  }
+
+  hasSync(key: string): boolean {
+    try {
+      return this.preferences?.hasSync(key) as boolean;
+    } catch (error) {
+      console.error(`hasSync ERROR: [${error.name}] ${error.message}`);
+      return false;
     }
   }
 
