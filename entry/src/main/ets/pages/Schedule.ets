@@ -87,9 +87,12 @@ struct Schedule {
     } catch (err) {
       this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]'))
       this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
-        ? Math.ceil((currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek) : 1;
+        ? Math.ceil((currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
+        : 1;
     }
-    this.weekStart = this.termStart + (this.weekDisplayed - 1) * 604800000;
+    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
+      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
+      : currentTime.getTime();
     this.weekEnd = this.weekStart + 518400000;
 
     // TODO: 将 weekStart 和 weekEnd 存入首选项
