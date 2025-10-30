@@ -42,7 +42,7 @@
     },
     {
       "name": "bbJiaoXuePingTai",
-      "value": "bb教学平台"
+      "value": "Bb教学平台"
     },
     {
       "name": "HanHaiJiaoXueWang",
@@ -53,8 +53,8 @@
       "value": "慕课"
     },
     {
-      "name": "JiaoShiChaXun",
-      "value": "教室查询"
+      "name": "GongGongChaXun",
+      "value": "公共查询"
     },
     {
       "name": "TuShuGuan",
@@ -71,10 +71,6 @@
     {
       "name": "DaWuShiYanYuYue",
       "value": "大物实验预约"
-    },
-    {
-      "name": "DaWuShiYanGongJu",
-      "value": "大物实验工具"
     },
     {
       "name": "ZhuJiaoXiTong",
