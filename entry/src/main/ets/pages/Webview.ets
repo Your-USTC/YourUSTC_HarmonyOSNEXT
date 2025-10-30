@@ -15,7 +15,7 @@ struct Webview {
   url: string = '';
   @State isTimeTablePage: boolean = false;
   @State gotTimeTable: boolean = false;
-  obtainedData: obtainedData = {timeTable: '', startTime: 0};
+  obtainedData: obtainedData = {timeTable: '', startTime: '0'};
 
   aboutToAppear() { // Receive parameters before loading the page
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
@@ -90,7 +90,8 @@ struct Webview {
             this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
               if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
               console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
-              this.obtainedData.startTime = Number(result);
+              this.obtainedData.startTime = result;
+              console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
             });
           })
         Image(this.isDesktop ? $r('app.media.mobile') : $r('app.media.desktop'))
@@ -147,7 +148,8 @@ struct Webview {
               this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                 if (error) {/* 理论上这里不会出什么错误（doge） */ return;}
                 console.info(`学期开始的UNIX时间戳是${result}mm`);
-                this.obtainedData.startTime = Number(result);
+                this.obtainedData.startTime = result;
+                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
               });
             }, 1000);
           }

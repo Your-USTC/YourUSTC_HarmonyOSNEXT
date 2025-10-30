@@ -22,7 +22,7 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import { SCHEDULE_KEY } from '../utils/UnifyPreference';
+import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from '../utils/UnifyPreference';
 
 // 课程信息类型
 export interface classAttribute {
@@ -37,7 +37,7 @@ export interface classAttribute {
 
 export interface obtainedData {
   timeTable: string;
-  startTime: number;
+  startTime: string;
 }
 
 let schedulePre: preferences.Preferences | null = null;
@@ -88,19 +88,26 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
-  timeTable: string = '';
-  @State termStart: number = 0;
-  @State parsedSchedule: classAttribute[][][] = []
+  termStart: number = 0;
+  @State parsedSchedule: classAttribute[][][] = [];
+  @State weekDisplayed: number = 6;
   onPageShow(): void {
+    const currentTime: Date = new Date();
     try {
       const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-      this.timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
-      this.termStart = routerParams.startTime;
-      this.parsedSchedule = JSON.parse(this.timeTable) as classAttribute[][][];
-      UnifiedPreferences.putSync(SCHEDULE_KEY, this.timeTable);
+      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
+      this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
+      this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
+      UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
+      UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
+      this.weekDisplayed = Math.ceil((currentTime.getTime() - this.termStart) / millisecondsPerWeek);
+      console.info(`课表 weekdisplayed ${this.weekDisplayed}`)
+      console.info(`课表 weekdisplayed ${currentTime.getTime()}`)
+      console.info(`课表 weekdisplayed ${this.termStart}`)
     } catch (err) {
       this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]'))
-      // this.parsedSchedule = JSON.parse(example) as classAttribute[][][]; // TODO: 把这行替换成从首选项提取课表
+      this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
+        ? Math.ceil((currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek) : 1;
     }
   }
 
@@ -159,6 +166,7 @@ struct Schedule {
           .width(40)
           .objectFit(ImageFit.Contain)
           .onClick(() => {
+            this.weekDisplayed--;
             // TODO: 上一周
             this.getUIContext().getPromptAction().showToast({
               message: '上一周',
@@ -166,7 +174,7 @@ struct Schedule {
             })
           })
 
-        Text($r('app.string.week_of_term_no_d', 1))    // TODO: 获取当前周数
+        Text($r('app.string.week_of_term_no_d', this.weekDisplayed))    // TODO: 获取当前周数
           .id('week_of_term_no')
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
@@ -176,6 +184,7 @@ struct Schedule {
           .width(40)
           .objectFit(ImageFit.Contain)
           .onClick(() => {
+            this.weekDisplayed++;
             // TODO: 下一周
             this.getUIContext().getPromptAction().showToast({
               message: '下一周',
@@ -391,42 +400,43 @@ struct Schedule {
          */
         ForEach(this.parsedSchedule, (day: classAttribute[][], indexDay) => {
           ForEach(day, (course: classAttribute[]) => {
-            // TODO: 根据教学周判断显示与否👇
-            if (course.length > 0 && true) {
-              GridItem({ style: GridItemStyle.PLAIN }) {
-                Column() {
-                  Text(course[0].name)
-                    .fontWeight(FontWeight.Bold)
-                    .fontSize(13)
-                    .fontColor($r('app.color.normal_text'))
-                    .maxLines(4)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+            ForEach(course, (lesson: classAttribute) => {
+              if (lesson.weekOfTerm.includes(this.weekDisplayed)) {
+                GridItem({ style: GridItemStyle.PLAIN }) {
+                  Column() {
+                    Text(lesson.name)
+                      .fontWeight(FontWeight.Bold)
+                      .fontSize(13)
+                      .fontColor($r('app.color.normal_text'))
+                      .maxLines(4)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                  Text(course[0].location)
-                    .fontSize(9)
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.MARQUEE })
+                    Text(lesson.location)
+                      .fontSize(9)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE })
 
-                  Text(course[0].teacher)
-                    .fontSize(9)
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.MARQUEE })
+                    Text(lesson.teacher)
+                      .fontSize(9)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE })
+                  }
+                  .width('100%')
+                  .height('100%')
+                  .justifyContent(FlexAlign.Center)
                 }
-                .width('100%')
-                .height('100%')
-                .justifyContent(FlexAlign.Center)
+                .rowStart(course[0].timeSpan[0])
+                .rowEnd(course[0].timeSpan[course[0].timeSpan.length - 1])
+                .columnStart(indexDay + 2)
+                .columnEnd(indexDay + 2)
+                .padding(2)
+                .backgroundColor($r('app.color.shaded_background'))
+                .border({
+                  width: 1,
+                  color: $r('app.color.grid_border')
+                })
               }
-              .rowStart(course[0].timeSpan[0])
-              .rowEnd(course[0].timeSpan[course[0].timeSpan.length - 1])
-              .columnStart(indexDay + 2)
-              .columnEnd(indexDay + 2)
-              .padding(2)
-              .backgroundColor($r('app.color.shaded_background'))
-              .border({
-                width: 1,
-                color: $r('app.color.grid_border')
-              })
-            }
+            })
           })
         })
       }
