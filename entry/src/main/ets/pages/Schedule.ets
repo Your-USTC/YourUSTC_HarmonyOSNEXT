@@ -482,22 +482,23 @@ struct ClassDetailDialog {
     Column() {
       Text(this.classInfo.name).fontSize(24)
         .fontWeight("bold")
-        .textAlign(TextAlign.Center);
+        .textAlign(TextAlign.Center)
+        .width('60%');
       Blank('16');
 
-      Text($r('app.string.class_detail_teacher', (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher)))
+      Text($r('app.string.class_detail_teacher_s', (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher)))
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_location', (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)))
+      Text($r('app.string.class_detail_location_s', (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)))
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_id', (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id)))
+      Text($r('app.string.class_detail_id_s', (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id)))
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_time', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))
+      Text($r('app.string.class_detail_time_s', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))    // TODO: 星期?
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_weeks', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
+      Text($r('app.string.class_detail_weeks_s', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
         .textAlign(TextAlign.Start)
         .width('80%');
 

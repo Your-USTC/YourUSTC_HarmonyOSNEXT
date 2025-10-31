@@ -143,23 +143,23 @@
       "value": "返回"
     },
     {
-      "name": "class_detail_teacher",
+      "name": "class_detail_teacher_s",
       "value": "教师：%s"
     },
     {
-      "name": "class_detail_location",
+      "name": "class_detail_location_s",
       "value": "地点：%s"
     },
     {
-      "name": "class_detail_id",
+      "name": "class_detail_id_s",
       "value": "编号：%s"
     },
     {
-      "name": "class_detail_time",
+      "name": "class_detail_time_s",
       "value": "时间：第 %s 节课"
     },
     {
-      "name": "class_detail_weeks",
+      "name": "class_detail_weeks_s",
       "value": "周数：%s"
     },
     {
@@ -196,19 +196,19 @@
     },
     {
       "name": "switch_ua",
-      "value": "切换 User Agent"
+      "value": "切换显示模式 (UA)"
     },
     {
       "name": "visit_desktop_ua",
-      "value": "访问桌面版站点"
+      "value": "电脑端"
     },
     {
       "name": "visit_mobile_ua",
-      "value": "访问手机版网页"
+      "value": "手机端"
     },
     {
       "name": "visit_tablet_ua",
-      "value": "访问平板端网页"
+      "value": "平板端"
     },
     {
       "name": "goto_system_settings",

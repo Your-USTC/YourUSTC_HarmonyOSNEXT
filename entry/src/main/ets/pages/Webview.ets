@@ -3,6 +3,7 @@ import { webview } from '@kit.ArkWeb'
 import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
+import { IconStyle } from '@kit.ArkUI'
 
 const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 
@@ -32,7 +33,7 @@ struct Webview {
   @Builder
   WebviewMenu() {
     Menu() {
-      MenuItem({ content: $r('app.string.page_forward'), startIcon: $r('app.media.right_arrow')})
+      MenuItem({ content: $r('app.string.page_forward'), startIcon: $r('app.media.forth')})
         .parallelGesture(
           GestureGroup(
             GestureMode.Exclusive,
@@ -76,7 +77,7 @@ struct Webview {
             this.uaMode = MOBILE_MODE;
           })
         MenuItem({ content: $r('app.string.visit_tablet_ua'),
-          startIcon: $r('app.media.default_function_icon'),
+          startIcon: $r('app.media.tablet'),
           endIcon: (this.uaMode == TABLET_MODE ? $r('app.media.checkmark') : undefined) })
           .onClick(() => {
             this.webviewController.setCustomUserAgent(TABLET_UA);
