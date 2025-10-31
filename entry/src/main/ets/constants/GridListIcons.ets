@@ -10,6 +10,7 @@
  */
 
 export let index_to_pic = new Map<string, ResourceStr>()
+  // 课程与学习
   .set('0.0', $r('app.media.JiaoWuXiTong'))             // 教务系统
   .set('0.1', $r('app.media.KeChengBiao'))              // 课程表
   .set('0.2', $r('app.media.KaoShiXinXi'))              // 考试信息
@@ -24,3 +25,8 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('0.11', $r('app.media.DaWuShiYanYuYue'))         // 大物实验预约
   .set('0.12', $r('app.media.ZhuJiaoXiTong'))           // 助教系统
   .set('0.13', $r('app.media.PingKeSheQu'))             // 评课社区
+  .set('0.14', $r('app.media.WolframAlpha'))            // Wolfram Alpha
+  .set('0.15', $r('app.media.WoKeXueShe'))              // 蜗壳学社
+
+  // 服务与工具
+  .set('1.0', $r('app.media.YingXinWang'))              // 迎新网
