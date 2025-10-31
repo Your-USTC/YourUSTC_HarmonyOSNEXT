@@ -30,3 +30,7 @@ export let index_to_pic = new Map<string, ResourceStr>()
 
   // 服务与工具
   .set('1.0', $r('app.media.YingXinWang'))              // 迎新网
+  .set('1.1', $r('app.media.KeDaYouXiang'))             // 科大邮箱
+  .set('1.2', $r('app.media.ZiZhuDaYin'))               // 自助打印
+  .set('1.3', $r('app.media.Nan7JiShi'))                // 南七集市 (有深浅图标)
+  .set('1.4', $r('app.media.Nan7LunTan'))               // 南七论坛

@@ -37,7 +37,7 @@ export let LINK = new Map<string, Link>()
   // 服务与工具
   .set("1.0", { title: $r('app.string.YingXinWang'), url: 'http://welcome.ustc.edu.cn'})
   .set("1.1", { title: $r('app.string.KeDaYouXiang'), url: 'http://mail.ustc.edu.cn'})
-  .set("1.2", { title: $r('app.string.ZiZhuDaYin'), url: 'http://ic.lib.ustc.edu.cn'})
+  .set("1.2", { title: $r('app.string.ZiZhuDaYin'), url: 'https://weixinprinthost.woquyun.com/wq-web/'})
   .set("1.3", { title: $r('app.string.Nan7JiShi'), url: 'https://nan7market.com'})
   .set("1.4", { title: $r('app.string.Nan7LunTan'), url: 'https://ustcforum.com'})
   .set("1.5", { title: $r('app.string.WangLuoTong'), url: 'http://wlt.ustc.edu.cn'})
