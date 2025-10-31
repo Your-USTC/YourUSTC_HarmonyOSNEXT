@@ -199,7 +199,8 @@ struct Webview {
           .domStorageAccess(true)
           .javaScriptAccess(true)
           .width('100%')
-          .height('100%')
+          .layoutWeight(1)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .onControllerAttached(() => {
             if (desktopUrl.includes(this.url)) {
               this.webviewController.setCustomUserAgent(DESKTOP_UA);

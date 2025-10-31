@@ -484,7 +484,7 @@ struct ClassDetailDialog {
       Text(this.classInfo.name).fontSize(24)
         .fontWeight("bold")
         .textAlign(TextAlign.Center)
-        .width('80%');
+        .width('90%');
       Blank('16');
 
       Text($r('app.string.class_detail_teacher_s', (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher)))
