@@ -2,9 +2,14 @@
 import { preferences } from '@kit.ArkData';
 
 export const PREF_NAME = 'unified_preference';
+
+export const LAST_DAY_KEY = 'lastDay';
+export const TOTAL_DAYS_KEY = 'totalDays';
+export const CONSECUTIVE_DAYS_KEY = 'consecutiveDays';
+export const CONTENT_KEY = 'content';
+
 export const SCHEDULE_KEY = 'scheduleInfo';
 export const START_TIME_KEY = 'termStartTime';
-export const millisecondsPerWeek = 604800000;
 
 class UnifiedPreferences {
 
@@ -55,6 +60,9 @@ class UnifiedPreferences {
       })
   }
 
+  clear() {
+    this.preferences?.clearSync()
+  }
 }
 
 export default new UnifiedPreferences();

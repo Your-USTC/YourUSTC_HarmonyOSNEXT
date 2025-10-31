@@ -2,7 +2,8 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from '../utils/UnifyPreference';
+import { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
+const millisecondsPerWeek = 604800000;
 
 // 课程信息类型
 export interface classAttribute {

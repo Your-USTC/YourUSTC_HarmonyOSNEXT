@@ -80,20 +80,11 @@ struct Index {
   @State checkInConsecutive: number = 0;
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
-  private pref: preferences.Preferences | null = null;
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   aboutToAppear(): void {
-    try {
-      this.pref = preferences.getPreferencesSync(
-        this.context,
-        { name: CheckInTools.PREF_NAME }
-      ); // 载入包含签到信息的首选项
-    } catch (error) {
-      console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
-    }
     Schedule.initSchedulePre(this.context);
-    const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup(this.pref);
+    const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup();
     this.checkInTotal = GeneratedDestructArray_1[0];
     this.checkInConsecutive = GeneratedDestructArray_1[1];
     this.checkedInToday = GeneratedDestructArray_1[2];
@@ -281,7 +272,7 @@ struct Index {
               .buttonStyle(this.checkedInToday ? ButtonStyleMode.NORMAL : ButtonStyleMode.EMPHASIZED)
               .enabled(!this.checkedInToday)
               .onClick(() => {
-                const GeneratedDestructArray_1 = CheckInTools.doCheckIn(this.pref)
+                const GeneratedDestructArray_1 = CheckInTools.doCheckIn()
                 this.checkInTotal = GeneratedDestructArray_1[0]
                 this.checkedInToday = true
                 this.checkInConsecutive = GeneratedDestructArray_1[1]
