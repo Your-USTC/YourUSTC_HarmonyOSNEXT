@@ -1,3 +1,4 @@
+// .onBackPressed()在5.0.0上不起作用！
 
 import { webview } from '@kit.ArkWeb'
 import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'

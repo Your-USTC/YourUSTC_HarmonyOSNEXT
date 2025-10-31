@@ -196,7 +196,7 @@
     },
     {
       "name": "switch_ua",
-      "value": "切换显示模式 (UA)"
+      "value": "切换浏览器标识"
     },
     {
       "name": "visit_desktop_ua",
