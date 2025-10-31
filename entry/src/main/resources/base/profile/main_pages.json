@@ -3,6 +3,8 @@
     "pages/Index",
     "pages/Webview",
     "pages/Schedule",
-    "pages/CourseEdit"
+    "pages/CourseEdit",
+    "pages/About",
+    "pages/Help"
   ]
 }

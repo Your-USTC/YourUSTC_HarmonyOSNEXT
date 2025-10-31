@@ -160,7 +160,7 @@ struct Schedule {
 
         Blank()
 
-        Image($r('app.media.last_page'))
+        Image($r('app.media.arrow_left_circle'))
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)
@@ -177,7 +177,7 @@ struct Schedule {
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
 
-        Image($r('app.media.next_page'))
+        Image($r('app.media.arrow_right_circle'))
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)

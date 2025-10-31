@@ -179,6 +179,38 @@
       "value": "取消"
     },
     {
+      "name": "help",
+      "value": "帮助"
+    },
+    {
+      "name": "already_first_page",
+      "value": "已是最先访问的 URL"
+    },
+    {
+      "name": "already_last_page",
+      "value": "已是最近访问的 URL"
+    },
+    {
+      "name": "page_forward",
+      "value": "前进"
+    },
+    {
+      "name": "switch_ua",
+      "value": "切换 User Agent"
+    },
+    {
+      "name": "visit_desktop_ua",
+      "value": "访问桌面版站点"
+    },
+    {
+      "name": "visit_mobile_ua",
+      "value": "访问手机版网页"
+    },
+    {
+      "name": "visit_tablet_ua",
+      "value": "访问平板端网页"
+    },
+    {
       "name": "goto_system_settings",
       "value": "前往系统设置"
     },

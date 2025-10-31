@@ -11,7 +11,23 @@ struct CourseEdit {
     console.log('edit page');
   }
 
-  build(){
-    Text(this.classInfo.name);
+  @Builder
+  MyMenu(){
+    Menu(){
+      MenuItem( { content: "test1" })
+      MenuItem( { content: "test2" })
+    }
+  }
+
+  build() {
+    Column() {
+      // 触发菜单的组件（如右上角图标）
+      Image($r('app.media.right_arrow'))
+        .width(40)
+        .height(40)
+        .margin({ top: 10, right: 10 })
+        // 绑定菜单（长按/右键触发）
+        .bindMenu(this.MyMenu())
+    }
   }
 }

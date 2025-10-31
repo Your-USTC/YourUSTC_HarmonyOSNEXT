@@ -603,9 +603,17 @@ struct Index {
                         }).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
                       }
                     })
-                  break;
-               default:
-                 this.showMessage($r('app.string.WorkingOn'), 500);
+                    break;
+                  case 5:
+                    this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
+                      .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+                    break;
+                  case 6:
+                    this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
+                      .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+                    break;
+                  default:
+                   this.showMessage($r('app.string.WorkingOn'), 500);
                 }
               })
             })
