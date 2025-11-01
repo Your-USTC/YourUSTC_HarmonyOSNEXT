@@ -34,3 +34,7 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('1.2', $r('app.media.ZiZhuDaYin'))               // 自助打印
   .set('1.3', $r('app.media.Nan7JiShi'))                // 南七集市 (有深浅图标)
   .set('1.4', $r('app.media.Nan7LunTan'))               // 南七论坛
+  .set('1.5', $r('app.media.WangLuoTong'))              // 网络通
+  .set('1.6', $r('app.media.YiKaTong'))                 // 一卡通
+  .set('1.7', $r('app.media.XiaoYiYuan'))               // 校医院
+  .set('1.8', $r('app.media.XueShengYiBao'))            // 学生医保
