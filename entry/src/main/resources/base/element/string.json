@@ -67,10 +67,12 @@
     {
       "name": "afternoon",
       "value": "下午"
-    },{
+    },
+    {
       "name": "evening",
       "value": "晚上"
-    },    {
+    },
+    {
       "name": "monday",
       "value": "星期一"
     },

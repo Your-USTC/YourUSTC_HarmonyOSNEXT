@@ -111,6 +111,10 @@ struct Schedule {
             this.getUIContext().getRouter().back()
           })
 
+        Image($r('app.media.empty')) // 让标题居中
+          .padding({left: 12})
+          .height(20)
+
         Blank()
 
         Text($r('app.string.local_schedule'))
@@ -118,6 +122,14 @@ struct Schedule {
           .fontColor($r('app.color.normal_text'))
 
         Blank()
+
+        Image($r('app.media.plus_square'))
+          .padding({right: 12})
+          .height(20)
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({ url: 'pages/CourseEdit' })
+              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+          })
 
         Image($r('app.media.get'))
           .padding({right: 12})
