@@ -199,6 +199,10 @@
       "value": "切换浏览器标识"
     },
     {
+      "name": "no_class_this_week",
+      "value": "本周没有课程喵~\n你可以在右上角导入或者添加课程。"
+    },
+    {
       "name": "visit_desktop_ua",
       "value": "电脑端"
     },

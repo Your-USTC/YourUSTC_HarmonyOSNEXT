@@ -2,8 +2,7 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
-const millisecondsPerWeek = 604800000;
+
 
 // 课程信息类型
 export interface classAttribute {
@@ -69,32 +68,22 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
-  @State parsedSchedule: classAttribute[][][] = [];
   @State weekDisplayed: number = 0;
   @State termStart: number = 0;
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
+  @State thisWeekSchedule: classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
 
   onPageShow(): void {
     const currentTime: Date = new Date();
-    try {
-      const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
-      this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
-      this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
-      UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
-      UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
-      this.weekDisplayed = Math.ceil((currentTime.getTime() - this.termStart) / millisecondsPerWeek);
-    } catch (err) {
-      this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]'))
-      this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
-        ? Math.ceil((currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
-        : 1;
-    }
-    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
-      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
-      : currentTime.getTime();
-    this.weekEnd = this.weekStart + 518400000;
+    const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
+    UnifiedPreferences.refreshParsedSchedule(routerParams);
+    UnifiedPreferences.refreshFormattedSchedule();
+    this.termStart = UnifiedPreferences.termStart;
+    this.weekDisplayed = UnifiedPreferences.weekDisplayed;
+    this.weekStart = UnifiedPreferences.weekStart;
+    this.weekEnd = UnifiedPreferences.weekEnd;
+    this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
 
     // TODO: 将 weekStart 和 weekEnd 存入首选项
     console.info(`课表 weekDisplayed: ${this.weekDisplayed}`)
@@ -161,7 +150,7 @@ struct Schedule {
 
         Blank()
 
-        Image($r('app.media.arrow_left_circle'))
+        Image(this.weekDisplayed == 1 ? $r('app.media.arrow_left_circle_unavailable') : $r('app.media.arrow_left_circle'))
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)
@@ -170,6 +159,7 @@ struct Schedule {
               this.weekDisplayed--;
               this.weekStart -= 604800000;
               this.weekEnd -= 604800000;
+              this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
             }
           })
 
@@ -178,7 +168,7 @@ struct Schedule {
           .fontWeight(FontWeight.Bold)
           .fontSize(14)
 
-        Image($r('app.media.arrow_right_circle'))
+        Image(this.weekDisplayed == 20 ? $r('app.media.arrow_right_circle_unavailable') : $r('app.media.arrow_right_circle'))
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)
@@ -187,6 +177,7 @@ struct Schedule {
               this.weekDisplayed++;
               this.weekStart += 604800000;
               this.weekEnd += 604800000;
+              this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
             }
           })
       }
@@ -390,75 +381,84 @@ struct Schedule {
           .border({
             width: { top: 1, right: 1 },
             color: $r('app.color.grid_border')
-          })
+          });
         })
 
         /**
          * 课程内容
          */
-        ForEach(this.parsedSchedule, (day: classAttribute[][], indexDay) => {
-          ForEach(day, (course: classAttribute[]) => {
+        if (this.thisWeekSchedule.length === 0 || this.thisWeekSchedule.every(subArr => subArr.length === 0))
+          GridItem({style:GridItemStyle.NONE}){
+            Column() {
+              Image($r('app.media.no_course_this_week'))
+                .height(100).width(100);
+              Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center);
+            }
+          }
+          .rowStart(1)
+          .rowEnd(11)
+          .columnStart(2)
+          .columnEnd(8);
+        else
+          ForEach(this.thisWeekSchedule, (course: classAttribute[], indexDay) => {
             ForEach(course, (lesson: classAttribute) => {
-              if (lesson.weekOfTerm.includes(this.weekDisplayed)) {
-                GridItem({ style: GridItemStyle.PLAIN }) {
-                  Column() {
-                    Text(lesson.name)
-                      .fontWeight(FontWeight.Bold)
-                      .fontSize(13)
-                      .fontColor($r('app.color.normal_text'))
-                      .maxLines(4)
-                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+              GridItem({ style: GridItemStyle.PLAIN }) {
+                Column() {
+                  Text(lesson.name)
+                    .fontWeight(FontWeight.Bold)
+                    .fontSize(13)
+                    .fontColor($r('app.color.normal_text'))
+                    .maxLines(4)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                    Text(lesson.location)
-                      .fontSize(9)
-                      .maxLines(1)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE })
+                  Text(lesson.location)
+                    .fontSize(9)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.MARQUEE })
 
-                    Text(lesson.teacher)
-                      .fontSize(9)
-                      .maxLines(1)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE })
-                  }
-                  .width('100%')
-                  .height('100%')
-                  .justifyContent(FlexAlign.Center)
+                  Text(lesson.teacher)
+                    .fontSize(9)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.MARQUEE })
                 }
-                .onClick(() => {
-                  this.ShowClassDetail = new CustomDialogController({
-                    builder: ClassDetailDialog({
-                      classInfo: lesson
-                    }),
-                    autoCancel: true,
-                    gridCount: 4,
-                    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
-                      if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-                        dismissDialogAction.dismiss();
-                      }
-                      if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
-                        dismissDialogAction.dismiss();
-                      }
-                    }
-                  })
-                  if (this.ShowClassDetail != null) {
-                    this.ShowClassDetail.open();
-                  }
-                  // this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
-                  //   .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
-                })
-                .rowStart(course[0].timeSpan[0])
-                .rowEnd(course[0].timeSpan[course[0].timeSpan.length - 1])
-                .columnStart(indexDay + 2)
-                .columnEnd(indexDay + 2)
-                .padding(2)
-                .backgroundColor($r('app.color.shaded_background'))
-                .border({
-                  width: 1,
-                  color: $r('app.color.grid_border')
-                })
+                .width('100%')
+                .height('100%')
+                .justifyContent(FlexAlign.Center)
               }
-            })
-          })
-        })
+              .onClick(() => {
+                this.ShowClassDetail = new CustomDialogController({
+                  builder: ClassDetailDialog({
+                    classInfo: lesson
+                  }),
+                  autoCancel: true,
+                  gridCount: 4,
+                  onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                    if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                      dismissDialogAction.dismiss();
+                    }
+                    if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                      dismissDialogAction.dismiss();
+                    }
+                  }
+                })
+                if (this.ShowClassDetail != null) {
+                  this.ShowClassDetail.open();
+                }
+                // this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
+                //   .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+              })
+              .rowStart(lesson.timeSpan[0])
+              .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1])
+              .columnStart(indexDay + 2)
+              .columnEnd(indexDay + 2)
+              .padding(2)
+              .backgroundColor($r('app.color.shaded_background'))
+              .border({
+                width: 1,
+                color: $r('app.color.grid_border')
+              });
+            });
+          });
       }
       .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
