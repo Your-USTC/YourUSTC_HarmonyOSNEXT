@@ -1,3 +1,7 @@
+import { classAttribute, obtainedData } from '../pages/Schedule';
+import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from './UnifyPreference';
+import UnifiedPreferences from './UnifyPreference';
+
 export const timeTableQueryJS = `
 function getWeekNumber(str) {
     const parts = str.replace(/[^0-9,-]/g, '').split(',');
@@ -60,3 +64,57 @@ export const startTimeQueryJS = `
 `
 
 export const example: string = '[[[{"name":"批判性思维与英语沟通","teacher":"Bradley Johnson","weekOfTerm":[2],"timeSpan":[1,2],"location":"5106","id":"FL1106A.01 [2]"}],[],[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[3,4],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[{"name":"计算机程序设计","teacher":"李卫海","weekOfTerm":[2],"timeSpan":[6,7],"location":"3A212","id":"CS1003.H2 [3]"}],[],[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[8,9],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[],[],[],[]],[[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[1,2],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[{"name":"线性代数(B1)","teacher":"赵晨","weekOfTerm":[2],"timeSpan":[3,4],"location":"3C103","id":"MATH1009.06 [4]"}],[],[],[],[],[{"name":"习近平新时代中国特色社会主义思想概论","teacher":"陈慧瑞","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"1302","id":"MARX1014.06 [3]"}],[],[],[],[],[]],[[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[1,2],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[],[],[],[],[],[],[],[],[],[]],[[{"name":"线性代数(B1)","teacher":"赵晨","weekOfTerm":[2],"timeSpan":[1,2],"location":"3C103","id":"MATH1009.06 [4]"}],[],[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[3,4],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[],[{"name":"基础体育","teacher":"刘德海","weekOfTerm":[2],"timeSpan":[6,7],"location":"","id":"PE00001.28 [1]"}],[],[{"name":"思想道德与法治","teacher":"刘海龙","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"1202","id":"MARX1012.12 [2.5]"}],[],[],[],[],[]],[[],[],[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[3,4],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[{"name":"计算机程序设计","teacher":"李卫海","weekOfTerm":[2],"timeSpan":[6,7],"location":"3A212","id":"CS1003.H2 [3]"}],[],[{"name":"先进制造实践","teacher":"倪青, 刘志刚, ...","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"","id":"ME2503.01 [2]"}],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[],[]]]'
+
+class scheduleManager {
+  weekDisplayed: number = 0;
+  termStart: number = 0;
+  weekStart: number = 0;
+  weekEnd: number = 0;
+  parsedSchedule: classAttribute[][][] = [];
+  formattedSchedule: classAttribute[][][] = [];
+  currentTime: Date = new Date();
+  today: number = 0; // 星期几-1
+
+  getParsedSchedule(): void {
+    this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
+    this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
+      ? Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
+      : 1;
+    this.today = (this.currentTime.getDay() + 6) % 7;
+  }
+
+  refreshParsedSchedule(routerParams: obtainedData): void {
+    try {
+      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
+      this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
+      this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
+      UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
+      UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
+      this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
+    } catch (err) {
+      this.getParsedSchedule();
+    }
+    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
+      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
+      : this.currentTime.getTime();
+    this.weekEnd = this.weekStart + 518400000;
+  }
+
+  getFormattedSchedule(): void {
+    this.getParsedSchedule();
+    this.formattedSchedule = [];
+    for (let i = 0; i <= 20; i++) { // 初始化三个维度
+      this.formattedSchedule[i] = [];
+      for (let j = 0; j <= 6; j++)
+        this.formattedSchedule[i][j] = [];
+    }
+    for (let i = 0; i <= 6; i++) // 星期几 -1
+      if (this.parsedSchedule[i] != undefined) // 防止不存在元素
+        for (let j of this.parsedSchedule[i]) // 星期几的每一节课
+          for (let k of j) // 叠课判断
+            for (let week of k.weekOfTerm)
+              this.formattedSchedule[week][i].push(k);
+  }
+}
+
+export default new scheduleManager();

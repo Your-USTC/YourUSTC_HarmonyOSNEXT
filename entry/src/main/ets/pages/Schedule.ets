@@ -2,6 +2,7 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import UnifiedPreferences from '../utils/UnifyPreference';
+import scheduleManager from '../utils/TimeTable';
 
 
 // 课程信息类型
@@ -77,13 +78,13 @@ struct Schedule {
   onPageShow(): void {
     const currentTime: Date = new Date();
     const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-    UnifiedPreferences.refreshParsedSchedule(routerParams);
-    UnifiedPreferences.getFormattedSchedule();
-    this.termStart = UnifiedPreferences.termStart;
-    this.weekDisplayed = UnifiedPreferences.weekDisplayed;
-    this.weekStart = UnifiedPreferences.weekStart;
-    this.weekEnd = UnifiedPreferences.weekEnd;
-    this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
+    scheduleManager.refreshParsedSchedule(routerParams);
+    scheduleManager.getFormattedSchedule();
+    this.termStart = scheduleManager.termStart;
+    this.weekDisplayed = scheduleManager.weekDisplayed;
+    this.weekStart = scheduleManager.weekStart;
+    this.weekEnd = scheduleManager.weekEnd;
+    this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
 
     // TODO: 将 weekStart 和 weekEnd 存入首选项
     console.info(`课表 weekDisplayed: ${this.weekDisplayed}`)
@@ -171,7 +172,7 @@ struct Schedule {
               this.weekDisplayed--;
               this.weekStart -= 604800000;
               this.weekEnd -= 604800000;
-              this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
+              this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
             }
           })
 
@@ -189,7 +190,7 @@ struct Schedule {
               this.weekDisplayed++;
               this.weekStart += 604800000;
               this.weekEnd += 604800000;
-              this.thisWeekSchedule = UnifiedPreferences.formattedSchedule[this.weekDisplayed];
+              this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
             }
           })
       }
