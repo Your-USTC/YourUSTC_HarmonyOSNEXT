@@ -40,8 +40,19 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('1.8', $r('app.media.XiaoYiYuan'))               // 校医院
   .set('1.9', $r('app.media.XueShengYiBao'))            // 学生医保
   .set('1.10', $r('app.media.Nan7JiShi'))               // 南七集市 (有深浅图标)
-  .set('1.11', $r('app.media.Nan7LunTan'))              // 南七论坛
+  .set('1.11', $r('app.media.Nan7LunTan'))              // 南七茶馆
   .set('1.12', $r('app.media.YingXinWang'))             // 迎新网
-  .set('1.13', $r('app.media.USTCDaoHang'))             // USTC导航
 
   // 信息技术
+  .set('2.0', $r('app.media.KeDaVPN'))                  // Web VPN
+  .set('2.1', $r('app.media.ZhengBanRuanJian'))         // 正版软件
+  .set('2.2', $r('app.media.KaiYuanJingXiang'))         // 开源镜像
+  .set('2.3', $r('app.media.WenDangXieZuo'))            // 文档协作
+  .set('2.4', $r('app.media.SCCGitLab'))                // SCC GitLab
+  .set('2.4', $r('app.media.SCCGitLab'))                // SCC GitLab
+  .set('2.5', $r('app.media.LUGGitLab'))                // LUG GitLab
+  .set('2.6', $r('app.media.KeDaOJ'))                   // 科大 OJ
+  .set('2.7', $r('app.media.VlabShiYanZhongXin'))       // Vlab 实验中心
+  .set('2.8', $r('app.media.JiYuanKeYanPingTai'))       // 计院科研平台
+
+  // 学校与管理
