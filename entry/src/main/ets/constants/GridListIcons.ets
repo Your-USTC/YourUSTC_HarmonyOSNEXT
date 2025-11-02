@@ -49,7 +49,6 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('2.2', $r('app.media.KaiYuanJingXiang'))         // 开源镜像
   .set('2.3', $r('app.media.WenDangXieZuo'))            // 文档协作
   .set('2.4', $r('app.media.SCCGitLab'))                // SCC GitLab
-  .set('2.4', $r('app.media.SCCGitLab'))                // SCC GitLab
   .set('2.5', $r('app.media.LUGGitLab'))                // LUG GitLab
   .set('2.6', $r('app.media.KeDaOJ'))                   // 科大 OJ
   .set('2.7', $r('app.media.VlabShiYanZhongXin'))       // Vlab 实验中心
