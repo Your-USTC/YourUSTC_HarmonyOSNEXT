@@ -35,6 +35,10 @@
     {
       "name": "grid_border",
       "value": "#DDDDDD"
+    },
+    {
+      "name": "pink",
+      "value": "#E2ADC3"
     }
   ]
 }

@@ -21,6 +21,8 @@ class UnifiedPreferences {
   weekEnd: number = 0;
   parsedSchedule: classAttribute[][][] = [];
   formattedSchedule: classAttribute[][][] = [];
+  currentTime: Date = new Date();
+  today: number = 0; // 星期几-1
 
   private preferences: preferences.Preferences | null = null;
 
@@ -53,6 +55,14 @@ class UnifiedPreferences {
     }
   }
 
+  getBoolSync(key: string, defaultValue: boolean): boolean {
+    try {
+      return this.preferences?.getSync(key, defaultValue) as boolean;
+    } catch (error) {
+      console.error(`getSync ERROR: [${error.name}] ${error.message}`);
+      return defaultValue;
+    }}
+
   hasSync(key: string): boolean {
     try {
       return this.preferences?.hasSync(key) as boolean;
@@ -73,28 +83,33 @@ class UnifiedPreferences {
     this.preferences?.clearSync()
   }
 
+  getParsedSchedule(): void {
+    this.parsedSchedule = JSON.parse(this.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
+    this.weekDisplayed = this.hasSync(START_TIME_KEY)
+      ? Math.ceil((this.currentTime.getTime() - Number(this.getSync(START_TIME_KEY))) / millisecondsPerWeek)
+      : 1;
+    this.today = (this.currentTime.getDay() + 6) % 7;
+  }
+
   refreshParsedSchedule(routerParams: obtainedData): void {
-    const currentTime: Date = new Date();
     try {
       const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
       this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
       this.putSync(SCHEDULE_KEY, timeTable);
       this.putSync(START_TIME_KEY, this.termStart);
-      this.weekDisplayed = Math.ceil((currentTime.getTime() - this.termStart) / millisecondsPerWeek);
+      this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
     } catch (err) {
-      this.parsedSchedule = JSON.parse(this.getSync(SCHEDULE_KEY, '[[[]]]'))
-      this.weekDisplayed = this.hasSync(START_TIME_KEY)
-        ? Math.ceil((currentTime.getTime() - Number(this.getSync(START_TIME_KEY))) / millisecondsPerWeek)
-        : 1;
+      this.getParsedSchedule();
     }
     this.weekStart = this.hasSync(START_TIME_KEY)
       ? Number(this.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
-      : currentTime.getTime();
+      : this.currentTime.getTime();
     this.weekEnd = this.weekStart + 518400000;
   }
 
-  refreshFormattedSchedule(): void {
+  getFormattedSchedule(): void {
+    this.getParsedSchedule();
     this.formattedSchedule = [];
     for (let i = 0; i <= 20; i++) { // 初始化三个维度
       this.formattedSchedule[i] = [];

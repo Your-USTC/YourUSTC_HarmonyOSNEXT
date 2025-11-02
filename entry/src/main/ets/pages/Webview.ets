@@ -118,7 +118,7 @@ struct Webview {
               })
             })
           Image($r('app.media.back'))
-            .padding(({ left: 12 }))
+            .padding(({ left: 12, right: 16 }))
             .height(16)
             .draggable(false)
             .parallelGesture(

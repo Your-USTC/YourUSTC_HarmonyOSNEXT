@@ -78,7 +78,7 @@ struct Schedule {
     const currentTime: Date = new Date();
     const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
     UnifiedPreferences.refreshParsedSchedule(routerParams);
-    UnifiedPreferences.refreshFormattedSchedule();
+    UnifiedPreferences.getFormattedSchedule();
     this.termStart = UnifiedPreferences.termStart;
     this.weekDisplayed = UnifiedPreferences.weekDisplayed;
     this.weekStart = UnifiedPreferences.weekStart;
@@ -456,8 +456,6 @@ struct Schedule {
                 if (this.ShowClassDetail != null) {
                   this.ShowClassDetail.open();
                 }
-                // this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
-                //   .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
               })
               .rowStart(lesson.timeSpan[0])
               .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1])

@@ -15,6 +15,7 @@ import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
+import UnifiedPreference from '../utils/UnifyPreference';
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -80,6 +81,10 @@ struct Index {
   @State checkInConsecutive: number = 0;
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
+  @State todayCourse: classAttribute[] = [];
+  @State tomorrowCourse: classAttribute[] = [];
+  @State showRecentCourse: boolean = true;
+  @State showTestInfo: boolean = true;
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
 
   aboutToAppear(): void {
@@ -89,6 +94,11 @@ struct Index {
     this.checkInConsecutive = GeneratedDestructArray_1[1];
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
+    UnifiedPreference.getFormattedSchedule(); // 初始化首页课表
+    this.todayCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed][UnifiedPreference.today];
+    this.tomorrowCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed + Math.floor((UnifiedPreference.today + 1) / 7)][(UnifiedPreference.today + 1) % 7];
+    this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
+    this.showTestInfo = UnifiedPreference.getBoolSync('showTestInfo', true);// 是否显示
   }
 
   /**
@@ -177,8 +187,18 @@ struct Index {
         Image($r('app.media.right_arrow'))
           .width('12vp')
           .height('24vp')
+      } else if (item.id == 0) {
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
+          .onClick(() => {
+            this.showRecentCourse = !this.showRecentCourse;
+            UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
+          });
       } else {
-        Toggle({ type: ToggleType.Switch, isOn: false })
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showTestInfo })
+          .onClick(() => {
+            this.showTestInfo = !this.showTestInfo;
+            UnifiedPreference.putSync('showTestInfo', this.showTestInfo);
+          });
       }
     }
     .justifyContent(FlexAlign.SpaceBetween)
@@ -307,18 +327,32 @@ struct Index {
       ListItem() {
         Column() {
           Row() {
+            if (this.showRecentCourse) {
+              Image($r('app.media.refresh'))
+                .height(20)
+                .onClick(() => {
+                  UnifiedPreference.getFormattedSchedule(); // 初始化首页课表
+                  this.todayCourse =
+                    UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed][UnifiedPreference.today];
+                  this.tomorrowCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed +
+                  Math.floor((UnifiedPreference.today + 1) / 7)][(UnifiedPreference.today + 1) % 7];
+                });
+            } else {
+              Image($r('app.media.empty')).height(20);
+            }
+
             Blank()
 
             Text($r('app.string.your_schedule'))
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.normal_text'))
+              .margin({ right: 10 })
 
             Blank()
 
             Image($r('app.media.right_arrow'))
-              .width('12vp')
-              .height('24vp')
+              .height(24)
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
@@ -328,7 +362,93 @@ struct Index {
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
           })
 
-          // TODO: 今日课程 或 当前课程
+          if (this.showRecentCourse) {
+            Divider();
+            if (this.todayCourse.length == 0) {
+              Column() {
+                Image($r('app.media.no_course_today'))
+                  .height(50);
+                Text($r('app.string.no_class_today'));
+              }
+              .margin({ top: 12, bottom: 12 });
+            } else {
+              ForEach(this.todayCourse, (course: classAttribute, index) => {
+                if (index > 0) {
+                  Divider().width('90%');
+                }
+                Row() {
+                  Column() {
+                    Text(course.name)
+                      .textAlign(TextAlign.Start)
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Bold)
+                      .maxLines(2)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis });
+                  }
+                  .width('40%')
+                  .alignItems(HorizontalAlign.Start)
+                  .margin({ left: 20 });
+
+                  Column() {
+                    Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
+                      1]][1]}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                  }
+                  .margin({ left: 10, right: 20 })
+                  .width('60%')
+                  .alignItems(HorizontalAlign.Start);
+                }
+                .margin({ top: 7, bottom: 7 })
+              });
+            }
+
+            if (this.tomorrowCourse.length > 0) {
+              Row() {
+                Text($r('app.string.tomorrow_class'))
+                  .fontSize(15)
+                  .margin({left: 10, right: 10})
+                  .fontColor($r('app.color.pink'));
+                Divider();
+              }
+
+              ForEach(this.tomorrowCourse, (course: classAttribute, index) => {
+                if (index > 0) {
+                  Divider().width('90%');
+                }
+                Row() {
+                  Column() {
+                    Text(course.name)
+                      .textAlign(TextAlign.Start)
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Bold)
+                      .maxLines(2)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis });
+                  }
+                  .width('40%')
+                  .alignItems(HorizontalAlign.Start)
+                  .margin({ left: 20 });
+
+                  Column() {
+                    Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
+                      1]][1]}`)
+                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                  }
+                  .margin({ left: 10, right: 20 })
+                  .width('60%')
+                  .alignItems(HorizontalAlign.Start);
+                }
+                .margin({ top: 7, bottom: 7 })
+              });
+            }
+          }
         }
         .justifyContent(FlexAlign.Center)
       }
@@ -442,7 +562,15 @@ struct Index {
               .height('48vp')
               .onClick(() => {
                 switch (cell.id) { // 根据 cell.id 区分设置项
+                  case 0:
+                    this.showRecentCourse = !this.showRecentCourse;
+                    UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
+                    break;
                   case 1:
+                    this.showTestInfo = !this.showTestInfo;
+                    UnifiedPreference.putSync('showTestInfo', this.showTestInfo);
+                    break;
+                  case 2:
                     // 选择最近使用
                     let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
                     let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
@@ -469,7 +597,7 @@ struct Index {
                       }
                     })
                     break;
-                  case 2:
+                  case 3:
                     // 重置最近使用
                     FunctionOrder.resetFunc(this.context);
                     this.refreshTabGrid(1);
@@ -479,7 +607,7 @@ struct Index {
                       console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                     }
                     break;
-                  case 3:
+                  case 4:
                     // 清除日历中的所有课程信息
                     calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
                       calendar = data;
@@ -499,7 +627,7 @@ struct Index {
                         this.calendar_permission_denied(err);
                     });
                     break;
-                  case 4:
+                  case 5:
                     let selected3: number = 0;
                     switch (Schedule.remindBefore[0]) {
                       case 10: selected3 = 1; break;
@@ -595,11 +723,13 @@ struct Index {
                       }
                     })
                     break;
-                  case 5:
+                  case 6:
+                    // 帮助
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
-                  case 6:
+                  case 7:
+                    // 关于
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
