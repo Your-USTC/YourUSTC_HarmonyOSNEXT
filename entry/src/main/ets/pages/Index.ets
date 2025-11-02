@@ -356,7 +356,7 @@ struct Index {
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
-          .padding({ left: 27, right: 15 })
+          .padding({ left: 20, right: 15 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
