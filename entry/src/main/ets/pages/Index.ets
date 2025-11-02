@@ -15,7 +15,8 @@ import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
-import UnifiedPreference from '../utils/UnifyPreference';
+import UnifiedPreference from '../utils/UnifyPreference'
+import scheduleManager from '../utils/TimeTable'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -94,9 +95,9 @@ struct Index {
     this.checkInConsecutive = GeneratedDestructArray_1[1];
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
-    UnifiedPreference.getFormattedSchedule(); // 初始化首页课表
-    this.todayCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed][UnifiedPreference.today];
-    this.tomorrowCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed + Math.floor((UnifiedPreference.today + 1) / 7)][(UnifiedPreference.today + 1) % 7];
+    scheduleManager.getFormattedSchedule(); // 初始化首页课表
+    this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+    this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
     this.showTestInfo = UnifiedPreference.getBoolSync('showTestInfo', true);// 是否显示
   }
@@ -331,11 +332,11 @@ struct Index {
               Image($r('app.media.refresh'))
                 .height(20)
                 .onClick(() => {
-                  UnifiedPreference.getFormattedSchedule(); // 初始化首页课表
+                  scheduleManager.getFormattedSchedule(); // 初始化首页课表
                   this.todayCourse =
-                    UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed][UnifiedPreference.today];
-                  this.tomorrowCourse = UnifiedPreference.formattedSchedule[UnifiedPreference.weekDisplayed +
-                  Math.floor((UnifiedPreference.today + 1) / 7)][(UnifiedPreference.today + 1) % 7];
+                    scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+                  Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
                 });
             } else {
               Image($r('app.media.empty')).height(20);
