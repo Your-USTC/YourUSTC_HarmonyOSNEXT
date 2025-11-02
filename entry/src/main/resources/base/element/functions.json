@@ -42,7 +42,7 @@
     },
     {
       "name": "bbJiaoXuePingTai",
-      "value": "Bb教学平台"
+      "value": "Bb 教学平台"
     },
     {
       "name": "HanHaiJiaoXueWang",
@@ -114,7 +114,7 @@
     },
     {
       "name": "Nan7LunTan",
-      "value": "南七论坛"
+      "value": "南七茶馆"
     },
     {
       "name": "YiKaTong",
@@ -141,10 +141,6 @@
       "value": "科大云盘"
     },
     {
-      "name": "USTCDaoHang",
-      "value": "USTC导航"
-    },
-    {
       "name": "ZhiHuiMenHu",
       "value": "智慧门户"
     },
@@ -162,27 +158,23 @@
     },
     {
       "name": "KeDaVPN",
-      "value": "科大VPN"
+      "value": "Web VPN"
     },
     {
       "name": "LUGGitlab",
-      "value": "LUG Gitlab"
+      "value": "LUG GitLab"
     },
     {
-      "name": "WangLuoQiDong",
-      "value": "网络启动文档"
-    },
-    {
-      "name": "ChaoSuanZhongXinGitlab",
-      "value": "超算中心GitLab"
+      "name": "SCCGitlab",
+      "value": "SCC GitLab"
     },
     {
       "name": "KeDaOJ",
-      "value": "科大OJ"
+      "value": "科大 OJ"
     },
     {
-      "name": "VLABShiYanZhongXin",
-      "value": "VLAB实验中心"
+      "name": "VlabShiYanZhongXin",
+      "value": "Vlab 实验中心"
     },
     {
       "name": "JiYuanKeYanPingTai",
