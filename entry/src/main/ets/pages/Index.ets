@@ -85,7 +85,7 @@ struct Index {
   @State todayCourse: classAttribute[] = [];
   @State tomorrowCourse: classAttribute[] = [];
   @State showRecentCourse: boolean = true;
-  @State showTestInfo: boolean = true;
+  @State showExamDetail: boolean = true;
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private currentTime: Date = new Date();
 
@@ -100,7 +100,7 @@ struct Index {
     this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
     this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
-    this.showTestInfo = UnifiedPreference.getBoolSync('showTestInfo', true);// 是否显示
+    this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
   }
 
   /**
@@ -196,10 +196,10 @@ struct Index {
             UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
           });
       } else {
-        Toggle({ type: ToggleType.Switch, isOn: $$this.showTestInfo })
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
           .onClick(() => {
-            this.showTestInfo = !this.showTestInfo;
-            UnifiedPreference.putSync('showTestInfo', this.showTestInfo);
+            this.showExamDetail = !this.showExamDetail;
+            UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
           });
       }
     }
@@ -487,6 +487,50 @@ struct Index {
       .borderRadius(20)
       .margin({ top: 5 })
       .backgroundColor($r('app.color.grid_background'))
+
+      ListItem() {
+        Column() {
+          Row() {
+            if (this.showExamDetail) {
+              Image($r('app.media.refresh'))
+                .height(20)
+                .onClick(() => {
+                  scheduleManager.getFormattedSchedule(); // 初始化首页课表
+                  this.todayCourse =
+                    scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+                  Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                });
+            } else {
+              Image($r('app.media.empty')).height(20);
+            }
+            
+            Blank()
+
+            Text($r('app.string.exam_detail'))
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.normal_text'))
+              .margin({ right: 10 })
+
+            Blank()
+
+            Image($r('app.media.right_arrow'))
+              .height(24)
+          }
+          .width('100%')
+          .margin({ top: 15, bottom: 10 })
+          .padding({ left: 20, right: 15 })
+          .onClick(() => {
+            this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
+              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+          })
+        }
+      }
+      .width('100%')
+      .borderRadius(20)
+      .margin({ top: 5 })
+      .backgroundColor($r('app.color.grid_background'));
     }
     .width('100%')
     .height('100%')
@@ -598,8 +642,8 @@ struct Index {
                     UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
                     break;
                   case 1:
-                    this.showTestInfo = !this.showTestInfo;
-                    UnifiedPreference.putSync('showTestInfo', this.showTestInfo);
+                    this.showExamDetail = !this.showExamDetail;
+                    UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
                     break;
                   case 2:
                     // 选择最近使用

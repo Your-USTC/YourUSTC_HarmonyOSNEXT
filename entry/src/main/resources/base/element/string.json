@@ -237,6 +237,10 @@
       "value": "尚未开始"
     },
     {
+      "name": "exam_detail",
+      "value": "考试信息"
+    },
+    {
       "name": "visit_desktop_ua",
       "value": "电脑端"
     },
