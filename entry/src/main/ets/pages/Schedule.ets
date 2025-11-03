@@ -1,7 +1,6 @@
 
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
-import UnifiedPreferences from '../utils/UnifyPreference';
 import scheduleManager from '../utils/TimeTable';
 
 

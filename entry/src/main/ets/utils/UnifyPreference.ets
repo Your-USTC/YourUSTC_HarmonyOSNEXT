@@ -1,6 +1,5 @@
 
 import { preferences } from '@kit.ArkData';
-import { classAttribute, obtainedData } from '../pages/Schedule';
 
 export const PREF_NAME = 'unified_preference';
 

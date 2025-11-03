@@ -81,6 +81,11 @@ class scheduleManager {
       ? Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
       : 1;
     this.today = (this.currentTime.getDay() + 6) % 7;
+    this.termStart = Number(UnifiedPreferences.getSync(START_TIME_KEY));
+    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
+      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
+      : this.currentTime.getTime();
+    this.weekEnd = this.weekStart + 518400000;
   }
 
   refreshParsedSchedule(routerParams: obtainedData): void {
@@ -91,13 +96,13 @@ class scheduleManager {
       UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
       UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
+      this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
+        ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
+        : this.currentTime.getTime();
+      this.weekEnd = this.weekStart + 518400000;
     } catch (err) {
       this.getParsedSchedule();
     }
-    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
-      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
-      : this.currentTime.getTime();
-    this.weekEnd = this.weekStart + 518400000;
   }
 
   getFormattedSchedule(): void {

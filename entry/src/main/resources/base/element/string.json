@@ -214,11 +214,27 @@
     },
     {
       "name": "no_class_today",
-      "value": "今日没有课程喵~ 好好休息一下吧。"
+      "value": "今天没有课程喵~ 好好休息一下吧。"
     },
     {
       "name": "tomorrow_class",
       "value": "明日课程"
+    },
+    {
+      "name": "class_soon",
+      "value": "即将上课"
+    },
+    {
+      "name": "class_in_session",
+      "value": "正在进行，别摸鱼了"
+    },
+    {
+      "name": "class_end",
+      "value": "刚结束"
+    },
+    {
+      "name": "class_not_start",
+      "value": "尚未开始"
     },
     {
       "name": "visit_desktop_ua",

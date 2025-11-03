@@ -87,6 +87,7 @@ struct Index {
   @State showRecentCourse: boolean = true;
   @State showTestInfo: boolean = true;
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  private currentTime: Date = new Date();
 
   aboutToAppear(): void {
     Schedule.initSchedulePre(this.context);
@@ -374,36 +375,65 @@ struct Index {
               .margin({ top: 12, bottom: 12 });
             } else {
               ForEach(this.todayCourse, (course: classAttribute, index) => {
-                if (index > 0) {
-                  Divider().width('90%');
-                }
-                Row() {
-                  Column() {
-                    Text(course.name)
-                      .textAlign(TextAlign.Start)
-                      .fontSize(18)
-                      .fontWeight(FontWeight.Bold)
-                      .maxLines(2)
-                      .textOverflow({ overflow: TextOverflow.Ellipsis });
+                if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                  + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
+                  if (index > 0) {
+                    Divider().width('90%');
                   }
-                  .width('40%')
-                  .alignItems(HorizontalAlign.Start)
-                  .margin({ left: 20 });
+                  Row() {
+                    Column() {
+                      Text(course.name)
+                        .textAlign(TextAlign.Start)
+                        .fontSize(18)
+                        .fontWeight(FontWeight.Bold)
+                        .maxLines(2)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis });
 
-                  Column() {
-                    Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
-                    Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
-                    Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
-                      1]][1]}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                      if (this.currentTime.getTime() <
+                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                          + Schedule.commonClassStamp[course.timeSpan[0]][0] &&
+                        this.currentTime.getTime() > (scheduleManager.weekStart + 57600000)
+                          + scheduleManager.today * 86400000 + Schedule.commonClassStamp[course.timeSpan[0]][0] -
+                          1800000) {
+                        Text($r('app.string.class_soon'))
+                          .fontColor($r('app.color.green'));
+                      } else if (this.currentTime.getTime() >
+                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                          + Schedule.commonClassStamp[course.timeSpan[0]][0] &&
+                        this.currentTime.getTime() < (scheduleManager.weekStart + 57600000)
+                          + scheduleManager.today * 86400000 +
+                        Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
+                        Text($r('app.string.class_in_session'))
+                          .fontColor($r('app.color.bright_blue'));
+                      } else if (this.currentTime.getTime() >
+                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                          + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
+                        Text($r('app.string.class_end'))
+                          .fontColor($r('app.color.red'));
+                      } else {
+                        Text($r('app.string.class_not_start'))
+                          .fontColor($r('app.color.green'));
+                      }
+                    }
+                    .width('40%')
+                    .alignItems(HorizontalAlign.Start)
+                    .margin({ left: 20 });
+
+                    Column() {
+                      Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE });
+                      Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE });
+                      Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
+                        1]][1]}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    }
+                    .margin({ left: 10, right: 20 })
+                    .width('60%')
+                    .alignItems(HorizontalAlign.Start);
                   }
-                  .margin({ left: 10, right: 20 })
-                  .width('60%')
-                  .alignItems(HorizontalAlign.Start);
+                  .margin({ top: 7, bottom: 7 });
                 }
-                .margin({ top: 7, bottom: 7 })
               });
             }
 

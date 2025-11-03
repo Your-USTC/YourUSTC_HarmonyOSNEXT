@@ -39,6 +39,18 @@
     {
       "name": "pink",
       "value": "#E2ADC3"
+    },
+    {
+      "name": "red",
+      "value": "#FF0000"
+    },
+    {
+      "name": "green",
+      "value": "#549159"
+    },
+    {
+      "name": "bright_blue",
+      "value": "#65CCE1"
     }
   ]
 }
