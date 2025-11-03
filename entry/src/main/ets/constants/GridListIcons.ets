@@ -55,3 +55,8 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('2.8', $r('app.media.JiYuanKeYanPingTai'))       // 计院科研平台
 
   // 学校与管理
+  .set('3.0', $r('app.media.TongYiShenFenRenZheng'))    // 统一身份认证
+  .set('3.1', $r('app.media.LiFanXiaoDengJi'))          // 离返校登记
+  .set('3.2', $r('app.media.QinYouRuXiao'))             // 亲友入校
+  .set('3.3', $r('app.media.JiaoWuChu'))                // 教务处
+  .set('3.4', $r('app.media.YuanXiZhuanYe'))            // 院系专业
