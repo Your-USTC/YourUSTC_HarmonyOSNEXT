@@ -85,7 +85,7 @@ export const otherGridDataList: GridData[] = [
       $r('app.string.XueGongYiTiHua'),
       $r('app.string.XiaoYuanDiTu'),
       $r('app.string.QuanJingDiTu'),
-      $r('app.string.XiaoYuanBaiKe'),
       $r('app.string.XiaoYuanBanChe'),
+      $r('app.string.AIZhuShou'),
     ])
 ];

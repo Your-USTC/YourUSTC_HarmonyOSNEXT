@@ -60,3 +60,9 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('3.2', $r('app.media.QinYouRuXiao'))             // 亲友入校
   .set('3.3', $r('app.media.JiaoWuChu'))                // 教务处
   .set('3.4', $r('app.media.YuanXiZhuanYe'))            // 院系专业
+  .set('3.5', $r('app.media.LianXiJiaoMi'))             // 联系教秘
+  .set('3.6', $r('app.media.XueGongYiTiHua'))           // 学工一体化
+  .set('3.7', $r('app.media.XiaoYuanDiTu'))             // 校园地图
+  .set('3.8', $r('app.media.QuanJingDiTu'))             // 全景地图
+  .set('3.9', $r('app.media.XiaoYuanBanChe'))           // 校园班车
+  .set('3.10', $r('app.media.AIZhuShou'))               // AI 助手
