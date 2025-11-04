@@ -332,6 +332,8 @@ struct Index {
             if (this.showRecentCourse) {
               Image($r('app.media.refresh'))
                 .height(20)
+                .width(24)
+                .objectFit(ImageFit.Contain)
                 .onClick(() => {
                   scheduleManager.getFormattedSchedule(); // 初始化首页课表
                   this.todayCourse =
@@ -340,7 +342,10 @@ struct Index {
                   Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
                 });
             } else {
-              Image($r('app.media.empty')).height(20);
+              Image($r('app.media.empty'))
+                .height(20)
+                .width(24)
+                .objectFit(ImageFit.Contain)
             }
 
             Blank()
@@ -349,16 +354,17 @@ struct Index {
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.normal_text'))
-              .margin({ right: 10 })
 
             Blank()
 
             Image($r('app.media.right_arrow'))
               .height(24)
+              .width(24)
+              .objectFit(ImageFit.Contain)
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
-          .padding({ left: 20, right: 15 })
+          .padding({ left: 20, right: 20 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
@@ -378,7 +384,8 @@ struct Index {
                 if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
                   + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
                   if (index > 0) {
-                    Divider().width('90%');
+                    Divider()
+                      .width('95%');
                   }
                   Row() {
                     Column() {
@@ -415,23 +422,36 @@ struct Index {
                           .fontColor($r('app.color.green'));
                       }
                     }
-                    .width('40%')
+                    .width('50%')
                     .alignItems(HorizontalAlign.Start)
-                    .margin({ left: 20 });
+                    .padding({ right: 10 });
 
                     Column() {
-                      Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE });
-                      Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE });
-                      Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
-                        1]][1]}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE });
+                      Row() {
+                        Text('\udb81\uddf3 ')
+                        Text(`${course.teacher == '' ? $r('app.string.temporary_null') : course.teacher}`)
+                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                          .layoutWeight(1)
+                      }
+
+                      Row() {
+                        Text('\udb80\uddb8 ')
+                        Text(`${course.location == '' ? $r('app.string.temporary_null') : course.location}`)
+                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                          .layoutWeight(1)
+                      }
+
+                      Row() {
+                        Text('\udb80\udfdc ')
+                        Text(`${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                          .layoutWeight(1)
+                      }
                     }
-                    .margin({ left: 10, right: 20 })
-                    .width('60%')
+                    .width('50%')
                     .alignItems(HorizontalAlign.Start);
                   }
+                  .width('90%')
                   .margin({ top: 7, bottom: 7 });
                 }
               });
@@ -448,7 +468,8 @@ struct Index {
 
               ForEach(this.tomorrowCourse, (course: classAttribute, index) => {
                 if (index > 0) {
-                  Divider().width('90%');
+                  Divider()
+                    .width('95%');
                 }
                 Row() {
                   Column() {
@@ -459,23 +480,36 @@ struct Index {
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis });
                   }
-                  .width('40%')
+                  .width('50%')
                   .alignItems(HorizontalAlign.Start)
-                  .margin({ left: 20 });
+                  .padding({ right: 10 });
 
                   Column() {
-                    Text(`󰗳 ${course.teacher == '' ? '暂无' : course.teacher}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
-                    Text(`󰆸 ${course.location == '' ? '暂无' : course.location}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
-                    Text(`󰏜 ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length -
-                      1]][1]}`)
-                      .textOverflow({ overflow: TextOverflow.MARQUEE });
+                    Row() {
+                      Text('\udb81\uddf3 ')
+                      Text(`${course.teacher == '' ? $r('app.string.temporary_null') : course.teacher}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        .layoutWeight(1)
+                    }
+
+                    Row() {
+                      Text('\udb80\uddb8 ')
+                      Text(`${course.location == '' ? $r('app.string.temporary_null') : course.location}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        .layoutWeight(1)
+                    }
+
+                    Row() {
+                      Text('\udb80\udfdc ')
+                      Text(`${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        .layoutWeight(1)
+                    }
                   }
-                  .margin({ left: 10, right: 20 })
-                  .width('60%')
+                  .width('50%')
                   .alignItems(HorizontalAlign.Start);
                 }
+                .width('90%')
                 .margin({ top: 7, bottom: 7 })
               });
             }
@@ -488,12 +522,15 @@ struct Index {
       .margin({ top: 5 })
       .backgroundColor($r('app.color.grid_background'))
 
+      // 考试信息
       ListItem() {
         Column() {
           Row() {
             if (this.showExamDetail) {
               Image($r('app.media.refresh'))
                 .height(20)
+                .width(24)
+                .objectFit(ImageFit.Contain)
                 .onClick(() => {
                   scheduleManager.getFormattedSchedule(); // 初始化首页课表
                   this.todayCourse =
@@ -502,7 +539,10 @@ struct Index {
                   Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
                 });
             } else {
-              Image($r('app.media.empty')).height(20);
+              Image($r('app.media.empty'))
+                .height(20)
+                .width(24)
+                .objectFit(ImageFit.Contain)
             }
             
             Blank()
@@ -511,16 +551,17 @@ struct Index {
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.normal_text'))
-              .margin({ right: 10 })
 
             Blank()
 
             Image($r('app.media.right_arrow'))
               .height(24)
+              .width(24)
+              .objectFit(ImageFit.Contain)
           }
           .width('100%')
           .margin({ top: 15, bottom: 10 })
-          .padding({ left: 20, right: 15 })
+          .padding({ left: 20, right: 20 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
