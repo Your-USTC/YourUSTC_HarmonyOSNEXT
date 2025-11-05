@@ -127,8 +127,28 @@ struct Schedule {
           .padding({right: 12})
           .height(20)
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({ url: 'pages/CourseEdit' })
-              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+            let lesson: classAttribute = {teacher:'暂无', name:"暂无",location:"暂无",id:"暂无",weekOfTerm: [9], dayOfWeek: 6,timeSpan:[1,2]};
+            this.ShowClassDetail = new CustomDialogController({
+              builder: ClassDetailDialog({
+                toChange: this.thisWeekSchedule,
+                classInfo: lesson,
+                oriClassInfo: lesson,
+                weekDisplayed: this.weekDisplayed
+              }),
+              autoCancel: true,
+              gridCount: 4,
+              onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                  dismissDialogAction.dismiss();
+                }
+                if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                  dismissDialogAction.dismiss();
+                }
+              }
+            })
+            if (this.ShowClassDetail != null) {
+              this.ShowClassDetail.open();
+            }
           })
 
         Image($r('app.media.get'))
@@ -440,7 +460,10 @@ struct Schedule {
               .onClick(() => {
                 this.ShowClassDetail = new CustomDialogController({
                   builder: ClassDetailDialog({
-                    classInfo: lesson
+                    toChange: this.thisWeekSchedule,
+                    classInfo: lesson,
+                    oriClassInfo: lesson,
+                    weekDisplayed: this.weekDisplayed
                   }),
                   autoCancel: true,
                   gridCount: 4,
@@ -485,53 +508,103 @@ struct Schedule {
 @CustomDialog
 @Component
 struct ClassDetailDialog {
+  @Link toChange: classAttribute[][];
   classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1 };
+  oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1 };
   controller?: CustomDialogController;
+  weekDisplayed: number = 1;
 
 
   build() {
     Column() {
-      Text(this.classInfo.name).fontSize(24)
+      Text($r('app.string.class_detail'))
+        .fontSize(24)
         .fontWeight("bold")
         .textAlign(TextAlign.Center)
         .width('90%');
       Blank('16');
 
-      Text($r('app.string.class_detail_teacher_s', (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher)))
+      Row() {
+        Text($r('app.string.class_detail_name'));
+        TextInput({ text: (this.classInfo.name == '' ? $r('app.string.temporary_null') : this.classInfo.name) })
+          .layoutWeight(1)
+          .textOverflow(TextOverflow.Ellipsis)
+          .onChange((input: string) => this.classInfo.name = input );
+      }
+      .margin({ top: 5, bottom: 5})
+      .width('80%');
+
+      Row() {
+        Text($r('app.string.class_detail_teacher'));
+        TextInput({ text: (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher) })
+          .layoutWeight(1)
+          .textOverflow(TextOverflow.Ellipsis)
+          .onChange((input: string) => this.classInfo.teacher = input );
+      }
+      .margin({ top: 5, bottom: 5})
+      .width('80%');
+
+      Row() {
+        Text($r('app.string.class_detail_location'));
+        TextInput({ text: (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location) })
+          .layoutWeight(1)
+          .textOverflow(TextOverflow.Ellipsis)
+          .onChange((input: string) => this.classInfo.location = input );
+      }
+      .margin({ top: 5, bottom: 5})
+      .width('80%');
+
+      Row() {
+        Text($r('app.string.class_detail_id'));
+        TextInput({ text: (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id) })
+          .layoutWeight(1)
+          .textOverflow(TextOverflow.Ellipsis)
+          .onChange((input: string) => this.classInfo.id = input );
+      }
+      .margin({ top: 5, bottom: 5})
+      .width('80%');
+
+      Text($r('app.string.class_detail_time', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_location_s', (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)))
+      Text($r('app.string.class_detail_weeks', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
         .textAlign(TextAlign.Start)
         .width('80%');
-      Text($r('app.string.class_detail_id_s', (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id)))
-        .textAlign(TextAlign.Start)
-        .width('80%');
-      Text($r('app.string.class_detail_time_s', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))    // TODO: 星期?
-        .textAlign(TextAlign.Start)
-        .width('80%');
-      Text($r('app.string.class_detail_weeks_s', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
+      Text($r('app.string.class_detail_day_of_week', this.classInfo.dayOfWeek + 1))
         .textAlign(TextAlign.Start)
         .width('80%');
 
       Blank('16');
       Row() {
-        Button($r('app.string.back'))
+        Button($r('app.string.delete'))
           .onClick(() => {
+            scheduleManager.deleteSchedule(this.oriClassInfo);
+            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined)
               this.controller.close();
           })
           .width('50%')
+          .fontColor($r('app.color.red'))
           .buttonStyle(ButtonStyleMode.TEXTUAL);
-        Button($r('app.string.edit'))
+        Button($r('app.string.ok'))
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({ url: 'pages/CourseEdit' })
-              .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+            scheduleManager.changeSchedule(this.oriClassInfo, this.classInfo);
+            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined)
               this.controller.close();
           })
           .width('50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED);
       };
+
+      Button($r('app.string.cancel'))
+        .onClick(() => {
+          console.log(`123${this.classInfo.dayOfWeek}`)
+          if (this.controller != undefined)
+            this.controller.close();
+        })
+        .width('100%')
+        .buttonStyle(ButtonStyleMode.TEXTUAL);
     }
     .width('100%')
     .padding(16)

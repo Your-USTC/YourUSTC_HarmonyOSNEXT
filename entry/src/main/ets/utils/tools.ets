@@ -64,3 +64,13 @@ export function timestampToDateTime(timestamp: number, format: string = 'yyyy-MM
     .replace('MM', month)
     .replace('DD', day);
 }
+
+export function areNumberArraysEqual(arr1: number[], arr2: number[]): boolean {
+  // 先比较长度，长度不同直接返回 false
+  if (arr1.length !== arr2.length) return false;
+  // 逐个比较元素
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false;
+  }
+  return true;
+}
