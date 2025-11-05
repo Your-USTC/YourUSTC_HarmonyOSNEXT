@@ -82,10 +82,15 @@ struct Index {
   @State checkInConsecutive: number = 0;
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
+
+  @State showRecentCourse: boolean = true;
   @State todayCourse: classAttribute[] = [];
   @State tomorrowCourse: classAttribute[] = [];
-  @State showRecentCourse: boolean = true;
+  private todayCourseLeftIndex: number = 0;
+
+
   @State showExamDetail: boolean = true;
+
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private currentTime: Date = new Date();
 
@@ -380,13 +385,14 @@ struct Index {
               }
               .margin({ top: 12, bottom: 12 });
             } else {
-              ForEach(this.todayCourse, (course: classAttribute, index) => {
-                if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
-                  + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
-                  if (index > 0) {
-                    Divider()
-                      .width('95%');
-                  }
+              ForEach(this.todayCourse, (course: classAttribute, index: number) => {
+                if (
+                  this.currentTime.getTime() <
+                    (scheduleManager.weekStart + 57600000)
+                      + scheduleManager.today * 86400000
+                      + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]
+                      + 1800000
+                ) {
                   Row() {
                     Column() {
                       Text(course.name)
@@ -429,22 +435,25 @@ struct Index {
                     Column() {
                       Row() {
                         Text('\udb81\uddf3 ')
-                        Text(`${course.teacher == '' ? $r('app.string.temporary_null') : course.teacher}`)
-                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        Text(course.teacher == '' ? $r('app.string.temporary_null') : course.teacher)
+                          .maxLines(1)
+                          .textOverflow({ overflow: TextOverflow.Ellipsis })
                           .layoutWeight(1)
                       }
 
                       Row() {
                         Text('\udb80\uddb8 ')
-                        Text(`${course.location == '' ? $r('app.string.temporary_null') : course.location}`)
-                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        Text(course.location == '' ? $r('app.string.temporary_null') : course.location)
+                          .maxLines(1)
+                          .textOverflow({ overflow: TextOverflow.Ellipsis })
                           .layoutWeight(1)
                       }
 
                       Row() {
                         Text('\udb80\udfdc ')
                         Text(`${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
-                          .textOverflow({ overflow: TextOverflow.MARQUEE })
+                          .maxLines(1)
+                          .textOverflow({ overflow: TextOverflow.Ellipsis })
                           .layoutWeight(1)
                       }
                     }
@@ -453,6 +462,11 @@ struct Index {
                   }
                   .width('90%')
                   .margin({ top: 7, bottom: 7 });
+
+                  if (index < this.todayCourse.length - 1) {
+                    Divider()
+                      .width('95%');
+                  }
                 }
               });
             }
@@ -487,22 +501,25 @@ struct Index {
                   Column() {
                     Row() {
                       Text('\udb81\uddf3 ')
-                      Text(`${course.teacher == '' ? $r('app.string.temporary_null') : course.teacher}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                      Text(course.teacher == '' ? $r('app.string.temporary_null') : course.teacher)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
                         .layoutWeight(1)
                     }
 
                     Row() {
                       Text('\udb80\uddb8 ')
-                      Text(`${course.location == '' ? $r('app.string.temporary_null') : course.location}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                      Text(course.location == '' ? $r('app.string.temporary_null') : course.location)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
                         .layoutWeight(1)
                     }
 
                     Row() {
                       Text('\udb80\udfdc ')
                       Text(`${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
-                        .textOverflow({ overflow: TextOverflow.MARQUEE })
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
                         .layoutWeight(1)
                     }
                   }
