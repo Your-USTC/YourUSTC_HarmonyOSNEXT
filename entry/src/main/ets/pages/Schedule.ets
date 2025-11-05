@@ -576,7 +576,7 @@ struct ClassDetailDialog {
 
       Blank('16');
       Row() {
-        Button($r('app.string.delete'))
+        Button($r('app.string.delete'), { buttonStyle: ButtonStyleMode.NORMAL })
           .onClick(() => {
             scheduleManager.deleteSchedule(this.oriClassInfo);
             this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
@@ -584,8 +584,8 @@ struct ClassDetailDialog {
               this.controller.close();
           })
           .width('50%')
-          .fontColor($r('app.color.red'))
-          .buttonStyle(ButtonStyleMode.TEXTUAL);
+          .fontColor($r('app.color.red'));
+
         Button($r('app.string.ok'))
           .onClick(() => {
             scheduleManager.changeSchedule(this.oriClassInfo, this.classInfo);
@@ -604,7 +604,8 @@ struct ClassDetailDialog {
             this.controller.close();
         })
         .width('100%')
-        .buttonStyle(ButtonStyleMode.TEXTUAL);
+        .buttonStyle(ButtonStyleMode.TEXTUAL)
+        .margin({top:5});
     }
     .width('100%')
     .padding(16)
