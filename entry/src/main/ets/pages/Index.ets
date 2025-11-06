@@ -138,7 +138,7 @@ struct Index {
                 Divider()
                   .color($r('app.color.active_text'))
                   .strokeWidth(2)
-                  .width('65vp')
+                  .width('84vp')
                   .margin({ top: '7vp' })
               }
             }
@@ -195,7 +195,7 @@ struct Index {
       if (item.others === undefined) {
         Image($r('app.media.right_arrow'))
           .width('12vp')
-          .height('24vp')
+          .height('12vp')
       } else if (item.id == 0) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
           .onClick(() => {
@@ -887,9 +887,9 @@ struct Index {
           }
           .divider({
             strokeWidth: '1vp',
-            color: '#0d000000',
-            startMargin: '42vp',
-            endMargin: '24vp'
+            color: $r('app.color.grid_border'),
+            startMargin: '12vp',
+            endMargin: '12vp'
           })
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius('16vp')
