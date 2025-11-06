@@ -171,14 +171,20 @@ struct Webview {
                 this.gotTimeTable = true;
                 console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
                 this.obtainedData.timeTable = result;
-              });
-              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                if (error) { /* 理论上这里不会出什么错误（doge） */
-                  return;
-                }
-                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
-                this.obtainedData.startTime = result;
-                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                  if (error) { /* 理论上这里不会出什么错误（doge） */
+                    return;
+                  }
+                  console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+                  this.obtainedData.startTime = result;
+                  console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                  if (this.getUIContext().getRouter().getLength() === '3') {
+                    this.getUIContext().getRouter().back({
+                      params: this.obtainedData,
+                      url: 'pages/Schedule'
+                    });
+                  }
+                });
               });
             })
           Image($r('app.media.refresh'))
@@ -232,14 +238,20 @@ struct Webview {
                   this.gotTimeTable = true;
                   console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
                   this.obtainedData.timeTable = result;
-                });
-                this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                  if (error) { /* 理论上这里不会出什么错误（doge） */
-                    return;
-                  }
-                  console.info(`学期开始的UNIX时间戳是${result}mm`);
-                  this.obtainedData.startTime = result;
-                  console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                  this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                    if (error) { /* 理论上这里不会出什么错误（doge） */
+                      return;
+                    }
+                    console.info(`学期开始的UNIX时间戳是${result}mm`);
+                    this.obtainedData.startTime = result;
+                    console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                    if (this.getUIContext().getRouter().getLength() === '3') {
+                      this.getUIContext().getRouter().back({
+                        params: this.obtainedData,
+                        url: 'pages/Schedule'
+                      });
+                    }
+                  });
                 });
               }, 1000);
             }
