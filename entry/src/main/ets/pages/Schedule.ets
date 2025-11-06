@@ -578,10 +578,22 @@ struct ClassDetailDialog {
       Row() {
         Button($r('app.string.delete'), { buttonStyle: ButtonStyleMode.NORMAL })
           .onClick(() => {
-            scheduleManager.deleteSchedule(this.oriClassInfo);
-            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
-            if (this.controller != undefined)
-              this.controller.close();
+            try {
+              scheduleManager.deleteSchedule(this.oriClassInfo);
+              this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+              if (this.controller != undefined)
+                this.controller.close();
+            } catch (error) {
+              console.error(`deleteSchedule ERROR: [${error.name}] ${error.message}`)
+              try {
+                this.getUIContext().getPromptAction().showToast({     // 修了？如修
+                  message: $r('app.string.delete_class_err_msg'),
+                  duration: 1000
+                })
+              } catch (error) {
+                console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
+              }
+            }
           })
           .width('50%')
           .fontColor($r('app.color.red'));

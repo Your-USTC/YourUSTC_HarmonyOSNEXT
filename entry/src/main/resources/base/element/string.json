@@ -321,6 +321,10 @@
       "value": "课程表获取出现错误！"
     },
     {
+      "name": "delete_class_err_msg",
+      "value": "不要在未保存编辑时删除课程！"
+    },
+    {
       "name": "write_calendar_permission_reason",
       "value": "用于写入上课提醒"
     },
