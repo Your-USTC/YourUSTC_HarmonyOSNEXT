@@ -35,6 +35,46 @@
     {
       "name": "red",
       "value": "#FF0000"
+    },
+    {
+      "name": "schedule_grid_1",
+      "value": "#DDFFE690"
+    },
+    {
+      "name": "schedule_grid_2",
+      "value": "#FFAF9C"
+    },
+    {
+      "name": "schedule_grid_3",
+      "value": "#FF959C"
+    },
+    {
+      "name": "schedule_grid_4",
+      "value": "#FF7FB6"
+    },
+    {
+      "name": "schedule_grid_5",
+      "value": "#7D6FFF"
+    },
+    {
+      "name": "schedule_grid_6",
+      "value": "#4377FF"
+    },
+    {
+      "name": "schedule_grid_7",
+      "value": "#7DACFF"
+    },
+    {
+      "name": "schedule_grid_8",
+      "value": "#78CEFF"
+    },
+    {
+      "name": "schedule_grid_9",
+      "value": "#66E5FF"
+    },
+    {
+      "name": "schedule_grid_10",
+      "value": "#DD5BFF91"
     }
   ]
 }

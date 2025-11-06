@@ -89,6 +89,7 @@ struct Index {
   private todayCourseLeftIndex: number = 0;
 
 
+  @State showCheckIn: boolean = true;
   @State showExamDetail: boolean = true;
 
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -104,6 +105,7 @@ struct Index {
     scheduleManager.getFormattedSchedule(); // 初始化首页课表
     this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
     this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+    this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
     this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
   }
@@ -195,6 +197,12 @@ struct Index {
           .width('12vp')
           .height('12vp')
       } else if (item.id == 0) {
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
+          .onClick(() => {
+            this.showCheckIn = !this.showCheckIn;
+            UnifiedPreference.putSync('showRecentCourse', this.showCheckIn);
+          });
+      } else if (item.id == 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
           .onClick(() => {
             this.showRecentCourse = !this.showRecentCourse;
@@ -270,65 +278,67 @@ struct Index {
   pageStart() {
     List({ space: 10 }) {
       // 每日签到
-      ListItem() {
-        Column() {
-          Row() {
-            Text($r('app.string.daily_checkin'))
-              .fontSize(18)
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.normal_text'))
+      if (this.showCheckIn) {
+        ListItem() {
+          Column() {
+            Row() {
+              Text($r('app.string.daily_checkin'))
+                .fontSize(18)
+                .fontWeight(FontWeight.Bold)
+                .fontColor($r('app.color.normal_text'))
+            }
+            .width('100%')
+            .margin({ top: 15, bottom: 10 })
+            .justifyContent(FlexAlign.Center)
+
+            Row() {
+              Text(this.checkInContent)
+                .fontColor($r('app.color.active_text'))
+                .fontSize(20)
+                .fontWeight(FontWeight.Bold)
+                .textShadow({ radius: 1 })
+            }
+            .width('80%')
+            .height(60)
+            .margin({ bottom: 10 })
+            .justifyContent(FlexAlign.Center)
+
+            Row() {
+              Button(this.checkedInToday ? $r('app.string.checked_in') : $r('app.string.check_in'))
+                .buttonStyle(this.checkedInToday ? ButtonStyleMode.NORMAL : ButtonStyleMode.EMPHASIZED)
+                .enabled(!this.checkedInToday)
+                .onClick(() => {
+                  const GeneratedDestructArray_1 = CheckInTools.doCheckIn()
+                  this.checkInTotal = GeneratedDestructArray_1[0]
+                  this.checkedInToday = true
+                  this.checkInConsecutive = GeneratedDestructArray_1[1]
+                  this.checkInContent = GeneratedDestructArray_1[2]
+                })
+            }
+            .width('90%')
+            .margin({ bottom: 10 })
+            .justifyContent(FlexAlign.Center)
+
+            Row() {
+              Text($r('app.string.checkin_count_d', this.checkInTotal))
+                .fontSize(12)
+                .align(Alignment.Start)
+
+              Blank()
+
+              Text($r('app.string.checkin_consecutive_d', this.checkInConsecutive))
+                .fontSize(12)
+                .align(Alignment.End)
+            }
+            .width('80%')
+            .margin({ bottom: 10 })
           }
-          .width('100%')
-          .margin({ top: 15, bottom: 10 })
           .justifyContent(FlexAlign.Center)
-
-          Row() {
-            Text(this.checkInContent)
-              .fontColor($r('app.color.active_text'))
-              .fontSize(20)
-              .fontWeight(FontWeight.Bold)
-              .textShadow({ radius: 1 })
-          }
-          .width('80%')
-          .height(60)
-          .margin({ bottom: 10 })
-          .justifyContent(FlexAlign.Center)
-
-          Row() {
-            Button(this.checkedInToday ? $r('app.string.checked_in') : $r('app.string.check_in'))
-              .buttonStyle(this.checkedInToday ? ButtonStyleMode.NORMAL : ButtonStyleMode.EMPHASIZED)
-              .enabled(!this.checkedInToday)
-              .onClick(() => {
-                const GeneratedDestructArray_1 = CheckInTools.doCheckIn()
-                this.checkInTotal = GeneratedDestructArray_1[0]
-                this.checkedInToday = true
-                this.checkInConsecutive = GeneratedDestructArray_1[1]
-                this.checkInContent = GeneratedDestructArray_1[2]
-              })
-          }
-          .width('90%')
-          .margin({ bottom: 10 })
-          .justifyContent(FlexAlign.Center)
-
-          Row() {
-            Text($r('app.string.checkin_count_d', this.checkInTotal))
-              .fontSize(12)
-              .align(Alignment.Start)
-
-            Blank()
-
-            Text($r('app.string.checkin_consecutive_d', this.checkInConsecutive))
-              .fontSize(12)
-              .align(Alignment.End)
-          }
-          .width('80%')
-          .margin({ bottom: 10 })
         }
-        .justifyContent(FlexAlign.Center)
+        .width('100%')
+        .borderRadius(20)
+        .backgroundColor($r('app.color.grid_background'))
       }
-      .width('100%')
-      .borderRadius(20)
-      .backgroundColor($r('app.color.grid_background'))
 
       // 你的课表
       ListItem() {
@@ -592,7 +602,6 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .margin({ top: 20 })
     .padding({ top: 20, bottom: 40, left: 20, right: 20 })
   }
 
@@ -696,14 +705,18 @@ struct Index {
               .onClick(() => {
                 switch (cell.id) { // 根据 cell.id 区分设置项
                   case 0:
+                    this.showCheckIn = !this.showCheckIn;
+                    UnifiedPreference.putSync('showCheckIn', this.showCheckIn);
+                    break;
+                  case 1:
                     this.showRecentCourse = !this.showRecentCourse;
                     UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
                     break;
-                  case 1:
+                  case 2:
                     this.showExamDetail = !this.showExamDetail;
                     UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
                     break;
-                  case 2:
+                  case 3:
                     // 选择最近使用
                     let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
                     let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
@@ -730,7 +743,7 @@ struct Index {
                       }
                     })
                     break;
-                  case 3:
+                  case 4:
                     // 重置最近使用
                     FunctionOrder.resetFunc(this.context);
                     this.refreshTabGrid(1);
@@ -740,7 +753,7 @@ struct Index {
                       console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                     }
                     break;
-                  case 4:
+                  case 5:
                     // 清除日历中的所有课程信息
                     calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
                       calendar = data;
@@ -760,7 +773,7 @@ struct Index {
                         this.calendar_permission_denied(err);
                     });
                     break;
-                  case 5:
+                  case 6:
                     let selected3: number = 0;
                     switch (Schedule.remindBefore[0]) {
                       case 10: selected3 = 1; break;
@@ -856,12 +869,12 @@ struct Index {
                       }
                     })
                     break;
-                  case 6:
+                  case 7:
                     // 帮助
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
-                  case 7:
+                  case 8:
                     // 关于
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
