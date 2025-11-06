@@ -150,8 +150,6 @@ class scheduleManager {
     let j: number = toChangeInfo.timeSpan[0] - 1;
     if (this.parsedSchedule[i] == undefined)
       this.parsedSchedule[i] = [];
-    if (this.parsedSchedule[j] == undefined)
-      this.parsedSchedule[j] = [];
     this.parsedSchedule[i][j].push(toChangeInfo);
     this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
@@ -160,18 +158,13 @@ class scheduleManager {
   deleteSchedule(oriClassInfo: classAttribute) {
     let i: number = oriClassInfo.dayOfWeek;
     let j: number = oriClassInfo.timeSpan[0] - 1;
-    for (let k = this.parsedSchedule[i][j].length - 1; k >= 0; k++)
+    for (let k = this.parsedSchedule[i][j].length - 1; k >= 0; k--)
       if (areClassAttributesEqual(oriClassInfo, this.parsedSchedule[i][j][k])) {
         this.parsedSchedule[i][j].splice(k, 1);
         break;
       }
     this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
-  }
-
-  changeSchedule(oriClassInfo: classAttribute, toChangeInfo: classAttribute) {
-    this.deleteSchedule(oriClassInfo);
-    this.addSchedule(toChangeInfo);
   }
 }
 

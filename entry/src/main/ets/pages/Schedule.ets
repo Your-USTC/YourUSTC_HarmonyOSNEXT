@@ -133,7 +133,8 @@ struct Schedule {
                 toChange: this.thisWeekSchedule,
                 classInfo: lesson,
                 oriClassInfo: lesson,
-                weekDisplayed: this.weekDisplayed
+                weekDisplayed: this.weekDisplayed,
+                isChangeSchedule: false
               }),
               autoCancel: true,
               gridCount: 4,
@@ -458,11 +459,20 @@ struct Schedule {
                 .justifyContent(FlexAlign.Center)
               }
               .onClick(() => {
+                let oriLesson: classAttribute = {
+                  name: lesson.name,
+                  teacher: lesson.teacher,
+                  weekOfTerm: lesson.weekOfTerm,    // 以枚举形式写出哪几周
+                  timeSpan: lesson.timeSpan,      // 应当仅包含开始和结束是第几节课
+                  dayOfWeek: lesson.dayOfWeek,
+                  location: lesson.location,
+                  id: lesson.id
+                };
                 this.ShowClassDetail = new CustomDialogController({
                   builder: ClassDetailDialog({
                     toChange: this.thisWeekSchedule,
                     classInfo: lesson,
-                    oriClassInfo: lesson,
+                    oriClassInfo: oriLesson,
                     weekDisplayed: this.weekDisplayed
                   }),
                   autoCancel: true,
@@ -513,6 +523,7 @@ struct ClassDetailDialog {
   oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 1 };
   controller?: CustomDialogController;
   weekDisplayed: number = 1;
+  isChangeSchedule: boolean = true;
 
 
   build() {
@@ -521,106 +532,125 @@ struct ClassDetailDialog {
         .fontSize(24)
         .fontWeight("bold")
         .textAlign(TextAlign.Center)
-        .width('90%');
+        .margin({ top: 5});
       Blank('16');
 
-      Row() {
-        Text($r('app.string.class_detail_name'));
-        TextInput({ text: (this.classInfo.name == '' ? $r('app.string.temporary_null') : this.classInfo.name) })
-          .layoutWeight(1)
-          .textOverflow(TextOverflow.Ellipsis)
-          .onChange((input: string) => this.classInfo.name = input );
-      }
-      .margin({ top: 5, bottom: 5})
-      .width('80%');
+      Column() {
+        Row() {
+          Text($r('app.string.class_detail_name'));
+          TextInput({ text: (this.classInfo.name == '' ? $r('app.string.temporary_null') : this.classInfo.name) })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.classInfo.name = input);
+        }
+        .margin({ bottom: 5 });
 
-      Row() {
-        Text($r('app.string.class_detail_teacher'));
-        TextInput({ text: (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher) })
-          .layoutWeight(1)
-          .textOverflow(TextOverflow.Ellipsis)
-          .onChange((input: string) => this.classInfo.teacher = input );
-      }
-      .margin({ top: 5, bottom: 5})
-      .width('80%');
+        Row() {
+          Text($r('app.string.class_detail_teacher'));
+          TextInput({ text: (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher) })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.classInfo.teacher = input);
+        }
+        .margin({ top: 5, bottom: 5 });
 
-      Row() {
-        Text($r('app.string.class_detail_location'));
-        TextInput({ text: (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location) })
-          .layoutWeight(1)
-          .textOverflow(TextOverflow.Ellipsis)
-          .onChange((input: string) => this.classInfo.location = input );
-      }
-      .margin({ top: 5, bottom: 5})
-      .width('80%');
-
-      Row() {
-        Text($r('app.string.class_detail_id'));
-        TextInput({ text: (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id) })
-          .layoutWeight(1)
-          .textOverflow(TextOverflow.Ellipsis)
-          .onChange((input: string) => this.classInfo.id = input );
-      }
-      .margin({ top: 5, bottom: 5})
-      .width('80%');
-
-      Text($r('app.string.class_detail_time', (this.classInfo.timeSpan.toString() == '' ? $r('app.string.temporary_null') : this.classInfo.timeSpan.toString())))
-        .textAlign(TextAlign.Start)
-        .width('80%');
-      Text($r('app.string.class_detail_weeks', (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') : tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
-        .textAlign(TextAlign.Start)
-        .width('80%');
-      Text($r('app.string.class_detail_day_of_week', this.classInfo.dayOfWeek + 1))
-        .textAlign(TextAlign.Start)
-        .width('80%');
-
-      Blank('16');
-      Row() {
-        Button($r('app.string.delete'), { buttonStyle: ButtonStyleMode.NORMAL })
-          .onClick(() => {
-            try {
-              scheduleManager.deleteSchedule(this.oriClassInfo);
-              this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
-              if (this.controller != undefined)
-                this.controller.close();
-            } catch (error) {
-              console.error(`deleteSchedule ERROR: [${error.name}] ${error.message}`)
-              try {
-                this.getUIContext().getPromptAction().showToast({     // 修了？如修
-                  message: $r('app.string.delete_class_err_msg'),
-                  duration: 1000
-                })
-              } catch (error) {
-                console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
-              }
-            }
+        Row() {
+          Text($r('app.string.class_detail_location'));
+          TextInput({
+            text: (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)
           })
-          .width('50%')
-          .fontColor($r('app.color.red'));
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.classInfo.location = input);
+        }
+        .margin({ top: 5, bottom: 5 });
+
+        Row() {
+          Text($r('app.string.class_detail_id'));
+          TextInput({ text: (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id) })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.classInfo.id = input);
+        }
+        .margin({ top: 5, bottom: 5 });
+
+        Row() {
+          Text($r('app.string.class_detail_time'))
+            .textAlign(TextAlign.Start);
+          Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
+            { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
+            .value(this.classInfo.timeSpan[0].toString())
+            .onSelect((index: number) => {
+              index++;
+              this.classInfo.timeSpan = tools.getContArray([[Math.min(index, this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1]), Math.max(index, this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1])]]) as number[];
+            });
+          Text(' - ');
+          Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
+            { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
+            .value(this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1].toString())
+            .onSelect((index: number) => {
+              index++;
+              this.classInfo.timeSpan = tools.getContArray([[Math.min(index, this.classInfo.timeSpan[0]), Math.max(index, this.classInfo.timeSpan[0])]]) as number[];
+            });
+        }
+
+        Text($r('app.string.class_detail_weeks',
+          (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') :
+            tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
+          .textAlign(TextAlign.Start);
+        Row() {
+          Text($r('app.string.class_detail_day_of_week'))
+            .textAlign(TextAlign.Start);
+          Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') }, { value: $r('app.string.wednesday') },
+            { value: $r('app.string.thursday') }, { value: $r('app.string.friday') }, { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
+            .value(`${this.classInfo.dayOfWeek + 1}`)
+            .onSelect((index: number) => {
+              this.classInfo.dayOfWeek = index;
+            });
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .width('80%');
+
+      Blank('16');
+      Row() {
+        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+          Image($r('app.media.trash_red')).width(24).height(24);
+        }
+        .onClick(() => {
+          scheduleManager.deleteSchedule(this.oriClassInfo);
+          this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+          if (this.controller != undefined)
+            this.controller.close();
+        })
+        .height(42)
+        .width(42);
+
+        Button($r('app.string.cancel'))
+          .onClick(() => {
+            if (this.controller != undefined)
+              this.controller.close();
+          })
+          .width('40%')
+          .buttonStyle(ButtonStyleMode.TEXTUAL);
 
         Button($r('app.string.ok'))
           .onClick(() => {
-            scheduleManager.changeSchedule(this.oriClassInfo, this.classInfo);
+            if (this.isChangeSchedule)
+              scheduleManager.deleteSchedule(this.oriClassInfo);
+            scheduleManager.addSchedule(this.classInfo);
+            console.log(`hhh${this.oriClassInfo.dayOfWeek} ${this.classInfo.dayOfWeek}`)
             this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined)
               this.controller.close();
           })
-          .width('50%')
+          .width('40%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED);
       };
 
-      Button($r('app.string.cancel'))
-        .onClick(() => {
-          console.log(`123${this.classInfo.dayOfWeek}`)
-          if (this.controller != undefined)
-            this.controller.close();
-        })
-        .width('100%')
-        .buttonStyle(ButtonStyleMode.TEXTUAL)
-        .margin({top:5});
     }
     .width('100%')
     .padding(16)
-    .backgroundColor($r('app.color.grid_background'))
+    .backgroundColor($r('app.color.grid_background'));
   }
 }

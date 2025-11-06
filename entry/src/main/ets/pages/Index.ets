@@ -509,29 +509,15 @@ struct Index {
                   .padding({ right: 10 });
 
                   Column() {
-                    Row() {
-                      Text('\udb81\uddf3 ')
-                      Text(course.teacher == '' ? $r('app.string.temporary_null') : course.teacher)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .layoutWeight(1)
-                    }
-
-                    Row() {
-                      Text('\udb80\uddb8 ')
-                      Text(course.location == '' ? $r('app.string.temporary_null') : course.location)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .layoutWeight(1)
-                    }
-
-                    Row() {
-                      Text('\udb80\udfdc ')
-                      Text(`${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .layoutWeight(1)
-                    }
+                    Text('\udb81\uddf3 ' + (course.teacher == '' ? $r('app.string.temporary_null') : course.teacher))
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    Text('\udb80\uddb8 ' + (course.location == '' ? $r('app.string.temporary_null') : course.location))
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
                   .width('50%')
                   .alignItems(HorizontalAlign.Start);

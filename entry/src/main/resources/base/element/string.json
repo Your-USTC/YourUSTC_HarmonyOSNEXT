@@ -178,7 +178,7 @@
     },
     {
       "name": "class_detail_time",
-      "value": "节数：%s"
+      "value": "节数："
     },
     {
       "name": "class_detail_weeks",
@@ -186,7 +186,7 @@
     },
     {
       "name": "class_detail_day_of_week",
-      "value": "星期：%d"
+      "value": "星期："
     },
     {
       "name": "temporary_null",
