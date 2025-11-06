@@ -485,7 +485,7 @@ struct Schedule {
               .columnStart(indexDay + 2)
               .columnEnd(indexDay + 2)
               .padding(2)
-              .backgroundColor($r('app.color.shaded_background'))
+              .backgroundColor($r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()))
               .border({
                 width: 1,
                 color: $r('app.color.grid_border')

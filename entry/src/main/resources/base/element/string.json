@@ -113,6 +113,10 @@
       "value": "\uDB80\uDC36  退出「你的科大」"
     },
     {
+      "name": "show_check_in",
+      "value": "在首页显示每日签到"
+    },
+    {
       "name": "show_schedule_on_start_page",
       "value": "在首页显示今日和明日课程"
     },

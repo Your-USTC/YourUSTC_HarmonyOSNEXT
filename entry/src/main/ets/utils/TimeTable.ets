@@ -145,35 +145,33 @@ class scheduleManager {
               this.formattedSchedule[week][i].push(k);
   }
 
-  changeSchedule(oriClassInfo: classAttribute, toChangeInfo: classAttribute) {
-    let isAdd: boolean = true;
-    let i: number = oriClassInfo.dayOfWeek;
-    let j: number = oriClassInfo.timeSpan[0] - 1;
-    for (let k = 0; k < this.parsedSchedule[i][j].length; k++)
-      if (areClassAttributesEqual(this.parsedSchedule[i][j][k], oriClassInfo)) {
-        this.parsedSchedule[i][j][k] = toChangeInfo;
-        isAdd = false;
-        break;
-      }
-    if (isAdd) {
-      this.parsedSchedule[toChangeInfo.dayOfWeek][toChangeInfo.timeSpan[0]].push(toChangeInfo);
-    }
-    let newSchedule: obtainedData = { timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() };
-    this.refreshParsedSchedule(newSchedule);
+  addSchedule(toChangeInfo: classAttribute) {
+    let i: number = toChangeInfo.dayOfWeek;
+    let j: number = toChangeInfo.timeSpan[0] - 1;
+    if (this.parsedSchedule[i] == undefined)
+      this.parsedSchedule[i] = [];
+    if (this.parsedSchedule[j] == undefined)
+      this.parsedSchedule[j] = [];
+    this.parsedSchedule[i][j].push(toChangeInfo);
+    this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
   }
 
   deleteSchedule(oriClassInfo: classAttribute) {
     let i: number = oriClassInfo.dayOfWeek;
-    let j: number = oriClassInfo.timeSpan[0];
+    let j: number = oriClassInfo.timeSpan[0] - 1;
     for (let k = this.parsedSchedule[i][j].length - 1; k >= 0; k++)
       if (areClassAttributesEqual(oriClassInfo, this.parsedSchedule[i][j][k])) {
         this.parsedSchedule[i][j].splice(k, 1);
         break;
       }
-    let newSchedule: obtainedData = { timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() };
-    this.refreshParsedSchedule(newSchedule);
+    this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
+  }
+
+  changeSchedule(oriClassInfo: classAttribute, toChangeInfo: classAttribute) {
+    this.deleteSchedule(oriClassInfo);
+    this.addSchedule(toChangeInfo);
   }
 }
 
