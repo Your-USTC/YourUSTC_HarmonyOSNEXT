@@ -193,7 +193,7 @@ struct Index {
       if (item.others === undefined) {
         Image($r('app.media.right_arrow'))
           .width('12vp')
-          .height('24vp')
+          .height('12vp')
       } else if (item.id == 0) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
           .onClick(() => {
