@@ -65,6 +65,24 @@ export const startTimeQueryJS = `
 {const startTime = new Date(document.getElementById('startDate').innerText);startTime.getTime().toString();};
 `
 
+export const examInfoQueryJS = `
+Array.from(document.querySelectorAll('#exams tbody tr')).map(
+    tr => {
+        const trCells = tr.cells;
+        return ({
+            courseNo: trCells[0].innerText,
+            examType: trCells[1].innerText,
+            courseName: trCells[2].innerText,
+            examDate: trCells[3].innerText,
+            examRoom: trCells[4].innerText,
+            examBuilding: trCells[5].innerText,
+            examCampus: trCells[6].innerText,
+            examInfo: trCells[7].innerText
+        })
+    }
+)
+`
+
 /**
  * 比较两个 classAttribute 对象是否完全相同
  * @param a 第一个对象
