@@ -161,6 +161,10 @@
       "value": "课程详情"
     },
     {
+      "name": "class_detail_new",
+      "value": "添加课程"
+    },
+    {
       "name": "class_detail_name",
       "value": "名称："
     },
@@ -219,6 +223,10 @@
     {
       "name": "already_last_page",
       "value": "已是最近访问的 URL"
+    },
+    {
+      "name": "open_in_browser",
+      "value": "在系统浏览器中打开"
     },
     {
       "name": "page_forward",

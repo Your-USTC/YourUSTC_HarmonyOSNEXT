@@ -127,12 +127,10 @@ struct Schedule {
           .padding({right: 12})
           .height(20)
           .onClick(() => {
-            let lesson: classAttribute = {teacher:'暂无', name:"暂无",location:"暂无",id:"暂无",weekOfTerm: [9], dayOfWeek: 6,timeSpan:[1,2]};
+            this.ShowClassDetail = null;
             this.ShowClassDetail = new CustomDialogController({
               builder: ClassDetailDialog({
                 toChange: this.thisWeekSchedule,
-                classInfo: lesson,
-                oriClassInfo: lesson,
                 weekDisplayed: this.weekDisplayed,
                 isChangeSchedule: false
               }),
@@ -462,18 +460,29 @@ struct Schedule {
                 let oriLesson: classAttribute = {
                   name: lesson.name,
                   teacher: lesson.teacher,
-                  weekOfTerm: lesson.weekOfTerm,    // 以枚举形式写出哪几周
-                  timeSpan: lesson.timeSpan,      // 应当仅包含开始和结束是第几节课
+                  weekOfTerm: [...lesson.weekOfTerm],    // 以枚举形式写出哪几周
+                  timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
                   dayOfWeek: lesson.dayOfWeek,
                   location: lesson.location,
                   id: lesson.id
                 };
+                let editLesson: classAttribute = {
+                  name: lesson.name,
+                  teacher: lesson.teacher,
+                  weekOfTerm: [...lesson.weekOfTerm],    // 以枚举形式写出哪几周
+                  timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
+                  dayOfWeek: lesson.dayOfWeek,
+                  location: lesson.location,
+                  id: lesson.id
+                };
+                this.ShowClassDetail = null;
                 this.ShowClassDetail = new CustomDialogController({
                   builder: ClassDetailDialog({
                     toChange: this.thisWeekSchedule,
-                    classInfo: lesson,
+                    classInfo: editLesson,
                     oriClassInfo: oriLesson,
-                    weekDisplayed: this.weekDisplayed
+                    weekDisplayed: this.weekDisplayed,
+                    rectifyTimeSpan: [oriLesson.timeSpan[0], oriLesson.timeSpan[oriLesson.timeSpan.length - 1]]
                   }),
                   autoCancel: true,
                   gridCount: 4,
@@ -524,11 +533,12 @@ struct ClassDetailDialog {
   controller?: CustomDialogController;
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
+  rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
 
 
   build() {
     Column() {
-      Text($r('app.string.class_detail'))
+      Text(this.isChangeSchedule ? $r('app.string.class_detail') : $r('app.string.class_detail_new'))
         .fontSize(24)
         .fontWeight("bold")
         .textAlign(TextAlign.Center)
@@ -579,18 +589,16 @@ struct ClassDetailDialog {
             .textAlign(TextAlign.Start);
           Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
             { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
-            .value(this.classInfo.timeSpan[0].toString())
+            .value(this.rectifyTimeSpan[0].toString())
             .onSelect((index: number) => {
-              index++;
-              this.classInfo.timeSpan = tools.getContArray([[Math.min(index, this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1]), Math.max(index, this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1])]]) as number[];
+              this.rectifyTimeSpan[0] = index + 1;
             });
           Text(' - ');
           Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
             { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
-            .value(this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1].toString())
+            .value(this.rectifyTimeSpan[1].toString())
             .onSelect((index: number) => {
-              index++;
-              this.classInfo.timeSpan = tools.getContArray([[Math.min(index, this.classInfo.timeSpan[0]), Math.max(index, this.classInfo.timeSpan[0])]]) as number[];
+              this.rectifyTimeSpan[1] = index + 1;
             });
         }
 
@@ -614,37 +622,45 @@ struct ClassDetailDialog {
 
       Blank('16');
       Row() {
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.trash_red')).width(24).height(24);
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.trash_red')).width(24).height(24);
+          }
+          .onClick(() => {
+            scheduleManager.deleteSchedule(this.oriClassInfo);
+            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+            if (this.controller != undefined) {
+              this.controller.close();
+            }
+          })
+          .height(42)
+          .width(42);
         }
-        .onClick(() => {
-          scheduleManager.deleteSchedule(this.oriClassInfo);
-          this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
-          if (this.controller != undefined)
-            this.controller.close();
-        })
-        .height(42)
-        .width(42);
 
         Button($r('app.string.cancel'))
           .onClick(() => {
             if (this.controller != undefined)
               this.controller.close();
           })
-          .width('40%')
+          .width(this.isChangeSchedule ? '40%' : '50%')
           .buttonStyle(ButtonStyleMode.TEXTUAL);
 
         Button($r('app.string.ok'))
           .onClick(() => {
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
             if (this.isChangeSchedule)
               scheduleManager.deleteSchedule(this.oriClassInfo);
             scheduleManager.addSchedule(this.classInfo);
-            console.log(`hhh${this.oriClassInfo.dayOfWeek} ${this.classInfo.dayOfWeek}`)
             this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined)
               this.controller.close();
           })
-          .width('40%')
+          .width(this.isChangeSchedule ? '40%' : '50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED);
       };
 

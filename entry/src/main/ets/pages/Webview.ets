@@ -4,7 +4,8 @@ import { webview } from '@kit.ArkWeb'
 import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
-import { IconStyle } from '@kit.ArkUI'
+import { BusinessError } from '@kit.BasicServicesKit'
+import { common, Want } from '@kit.AbilityKit'
 
 const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 
@@ -86,6 +87,21 @@ struct Webview {
             this.uaMode = TABLET_MODE;
           })
       }
+
+      MenuItem({ content: $r('app.string.open_in_browser'),
+        startIcon: $r('app.media.browser')
+      })
+        .onClick(() => {
+          let want: Want = {
+            action: 'ohos.want.action.viewData',
+            entities: ['entity.system.browsable'],
+            uri: this.url
+          };
+          (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility(want)
+            .catch((err: BusinessError) => {
+              console.error(`startAbility failed, code is ${err.code}, message is ${err.message}`);
+            })
+        })
 
       MenuItem({ content: $r('app.string.help'), startIcon: $r('app.media.questionmark_circle')})
         .onClick(() => {
