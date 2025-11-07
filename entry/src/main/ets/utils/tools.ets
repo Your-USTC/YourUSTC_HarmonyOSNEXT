@@ -32,6 +32,9 @@ export function getContArray(range: number[][], returnString: boolean = false): 
 }
 
 export function shrinkContArrayToString(array: number[]):string {
+  if (array.length == 0) {
+    return '---';
+  }
   let res: string = array[0].toString();
   let i: number;
   for (i = 1; i < array.length; i++)

@@ -488,7 +488,8 @@ struct Schedule {
                     oriClassInfo: oriLesson,
                     weekDisplayed: this.weekDisplayed,
                     rectifyTimeSpan: [oriLesson.timeSpan[0], oriLesson.timeSpan[oriLesson.timeSpan.length - 1]],
-                    rectifyWeekOfTerm: rectifyWeekOfTerm
+                    rectifyWeekOfTerm: rectifyWeekOfTerm,
+                    weekOfTerm: [...editLesson.weekOfTerm]
                   }),
                   autoCancel: true,
                   gridCount: 4,
@@ -542,6 +543,7 @@ struct ClassDetailDialog {
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
   rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
+  @State weekOfTerm: number[] = tools.getContArray([[2, 10], [13, 16]]) as number[];
 
   build() {
     Column() {
@@ -658,8 +660,11 @@ struct ClassDetailDialog {
         Row() {
           Text($r('app.string.class_detail_weeks',
             (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') :
-              tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
-            .textAlign(TextAlign.Start);
+              tools.shrinkContArrayToString(this.weekOfTerm))))
+            .textAlign(TextAlign.Start)
+            .layoutWeight(1)
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis });
           CheckboxGroup({ group: 'checkboxGroup' })
             .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
             .onChange((itemName: CheckboxGroupResult) => {
@@ -671,11 +676,16 @@ struct ClassDetailDialog {
                 selectAny = true;
               }
               this.isOkButtonEnabled = selectAny;
+              this.weekOfTerm = [];
+              for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
+                if (this.rectifyWeekOfTerm[weekRepeat])
+                  this.weekOfTerm.push(weekRepeat);
             });
           Text($r('app.string.select_all'));
         }
+        .width('100%');
 
-        ForEach(tools.getContArray([[0, 3]]) as number[], (checkboxId: number) => {
+        ForEach(tools.getContArray([[0, 3]]), (checkboxId: number) => {
           Row() {
             ForEach(tools.getContArray([[1, 5]]), (checkboxId2: number) => {
               Checkbox({ name: (checkboxId * 5 + checkboxId2).toString(), group: 'checkboxGroup' })
