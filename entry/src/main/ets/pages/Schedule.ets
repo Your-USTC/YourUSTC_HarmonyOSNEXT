@@ -230,7 +230,7 @@ struct Schedule {
          * 表头
          */
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.monday'))
+          Text($r('app.string.sunday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -245,7 +245,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.tuesday'))
+          Text($r('app.string.monday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -260,7 +260,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.wednesday'))
+          Text($r('app.string.tuesday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -275,7 +275,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.thursday'))
+          Text($r('app.string.wednesday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -290,7 +290,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.friday'))
+          Text($r('app.string.thursday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -305,7 +305,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.saturday'))
+          Text($r('app.string.friday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -320,7 +320,7 @@ struct Schedule {
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.sunday'))
+          Text($r('app.string.saturday'))
             .fontWeight(FontWeight.Bold)
             .fontSize(12)
         }
@@ -507,8 +507,8 @@ struct Schedule {
               })
               .rowStart(lesson.timeSpan[0])
               .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1])
-              .columnStart(indexDay + 2)
-              .columnEnd(indexDay + 2)
+              .columnStart((indexDay + 1) % 7 + 2)
+              .columnEnd((indexDay + 1) % 7 + 2)
               .padding(2)
               .backgroundColor($r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()))
               .border({
@@ -541,6 +541,7 @@ struct ClassDetailDialog {
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
   rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false];
+  @State isOkButtonEnabled: boolean = true;
 
   build() {
     Column() {
@@ -664,8 +665,12 @@ struct ClassDetailDialog {
             .onChange((itemName: CheckboxGroupResult) => {
               for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++)
                 this.rectifyWeekOfTerm[checkboxRepeat] = false;
-              for (let checkboxRepeat of itemName.name)
+              let selectAny: boolean = false;
+              for (let checkboxRepeat of itemName.name) {
                 this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
+                selectAny = true;
+              }
+              this.isOkButtonEnabled = selectAny;
             });
           Text($r('app.string.select_all'));
         }
@@ -714,7 +719,8 @@ struct ClassDetailDialog {
               this.controller.close();
           })
           .width('50%')
-          .buttonStyle(ButtonStyleMode.EMPHASIZED);
+          .buttonStyle(ButtonStyleMode.EMPHASIZED)
+          .enabled(this.isOkButtonEnabled);
       };
 
     }

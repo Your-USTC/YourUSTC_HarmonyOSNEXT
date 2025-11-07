@@ -40,11 +40,6 @@ export function shrinkContArrayToString(array: number[]):string {
   return res + `-${array[i - 1]}`;
 }
 
-export function dateTimeToTimestamp(dateTime: string): number {
-  const date = new Date(dateTime);
-  return Math.floor(date.getTime());
-}
-
 export function getClassTimestamp(termBeginDate: number, week: number, day: number, surplus: number): number {
   return termBeginDate
     + (week - 1) * 604800000    // 第几周

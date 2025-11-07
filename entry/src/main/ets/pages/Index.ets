@@ -27,7 +27,6 @@ const calendarAccount: calendarManager.CalendarAccount = {
   // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
   displayName: "你的科大上课提醒"
 };
-export let calendarAccess: boolean = false;
 
 // 滚动条参数
 enum ScrollPosition {
@@ -442,14 +441,14 @@ struct Index {
 
                     Column() {
                       Row() {
-                        Text(`\udb81\uddf3 ${course.teacher == '' ? $r('app.string.temporary_null') : course.teacher}`)
+                        Text(`\udb81\uddf3 ${course.teacher == '' ? 'null' : course.teacher}`)
                           .maxLines(1)
                           .textOverflow({ overflow: TextOverflow.Ellipsis })
                           .layoutWeight(1)
                       }
 
                       Row() {
-                        Text(`\udb80\uddb8 ${course.location == '' ? $r('app.string.temporary_null') : course.location}`)
+                        Text(`\udb80\uddb8 ${course.location == '' ? 'null' : course.location}`)
                           .maxLines(1)
                           .textOverflow({ overflow: TextOverflow.Ellipsis })
                           .layoutWeight(1)
@@ -780,7 +779,6 @@ struct Index {
                           calendar = data;
                           // 确保日历账户创建成功后，再进行后续相关操作
                           // 将课程写入日历
-                          let isPermissionDenied = false;
                           if (calendar != undefined) {
                             //获取日历账户
                             calendarMgr?.getCalendar(calendarAccount, (err, data) => {
@@ -823,11 +821,11 @@ struct Index {
                                             type: calendarManager.EventType.NORMAL, // 日程类型
                                             startTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
                                               layer3.weekOfTerm[0],
-                                              layer3.dayOfWeek,
+                                              (layer3.dayOfWeek + 1) % 7,
                                               Schedule.commonClassStamp[layer3.timeSpan[0]][0]), // 日程开始时间
                                             endTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
                                               layer3.weekOfTerm[0],
-                                              layer3.dayOfWeek,
+                                              (layer3.dayOfWeek + 1) % 7,
                                               Schedule.commonClassStamp[layer3.timeSpan[1]][1]), // 日程结束时间
                                             reminderTime: Schedule.remindBefore, // 距开始时间提前remindBefore分钟提醒
                                             recurrenceRule: {
@@ -845,10 +843,7 @@ struct Index {
                                             });
                                           }
                                         }
-                                }).catch((err: BusinessError) => {
-                                  this.calendar_permission_denied(err);
-                                  isPermissionDenied = true;
-                                })
+                                }).catch((err: BusinessError) => { this.calendar_permission_denied(err); });
                               }
                             });
                           }

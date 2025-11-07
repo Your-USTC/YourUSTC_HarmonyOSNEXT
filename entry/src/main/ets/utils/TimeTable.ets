@@ -112,8 +112,8 @@ class scheduleManager {
   termStart: number = 0;
   weekStart: number = 0;
   weekEnd: number = 0;
-  parsedSchedule: classAttribute[][][] = [];
-  formattedSchedule: classAttribute[][][] = [];
+  parsedSchedule: classAttribute[][][] = [[[]]];
+  formattedSchedule: classAttribute[][][] = [[[]]];
   currentTime: Date = new Date();
   today: number = 0; // 星期几-1
 
@@ -122,6 +122,8 @@ class scheduleManager {
     this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
       ? Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
       : 1;
+    if (this.weekDisplayed > 20)
+      this.weekDisplayed = 1;
     this.today = (this.currentTime.getDay() + 6) % 7;
     this.termStart = Number(UnifiedPreferences.getSync(START_TIME_KEY));
     this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
@@ -158,9 +160,10 @@ class scheduleManager {
     for (let i = 0; i <= 6; i++) // 星期几 -1
       if (this.parsedSchedule[i] != undefined) // 防止不存在元素
         for (let j of this.parsedSchedule[i]) // 星期几的每一节课
-          for (let k of j) // 叠课判断
-            for (let week of k.weekOfTerm)
-              this.formattedSchedule[week][i].push(k);
+          if (j != undefined)
+            for (let k of j) // 叠课判断
+              for (let week of k.weekOfTerm)
+                this.formattedSchedule[week][i].push(k);
   }
 
   addSchedule(toChangeInfo: classAttribute) {
@@ -168,6 +171,8 @@ class scheduleManager {
     let j: number = toChangeInfo.timeSpan[0] - 1;
     if (this.parsedSchedule[i] == undefined)
       this.parsedSchedule[i] = [];
+    if (this.parsedSchedule[i][j] == undefined)
+      this.parsedSchedule[i][j] = [];
     this.parsedSchedule[i][j].push(toChangeInfo);
     this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
