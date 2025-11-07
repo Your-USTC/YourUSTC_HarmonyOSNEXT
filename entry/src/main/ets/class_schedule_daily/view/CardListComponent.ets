@@ -26,7 +26,7 @@ export struct CardListComponent {
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-              if (this.cardListParameter.isItemCount !== undefined && this.cardListParameter.itemCount !== undefined) {
+              if (this.cardListParameter.isItemCount === true && this.cardListParameter.itemCount !== undefined) {
                 Text(this.cardListParameter.itemCount > 99 ? '99+' :
                   this.cardListParameter.itemCount + '')
                   .textAlign(TextAlign.Center)
@@ -41,9 +41,8 @@ export struct CardListComponent {
             }.layoutWeight(1)
 
             Image(this.cardListParameter.logo)
-              .width(20)
-              .height(20)
-              .margin({ left: 28 })
+              .width(24)
+              .height(24)
           }
           .width('100%')
           .alignItems(VerticalAlign.Top)

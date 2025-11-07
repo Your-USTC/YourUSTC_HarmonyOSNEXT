@@ -358,15 +358,11 @@
     },
     {
       "name": "class_schedule_daily_display_name",
-      "value": "课程表"
+      "value": "你的课表"
     },
     {
-      "name": "card_list_title",
-      "value": "Title"
-    },
-    {
-      "name": "card_list_content",
-      "value": "Introduction"
+      "name": "schedule_card_title",
+      "value": "你的课表"
     }
   ]
 }

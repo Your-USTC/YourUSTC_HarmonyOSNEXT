@@ -2,6 +2,9 @@
 import * as tools from '../../utils/tools';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
+import { classAttribute } from '../../pages/Schedule';
+import UnifiedPreference from '../../utils/UnifyPreference';
+import scheduleManager from '../../utils/TimeTable';
 
 interface CardListItemData {
   title: ResourceStr;
@@ -12,66 +15,60 @@ interface CardListItemData {
 @Entry
 @Component
 struct Class_schedule_dailyCard {
-  readonly cardList: number[] = tools.getContArray([[0,9]]) as number[];
-  @State cardListParameter: CardListParameter = new CardListParameter($r('sys.color.ohos_id_color_background'),
-    $r('app.string.card_list_title'), '', ImageSize.Auto, $r('app.media.icon_round'), true,
-    $r('app.color.fade'), true, this.cardList.length, $r('sys.color.ohos_id_color_emphasize'),    // TODO: 浅色模式显示有问题，深色没事
-    $r('app.color.list_item_count_background'), '', true, $r('app.media.bottom_icon'));
 
-  readonly cardListData: CardListItemData = {
-    title: $r('app.string.card_list_title'),
-    content: $r('app.string.card_list_content'),
-    icon: $r('app.media.list_item')
-  };
+  @State cardListParameter: CardListParameter = new CardListParameter(
+    /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
+    /* title                    */ $r('app.string.schedule_card_title'),
+    /* backgroundImage          */ undefined,
+    /* backgroundImageSize      */ ImageSize.Auto,
+    /* logo                     */ $r('app.media.icon_round'),
+    /* isMask                   */ true,
+    /* maskColor                */ $r('app.color.fade'),
+    /* isItemCount              */ false,
+    /* itemCount                */ undefined,
+    /* itemCountColor           */ $r('sys.color.ohos_id_color_emphasize'),
+    /* itemCountBackgroundColor */ $r('app.color.list_item_count_background'),
+    /* titleColor               */ undefined,
+    /* isBottomIcon             */ false,
+    /* bottomIcon               */ undefined
+  );
+
+  private currentTime: Date = new Date();
+  @State todayCourse: classAttribute[] = [];
+  @State tomorrowCourse: classAttribute[] = [];
+
+  aboutToAppear(): void {    // TODO: 获取课程数据 (与应用中不一样)
+    //scheduleManager.getFormattedSchedule();
+    //this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+    //this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+  }
 
   @Builder
   cardListBuilder() {
-    ForEach(this.cardList, () => {
+    if (this.todayCourse.length == 0) {
       ListItem() {
-        Row() {
-          Column() {
-            Text(this.cardListData.title)
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .fontSize(12)
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('sys.color.black'))
-              .height(16)
-              .margin({ top: 5 })
-            Text(this.cardListData.content)
-              .maxLines(1)
-              .fontSize(12)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .fontWeight(FontWeight.Regular)
-              .height(16)
-
-            Divider()
-              .strokeWidth(0.38)
-              .lineCap(LineCapStyle.Square)
-              .margin({ top: 6 })
-          }
-          .margin({ right: 4 })
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
-
-          Image(this.cardListData.icon)
-            .width(32)
-            .height(32)
+        Column() {
+          Image($r('app.media.no_course_today'))
+            .height(50);
+          Text($r('app.string.no_class_today'));
         }
-        .alignItems(VerticalAlign.Center)
-        .width('100%')
+        .justifyContent(FlexAlign.Center)
+        .margin({ bottom: 20 })
       }
       .width('100%')
-      .height(44)
-    }, (item: number, index) => index + JSON.stringify(item))
+      .height('100%')
+    } else {
+
+    }
   }
 
   build() {
-    Row() {
+    Column() {
       CardListComponent({ cardListParameter: this.cardListParameter }) {
         this.cardListBuilder();
       }
     }
+    .width('100%')
     .height('100%')
     .onClick(() => {
       postCardAction(this, {
@@ -81,4 +78,5 @@ struct Class_schedule_dailyCard {
       });
     })
   }
+
 }

@@ -86,8 +86,6 @@ struct Index {
   @State showRecentCourse: boolean = true;
   @State todayCourse: classAttribute[] = [];
   @State tomorrowCourse: classAttribute[] = [];
-  private todayCourseLeftIndex: number = 0;
-
 
   @State showCheckIn: boolean = true;
   @State showExamDetail: boolean = true;
