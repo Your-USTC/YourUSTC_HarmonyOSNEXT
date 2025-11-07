@@ -91,6 +91,7 @@ struct Index {
 
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private currentTime: Date = new Date();
+  @State isTodayCourseEnd: boolean = true;
 
   aboutToAppear(): void {
     Schedule.initSchedulePre(this.context);
@@ -105,6 +106,12 @@ struct Index {
     this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
     this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
+    for (let todaySingleCourse of this.todayCourse)
+      if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+        + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
+        this.isTodayCourseEnd = false;
+        break;
+      }
   }
 
   /**
@@ -348,10 +355,16 @@ struct Index {
                 .objectFit(ImageFit.Contain)
                 .onClick(() => {
                   scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                  this.todayCourse =
-                    scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-                  Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                  this.currentTime = new Date();
+                  this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                  this.isTodayCourseEnd = true;
+                  for (let todaySingleCourse of this.todayCourse)
+                    if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                      + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
+                      this.isTodayCourseEnd = false;
+                      break;
+                    }
                 });
             } else {
               Image($r('app.media.empty'))
@@ -393,13 +406,8 @@ struct Index {
               .margin({ top: 12, bottom: 12 });
             } else {
               ForEach(this.todayCourse, (course: classAttribute, index: number) => {
-                if (
-                  this.currentTime.getTime() <
-                    (scheduleManager.weekStart + 57600000)
-                      + scheduleManager.today * 86400000
-                      + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]
-                      + 1800000
-                ) {
+                if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                  + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
                   Row() {
                     Column() {
                       Text(course.name)
@@ -473,6 +481,14 @@ struct Index {
                   }
                 }
               });
+              if (this.isTodayCourseEnd) {
+                Column() {
+                  Image($r('app.media.course_finish_today'))
+                    .height(50);
+                  Text($r('app.string.class_finish_today'));
+                }
+                .margin({ top: 12, bottom: 12 });
+              }
             }
 
             if (this.tomorrowCourse.length > 0) {

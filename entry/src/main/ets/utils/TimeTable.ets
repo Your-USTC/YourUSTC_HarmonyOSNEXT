@@ -119,16 +119,20 @@ class scheduleManager {
 
   getParsedSchedule(): void {
     this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
-    this.weekDisplayed = UnifiedPreferences.hasSync(START_TIME_KEY)
-      ? Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek)
-      : 1;
-    if (this.weekDisplayed > 20)
+    if (UnifiedPreferences.hasSync(START_TIME_KEY)) {
+      this.weekDisplayed = Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek);
+      this.weekStart = Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek;
+      this.termStart = Number(UnifiedPreferences.getSync(START_TIME_KEY));
+    } else {
       this.weekDisplayed = 1;
+      const monday = new Date(this.currentTime);
+      monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : - (this.currentTime.getDay() - 1)));
+      monday.setHours(8, 0, 0, 0);
+      this.weekStart = monday.getTime() - 86400000;
+      UnifiedPreferences.putSync(START_TIME_KEY, this.weekStart);
+      this.termStart = this.weekStart;
+    }
     this.today = (this.currentTime.getDay() + 6) % 7;
-    this.termStart = Number(UnifiedPreferences.getSync(START_TIME_KEY));
-    this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
-      ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
-      : this.currentTime.getTime();
     this.weekEnd = this.weekStart + 518400000;
   }
 
@@ -140,6 +144,13 @@ class scheduleManager {
       UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
       UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
+      if (this.weekDisplayed > 20) {
+        this.weekDisplayed = 1;
+        const monday = new Date(this.currentTime);
+        monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : - (this.currentTime.getDay() - 1)));
+        monday.setHours(8, 0, 0, 0);
+        UnifiedPreferences.putSync(START_TIME_KEY, monday.getTime() - 86400000)
+      }
       this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
         ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
         : this.currentTime.getTime();
