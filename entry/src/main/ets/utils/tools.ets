@@ -45,8 +45,8 @@ export function dateTimeToTimestamp(dateTime: string): number {
   return Math.floor(date.getTime());
 }
 
-export function getClassTimestamp(termBeginDate: string, week: number, day: number, surplus: number): number {
-  return dateTimeToTimestamp(termBeginDate)
+export function getClassTimestamp(termBeginDate: number, week: number, day: number, surplus: number): number {
+  return termBeginDate
     + (week - 1) * 604800000    // 第几周
     + day * 86400000            // 第几天，不-1是因为教务系统中一周从周日开始
     + surplus;                  // 第几节课结束
