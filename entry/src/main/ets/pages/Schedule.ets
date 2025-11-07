@@ -475,6 +475,11 @@ struct Schedule {
                   location: lesson.location,
                   id: lesson.id
                 };
+                let rectifyWeekOfTerm: boolean[] = [];
+                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
+                  rectifyWeekOfTerm[weekRepeat] = false;
+                for (let weekRepeat of lesson.weekOfTerm)
+                  rectifyWeekOfTerm[weekRepeat] = true;
                 this.ShowClassDetail = null;
                 this.ShowClassDetail = new CustomDialogController({
                   builder: ClassDetailDialog({
@@ -482,7 +487,8 @@ struct Schedule {
                     classInfo: editLesson,
                     oriClassInfo: oriLesson,
                     weekDisplayed: this.weekDisplayed,
-                    rectifyTimeSpan: [oriLesson.timeSpan[0], oriLesson.timeSpan[oriLesson.timeSpan.length - 1]]
+                    rectifyTimeSpan: [oriLesson.timeSpan[0], oriLesson.timeSpan[oriLesson.timeSpan.length - 1]],
+                    rectifyWeekOfTerm: rectifyWeekOfTerm
                   }),
                   autoCancel: true,
                   gridCount: 4,
@@ -534,16 +540,50 @@ struct ClassDetailDialog {
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-
+  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false];
 
   build() {
     Column() {
-      Text(this.isChangeSchedule ? $r('app.string.class_detail') : $r('app.string.class_detail_new'))
-        .fontSize(24)
-        .fontWeight("bold")
-        .textAlign(TextAlign.Center)
-        .margin({ top: 5});
-      Blank('16');
+      Row() {
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.trash_red')).width(24).height(24);
+          }
+          .onClick(() => {
+            scheduleManager.deleteSchedule(this.oriClassInfo);
+            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+            if (this.controller != undefined) {
+              this.controller.close();
+            }
+          })
+          .height(42)
+          .width(42);
+        }
+        Blank();
+
+        Text(this.isChangeSchedule ? $r('app.string.class_detail') : $r('app.string.class_detail_new'))
+          .fontSize(24)
+          .fontWeight("bold")
+          .textAlign(TextAlign.Center)
+          .margin({ top: 5 });
+
+        Blank();
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.copy')).width(24).height(24);
+          }
+          .onClick(() => {
+            scheduleManager.addSchedule(this.classInfo);
+            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+            if (this.controller != undefined) {
+              this.controller.close();
+            }
+          })
+          .height(42)
+          .width(42);
+        }
+      }
+      .width('100%');
 
       Column() {
         Row() {
@@ -562,7 +602,7 @@ struct ClassDetailDialog {
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.teacher = input);
         }
-        .margin({ top: 5, bottom: 5 });
+        .margin({ bottom: 5 });
 
         Row() {
           Text($r('app.string.class_detail_location'));
@@ -573,7 +613,7 @@ struct ClassDetailDialog {
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.location = input);
         }
-        .margin({ top: 5, bottom: 5 });
+        .margin({ bottom: 5 });
 
         Row() {
           Text($r('app.string.class_detail_id'));
@@ -582,7 +622,7 @@ struct ClassDetailDialog {
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.id = input);
         }
-        .margin({ top: 5, bottom: 5 });
+        .margin({ bottom: 5 });
 
         Row() {
           Text($r('app.string.class_detail_time'))
@@ -601,11 +641,8 @@ struct ClassDetailDialog {
               this.rectifyTimeSpan[1] = index + 1;
             });
         }
+        .margin({ bottom: 5 })
 
-        Text($r('app.string.class_detail_weeks',
-          (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') :
-            tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
-          .textAlign(TextAlign.Start);
         Row() {
           Text($r('app.string.class_detail_day_of_week'))
             .textAlign(TextAlign.Start);
@@ -616,37 +653,53 @@ struct ClassDetailDialog {
               this.classInfo.dayOfWeek = index;
             });
         }
+
+        Row() {
+          Text($r('app.string.class_detail_weeks',
+            (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') :
+              tools.shrinkContArrayToString(this.classInfo.weekOfTerm))))
+            .textAlign(TextAlign.Start);
+          CheckboxGroup({ group: 'checkboxGroup' })
+            .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
+            .onChange((itemName: CheckboxGroupResult) => {
+              for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++)
+                this.rectifyWeekOfTerm[checkboxRepeat] = false;
+              for (let checkboxRepeat of itemName.name)
+                this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
+            });
+          Text($r('app.string.select_all'));
+        }
+
+        ForEach(tools.getContArray([[0, 3]]) as number[], (checkboxId: number) => {
+          Row() {
+            ForEach(tools.getContArray([[1, 5]]), (checkboxId2: number) => {
+              Checkbox({ name: (checkboxId * 5 + checkboxId2).toString(), group: 'checkboxGroup' })
+                .shape(CheckBoxShape.ROUNDED_SQUARE)
+                .select(this.rectifyWeekOfTerm[checkboxId * 5 + checkboxId2]);
+              Text((checkboxId * 5 + checkboxId2).toString()).width('8%');
+            })
+          }
+        });
       }
       .alignItems(HorizontalAlign.Start)
       .width('80%');
 
       Blank('16');
       Row() {
-        if (this.isChangeSchedule) {
-          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.trash_red')).width(24).height(24);
-          }
-          .onClick(() => {
-            scheduleManager.deleteSchedule(this.oriClassInfo);
-            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
-            if (this.controller != undefined) {
-              this.controller.close();
-            }
-          })
-          .height(42)
-          .width(42);
-        }
-
         Button($r('app.string.cancel'))
           .onClick(() => {
             if (this.controller != undefined)
               this.controller.close();
           })
-          .width(this.isChangeSchedule ? '40%' : '50%')
+          .width('50%')
           .buttonStyle(ButtonStyleMode.TEXTUAL);
 
         Button($r('app.string.ok'))
           .onClick(() => {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
+              if (this.rectifyWeekOfTerm[weekRepeat])
+                this.classInfo.weekOfTerm.push(weekRepeat);
             if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
               let swapTemp = this.rectifyTimeSpan[0];
               this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -660,7 +713,7 @@ struct ClassDetailDialog {
             if (this.controller != undefined)
               this.controller.close();
           })
-          .width(this.isChangeSchedule ? '40%' : '50%')
+          .width('50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED);
       };
 

@@ -189,6 +189,10 @@
       "value": "周数：%s"
     },
     {
+      "name": "select_all",
+      "value": "全选"
+    },
+    {
       "name": "class_detail_day_of_week",
       "value": "星期："
     },
