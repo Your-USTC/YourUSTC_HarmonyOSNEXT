@@ -21,7 +21,7 @@ export class GridData {
 
 // 每个grid所含元素个数&grid总数，添加元素时需要更改
 // 不使用.length因为节省时间
-export const eachGridNum: number[] = [16, 15, 10, 11];
+export const eachGridNum: number[] = [16, 15, 10, 12];
 export const totalGridNum: number = 4
 
 
@@ -87,5 +87,6 @@ export const otherGridDataList: GridData[] = [
       $r('app.string.QuanJingDiTu'),
       $r('app.string.XiaoYuanBanChe'),
       $r('app.string.AIZhuShou'),
+      $r('app.string.PiaoWuXiTong')
     ])
 ];

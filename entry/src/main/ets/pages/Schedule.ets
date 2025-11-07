@@ -576,6 +576,16 @@ struct ClassDetailDialog {
             Image($r('app.media.copy')).width(24).height(24);
           }
           .onClick(() => {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
+              if (this.rectifyWeekOfTerm[weekRepeat])
+                this.classInfo.weekOfTerm.push(weekRepeat);
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
             scheduleManager.addSchedule(this.classInfo);
             this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined) {
@@ -583,7 +593,8 @@ struct ClassDetailDialog {
             }
           })
           .height(42)
-          .width(42);
+          .width(42)
+          .enabled(this.isOkButtonEnabled);
         }
       }
       .width('100%');
@@ -658,9 +669,7 @@ struct ClassDetailDialog {
         }
 
         Row() {
-          Text($r('app.string.class_detail_weeks',
-            (this.classInfo.weekOfTerm.toString() == '' ? $r('app.string.temporary_null') :
-              tools.shrinkContArrayToString(this.weekOfTerm))))
+          Text($r('app.string.class_detail_weeks', tools.shrinkContArrayToString(this.weekOfTerm)))
             .textAlign(TextAlign.Start)
             .layoutWeight(1)
             .maxLines(2)

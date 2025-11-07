@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可折叠列表</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+
+        .accordion-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .accordion-item {
+            margin-bottom: 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            overflow: hidden; /* 确保内容超出时被裁剪，配合动画效果 */
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background-color: #f0f0f0;
+        }
+
+        .accordion-title {
+            flex-grow: 1;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .arrow-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+            color: #555;
+        }
+
+        /* 旋转箭头类 */
+        .rotated .arrow-icon {
+            transform: rotate(90deg);
+        }
+
+        .accordion-content {
+            /* 初始高度设置为0，动画过渡应用于高度 */
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            background-color: #fafafa;
+        }
+
+        .accordion-body {
+            padding: 0 20px; /* 初始无内容垂直间距 */
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .accordion-body p {
+            margin: 15px 0; /* 内容文本的间距 */
+        }
+
+        /* 展开状态下的样式 */
+        .expanded .accordion-content {
+            /* 展开后的高度需要足够大以容纳内容，或者使用一个预估值 */
+            /* 这里的 trick 是设置为一个较大的值，然后依赖JS设置最终高度 */
+            max-height: 500px; /* 预设一个较大的值，确保内容能显示 */
+            padding: 10px 0; /* 展开后添加一些垂直间距 */
+        }
+        /* --- 深色模式 (Dark Mode) 样式 --- */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1e1e1e; /* 深色背景 */
+                color: #e0e0e0; /* 浅色文本 */
+            }
+
+            .accordion-item {
+                background-color: #2d2d2d; /* 深色卡片背景 */
+                box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1); /* 浅色阴影 */
+            }
+
+            .accordion-header:hover {
+                background-color: #3a3a3a;
+            }
+
+            .accordion-title {
+                color: #f0f0f0; /* 浅色标题 */
+            }
+
+            .arrow-icon {
+                color: #cccccc; /* 浅色箭头 */
+            }
+
+            .accordion-content {
+                background-color: #252525; /* 内容区域深色背景 */
+            }
+
+            .accordion-body {
+                color: #b0b0b0; /* 较深的浅色文本 */
+            }
+
+            .accordion-body p {
+                color: #b0b0b0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="accordion-container">
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <span class="accordion-title">第一部分：关于本组件的介绍</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </div>
+        <div class="accordion-content">
+            <div class="accordion-body">
+                <p>这是第一部分展开后的内容文本。它展示了该组件的详细信息，例如它是如何使用纯 HTML、CSS 和 JavaScript 实现的，并且不需要任何外部库。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <span class="accordion-title">第二部分：CSS 动画原理</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </div>
+        <div class="accordion-content">
+            <div class="accordion-body">
+                <p>圆角矩形的“变长”是通过控制 <code>.accordion-content</code> 的 <code>max-height</code> 属性实现的 CSS 过渡动画。箭头旋转使用 <code>transform: rotate()</code> 属性。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <span class="accordion-title">第三部分：JavaScript 交互逻辑</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </div>
+        <div class="accordion-content">
+            <div class="accordion-body">
+                <p>JavaScript 负责监听点击事件，并在展开和收起时切换 <code>.rotated</code> 和 <code>.expanded</code> 类。展开时，为了实现平滑的高度过渡，我们使用了一个较大的 <code>max-height</code> 值，并在 JS 中动态计算了内容的实际高度并赋给 <code>max-height</code>（如果内容高度已知，这能避免预设值过大或过小的问题，但为了简洁，这里主要依赖 CSS 预设）。</p>
+                <p><strong>注意：</strong> 在本示例中，为了简化 JS 代码并保持其单文件特性，我们主要依赖 CSS 的 <code>max-height</code> 过渡来实现“逐渐变长”的效果，内容间距的调整则通过切换 <code>padding</code> 实现。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const items = document.querySelectorAll('.accordion-item');
+
+        items.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const content = item.querySelector('.accordion-content');
+
+            header.addEventListener('click', () => {
+                // 切换 'expanded' 类，触发高度和内边距的过渡动画
+                const isExpanded = item.classList.toggle('expanded');
+
+                // 切换 'rotated' 类，触发箭头旋转动画
+                item.classList.toggle('rotated', isExpanded);
+
+                if (isExpanded) {
+                    // 展开时，计算内容实际高度，设置 max-height 以确保平滑过渡
+                    // 这一步是实现完美高度过渡的关键
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } else {
+                    // 收起时，将 max-height 设为 0，触发收起动画
+                    content.style.maxHeight = "0";
+                }
+            });
+
+            // 初始设置：确保在初始渲染时内容是收起状态，并设置 max-height 为 0
+            // 否则在某些浏览器中，立即添加.expanded可能会跳过初始过渡
+            if (!item.classList.contains('expanded')) {
+                content.style.maxHeight = "0";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

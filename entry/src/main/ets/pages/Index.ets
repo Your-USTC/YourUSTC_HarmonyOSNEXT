@@ -204,7 +204,7 @@ struct Index {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
           .onClick(() => {
             this.showCheckIn = !this.showCheckIn;
-            UnifiedPreference.putSync('showRecentCourse', this.showCheckIn);
+            UnifiedPreference.putSync('showCheckIn', this.showCheckIn);
           });
       } else if (item.id == 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
