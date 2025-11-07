@@ -88,6 +88,7 @@ struct Index {
 
   @State showCheckIn: boolean = true;
   @State showExamDetail: boolean = true;
+  @State webAutoDarkMode: boolean = true;
 
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
   private currentTime: Date = new Date();
@@ -106,6 +107,7 @@ struct Index {
     this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
     this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
+    this.webAutoDarkMode = UnifiedPreference.getBoolSync('webAutoDarkMode', true);// 是否显示
     for (let todaySingleCourse of this.todayCourse)
       if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
         + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
@@ -212,11 +214,17 @@ struct Index {
             this.showRecentCourse = !this.showRecentCourse;
             UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
           });
-      } else {
+      } else if (item.id == 2){
         Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
           .onClick(() => {
             this.showExamDetail = !this.showExamDetail;
             UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
+          });
+      } else { // item.id == 5
+        Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
+          .onClick(() => {
+            this.webAutoDarkMode = !this.webAutoDarkMode;
+            UnifiedPreference.putSync('webAutoDarkMode', this.webAutoDarkMode);
           });
       }
     }
@@ -701,14 +709,17 @@ struct Index {
               .onClick(() => {
                 switch (cell.id) { // 根据 cell.id 区分设置项
                   case 0:
+                    // 显示签到
                     this.showCheckIn = !this.showCheckIn;
                     UnifiedPreference.putSync('showCheckIn', this.showCheckIn);
                     break;
                   case 1:
+                    // 显示课表
                     this.showRecentCourse = !this.showRecentCourse;
                     UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
                     break;
                   case 2:
+                    // 显示考试
                     this.showExamDetail = !this.showExamDetail;
                     UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
                     break;
@@ -750,6 +761,10 @@ struct Index {
                     }
                     break;
                   case 5:
+                    this.webAutoDarkMode = !this.webAutoDarkMode;
+                    UnifiedPreference.putSync('webAutoDarkMode', this.webAutoDarkMode);
+                    break;
+                  case 6:
                     // 清除日历中的所有课程信息
                     calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
                       calendar = data;
@@ -769,7 +784,7 @@ struct Index {
                         this.calendar_permission_denied(err);
                     });
                     break;
-                  case 6:
+                  case 7:
                     let selected3: number = 0;
                     switch (Schedule.remindBefore[0]) {
                       case 10: selected3 = 1; break;
@@ -867,12 +882,12 @@ struct Index {
                       }
                     })
                     break;
-                  case 7:
+                  case 8:
                     // 帮助
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
-                  case 8:
+                  case 9:
                     // 关于
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });

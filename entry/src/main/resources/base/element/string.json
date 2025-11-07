@@ -133,6 +133,10 @@
       "value": "设置「最近使用」的显示数量"
     },
     {
+      "name": "web_auto_dark_mode",
+      "value": "网页深色模式跟随系统"
+    },
+    {
       "name": "clear_calendar",
       "value": "清除日历中所有课程信息"
     },

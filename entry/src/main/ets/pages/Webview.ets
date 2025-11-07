@@ -6,6 +6,7 @@ import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../ut
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { common, Want } from '@kit.AbilityKit'
+import UnifiedPreference from '../utils/UnifyPreference'
 
 const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 
@@ -19,6 +20,7 @@ struct Webview {
   @State isTimeTablePage: boolean = false;
   @State gotTimeTable: boolean = false;
   obtainedData: obtainedData = {timeTable: '', startTime: '0'};
+  webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
 
 
   showMessage(message: string | ResourceStr, duration: number) {
@@ -222,6 +224,8 @@ struct Webview {
           .javaScriptAccess(true)
           .width('100%')
           .layoutWeight(1)
+          .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
+          .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .onControllerAttached(() => {
             if (desktopUrl.includes(this.url)) {
