@@ -565,7 +565,7 @@ struct ClassDetailDialog {
           .fontSize(24)
           .fontWeight("bold")
           .textAlign(TextAlign.Center)
-          .margin({ top: 5 });
+          .height(42);
 
         Blank();
         if (this.isChangeSchedule) {
