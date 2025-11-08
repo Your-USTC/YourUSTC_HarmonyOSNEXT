@@ -254,7 +254,7 @@
     },
     {
       "name": "get_schedule_hint",
-      "value": "登录后将自动跳转课表页面，人家是不是超级贴心 (≥▽≤)"
+      "value": "登录后将自动跳转，人家是不是超级贴心(≥▽≤)"
     },
     {
       "name": "no_class_today",
@@ -351,6 +351,10 @@
     {
       "name": "get_timetable_err_msg",
       "value": "课程表获取出现错误！"
+    },
+    {
+      "name": "get_timetable_succ_msg",
+      "value": "课程表获成功！"
     },
     {
       "name": "delete_class_err_msg",
