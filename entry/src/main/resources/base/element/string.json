@@ -57,6 +57,10 @@
       "value": "在线课表"
     },
     {
+      "name": "online_exam_info",
+      "value": "考试信息"
+    },
+    {
       "name": "week_of_term_no_d",
       "value": "第 %d 周"
     },
@@ -349,12 +353,24 @@
       "value": "课表自动获取失败！当网页加载完毕可尝试手动获取"
     },
     {
+      "name": "auto_get_exam_info_fail_msg",
+      "value": "考试信息自动获取失败！当网页加载完毕可尝试手动获取"
+    },
+    {
       "name": "get_timetable_err_msg",
       "value": "课程表获取出现错误！"
     },
     {
+      "name": "get_exam_info_err_msg",
+      "value": "考试信息获取出现错误！"
+    },
+    {
       "name": "get_timetable_succ_msg",
-      "value": "课程表获成功！"
+      "value": "课程表获取成功！"
+    },
+    {
+      "name": "get_exam_info_succ_msg",
+      "value": "考试信息获取成功！"
     },
     {
       "name": "delete_class_err_msg",
