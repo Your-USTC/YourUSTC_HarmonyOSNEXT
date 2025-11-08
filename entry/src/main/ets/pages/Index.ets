@@ -610,6 +610,9 @@ struct Index {
     .width('100%')
     .height('100%')
     .padding({ top: 20, bottom: 40, left: 20, right: 20 })
+
+    Button("[开发用] 清空首选项").onClick(() => {UnifiedPreference.clear();})
+    // TODO: 把该功能放到设置页面
   }
 
   /**
