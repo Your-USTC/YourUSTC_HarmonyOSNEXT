@@ -21,19 +21,17 @@
         /* --- 核心容器 --- */
         .error-container {
             background-color: #fff; /* 浅色容器背景 */
-            padding: 40px 60px;
+            padding: 40px 20px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 50%;
+            max-width: 600px;
+            width: 80%;
         }
 
-        /* --- 错误图标/符号 --- */
-        .error-icon {
-            font-size: 60px;
-            color: #ff6b6b; /* 醒目的红色系 */
-            margin-bottom: 20px;
-            display: block;
+        .error-container img {
+            max-width: 90%;
+            height: auto;
+            object-fit: contain;
         }
 
         /* --- 标题 --- */
@@ -48,7 +46,8 @@
         p {
             color: #666;
             line-height: 1.6;
-            margin-bottom: 25px;
+            margin-top: 0;
+            margin-bottom: 0;
         }
 
         /* --- 按钮（可选） --- */
@@ -61,6 +60,7 @@
             border-radius: 6px;
             font-weight: bold;
             transition: background-color 0.3s ease;
+            margin-top: 25px;
         }
 
         .refresh-button:hover {
@@ -106,13 +106,11 @@
 <body>
 
     <div class="error-container">
-        <span class="error-icon">&#129488;</span>
+        <img src="./thinking.png" width="300"/>
         
         <h1>网络错误</h1>
-        
-        <p>
-            诶？网络问题吗？让我看看喵~（歪头）要不要你试试检查一下网络设置？或者网址有没有问题？
-        </p>
+        <p>诶？网络问题吗？让我看看喵~（歪头）</p>
+        <p>要不要你试试检查一下网络设置？或者网址有没有问题？</p>
 
         <a href="native://webview_error_backward" class="refresh-button">
             返回上一页

@@ -243,10 +243,14 @@ struct Webview {
               if (event) {
                 let url: string = event.data.getRequestUrl();
                 if (url.indexOf('native://webview_error_backward') === 0) {
-                  this.getUIContext().getRouter().back({
-                    params: this.obtainedData,
-                    url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-                  })
+                  if (this.webviewController.accessBackward()) {
+                    this.webviewController.backward();
+                  } else {
+                    this.getUIContext().getRouter().back({
+                      params: this.obtainedData,
+                      url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+                    });
+                  }
                   return true;
                 }
               }
