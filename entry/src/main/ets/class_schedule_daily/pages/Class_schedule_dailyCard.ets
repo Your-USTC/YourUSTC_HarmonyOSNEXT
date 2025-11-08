@@ -40,6 +40,48 @@ struct Class_schedule_dailyCard {
   @Builder
   cardListBuilder() {
 
+    // TODO: 删除示例课程 👇👇
+    ListItem() {
+      Row() {
+        Column() {
+          Text('示例课程')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .textAlign(TextAlign.Start)
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+          Text($r('app.string.class_soon'))
+            .fontColor($r('app.color.green'))
+        }
+        .width('50%')
+        .alignItems(HorizontalAlign.Start)
+        .padding({ right: 10 });
+
+        Column() {
+          Text(`\udb81\uddf3 教师`)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+          Text(`\udb80\uddb8 地点`)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+          Text(`\udb80\udfdc 07:50 - 18:20`)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        }
+        .width('50%')
+        .alignItems(HorizontalAlign.Start)
+      }
+    }
+    .width('90%')
+    .margin({ top: 7, bottom: 7 })
+
+    Divider()
+      .width('95%')
+    // TODO: 删除示例课程 👆👆
+
     if (this.todayCourse.length == 0) {
 
       ListItem() {
