@@ -47,6 +47,7 @@ struct Webview {
           .height(20)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
+            this.webviewController.terminateRenderProcess();
             this.getUIContext().getRouter().back({
               params: this.obtainedData,
               url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
@@ -64,6 +65,7 @@ struct Webview {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
+                    this.webviewController.terminateRenderProcess();
                     this.getUIContext().getRouter().back({
                       params: this.obtainedData,
                       url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
@@ -117,6 +119,7 @@ struct Webview {
                 this.obtainedData.startTime = result;
                 console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
                 if (this.getUIContext().getRouter().getLength() === '3') {
+                  this.webviewController.terminateRenderProcess();
                   this.getUIContext().getRouter().back({
                     params: this.obtainedData,
                     url: 'pages/Schedule'
@@ -147,6 +150,7 @@ struct Webview {
                 if (this.webviewController.accessBackward()) {
                   this.webviewController.backward();
                 } else {
+                  this.webviewController.terminateRenderProcess();
                   this.getUIContext().getRouter().back({
                     params: this.obtainedData,
                     url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
@@ -203,6 +207,7 @@ struct Webview {
                     this.obtainedData.startTime = result;
                     console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
                     if (this.getUIContext().getRouter().getLength() === '3') {
+                      this.webviewController.terminateRenderProcess();
                       this.getUIContext().getRouter().back({
                         params: this.obtainedData,
                         url: 'pages/Schedule'

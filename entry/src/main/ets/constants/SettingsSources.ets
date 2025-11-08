@@ -20,7 +20,8 @@ export class SettingsData {
       ],
       [
         new ItemData(8, $r('app.string.help'), $r('app.media.questionmark_circle')),
-        new ItemData(9, $r('app.string.about'), $r('app.media.info_circle'))
+        new ItemData(9, $r('app.string.about'), $r('app.media.info_circle')),
+        new ItemData(10, $r('app.string.manual_fault'), $r('app.media.exclamationmark_circle'))
       ]
     ];
     return settingListData;

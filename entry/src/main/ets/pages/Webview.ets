@@ -5,6 +5,7 @@ import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_U
 import { BusinessError } from '@kit.BasicServicesKit'
 import { common, Want } from '@kit.AbilityKit'
 import UnifiedPreference from '../utils/UnifyPreference'
+import { call } from '@kit.TelephonyKit'
 
 const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
 
@@ -99,13 +100,11 @@ struct Webview {
         startIcon: $r('app.media.browser')
       })
         .onClick(() => {
-          let want: Want = {
+          (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
             action: 'ohos.want.action.viewData',
             entities: ['entity.system.browsable'],
             uri: this.webviewController.getUrl()
-          };
-          (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility(want)
-            .catch((err: BusinessError) => {
+          }).catch((err: BusinessError) => {
               console.error(`startAbility failed, code is ${err.code}, message is ${err.message}`);
             })
         })
@@ -134,7 +133,9 @@ struct Webview {
             .padding({ left: 12 })
             .height(20)
             .onClick(() => {
+              this.webviewController.terminateRenderProcess();
               console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
+              this.webviewController.terminateRenderProcess();
               this.getUIContext().getRouter().back({
                 url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
               })
@@ -151,6 +152,7 @@ struct Webview {
                     if (this.webviewController.accessBackward()) {
                       this.webviewController.backward();
                     } else {
+                      this.webviewController.terminateRenderProcess();
                       this.getUIContext().getRouter().back({
                         url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
                       });
@@ -200,11 +202,29 @@ struct Webview {
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
             .onLoadIntercept((event) => {
               if (event) {
-                let url: string = event.data.getRequestUrl();
-                if (url.indexOf('native://webview_error_backward') === 0) {
+                let uri: string = event.data.getRequestUrl();
+                if (uri.startsWith('mailto:')) {
+                  (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
+                    action: 'ohos.want.action.sendToData',
+                    uri: uri
+                  }).catch((err: BusinessError) => {
+                      console.error(`startAbility failed, code is ${err.code}, message is ${err.message}`);
+                    })
+                  return true;
+                } else if (uri.indexOf('tel:') === 0) {
+                  call.makeCall(uri.substring(4), (err) => {
+                    if (!err) {
+                      console.info('make call succeeded.');
+                    } else {
+                      console.info('make call fail, err is:' + JSON.stringify(err));
+                    }
+                  });
+                  return true;
+                } else if (uri.indexOf('native://webview_error_backward') === 0) {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
+                    this.webviewController.terminateRenderProcess();
                     this.getUIContext().getRouter().back({
                       url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
                     });

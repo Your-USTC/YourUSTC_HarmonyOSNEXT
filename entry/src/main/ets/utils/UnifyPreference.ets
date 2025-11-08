@@ -15,10 +15,12 @@ export const millisecondsPerWeek = 604800000;
 
 class UnifiedPreferences {
   private preferences: preferences.Preferences | null = null;
+  private initContext: Context | undefined = undefined;
 
   init(context: Context) {
     if (!this.preferences) {
       const options: preferences.Options = { name: PREF_NAME };
+      this.initContext = context;
       try {
         this.preferences = preferences.getPreferencesSync(context, options);
       } catch (error) {
@@ -70,7 +72,18 @@ class UnifiedPreferences {
   }
 
   clear() {
-    this.preferences?.clearSync()
+    this.preferences?.clearSync();
+    this.flush();
+  }
+
+  deletePreference(optionsName: string) {
+    if (this.initContext != undefined)
+    preferences.deletePreferences(this.initContext, { name: optionsName });
+  }
+
+  deleteSync(key: string) {
+    this.preferences?.deleteSync(key);
+    this.flush();
   }
 }
 

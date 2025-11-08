@@ -895,6 +895,9 @@ struct Index {
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
+                  case 10:
+                    scheduleManager.formattedSchedule[30][0];
+                    break;
                   default:
                    this.showMessage($r('app.string.under_construction'), 500);
                 }
@@ -926,7 +929,7 @@ struct Index {
         .width('80%')
         .fontColor(Color.Red)
         .onClick(() => {
-          const context = getContext(this) as common.UIAbilityContext
+          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           context.terminateSelf((err) => {
             if (!err) {
               context.getApplicationContext().killAllProcesses().catch((error: Error) => {

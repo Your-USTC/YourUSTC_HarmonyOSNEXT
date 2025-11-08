@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
+    "pages/FaultOccurred",
     "pages/Webview",
     "pages/Schedule",
     "pages/About",

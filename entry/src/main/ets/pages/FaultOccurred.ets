@@ -1,0 +1,70 @@
+
+import UnifiedPreferences, {CONSECUTIVE_DAYS_KEY, LAST_DAY_KEY,
+  PREF_NAME,SCHEDULE_KEY, START_TIME_KEY, TOTAL_DAYS_KEY } from '../utils/UnifyPreference';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+
+@Entry
+@Component
+struct FaultOccurred {
+  private button1ClickTimes: number = 0;
+  private button2ClickTimes: number = 0;
+  @State button1Text: ResourceStr = $r('app.string.delete_schedule')
+  @State button2Text: ResourceStr = $r('app.string.delete_all_data');
+
+  build() {
+    Column() {
+      Text($r('app.string.runtime_error'))
+        .fontSize(20)
+        .fontWeight(FontWeight.Bold)
+      Button(this.button1Text)
+        .backgroundColor($r('app.color.red'))
+        .margin({ top: 20})
+        .onClick(() => {
+          this.button1ClickTimes++;
+          if (this.button1ClickTimes == 2) {
+            UnifiedPreferences.deleteSync(LAST_DAY_KEY);
+            UnifiedPreferences.deleteSync(TOTAL_DAYS_KEY);
+            UnifiedPreferences.deleteSync(CONSECUTIVE_DAYS_KEY);
+            UnifiedPreferences.deleteSync(SCHEDULE_KEY);
+            UnifiedPreferences.deleteSync(START_TIME_KEY);
+          } else if (this.button1ClickTimes == 1){
+            this.button1Text = $r('app.string.click_again_to_delete');
+          } else {
+            this.button1Text = $r('app.string.clear_success');
+          }
+        });
+      Button(this.button2Text)
+        .backgroundColor($r('app.color.red'))
+        .margin({ top: 20})
+        .onClick(() => {
+          this.button2ClickTimes++;
+          if (this.button2ClickTimes == 2) {
+            UnifiedPreferences.deletePreference(PREF_NAME);
+          } else if (this.button2ClickTimes == 1){
+            this.button2Text = $r('app.string.click_again_to_delete');
+          } else {
+            this.button2Text = $r('app.string.clear_success');
+          }
+        });
+      Button($r('app.string.normal_restart'))
+        .margin({ top: 20})
+        .onClick(() => {
+          UnifiedPreferences.putSync('FaultOccurred', false);
+          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+          context.terminateSelf((err: BusinessError) => {
+            if (!err) {
+              context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+              })
+            }
+          })
+        })
+      Button($r('app.string.contact_developer'))
+        .margin({ top: 20})
+        .onClick(() => {})
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Center);
+  }
+}

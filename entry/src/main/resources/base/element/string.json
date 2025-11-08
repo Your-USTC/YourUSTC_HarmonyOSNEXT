@@ -383,6 +383,34 @@
     {
       "name": "schedule_card_title",
       "value": "你的课表"
+    },
+    {
+      "name": "runtime_error",
+      "value": "(｡•́︿•̀｡)上次运行时发生了错误，你可以："
+    },
+    {
+      "name": "delete_all_data",
+      "value": "清空除最近使用外的所有数据"
+    },
+    {
+      "name": "delete_schedule",
+      "value": "删除课表"
+    },
+    {
+      "name": "click_again_to_delete",
+      "value": "再次点击以确认"
+    },
+    {
+      "name": "normal_restart",
+      "value": "退出后再次尝试正常启动"
+    },
+    {
+      "name": "contact_developer",
+      "value": "联系开发者"
+    },
+    {
+      "name": "manual_fault",
+      "value": "(test)产生一个错误"
     }
   ]
 }
