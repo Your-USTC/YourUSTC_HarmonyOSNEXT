@@ -55,14 +55,12 @@ function getTimeTable() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-JSON.stringify(getTimeTable());
+getTimeTable();
 `
-export const timeTableQueryJSShort = `
-JSON.stringify(getTimeTable());
-`
+export const timeTableQueryJSShort = `getTimeTable();`
 
 export const startTimeQueryJS = `
-{const startTime = new Date(document.getElementById('startDate').innerText);startTime.getTime().toString();};
+{const startTime = new Date(document.getElementById('startDate').innerText);startTime.getTime();};
 `
 
 export const examInfoQueryJS = `
@@ -144,10 +142,9 @@ class scheduleManager {
 
   refreshParsedSchedule(routerParams: obtainedData): void {
     try {
-      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
-      this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
-      this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
-      UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
+      this.termStart = Number(routerParams.startTime);
+      this.parsedSchedule = JSON.parse(routerParams.timeTable) as classAttribute[][][];
+      UnifiedPreferences.putSync(SCHEDULE_KEY, routerParams.timeTable);
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
       if (this.weekDisplayed > 20) {
         this.weekDisplayed = 1;
