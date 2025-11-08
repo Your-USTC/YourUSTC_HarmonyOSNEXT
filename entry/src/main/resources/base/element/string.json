@@ -250,7 +250,11 @@
     },
     {
       "name": "no_class_today",
-      "value": "今天没有课程喵~ 好好休息一下吧。"
+      "value": "今天没有课程喵~好好休息一下吧。"
+    },
+    {
+      "name": "no_class_term_end",
+      "value": "本学期已结束"
     },
     {
       "name": "class_finish_today",

@@ -116,11 +116,16 @@ class scheduleManager {
   formattedSchedule: classAttribute[][][] = [[[]]];
   currentTime: Date = new Date();
   today: number = 0; // 星期几-1
+  isTermEnd: boolean = false;
 
   getParsedSchedule(): void {
     this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
     if (UnifiedPreferences.hasSync(START_TIME_KEY)) {
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek);
+      if (this.weekDisplayed > 20) {
+        this.weekDisplayed = 1;
+        this.isTermEnd = true;
+      }
       this.weekStart = Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek;
       this.termStart = Number(UnifiedPreferences.getSync(START_TIME_KEY));
     } else {
@@ -131,6 +136,7 @@ class scheduleManager {
       this.weekStart = monday.getTime() - 86400000;
       UnifiedPreferences.putSync(START_TIME_KEY, this.weekStart);
       this.termStart = this.weekStart;
+      this.isTermEnd = false;
     }
     this.today = (this.currentTime.getDay() + 6) % 7;
     this.weekEnd = this.weekStart + 518400000;
@@ -142,14 +148,21 @@ class scheduleManager {
       this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
       UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
-      UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
       if (this.weekDisplayed > 20) {
         this.weekDisplayed = 1;
-        const monday = new Date(this.currentTime);
-        monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : - (this.currentTime.getDay() - 1)));
-        monday.setHours(8, 0, 0, 0);
-        UnifiedPreferences.putSync(START_TIME_KEY, monday.getTime() - 86400000)
+        if (this.termStart == 0 ) { // 如果没有学期开始信息，将上一个周日作为一周开始
+          const monday = new Date(this.currentTime);
+          monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : -(this.currentTime.getDay() - 1)));
+          monday.setHours(8, 0, 0, 0);
+          UnifiedPreferences.putSync(START_TIME_KEY, monday.getTime() - 86400000);
+          this.isTermEnd = false;
+        } else { // 如果有，说明学期结束
+          this.isTermEnd = true;
+        }
+      } else { // 否则说明学期未结束
+        UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
+        this.isTermEnd = false;
       }
       this.weekStart = UnifiedPreferences.hasSync(START_TIME_KEY)
         ? Number(UnifiedPreferences.getSync(START_TIME_KEY)) + (this.weekDisplayed - 1) * millisecondsPerWeek
@@ -163,7 +176,7 @@ class scheduleManager {
   getFormattedSchedule(): void {
     this.getParsedSchedule();
     this.formattedSchedule = [];
-    for (let i = 0; i <= 20; i++) { // 初始化三个维度
+    for (let i = 0; i <= 21; i++) { // 初始化三个维度
       this.formattedSchedule[i] = [];
       for (let j = 0; j <= 6; j++)
         this.formattedSchedule[i][j] = [];

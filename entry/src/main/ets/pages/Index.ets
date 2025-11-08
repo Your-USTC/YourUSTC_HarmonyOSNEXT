@@ -102,8 +102,13 @@ struct Index {
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
     scheduleManager.getFormattedSchedule(); // 初始化首页课表
-    this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-    this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+    if (scheduleManager.isTermEnd) {
+      this.todayCourse = [];
+      this.tomorrowCourse = [];
+    } else {
+      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 2) / 7)][(scheduleManager.today + 1) % 7];
+    }
     this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
     this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
@@ -409,7 +414,7 @@ struct Index {
               Column() {
                 Image($r('app.media.no_course_today'))
                   .height(50);
-                Text($r('app.string.no_class_today'));
+                Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'));
               }
               .margin({ top: 12, bottom: 12 });
             } else {
