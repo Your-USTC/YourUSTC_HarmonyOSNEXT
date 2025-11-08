@@ -1,0 +1,227 @@
+// .onBackPressed()在5.0.0上不起作用！
+
+import { webview } from '@kit.ArkWeb'
+import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
+import { obtainedData } from '../pages/Schedule'
+import { BusinessError } from '@kit.BasicServicesKit'
+import UnifiedPreference from '../utils/UnifyPreference'
+
+
+@Entry
+@Component
+struct Webview {
+  webviewController: webview.WebviewController = new webview.WebviewController();
+  title: string = '';
+  url: string = '';
+  haveLogin: boolean = false;
+  @State isTimeTablePage: boolean = false;
+  @State gotTimeTable: boolean = false;
+  obtainedData: obtainedData = {timeTable: '', startTime: '0'};
+  webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
+  @State loadingProgress: number = 0;
+
+  showMessage(message: string | ResourceStr, duration: number) {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: message,
+        duration: duration
+      });
+    } catch (error) {
+      console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
+    }
+  }
+
+  aboutToAppear() { // Receive parameters before loading the page
+    const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
+    if (params) {
+      this.title = params.title ?? '';
+      this.url = params.url ?? '';
+    }
+  }
+
+  build() {
+    Column() {
+      Row() {
+        Image($r('app.media.close'))
+          .padding({ left: 12 })
+          .height(20)
+          .onClick(() => {
+            console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
+            this.getUIContext().getRouter().back({
+              params: this.obtainedData,
+              url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+            })
+          })
+        Image($r('app.media.back'))
+          .padding(({ left: 12, right: 4 }))
+          .height(16)
+          .draggable(false)
+          .parallelGesture(
+            GestureGroup(
+              GestureMode.Exclusive,
+              TapGesture({ count: 1 })
+                .onAction(() => {
+                  if (this.webviewController.accessBackward()) {
+                    this.webviewController.backward();
+                  } else {
+                    this.getUIContext().getRouter().back({
+                      params: this.obtainedData,
+                      url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+                    });
+                  }
+                }),
+              LongPressGesture()
+                .onAction(() => {
+                  if (this.webviewController.accessBackward()) {
+                    let i: number = -1;
+                    while (this.webviewController.accessStep(i))
+                      i--;
+                    this.webviewController.backOrForward(i + 1);
+                  } else {
+                    this.showMessage($r('app.string.already_first_page'), 500);
+                  }
+                })
+            )
+          )
+        Blank()
+        Text(this.title)
+          .fontSize(18)
+          .fontColor($r('app.color.normal_text'))
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+        Blank()
+        Image($r('app.media.refresh'))
+          .padding({ right: 12 })
+          .height(20)
+          .onClick(() => this.webviewController.refresh())
+        Image($r('app.media.get'))
+          .padding({ right: 12 })
+          .height(20)
+          .onClick(() => {
+            this.webviewController.runJavaScript(timeTableQueryJSShort, (error, result) => {
+              if (error) {
+                this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
+                return;
+              }
+              if (result === 'null') {
+                this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 3500 );
+                return;
+              }
+              this.gotTimeTable = true;
+              console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+              this.obtainedData.timeTable = result;
+              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                if (error) { /* 理论上这里不会出什么错误（doge） */
+                  return;
+                }
+                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+                this.obtainedData.startTime = result;
+                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                if (this.getUIContext().getRouter().getLength() === '3') {
+                  this.getUIContext().getRouter().back({
+                    params: this.obtainedData,
+                    url: 'pages/Schedule'
+                  });
+                }
+              });
+            });
+          })
+      }
+      .id('header')
+      .width('100%')
+      .height(48)
+      .backgroundColor($r('app.color.shaded_background'))
+
+      Stack({ alignContent: Alignment.TopStart}) {
+        Web({ src: this.url, controller: this.webviewController })
+          .domStorageAccess(true)
+          .javaScriptAccess(true)
+          .width('100%')
+          .height('100%')
+          .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
+          .forceDarkAccess(this.webAutoDarkMode)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+          .onLoadIntercept((event) => {
+            if (event) {
+              let url: string = event.data.getRequestUrl();
+              if (url.indexOf('native://webview_error_backward') === 0) {
+                if (this.webviewController.accessBackward()) {
+                  this.webviewController.backward();
+                } else {
+                  this.getUIContext().getRouter().back({
+                    params: this.obtainedData,
+                    url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+                  });
+                }
+                return true;
+              }
+            }
+            return false;
+          })
+          .onErrorReceive((event) => {
+            // Only handle loading errors of the main framework to avoid duplicate processing of errors in sub-resources
+            if (event && event.request.isMainFrame()) {
+              try {
+                this.webviewController.loadUrl($rawfile('WebError.html')); // 加载自定义错误页面
+              } catch (error) {
+                console.error(`ErrorCode: ${(error as BusinessError).code}, Message: ${(error as BusinessError).message}`);
+              }
+            }
+          })
+          .onProgressChange((event) => {
+            this.loadingProgress = event.newProgress;
+          })
+          .onPageBegin(() => {
+            if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+              this.haveLogin = true;
+              this.showMessage($r('app.string.get_schedule_hint'), 5000);
+            }
+            this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-table');
+            console.log(`aaa${this.haveLogin} ${this.isTimeTablePage}`);
+            if (!this.isTimeTablePage && this.haveLogin && this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home'))
+              this.webviewController.loadUrl('https://jw.ustc.edu.cn/for-std/course-table');
+          })
+          .onPageEnd(() => {
+            if (this.isTimeTablePage && !this.gotTimeTable) {
+              setTimeout(() => {
+                this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
+                  if (error) {
+                    this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
+                    return;
+                  }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                    return;
+                  }
+                  this.gotTimeTable = true;
+                  console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+                  this.obtainedData.timeTable = result;
+                  this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                    if (error) { /* 理论上这里不会出什么错误（doge） */
+                      return;
+                    }
+                    console.info(`学期开始的UNIX时间戳是${result}mm`);
+                    this.obtainedData.startTime = result;
+                    console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+                    if (this.getUIContext().getRouter().getLength() === '3') {
+                      this.getUIContext().getRouter().back({
+                        params: this.obtainedData,
+                        url: 'pages/Schedule'
+                      });
+                    }
+                  });
+                });
+              }, 1000);
+            }
+          })
+
+        Line()
+          .visibility(this.loadingProgress == 100 ? Visibility.None : Visibility.Visible)
+          .width(`${this.loadingProgress}%`)
+          .height(5)
+          .startPoint([0, 0])
+          .backgroundColor($r('app.color.pink'))
+      }
+      .layoutWeight(1)
+    }
+  }
+}

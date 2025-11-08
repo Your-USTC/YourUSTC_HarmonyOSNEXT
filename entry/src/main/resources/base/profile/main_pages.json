@@ -5,6 +5,7 @@
     "pages/Schedule",
     "pages/About",
     "pages/Help",
-    "pages/ExamDetail"
+    "pages/ExamDetail",
+    "pages/GetSchedule"
   ]
 }

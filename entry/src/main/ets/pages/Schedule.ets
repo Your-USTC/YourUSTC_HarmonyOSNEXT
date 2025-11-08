@@ -151,7 +151,7 @@ struct Schedule {
           .height(20)
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
-              url: 'pages/Webview',
+              url: 'pages/GetSchedule',
               params: { title: $r('app.string.online_schedule'), url: 'https://jw.ustc.edu.cn/for-std/course-table'}
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
