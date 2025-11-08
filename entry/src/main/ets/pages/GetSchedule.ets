@@ -1,7 +1,7 @@
 // .onBackPressed()在5.0.0上不起作用！
 
 import { webview } from '@kit.ArkWeb'
-import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort } from '../utils/TimeTable'
+import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS } from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreference from '../utils/UnifyPreference'
@@ -15,7 +15,9 @@ struct Webview {
   url: string = '';
   haveLogin: boolean = false;
   @State isTimeTablePage: boolean = false;
-  @State gotTimeTable: boolean = false;
+  gotTimeTable: boolean = false;
+  @State isExamInfoPage: boolean = false;
+  gotExamInfo: boolean = false;
   obtainedData: obtainedData = {timeTable: '', startTime: '0'};
   webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
@@ -47,11 +49,14 @@ struct Webview {
           .height(20)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
-            this.webviewController.terminateRenderProcess();
-            this.getUIContext().getRouter().back({
-              params: this.obtainedData,
-              url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-            })
+            if (this.obtainedData.startTime !== '0') {
+              this.getUIContext().getRouter().back({
+                params: this.obtainedData,
+                url: 'pages/Schedule'
+              });
+              return;
+            }
+            this.getUIContext().getRouter().back();
           })
         Image($r('app.media.back'))
           .padding(({ left: 12, right: 4 }))
@@ -65,7 +70,6 @@ struct Webview {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
-                    this.webviewController.terminateRenderProcess();
                     this.getUIContext().getRouter().back({
                       params: this.obtainedData,
                       url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
@@ -109,23 +113,9 @@ struct Webview {
                 return;
               }
               this.gotTimeTable = true;
+              this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
               console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
               this.obtainedData.timeTable = result;
-              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                if (error) { /* 理论上这里不会出什么错误（doge） */
-                  return;
-                }
-                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
-                this.obtainedData.startTime = result;
-                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
-                if (this.getUIContext().getRouter().getLength() === '3') {
-                  this.webviewController.terminateRenderProcess();
-                  this.getUIContext().getRouter().back({
-                    params: this.obtainedData,
-                    url: 'pages/Schedule'
-                  });
-                }
-              });
             });
           })
       }
@@ -150,7 +140,6 @@ struct Webview {
                 if (this.webviewController.accessBackward()) {
                   this.webviewController.backward();
                 } else {
-                  this.webviewController.terminateRenderProcess();
                   this.getUIContext().getRouter().back({
                     params: this.obtainedData,
                     url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
@@ -180,12 +169,21 @@ struct Webview {
               this.showMessage($r('app.string.get_schedule_hint'), 5000);
             }
             this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-table');
+            this.isExamInfoPage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/exam-arrange');
             console.log(`aaa${this.haveLogin} ${this.isTimeTablePage}`);
-            if (!this.isTimeTablePage && this.haveLogin && this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home'))
-              this.webviewController.loadUrl('https://jw.ustc.edu.cn/for-std/course-table');
+            if (/*!this.isTimeTablePage &&*/ this.haveLogin && this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {
+              this.webviewController.loadUrl(this.url);
+              console.info(`${this.url}|xxx`);
+            }
           })
           .onPageEnd(() => {
             if (this.isTimeTablePage && !this.gotTimeTable) {
+              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                if (error) { /* 理论上这里不会出什么错误 */ return;}
+                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+                this.obtainedData.startTime = result;
+                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
+              });
               setTimeout(() => {
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
                   if (error) {
@@ -197,25 +195,35 @@ struct Webview {
                     return;
                   }
                   this.gotTimeTable = true;
+                  this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
                   console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
                   this.obtainedData.timeTable = result;
-                  this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                    if (error) { /* 理论上这里不会出什么错误（doge） */
-                      return;
-                    }
-                    console.info(`学期开始的UNIX时间戳是${result}mm`);
-                    this.obtainedData.startTime = result;
-                    console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
-                    if (this.getUIContext().getRouter().getLength() === '3') {
-                      this.webviewController.terminateRenderProcess();
-                      this.getUIContext().getRouter().back({
-                        params: this.obtainedData,
-                        url: 'pages/Schedule'
-                      });
-                    }
+                  //if (this.getUIContext().getRouter().getLength() === '3') { }
+                  this.getUIContext().getRouter().back({
+                    params: this.obtainedData,
+                    url: 'pages/Schedule'
                   });
                 });
               }, 1000);
+            }
+            if (this.isExamInfoPage && !this.gotExamInfo) {
+              this.webviewController.runJavaScript(examInfoQueryJS, (error, result) => {
+                if (error) {
+                  this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
+                  return;
+                }
+                if (result === 'null') {
+                  this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
+                  return;
+                }
+                this.gotExamInfo = true;
+                this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
+                this.obtainedData.timeTable = result;
+                this.getUIContext().getRouter().back({
+                  params: this.obtainedData,
+                  url: 'pages/ExamDetail'
+                });
+              })
             }
           })
 

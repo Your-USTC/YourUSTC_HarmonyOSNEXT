@@ -54,8 +54,9 @@ export struct CardListComponent {
           }
           .width('100%')
           .height('100%')
+          .alignListItem(ListItemAlign.Center)
           .layoutWeight(1)
-          .scrollBar(BarState.Off)
+          .scrollBar(BarState.Auto)
         }
         .pixelRound({ bottom: PixelRoundCalcPolicy.FORCE_CEIL })
 
