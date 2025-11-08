@@ -67,7 +67,7 @@ export default struct GridComponent {
             // 跳转 Webview
             else if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
               this.getUIContext().getPromptAction().showToast({
-                message: $r('app.string.WorkingOn'),
+                message: $r('app.string.under_construction'),
                 duration: 500
               })
             } else { // 已设置对应网址

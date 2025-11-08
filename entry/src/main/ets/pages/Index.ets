@@ -362,28 +362,28 @@ struct Index {
         Column() {
           Row() {
             if (this.showRecentCourse) {
-              Image($r('app.media.refresh'))
-                .height(20)
-                .width(24)
-                .objectFit(ImageFit.Contain)
-                .onClick(() => {
-                  scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                  this.currentTime = new Date();
-                  this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
-                  this.isTodayCourseEnd = true;
-                  for (let todaySingleCourse of this.todayCourse)
-                    if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
-                      + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
-                      this.isTodayCourseEnd = false;
-                      break;
-                    }
-                });
+              Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+                Image($r('app.media.refresh')).height(20).width(20);
+              }
+              .height(36)
+              .width(36)
+              .onClick(() => {
+                scheduleManager.getFormattedSchedule(); // 初始化首页课表
+                this.currentTime = new Date();
+                this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+                Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                this.isTodayCourseEnd = true;
+                for (let todaySingleCourse of this.todayCourse) {
+                  if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                    + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
+                    this.isTodayCourseEnd = false;
+                    break;
+                  }
+                }
+              })
             } else {
-              Image($r('app.media.empty'))
-                .height(20)
-                .width(24)
-                .objectFit(ImageFit.Contain)
+              Blank().width(36);
             }
 
             Blank()
@@ -396,13 +396,13 @@ struct Index {
             Blank()
 
             Image($r('app.media.right_arrow'))
-              .height(24)
-              .width(24)
+              .height(28)
+              .width(28)
+              .margin({ left: 8 })
               .objectFit(ImageFit.Contain)
           }
           .width('100%')
-          .margin({ top: 15, bottom: 10 })
-          .padding({ left: 20, right: 20 })
+          .padding({ left: 8, right: 8, top: 8, bottom: 8 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/Schedule' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
@@ -563,22 +563,20 @@ struct Index {
         Column() {
           Row() {
             if (this.showExamDetail) {
-              Image($r('app.media.refresh'))
-                .height(20)
-                .width(24)
-                .objectFit(ImageFit.Contain)
-                .onClick(() => {
-                  scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                  this.todayCourse =
-                    scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-                  Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
-                });
+              Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+                Image($r('app.media.refresh')).height(20).width(20);
+              }
+              .height(36)
+              .width(36)
+              .onClick(() => {
+                scheduleManager.getFormattedSchedule(); // 初始化首页课表
+                this.todayCourse =
+                  scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+                Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+              });
             } else {
-              Image($r('app.media.empty'))
-                .height(20)
-                .width(24)
-                .objectFit(ImageFit.Contain)
+              Blank().width(36);
             }
             
             Blank()
@@ -591,13 +589,13 @@ struct Index {
             Blank()
 
             Image($r('app.media.right_arrow'))
-              .height(24)
-              .width(24)
+              .height(28)
+              .width(28)
+              .margin({ left: 8 })
               .objectFit(ImageFit.Contain)
           }
           .width('100%')
-          .margin({ top: 15, bottom: 10 })
-          .padding({ left: 20, right: 20 })
+          .padding({ left: 8, right: 8, top: 8, bottom: 8 })
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
@@ -898,7 +896,7 @@ struct Index {
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
                   default:
-                   this.showMessage($r('app.string.WorkingOn'), 500);
+                   this.showMessage($r('app.string.under_construction'), 500);
                 }
               })
             })

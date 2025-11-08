@@ -105,15 +105,11 @@ struct Schedule {
        */
       Row() {
         Image($r('app.media.close'))
-          .padding({left: 12})
+          .padding({left: 12, right: 32})
           .height(20)
           .onClick(() => {
             this.getUIContext().getRouter().back()
           })
-
-        Image($r('app.media.empty')) // 让标题居中
-          .padding({left: 12})
-          .height(20)
 
         Blank()
 

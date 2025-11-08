@@ -241,6 +241,10 @@
       "value": "前进"
     },
     {
+      "name": "trim_memory",
+      "value": "释放缓存"
+    },
+    {
       "name": "switch_ua",
       "value": "切换浏览器标识"
     },
@@ -301,7 +305,7 @@
       "value": "前往系统设置"
     },
     {
-      "name": "WorkingOn",
+      "name": "under_construction",
       "value": "前面的区域，以后再来探索吧"
     },
     {
