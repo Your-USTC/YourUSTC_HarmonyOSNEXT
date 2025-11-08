@@ -461,26 +461,17 @@ struct Index {
                     .padding({ right: 10 });
 
                     Column() {
-                      Row() {
-                        Text(`\udb81\uddf3 ${course.teacher == '' ? 'null' : course.teacher}`)
-                          .maxLines(1)
-                          .textOverflow({ overflow: TextOverflow.Ellipsis })
-                          .layoutWeight(1)
-                      }
+                      Text(`\udb81\uddf3 ${course.teacher == '' ? '' : course.teacher}`)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                      Row() {
-                        Text(`\udb80\uddb8 ${course.location == '' ? 'null' : course.location}`)
-                          .maxLines(1)
-                          .textOverflow({ overflow: TextOverflow.Ellipsis })
-                          .layoutWeight(1)
-                      }
+                      Text(`\udb80\uddb8 ${course.location == '' ? '' : course.location}`)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                      Row() {
-                        Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
-                          .maxLines(1)
-                          .textOverflow({ overflow: TextOverflow.Ellipsis })
-                          .layoutWeight(1)
-                      }
+                      Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
                     }
                     .width('50%')
                     .alignItems(HorizontalAlign.Start);
@@ -532,12 +523,14 @@ struct Index {
                   .padding({ right: 10 });
 
                   Column() {
-                    Text('\udb81\uddf3 ' + (course.teacher == '' ? $r('app.string.temporary_null') : course.teacher))
+                    Text(`\udb81\uddf3 ${course.teacher == '' ? '' : course.teacher}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    Text('\udb80\uddb8 ' + (course.location == '' ? $r('app.string.temporary_null') : course.location))
+
+                    Text(`\udb80\uddb8 ${course.location == '' ? '' : course.location}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
+
                     Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
