@@ -76,11 +76,6 @@ class UnifiedPreferences {
     this.flush();
   }
 
-  deletePreference(optionsName: string) {
-    if (this.initContext != undefined)
-    preferences.deletePreferences(this.initContext, { name: optionsName });
-  }
-
   deleteSync(key: string) {
     this.preferences?.deleteSync(key);
     this.flush();

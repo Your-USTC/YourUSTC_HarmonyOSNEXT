@@ -13,6 +13,10 @@
       "value": "#101015"
     },
     {
+      "name": "normal_background_transparent",
+      "value": "#AA101015"
+    },
+    {
       "name": "shaded_background",
       "value": "#071B58"
     },

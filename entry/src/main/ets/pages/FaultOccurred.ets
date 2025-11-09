@@ -9,7 +9,7 @@ import { common } from '@kit.AbilityKit';
 struct FaultOccurred {
   private button1ClickTimes: number = 0;
   private button2ClickTimes: number = 0;
-  @State button1Text: ResourceStr = $r('app.string.delete_schedule')
+  @State button1Text: ResourceStr = $r('app.string.delete_schedule');
   @State button2Text: ResourceStr = $r('app.string.delete_all_data');
 
   build() {
@@ -18,7 +18,7 @@ struct FaultOccurred {
         .fontColor($r('app.color.normal_text'))
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
-        .textAlign(TextAlign.Center)
+        .textAlign(TextAlign.Center);
       Button(this.button1Text)
         .backgroundColor($r('app.color.red'))
         .margin({ top: 20})
@@ -37,20 +37,23 @@ struct FaultOccurred {
         });
       Button(this.button2Text)
         .backgroundColor($r('app.color.red'))
-        .margin({ top: 20})
+        .margin({ top: 20, bottom: 10 })
         .onClick(() => {
           this.button2ClickTimes++;
           if (this.button2ClickTimes == 2) {
-            UnifiedPreferences.deletePreference(PREF_NAME); // 没啥用
+            UnifiedPreferences.clear();
             this.button2Text = $r('app.string.clear_success');
           } else if (this.button2ClickTimes == 1){
             this.button2Text = $r('app.string.click_again_to_delete');
           }
         });
+      Text($r('app.string.dangerous_behavior'))
+        .fontSize(24)
+        .fontWeight(FontWeight.Bolder)
+        .fontColor($r('app.color.red'));
       Button($r('app.string.normal_restart'))
-        .margin({ top: 20})
+        .margin({ top: 10 })
         .onClick(() => {
-          UnifiedPreferences.putSync('FaultOccurred', false);
           const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           context.terminateSelf((err: BusinessError) => {
             if (!err) {

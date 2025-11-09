@@ -15,7 +15,7 @@ import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
-import UnifiedPreference from '../utils/UnifyPreference'
+import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 
 // 日历初始化
@@ -82,16 +82,17 @@ struct Index {
   @State checkedInToday: boolean = false;
   @State checkInContent: string = ''; // 签到后展示的随机内容
 
-  @State showRecentCourse: boolean = true;
   @State todayCourse: classAttribute[] = [];
   @State tomorrowCourse: classAttribute[] = [];
 
-  @State showCheckIn: boolean = true;
-  @State showExamDetail: boolean = true;
-  @State webAutoDarkMode: boolean = true;
+  @State showCheckIn: boolean = UnifiedPreferences.getBoolSync('showCheckIn', true);
+  @State showRecentCourse: boolean = UnifiedPreferences.getBoolSync('showRecentCourse', true);
+  @State showExamDetail: boolean = UnifiedPreferences.getBoolSync('showExamDetail', true);
+  @State webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
+  @State webBackPress: boolean = UnifiedPreferences.getBoolSync('webBackPress', true);
 
   private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  private currentTime: Date = new Date();
+  @State currentTime: Date = new Date();
   @State isTodayCourseEnd: boolean = true;
 
   aboutToAppear(): void {
@@ -109,13 +110,9 @@ struct Index {
       this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
       this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
     }
-    this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
-    this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示
-    this.showExamDetail = UnifiedPreference.getBoolSync('showExamDetail', true);// 是否显示
-    this.webAutoDarkMode = UnifiedPreference.getBoolSync('webAutoDarkMode', true);// 是否显示
     for (let todaySingleCourse of this.todayCourse)
-      if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
-        + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
+      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+        + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
         this.isTodayCourseEnd = false;
         break;
       }
@@ -211,25 +208,31 @@ struct Index {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
           .onClick(() => {
             this.showCheckIn = !this.showCheckIn;
-            UnifiedPreference.putSync('showCheckIn', this.showCheckIn);
+            UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
           });
       } else if (item.id == 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
           .onClick(() => {
             this.showRecentCourse = !this.showRecentCourse;
-            UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
+            UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
           });
       } else if (item.id == 2){
         Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
           .onClick(() => {
             this.showExamDetail = !this.showExamDetail;
-            UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
+            UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
           });
-      } else { // item.id == 5
+      } else if (item.id == 5) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
           .onClick(() => {
             this.webAutoDarkMode = !this.webAutoDarkMode;
-            UnifiedPreference.putSync('webAutoDarkMode', this.webAutoDarkMode);
+            UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
+          });
+      } else { // item.id == 6
+        Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
+          .onClick(() => {
+            this.webBackPress = !this.webBackPress;
+            UnifiedPreferences.putSync('webBackPress', this.webAutoDarkMode);
           });
       }
     }
@@ -370,13 +373,17 @@ struct Index {
               .onClick(() => {
                 scheduleManager.getFormattedSchedule(); // 初始化首页课表
                 this.currentTime = new Date();
-                this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-                Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                if (scheduleManager.isTermEnd) {
+                  this.todayCourse = [];
+                  this.tomorrowCourse = [];
+                } else {
+                  this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
+                }
                 this.isTodayCourseEnd = true;
                 for (let todaySingleCourse of this.todayCourse) {
-                  if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
-                    + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1] + 1800000) {
+                  if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                    + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
                     this.isTodayCourseEnd = false;
                     break;
                   }
@@ -419,7 +426,7 @@ struct Index {
               .margin({ top: 12, bottom: 12 });
             } else {
               ForEach(this.todayCourse, (course: classAttribute, index: number) => {
-                if (this.currentTime.getTime() < (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
                   + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
                   Row() {
                     Column() {
@@ -430,24 +437,21 @@ struct Index {
                         .maxLines(2)
                         .textOverflow({ overflow: TextOverflow.Ellipsis });
 
-                      if (this.currentTime.getTime() <
-                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
                           + Schedule.commonClassStamp[course.timeSpan[0]][0] &&
-                        this.currentTime.getTime() > (scheduleManager.weekStart + 57600000)
-                          + scheduleManager.today * 86400000 + Schedule.commonClassStamp[course.timeSpan[0]][0] -
-                          1800000) {
+                        this.currentTime.getTime() > scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                          + Schedule.commonClassStamp[course.timeSpan[0]][0] - 1800000) {
                         Text($r('app.string.class_soon'))
                           .fontColor($r('app.color.green'));
                       } else if (this.currentTime.getTime() >
-                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                        scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
                           + Schedule.commonClassStamp[course.timeSpan[0]][0] &&
-                        this.currentTime.getTime() < (scheduleManager.weekStart + 57600000)
-                          + scheduleManager.today * 86400000 +
-                        Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
+                        this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                          + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
                         Text($r('app.string.class_in_session'))
                           .fontColor($r('app.color.bright_blue'));
                       } else if (this.currentTime.getTime() >
-                        (scheduleManager.weekStart + 57600000) + scheduleManager.today * 86400000
+                        scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
                           + Schedule.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
                         Text($r('app.string.class_end'))
                           .fontColor($r('app.color.red'));
@@ -602,9 +606,9 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .padding({ top: 20, bottom: 40, left: 20, right: 20 })
+    .padding({ top: 20, left: 15, right: 15 })
 
-    Button("[开发用] 清空首选项").onClick(() => {UnifiedPreference.clear();})
+    Button("[开发用] 清空首选项").onClick(() => {UnifiedPreferences.clear();})
     // TODO: 把该功能放到设置页面
   }
 
@@ -696,7 +700,7 @@ struct Index {
    */
   @Builder
   pageSettings() {
-    Column() {
+    Stack({ alignContent: Alignment.Bottom }) {
       List({ space: 12 }) {
         ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
           ListItemGroup() {
@@ -710,17 +714,17 @@ struct Index {
                   case 0:
                     // 显示签到
                     this.showCheckIn = !this.showCheckIn;
-                    UnifiedPreference.putSync('showCheckIn', this.showCheckIn);
+                    UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
                     break;
                   case 1:
                     // 显示课表
                     this.showRecentCourse = !this.showRecentCourse;
-                    UnifiedPreference.putSync('showRecentCourse', this.showRecentCourse);
+                    UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
                     break;
                   case 2:
                     // 显示考试
                     this.showExamDetail = !this.showExamDetail;
-                    UnifiedPreference.putSync('showExamDetail', this.showExamDetail);
+                    UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
                     break;
                   case 3:
                     // 选择最近使用
@@ -761,9 +765,13 @@ struct Index {
                     break;
                   case 5:
                     this.webAutoDarkMode = !this.webAutoDarkMode;
-                    UnifiedPreference.putSync('webAutoDarkMode', this.webAutoDarkMode);
+                    UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
                     break;
                   case 6:
+                    this.webBackPress = !this.webBackPress;
+                    UnifiedPreferences.putSync('webBackPress', this.webBackPress);
+                    break;
+                  case 7:
                     // 清除日历中的所有课程信息
                     calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
                       calendar = data;
@@ -783,7 +791,7 @@ struct Index {
                         this.calendar_permission_denied(err);
                     });
                     break;
-                  case 7:
+                  case 8:
                     let selected3: number = 0;
                     switch (Schedule.remindBefore[0]) {
                       case 10: selected3 = 1; break;
@@ -881,17 +889,17 @@ struct Index {
                       }
                     })
                     break;
-                  case 8:
+                  case 10:
                     // 帮助
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
-                  case 9:
+                  case 11:
                     // 关于
                     this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                       .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                     break;
-                  case 10:
+                  case 12:
                     scheduleManager.formattedSchedule[30][0];
                     break;
                   default:
@@ -910,20 +918,25 @@ struct Index {
           .borderRadius('16vp')
 
         }, (item: ItemData) => JSON.stringify(item))
+
+        ListItem()
+          .visibility(Visibility.Hidden)
+          .height('50vp')
       }
       .scrollBar(BarState.Off)
       .width('100%')
-      .padding({
-        top: '4vp',
-        bottom: '4vp'
-      })
-
-      Blank()
 
       Button($r('app.string.exit_app'), { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.NORMAL)
         .width('80%')
         .fontColor(Color.Red)
+        .backgroundColor($r('app.color.normal_background_transparent'))
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR, {
+          colorMode: ThemeColorMode.LIGHT,
+          adaptiveColor: AdaptiveColor.DEFAULT,
+          scale: 0.1
+        })
+        .margin({ bottom: 15 })
         .onClick(() => {
           const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           context.terminateSelf((err) => {
@@ -937,8 +950,7 @@ struct Index {
     }
     .height('100%')
     .width('100%')
-    .padding({ top: 20, bottom: 20 })
-    .justifyContent(FlexAlign.Center)
+    .padding({ top: 20, left: 15, right: 15 })
   }
 
   /**

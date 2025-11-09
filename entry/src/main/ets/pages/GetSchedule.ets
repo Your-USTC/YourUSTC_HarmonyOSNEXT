@@ -13,7 +13,6 @@ struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
   title: string = '';
   url: string = '';
-  haveLogin: boolean = false;
   @State isTimeTablePage: boolean = false;
   gotTimeTable: boolean = false;
   @State isExamInfoPage: boolean = false;
@@ -165,13 +164,11 @@ struct Webview {
           })
           .onPageBegin(() => {
             if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
-              this.haveLogin = true;
               this.showMessage($r('app.string.get_schedule_hint'), 5000);
             }
             this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-table');
             this.isExamInfoPage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/exam-arrange');
-            console.log(`aaa${this.haveLogin} ${this.isTimeTablePage}`);
-            if (/*!this.isTimeTablePage &&*/ this.haveLogin && this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {
+            if (/*!this.isTimeTablePage &&*/ this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {
               this.webviewController.loadUrl(this.url);
               console.info(`${this.url}|xxx`);
             }
