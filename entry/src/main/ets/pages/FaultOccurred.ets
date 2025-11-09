@@ -28,10 +28,9 @@ struct FaultOccurred {
             UnifiedPreferences.deleteSync(CONSECUTIVE_DAYS_KEY);
             UnifiedPreferences.deleteSync(SCHEDULE_KEY);
             UnifiedPreferences.deleteSync(START_TIME_KEY);
+            this.button1Text = $r('app.string.clear_success');
           } else if (this.button1ClickTimes == 1){
             this.button1Text = $r('app.string.click_again_to_delete');
-          } else {
-            this.button1Text = $r('app.string.clear_success');
           }
         });
       Button(this.button2Text)
@@ -40,11 +39,10 @@ struct FaultOccurred {
         .onClick(() => {
           this.button2ClickTimes++;
           if (this.button2ClickTimes == 2) {
-            UnifiedPreferences.deletePreference(PREF_NAME);
+            UnifiedPreferences.deletePreference(PREF_NAME); // 没啥用
+            this.button2Text = $r('app.string.clear_success');
           } else if (this.button2ClickTimes == 1){
             this.button2Text = $r('app.string.click_again_to_delete');
-          } else {
-            this.button2Text = $r('app.string.clear_success');
           }
         });
       Button($r('app.string.normal_restart'))
