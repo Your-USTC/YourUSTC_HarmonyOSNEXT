@@ -2,11 +2,11 @@
   "color": [
     {
       "name": "transparent",
-      "value": "#00000000"
+      "value": "#00FFFFFF"
     },
     {
       "name": "fade",
-      "value": "#30000000"
+      "value": "#FFFFFFFF"
     },
     {
       "name": "normal_background",

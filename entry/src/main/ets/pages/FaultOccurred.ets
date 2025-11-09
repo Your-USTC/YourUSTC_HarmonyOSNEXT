@@ -17,6 +17,7 @@ struct FaultOccurred {
       Text($r('app.string.runtime_error'))
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
+        .textAlign(TextAlign.Center)
       Button(this.button1Text)
         .backgroundColor($r('app.color.red'))
         .margin({ top: 20})
@@ -60,9 +61,19 @@ struct FaultOccurred {
         })
       Button($r('app.string.contact_developer'))
         .margin({ top: 20})
-        .onClick(() => {})
+        .onClick(() => {
+          (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
+            action: 'ohos.want.action.viewData',
+            entities: ['entity.system.browsable'],
+            uri: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/issues'
+          }).catch((err: BusinessError) => {
+            console.error(`startAbility failed, code is ${err.code}, message is ${err.message}`);
+          })
+        })
     }
     .width('100%')
-    .alignItems(HorizontalAlign.Center);
+    .height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
   }
 }

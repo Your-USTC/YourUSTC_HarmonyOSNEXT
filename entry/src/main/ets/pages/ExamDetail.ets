@@ -11,10 +11,11 @@ struct ExamDetail {
   }
 
   build() {
+
     Column() {
       Row() {
         Image($r('app.media.close'))
-          .padding({left: 12/*, right: 32*/})
+          .padding({ left: 12 })
           .height(20)
           .onClick(() => {
             this.getUIContext().getRouter().back()
@@ -29,7 +30,7 @@ struct ExamDetail {
         Blank()
 
         Image($r('app.media.get'))
-          .padding({right: 12})
+          .padding({ right: 12 })
           .height(20)
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
@@ -43,6 +44,19 @@ struct ExamDetail {
       .width('100%')
       .height(48)
       .backgroundColor($r('app.color.shaded_background'))
+
+      List() {
+
+      }
+      .width('100%')
+      .height('100%')
+      .alignListItem(ListItemAlign.Center)
+      .scrollBar(BarState.Auto)
+      .padding({ bottom: 48 })
     }
+    .height('100%')
+    .width('100%')
+    .backgroundColor($r('app.color.normal_background'))
+
   }
 }
