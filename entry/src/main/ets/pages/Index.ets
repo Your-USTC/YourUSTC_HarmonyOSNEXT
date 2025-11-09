@@ -107,7 +107,7 @@ struct Index {
       this.tomorrowCourse = [];
     } else {
       this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + Math.floor((scheduleManager.today + 2) / 7)][(scheduleManager.today + 1) % 7];
+      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
     }
     this.showCheckIn = UnifiedPreference.getBoolSync('showCheckIn', true);// 是否显示
     this.showRecentCourse = UnifiedPreference.getBoolSync('showRecentCourse', true);// 是否显示

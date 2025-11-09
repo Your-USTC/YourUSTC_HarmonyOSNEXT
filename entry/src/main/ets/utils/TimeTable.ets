@@ -60,7 +60,7 @@ JSON.stringify(getTimeTable());
 export const timeTableQueryJSShort = `JSON.stringify(getTimeTable());`
 
 export const startTimeQueryJS = `
-{const startTime = new Date(document.getElementById('startDate').innerText);startTime.getTime().toString();};
+{const startTime = new Date(document.getElementById('startDate').innerText); startTime.setHours(0, 0, 0, 0); startTime.getTime().toString();};
 `
 
 export const examInfoQueryJS = `
@@ -130,7 +130,7 @@ class scheduleManager {
       this.weekDisplayed = 1;
       const monday = new Date(this.currentTime);
       monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : - (this.currentTime.getDay() - 1)));
-      monday.setHours(8, 0, 0, 0);
+      monday.setHours(0, 0, 0, 0);
       this.weekStart = monday.getTime() - 86400000;
       UnifiedPreferences.putSync(START_TIME_KEY, this.weekStart);
       this.termStart = this.weekStart;
@@ -152,7 +152,7 @@ class scheduleManager {
         if (this.termStart == 0 ) { // 如果没有学期开始信息，将上一个周日作为一周开始
           const monday = new Date(this.currentTime);
           monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : -(this.currentTime.getDay() - 1)));
-          monday.setHours(8, 0, 0, 0);
+          monday.setHours(0, 0, 0, 0);
           UnifiedPreferences.putSync(START_TIME_KEY, monday.getTime() - 86400000);
           this.isTermEnd = false;
         } else { // 如果有，说明学期结束
