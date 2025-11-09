@@ -901,7 +901,7 @@ struct Index {
             })
           }
           .divider({
-            strokeWidth: '1vp',
+            strokeWidth: '0.6vp',
             color: $r('app.color.grid_border'),
             startMargin: '12vp',
             endMargin: '12vp'

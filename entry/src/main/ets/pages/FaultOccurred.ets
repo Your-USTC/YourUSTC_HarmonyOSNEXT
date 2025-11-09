@@ -15,6 +15,7 @@ struct FaultOccurred {
   build() {
     Column() {
       Text($r('app.string.runtime_error'))
+        .fontColor($r('app.color.normal_text'))
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center)

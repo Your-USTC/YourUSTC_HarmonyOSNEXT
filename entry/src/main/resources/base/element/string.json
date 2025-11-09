@@ -373,8 +373,8 @@
       "value": "考试信息获取成功！"
     },
     {
-      "name": "delete_class_err_msg",
-      "value": "不要在未保存编辑时删除课程！"
+      "name": "days_before",
+      "value": "天"
     },
     {
       "name": "write_calendar_permission_reason",
