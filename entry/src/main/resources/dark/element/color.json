@@ -1,6 +1,10 @@
 {
   "color": [
     {
+      "name": "transparent",
+      "value": "#00000000"
+    },
+    {
       "name": "fade",
       "value": "#FF000000"
     },
