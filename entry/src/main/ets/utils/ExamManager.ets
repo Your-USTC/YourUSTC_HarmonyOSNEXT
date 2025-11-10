@@ -15,18 +15,17 @@ export interface examAttribute {
 class examManager {
   allExamInfo: examAttribute[] = [];
 
-  readStoredExam(data: string = '') {
-    if (data === '')
-      data=UnifiedPreferences.getSync('examInfo', '');
+  readStoredExam() {
+    let data = UnifiedPreferences.getSync('examInfo', '');
     if (data === '')
       this.allExamInfo = [];
     else
       this.allExamInfo = JSON.parse(data);
   }
 
-  refreshStoredExam(data: string) {
-    UnifiedPreferences.putSync('examInfo', data);
-    this.readStoredExam(data);
+  storeExam(data: string) {
+    if (data !== '')
+      UnifiedPreferences.putSync('examInfo', data);
   }
 }
 

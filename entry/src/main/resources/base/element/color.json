@@ -29,6 +29,10 @@
       "value": "#000000"
     },
     {
+      "name": "transparent_text",
+      "value": "#99000000"
+    },
+    {
       "name": "active_text",
       "value": "#0040C0"
     },
@@ -98,11 +102,11 @@
     },
     {
       "name": "hour",
-      "value": "#D674C1"
+      "value": "#7A73C9"
     },
     {
       "name": "minute",
-      "value": "#7A73C9"
+      "value": "#D674C1"
     }
   ]
 }

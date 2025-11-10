@@ -397,6 +397,10 @@
       "value": "暂无考试信息"
     },
     {
+      "name": "exam_ended",
+      "value": "考试已结束"
+    },
+    {
       "name": "write_calendar_permission_reason",
       "value": "用于写入上课提醒"
     },

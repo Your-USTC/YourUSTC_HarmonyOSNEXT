@@ -14,15 +14,12 @@ struct ExamDetail {
   @State currentTime: Date = new Date();
 
   onPageShow(): void {
-    // const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-    const routerParams: obtainedData = {timeTable: '[{"campus":"东区","classroom":"5103","date":"2025-11-16 14:30~16:00","info":"","id":"FL1013.19","building":"第五教学楼","name":"大学英语交流","type":"期中考试"},{"campus":"东区","classroom":"5301","date":"2025-11-23 14:30~16:30","info":"","id":"MATH1006.04","building":"第五教学楼","name":"数学分析(B1)","type":"期中考试"},{"campus":"东区","classroom":"5303","date":"2025-11-29 08:30~10:30","info":"","id":"MATH1009.05","building":"第五教学楼","name":"线性代数(B1)","type":"期中考试"}]', startTime: '0'};
+    const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
     if (routerParams != undefined) {
-      examManager.refreshStoredExam(routerParams.timeTable);
+      examManager.storeExam(routerParams.timeTable);
     }
-    this.examInfo = [];
-    for (let layer1 of examManager.allExamInfo)
-      if (this.currentTime.getTime() < new Date(layer1.date.slice(0, 16)).getTime())
-        this.examInfo.push(layer1);
+    examManager.readStoredExam();
+    this.examInfo = examManager.allExamInfo;
   }
 
   build() {
@@ -39,15 +36,9 @@ struct ExamDetail {
           .padding({ left: 12 })
           .height(20)
           .onClick(() => {
+            examManager.readStoredExam();
             this.currentTime = new Date();
-            this.examInfo = [];
-            for (let layer1 of examManager.allExamInfo) {
-              console.log('考试',this.currentTime.getTime())
-              console.log('考试',new Date(layer1.date.slice(0, 16)).getTime())
-              if (this.currentTime.getTime() < new Date(layer1.date.slice(0, 16)).getTime()) {
-                this.examInfo.push(layer1);
-              }
-            }
+            this.examInfo = examManager.allExamInfo;
           })
 
         Blank()
@@ -111,50 +102,60 @@ struct ExamDetail {
         ForEach(this.examInfo, (singleExam: examAttribute) => {
           ListItem() {
             Row() {
-              Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
-                Row() {
-                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                    new Date(singleExam.date.slice(0, 16)).getTime(), 0).toString())
-                    .fontSize(36)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor($r('app.color.green'))
-                  Text($r('app.string.day'))
-                    .fontColor($r('app.color.green'))
-                    .lineSpacing({ value: 5, unit: LengthUnit.FP })
-                    .maxFontSize(18)
-                    .fontWeight(FontWeight.Bold)
-                    .padding({ bottom: 5 })
+              if (this.currentTime.getTime() < new Date(singleExam.date.slice(0, 16)).getTime()) {
+                Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
+                  Row() {
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                      new Date(singleExam.date.slice(0, 16)).getTime(), 0).toString())
+                      .fontSize(36)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor($r('app.color.green'))
+                    Text($r('app.string.day'))
+                      .fontColor($r('app.color.green'))
+                      .lineSpacing({ value: 5, unit: LengthUnit.FP })
+                      .maxFontSize(18)
+                      .fontWeight(FontWeight.Bold)
+                      .padding({ bottom: 5 })
+                  }
+                  .alignItems(VerticalAlign.Bottom)
+
+                  Row() {
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                      new Date(singleExam.date.slice(0, 16)).getTime(), 1).toString())
+                      .fontSize(28)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor($r('app.color.hour'))
+                    Text($r('app.string.hour'))
+                      .fontColor($r('app.color.hour'))
+                      .fontSize(14)
+                      .fontWeight(FontWeight.Bold)
+                      .padding({ bottom: 5 })
+                  }
+                  .alignItems(VerticalAlign.Bottom)
+
+                  Row() {
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                      new Date(singleExam.date.slice(0, 16)).getTime(),
+                      2).toString())
+                      .fontSize(28)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor($r('app.color.minute'))
+                    Text($r('app.string.minute'))
+                      .fontColor($r('app.color.minute'))
+                      .fontSize(14)
+                      .fontWeight(FontWeight.Bold)
+                      .padding({ bottom: 5 })
+                  }
+                  .alignItems(VerticalAlign.Bottom)
                 }
-                .alignItems(VerticalAlign.Bottom)
-                Row() {
-                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                    new Date(singleExam.date.slice(0, 16)).getTime(), 1).toString())
-                    .fontSize(28)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor($r('app.color.hour'))
-                  Text($r('app.string.hour'))
-                    .fontColor($r('app.color.hour'))
-                    .fontSize(14)
-                    .fontWeight(FontWeight.Bold)
-                    .padding({ bottom: 5 })
-                }
-                .alignItems(VerticalAlign.Bottom)
-                Row() {
-                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                    new Date(singleExam.date.slice(0, 16)).getTime(),
-                    2).toString())
-                    .fontSize(28)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor($r('app.color.minute'))
-                  Text($r('app.string.minute'))
-                    .fontColor($r('app.color.minute'))
-                    .fontSize(14)
-                    .fontWeight(FontWeight.Bold)
-                    .padding({ bottom: 5 })
-                }
-                .alignItems(VerticalAlign.Bottom)
+                .width('30%');
+              } else {
+                Text($r('app.string.exam_ended'))
+                  .fontSize(20)
+                  .fontColor($r('app.color.transparent_text'))
+                  .width('30%')
+                  .textAlign(TextAlign.Start);
               }
-              .width('30%');
 
               Column() {
                 Row() {
