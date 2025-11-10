@@ -305,6 +305,10 @@
       "value": "考试信息"
     },
     {
+      "name": "no_exam",
+      "value": "暂时还没有考试哦~"
+    },
+    {
       "name": "visit_desktop_ua",
       "value": "电脑端"
     },

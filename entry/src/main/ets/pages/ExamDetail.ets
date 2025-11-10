@@ -9,6 +9,8 @@ import { obtainedData } from '../pages/Schedule'
 struct ExamDetail {
 
   @State context: UIContext = this.getUIContext()
+  // TODO: 删除示例考试天数
+  private daysLeft: number = 14
 
   onPageShow(): void {
     const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
@@ -52,65 +54,92 @@ struct ExamDetail {
       .height(48)
       .backgroundColor($r('app.color.shaded_background'))
 
-      List() {
+      if (false) {    // TODO: 判断有无考试
 
-        // TODO: 删除示例考试 👇👇
-        ListItem() {
-          Row() {
-            Column() {
-              Row() {
-                Text('14')
-                  .fontColor($r('app.color.green'))    // TODO: 可以根据时间调整颜色
-                  .fontSize(36)
-                  .fontWeight(FontWeight.Bold)
-                  .margin({ right: 8 })
+        Column() {
+          Image($r('app.media.no_course_this_week'))
+            .height(100)
+            .width(100)
 
-                Text($r('app.string.days_before'))
-                  .fontColor($r('app.color.green'))    // TODO: 可以根据时间调整颜色
-                  .maxLines(2)
-                  .lineSpacing({ value: 5, unit: LengthUnit.FP })
-                  .maxFontSize(18)
-                  .minFontSize(10)
-                  .fontWeight(FontWeight.Bold)
-                  .padding({ bottom: 5 })
-                  .layoutWeight(1)
-              }
-              .alignItems(VerticalAlign.Bottom)
-            }
-            .width('30%')
-            .padding({ left: 5 })
-
-            Column() {
-              Text('数学分析(B1)')
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-                .margin({ bottom: 5 })
-
-              Text(`\udb80\uddb8 西区 第三教学楼 3C103`)
-              // 3段字符串拼接
-
-              Text(`\udb80\udfdc 2025-11-23 14:30~16:30`)
-              // 可以直接用网页上的字符串
-            }
-            .width('70%')
-            .alignItems(HorizontalAlign.Start)
-            .padding({ left: 10 })
-          }
+          Text($r('app.string.no_exam'))
+            .fontSize(18)
+            .textAlign(TextAlign.Center)
         }
-        .width('90%')
-        .padding({ top: 10, bottom: 10, left: 16, right: 16 })
-        .margin({ top: 7, bottom: 7 })
-        .backgroundColor($r('app.color.grid_background'))
-        .borderRadius(20)
-        // TODO: 删除示例考试 👆👆
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+        .padding({ bottom: 48 })
 
+      } else {
+
+        List() {
+
+          // TODO: 删除示例考试 👇👇
+          ListItem() {
+            Row() {
+              Column() {
+                Row() {
+                  Text(this.daysLeft.toString())
+                    .fontColor(
+                      this.daysLeft > 7 ? $r('app.color.green') : (
+                        this.daysLeft > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
+                      )
+                    )
+                    .fontSize(36)
+                    .fontWeight(FontWeight.Bold)
+                    .margin({ right: 8 })
+
+                  Text($r('app.string.days_before'))
+                    .fontColor(
+                      this.daysLeft > 7 ? $r('app.color.green') : (
+                        this.daysLeft > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
+                      )
+                    )
+                    .maxLines(2)
+                    .lineSpacing({ value: 5, unit: LengthUnit.FP })
+                    .maxFontSize(18)
+                    .minFontSize(10)
+                    .fontWeight(FontWeight.Bold)
+                    .padding({ bottom: 5 })
+                    .layoutWeight(1)
+                }
+                .alignItems(VerticalAlign.Bottom)
+              }
+              .width('30%')
+              .padding({ left: 5 })
+
+              Column() {
+                Text('数学分析(B1)')
+                  .fontSize(18)
+                  .fontWeight(FontWeight.Bold)
+                  .margin({ bottom: 5 })
+
+                Text(`\udb80\uddb8 西区 第三教学楼 3C103`)
+                // 3段字符串拼接
+
+                Text(`\udb80\udfdc 2025-11-23 14:30~16:30`)
+                // 可以直接用网页上的字符串
+              }
+              .width('70%')
+              .alignItems(HorizontalAlign.Start)
+              .padding({ left: 10 })
+            }
+          }
+          .width('90%')
+          .padding({ top: 10, bottom: 10, left: 16, right: 16 })
+          .margin({ top: 7, bottom: 7 })
+          .backgroundColor($r('app.color.grid_background'))
+          .borderRadius(20)
+          // TODO: 删除示例考试 👆👆
+
+        }
+        .width('100%')
+        .height('100%')
+        .alignListItem(ListItemAlign.Center)
+        .scrollBar(BarState.Auto)
+        .padding({ top: 7, bottom: 48 })
+        .backgroundColor($r('app.color.normal_background'))
       }
-      .width('100%')
-      .height('100%')
-      .alignListItem(ListItemAlign.Center)
-      .scrollBar(BarState.Auto)
-      .padding({ top: 7, bottom: 48 })
-      .backgroundColor($r('app.color.normal_background'))
     }
     .height('100%')
     .width('100%')
