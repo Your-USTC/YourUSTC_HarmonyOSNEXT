@@ -68,14 +68,14 @@ Array.from(document.querySelectorAll('#exams tbody tr')).map(
     tr => {
         const trCells = tr.cells;
         return ({
-            courseNo: trCells[0].innerText,
-            examType: trCells[1].innerText,
-            courseName: trCells[2].innerText,
-            examDate: trCells[3].innerText,
-            examRoom: trCells[4].innerText,
-            examBuilding: trCells[5].innerText,
-            examCampus: trCells[6].innerText,
-            examInfo: trCells[7].innerText
+            id: trCells[0].innerText,
+            type: trCells[1].innerText,
+            name: trCells[2].innerText,
+            date: trCells[3].innerText,
+            classroom: trCells[4].innerText,
+            building: trCells[5].innerText,
+            campus: trCells[6].innerText,
+            info: trCells[7].innerText
         })
     }
 )

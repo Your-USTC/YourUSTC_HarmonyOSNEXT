@@ -305,10 +305,6 @@
       "value": "考试信息"
     },
     {
-      "name": "no_exam",
-      "value": "暂时还没有考试哦~"
-    },
-    {
       "name": "visit_desktop_ua",
       "value": "电脑端"
     },
@@ -385,8 +381,20 @@
       "value": "考试信息获取成功！"
     },
     {
-      "name": "days_before",
+      "name": "day",
       "value": "天"
+    },
+    {
+      "name": "hour",
+      "value": "时"
+    },
+    {
+      "name": "minute",
+      "value": "分"
+    },
+    {
+      "name": "no_exam_info",
+      "value": "暂无考试信息"
     },
     {
       "name": "write_calendar_permission_reason",

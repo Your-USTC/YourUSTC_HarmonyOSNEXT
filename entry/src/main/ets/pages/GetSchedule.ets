@@ -1,4 +1,3 @@
-// .onBackPressed()在5.0.0上不起作用！
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS } from '../utils/TimeTable'

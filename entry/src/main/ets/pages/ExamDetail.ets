@@ -3,20 +3,26 @@ import { preferences } from '@kit.ArkData'
 import { LengthUnit } from '@kit.ArkUI'
 import * as tools from '../utils/tools'
 import { obtainedData } from '../pages/Schedule'
+import examManager, { examAttribute } from '../utils/ExamManager';
 
 @Entry
 @Component
 struct ExamDetail {
 
-  @State context: UIContext = this.getUIContext()
-  // TODO: 删除示例考试天数
-  private daysLeft: number = 14
+  context: UIContext = this.getUIContext();
+  @State examInfo: examAttribute[] = [];
+  @State currentTime: Date = new Date();
 
   onPageShow(): void {
-    const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-    try {
-      console.log(`获取了考试信息: ${routerParams.timeTable}`)
-    } catch (error) {}
+    // const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
+    const routerParams: obtainedData = {timeTable: '[{"campus":"东区","classroom":"5103","date":"2025-11-16 14:30~16:00","info":"","id":"FL1013.19","building":"第五教学楼","name":"大学英语交流","type":"期中考试"},{"campus":"东区","classroom":"5301","date":"2025-11-23 14:30~16:30","info":"","id":"MATH1006.04","building":"第五教学楼","name":"数学分析(B1)","type":"期中考试"},{"campus":"东区","classroom":"5303","date":"2025-11-29 08:30~10:30","info":"","id":"MATH1009.05","building":"第五教学楼","name":"线性代数(B1)","type":"期中考试"}]', startTime: '0'};
+    if (routerParams != undefined) {
+      examManager.refreshStoredExam(routerParams.timeTable);
+    }
+    this.examInfo = [];
+    for (let layer1 of examManager.allExamInfo)
+      if (this.currentTime.getTime() < new Date(layer1.date.slice(0, 16)).getTime())
+        this.examInfo.push(layer1);
   }
 
   build() {
@@ -29,6 +35,20 @@ struct ExamDetail {
           .onClick(() => {
             this.context.getRouter().back()
           })
+        Image($r('app.media.refresh'))
+          .padding({ left: 12 })
+          .height(20)
+          .onClick(() => {
+            this.currentTime = new Date();
+            this.examInfo = [];
+            for (let layer1 of examManager.allExamInfo) {
+              console.log('考试',this.currentTime.getTime())
+              console.log('考试',new Date(layer1.date.slice(0, 16)).getTime())
+              if (this.currentTime.getTime() < new Date(layer1.date.slice(0, 16)).getTime()) {
+                this.examInfo.push(layer1);
+              }
+            }
+          })
 
         Blank()
 
@@ -37,7 +57,32 @@ struct ExamDetail {
           .fontColor($r('app.color.normal_text'))
 
         Blank()
-
+        Image($r('app.media.plus_square'))
+          .padding({right: 12})
+          .height(20)
+          // .onClick(() => {
+          //   this.ShowClassDetail = null;
+          //   this.ShowClassDetail = new CustomDialogController({
+          //     builder: ClassDetailDialog({
+          //       toChange: this.thisWeekSchedule,
+          //       weekDisplayed: this.weekDisplayed,
+          //       isChangeSchedule: false
+          //     }),
+          //     autoCancel: true,
+          //     gridCount: 4,
+          //     onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+          //       if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+          //         dismissDialogAction.dismiss();
+          //       }
+          //       if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+          //         dismissDialogAction.dismiss();
+          //       }
+          //     }
+          //   })
+          //   if (this.ShowClassDetail != null) {
+          //     this.ShowClassDetail.open();
+          //   }
+          // })
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(20)
@@ -54,92 +99,98 @@ struct ExamDetail {
       .height(48)
       .backgroundColor($r('app.color.shaded_background'))
 
-      if (false) {    // TODO: 判断有无考试
-
-        Column() {
-          Image($r('app.media.no_course_this_week'))
-            .height(100)
-            .width(100)
-
-          Text($r('app.string.no_exam'))
-            .fontSize(18)
-            .textAlign(TextAlign.Center)
+      List() {
+        ListItem() {
+          Column() {
+            Image($r('app.media.course_finish_today')).width(100);
+            Text($r('app.string.no_exam_info')).fontSize(18).padding({ top: 10 });
+          }
         }
-        .width('100%')
-        .height('100%')
-        .justifyContent(FlexAlign.Center)
-        .padding({ bottom: 48 })
+        .visibility(this.examInfo.length == 0 ? Visibility.Visible : Visibility.None)
 
-      } else {
-
-        List() {
-
-          // TODO: 删除示例考试 👇👇
+        ForEach(this.examInfo, (singleExam: examAttribute) => {
           ListItem() {
             Row() {
-              Column() {
+              Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                 Row() {
-                  Text(this.daysLeft.toString())
-                    .fontColor(
-                      this.daysLeft > 7 ? $r('app.color.green') : (
-                        this.daysLeft > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
-                      )
-                    )
+                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                    new Date(singleExam.date.slice(0, 16)).getTime(), 0).toString())
                     .fontSize(36)
                     .fontWeight(FontWeight.Bold)
-                    .margin({ right: 8 })
-
-                  Text($r('app.string.days_before'))
-                    .fontColor(
-                      this.daysLeft > 7 ? $r('app.color.green') : (
-                        this.daysLeft > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
-                      )
-                    )
-                    .maxLines(2)
+                    .fontColor($r('app.color.green'))
+                  Text($r('app.string.day'))
+                    .fontColor($r('app.color.green'))
                     .lineSpacing({ value: 5, unit: LengthUnit.FP })
                     .maxFontSize(18)
-                    .minFontSize(10)
                     .fontWeight(FontWeight.Bold)
                     .padding({ bottom: 5 })
-                    .layoutWeight(1)
+                }
+                .alignItems(VerticalAlign.Bottom)
+                Row() {
+                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                    new Date(singleExam.date.slice(0, 16)).getTime(), 1).toString())
+                    .fontSize(28)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor($r('app.color.hour'))
+                  Text($r('app.string.hour'))
+                    .fontColor($r('app.color.hour'))
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Bold)
+                    .padding({ bottom: 5 })
+                }
+                .alignItems(VerticalAlign.Bottom)
+                Row() {
+                  Text(tools.formatTimeDiff(this.currentTime.getTime(),
+                    new Date(singleExam.date.slice(0, 16)).getTime(),
+                    2).toString())
+                    .fontSize(28)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor($r('app.color.minute'))
+                  Text($r('app.string.minute'))
+                    .fontColor($r('app.color.minute'))
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Bold)
+                    .padding({ bottom: 5 })
                 }
                 .alignItems(VerticalAlign.Bottom)
               }
-              .width('30%')
-              .padding({ left: 5 })
+              .width('30%');
 
               Column() {
-                Text('数学分析(B1)')
-                  .fontSize(18)
-                  .fontWeight(FontWeight.Bold)
-                  .margin({ bottom: 5 })
-
-                Text(`\udb80\uddb8 西区 第三教学楼 3C103`)
-                // 3段字符串拼接
-
-                Text(`\udb80\udfdc 2025-11-23 14:30~16:30`)
-                // 可以直接用网页上的字符串
+                Row() {
+                  Text(singleExam.name + '  ')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                    .margin({ bottom: 5 })
+                  Text(singleExam.type)
+                    .fontSize(18)
+                    .margin({ bottom: 5 })
+                }
+                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`);
+                Text(`\udb80\udfdc ${singleExam.date}`);
+                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`);
               }
               .width('70%')
               .alignItems(HorizontalAlign.Start)
               .padding({ left: 10 })
             }
+            .backgroundColor($r('app.color.grid_background'))
+            .borderRadius(20);
           }
           .width('90%')
           .padding({ top: 10, bottom: 10, left: 16, right: 16 })
           .margin({ top: 7, bottom: 7 })
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
-          // TODO: 删除示例考试 👆👆
+        });
 
-        }
-        .width('100%')
-        .height('100%')
-        .alignListItem(ListItemAlign.Center)
-        .scrollBar(BarState.Auto)
-        .padding({ top: 7, bottom: 48 })
-        .backgroundColor($r('app.color.normal_background'))
       }
+      .width('100%')
+      .height('100%')
+      .alignListItem(ListItemAlign.Center)
+      .scrollBar(BarState.Auto)
+      .padding({ top: 7, bottom: 48 })
+      .backgroundColor($r('app.color.normal_background'))
     }
     .height('100%')
     .width('100%')

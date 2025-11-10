@@ -72,3 +72,29 @@ export function areNumberArraysEqual(arr1: number[], arr2: number[]): boolean {
   }
   return true;
 }
+
+/**
+ * 格式化时间差
+ * 根据指定的类型返回两个时间戳之间相差的天数、小时数或分钟数
+ *
+ * @param start - 开始时间戳（毫秒）
+ * @param end - 结束时间戳（毫秒）
+ * @param type - 计算类型：
+ *               0 = 返回相差的天数
+ *               1 = 返回相差的小时数（除去整天后的剩余小时）
+ *               2 = 返回相差的分钟数（除去整小时后的剩余分钟）
+ *
+ * @returns 根据类型返回对应的时间差值（向下取整）
+ */
+export function formatTimeDiff(start: number, end: number, type: number): number {
+  const diffSec = Math.abs(end - start) / 1000;
+  switch(type) {
+    case 0:
+      return Math.floor(diffSec / 86400);
+    case 1:
+      return Math.floor((diffSec % 86400) / 3600);
+    case 2:
+      return Math.floor((diffSec % 3600) / 60);
+  }
+  return 0;
+}

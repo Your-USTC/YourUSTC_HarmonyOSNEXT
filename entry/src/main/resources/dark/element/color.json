@@ -83,6 +83,14 @@
     {
       "name": "schedule_grid_10",
       "value": "#DD5BFF91"
+    },
+    {
+      "name": "hour",
+      "value": "#E59EB6"
+    },
+    {
+      "name": "minute",
+      "value": "#73A6C9"
     }
   ]
 }
