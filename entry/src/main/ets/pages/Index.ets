@@ -232,7 +232,7 @@ struct Index {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
           .onClick(() => {
             this.webBackPress = !this.webBackPress;
-            UnifiedPreferences.putSync('webBackPress', this.webAutoDarkMode);
+            UnifiedPreferences.putSync('webBackPress', this.webBackPress);
           });
       }
     }
@@ -260,7 +260,7 @@ struct Index {
       subtitle: `${error.message}`,
       message: $r('app.string.need_calendar_permission'),
       autoCancel: true,
-      alignment: DialogAlignment.Bottom,
+      alignment: DialogAlignment.Center,
       gridCount: 4,
       primaryButton: {
         value: $r('app.string.cancel'),
@@ -700,235 +700,240 @@ struct Index {
    */
   @Builder
   pageSettings() {
-    Stack({ alignContent: Alignment.Bottom }) {
-      List({ space: 12 }) {
-        ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
-          ListItemGroup() {
-            ForEach(item, (cell: ItemData, cellIndex) => {
-              ListItem() {
-                this.settingCell(cell)
-              }
-              .height('48vp')
-              .onClick(() => {
-                switch (cell.id) { // 根据 cell.id 区分设置项
-                  case 0:
-                    // 显示签到
-                    this.showCheckIn = !this.showCheckIn;
-                    UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
-                    break;
-                  case 1:
-                    // 显示课表
-                    this.showRecentCourse = !this.showRecentCourse;
-                    UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
-                    break;
-                  case 2:
-                    // 显示考试
-                    this.showExamDetail = !this.showExamDetail;
-                    UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
-                    break;
-                  case 3:
-                    // 选择最近使用
-                    let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
-                    let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
-                    this.getUIContext().showTextPickerDialog({
-                      selected: selected1,
-                      range: tools.getContArray([[1, 20]], true) as string[], // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
-                      defaultPickerItemHeight: 36,
-                      canLoop: false,
-                      onAccept: (value: TextPickerResult) => {
-                        try {
-                          this.showMessage(`已更改为 ${value.value}`, 500);
-                        } catch (error) {
-                          console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
-                        }
-                        try {
-                          maxRecordPre.putSync('maxRecord', Number(value.value));
-                          maxRecordPre.flush().catch((error: Error) => {
-                            console.error(`Flush ERROR: [${error.name}] ${error.message}`);
-                          });
-                        } catch (error) {
-                          console.error(`Preference load ERROR: [${error.name}] ${error.message}`);
-                        }
-                        this.refreshTabGrid(1);
+    List({ space: 12 }) {
+      ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
+        ListItemGroup() {
+          ForEach(item, (cell: ItemData, cellIndex) => {
+            ListItem() {
+              this.settingCell(cell)
+            }
+            .height('48vp')
+            .onClick(() => {
+              switch (cell.id) { // 根据 cell.id 区分设置项
+                case 0:
+                  // 显示签到
+                  this.showCheckIn = !this.showCheckIn;
+                  UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
+                  break;
+                case 1:
+                  // 显示课表
+                  this.showRecentCourse = !this.showRecentCourse;
+                  UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
+                  break;
+                case 2:
+                  // 显示考试
+                  this.showExamDetail = !this.showExamDetail;
+                  UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
+                  break;
+                case 3:
+                  // 选择最近使用
+                  let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
+                  let selected1: number | number[] = maxRecordPre.getSync('maxRecord', 8) as number - 1;
+                  this.getUIContext().showTextPickerDialog({
+                    selected: selected1,
+                    range: tools.getContArray([[1, 20]], true) as string[], // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
+                    defaultPickerItemHeight: 36,
+                    canLoop: false,
+                    onAccept: (value: TextPickerResult) => {
+                      try {
+                        this.showMessage(`已更改为 ${value.value}`, 500);
+                      } catch (error) {
+                        console.error(`CheckIn load ERROR: [${error.name}] ${error.message}`);
                       }
-                    })
-                    break;
-                  case 4:
-                    // 重置最近使用
-                    FunctionOrder.resetFunc(this.context);
-                    this.refreshTabGrid(1);
-                    try {
-                      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.have_cleared'), duration: 500 })
-                    } catch (error) {
-                      console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
-                    }
-                    break;
-                  case 5:
-                    this.webAutoDarkMode = !this.webAutoDarkMode;
-                    UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
-                    break;
-                  case 6:
-                    this.webBackPress = !this.webBackPress;
-                    UnifiedPreferences.putSync('webBackPress', this.webBackPress);
-                    break;
-                  case 7:
-                    // 清除日历中的所有课程信息
-                    calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-                      calendar = data;
-                      if (calendar == undefined){
-                        this.showMessage($r('app.string.calendar_null'), 500);
-                      } else {
-                        calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
-                          this.calendar_permission_denied(error);
+                      try {
+                        maxRecordPre.putSync('maxRecord', Number(value.value));
+                        maxRecordPre.flush().catch((error: Error) => {
+                          console.error(`Flush ERROR: [${error.name}] ${error.message}`);
                         });
-                        this.showMessage($r('app.string.clear_success'), 500);
-                        calendar = undefined;
+                      } catch (error) {
+                        console.error(`Preference load ERROR: [${error.name}] ${error.message}`);
                       }
-                    }).catch((err: BusinessError) => {
-                      if (err.message == 'GetCalendar failed!')
-                        this.showMessage($r('app.string.clear_success'), 500);
-                      else
-                        this.calendar_permission_denied(err);
-                    });
-                    break;
-                  case 8:
-                    let selected3: number = 0;
-                    switch (Schedule.remindBefore[0]) {
-                      case 10: selected3 = 1; break;
-                      case 20: selected3 = 2; break;
-                      case 30: selected3 = 3; break;
-                      case 45: selected3 = 4; break;
-                      case 60: selected3 = 5; break;
-                      case 90: selected3 = 6; break;
-                      case 120: selected3 = 7; break;
+                      this.refreshTabGrid(1);
                     }
-                    // 在上课几分钟前提醒
-                    this.getUIContext().showTextPickerDialog({
-                      selected: selected3,
-                      range: ['不提醒', '上课前 10 分钟', '上课前 20 分钟', "上课前 30 分钟",
-                        "上课前 45 分钟", "上课前 1 小时", "上课前 90 分钟", "上课前 2 小时"],
-                      defaultPickerItemHeight: 36,
-                      canLoop: false,
-                      onAccept: (value: TextPickerResult) => {
-                        // 删除日程
-                        if (calendar != undefined)
-                          calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
-                        calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
-                          calendar = data;
-                          // 确保日历账户创建成功后，再进行后续相关操作
-                          // 将课程写入日历
-                          if (calendar != undefined) {
-                            //获取日历账户
-                            calendarMgr?.getCalendar(calendarAccount, (err, data) => {
-                              if (err) {
-                                this.calendar_permission_denied(err);
-                              } else {
-                                const config: calendarManager.CalendarConfig = {
-                                  enableReminder: true, // 打开日程提醒
-                                  color: '#BCC7DF' // 设置日历账户颜色
-                                };
-                                data.setConfig(config).then(() => { // 设置日历配置信息
-                                  let valueData: number[] = [-1, 10, 20, 30, 45, 60, 90, 120]
-                                  Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
-                                  if (value.index == 0) {
-                                    this.showMessage('已更改为 不提醒', 500);
-                                  } else {
-                                    this.showMessage(`已更改为 在${value.value}提醒`, 500);
-                                  }
-                                  let eventId: number | undefined = undefined;
-                                  for (let layer1 = 0; layer1 <= 6; layer1++) // 星期几 -1
-                                    if (scheduleManager.parsedSchedule[layer1] != undefined) // 防止不存在元素
-                                      for (let layer2 of scheduleManager.parsedSchedule[layer1]) // 星期几的每一节课
-                                        for (let layer3 of layer2) { // 叠课判断
-                                          // 确保数组有序
-                                          layer3.weekOfTerm.sort((a, b) => a - b);
-                                          layer3.timeSpan.sort((a, b) => a - b);
-                                          // 非上课周排除
-                                          let excludeDates: number[] = [];
-                                          for (let i = 1; i < layer3.weekOfTerm.length; i++) {
-                                            for (let j = layer3.weekOfTerm[i - 1] + 1; j < layer3.weekOfTerm[i]; j++) {
-                                              excludeDates.push(tools.getClassTimestamp(scheduleManager.termStart -
-                                                28800000, j,
-                                                layer3.dayOfWeek,
-                                                Schedule.commonClassStamp[layer3.timeSpan[0]][0]));
-                                            }
-                                          }
-                                          //设置日程
-                                          const event: calendarManager.Event = {
-                                            title: `${layer3.name}@${layer3.location == '' ? 'null' : layer3.location}`, // 日程标题
-                                            type: calendarManager.EventType.NORMAL, // 日程类型
-                                            startTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
-                                              layer3.weekOfTerm[0],
-                                              (layer3.dayOfWeek + 1) % 7,
-                                              Schedule.commonClassStamp[layer3.timeSpan[0]][0]), // 日程开始时间
-                                            endTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
-                                              layer3.weekOfTerm[0],
-                                              (layer3.dayOfWeek + 1) % 7,
-                                              Schedule.commonClassStamp[layer3.timeSpan[1]][1]), // 日程结束时间
-                                            reminderTime: Schedule.remindBefore, // 距开始时间提前remindBefore分钟提醒
-                                            recurrenceRule: {
-                                              // 日程重复规则
-                                              recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
-                                              count: layer3.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
-                                              interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
-                                              // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
-                                              excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
-                                            }
-                                          };
-                                          if (calendar != undefined) {
-                                            calendar.addEvent(event).then((data: number) => {
-                                              eventId = data;
-                                            });
+                  })
+                  break;
+                case 4:
+                  // 重置最近使用
+                  FunctionOrder.resetFunc(this.context);
+                  this.refreshTabGrid(1);
+                  try {
+                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.have_cleared'), duration: 500 })
+                  } catch (error) {
+                    console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
+                  }
+                  break;
+                case 5:
+                  this.webAutoDarkMode = !this.webAutoDarkMode;
+                  UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
+                  break;
+                case 6:
+                  this.webBackPress = !this.webBackPress;
+                  UnifiedPreferences.putSync('webBackPress', this.webBackPress);
+                  break;
+                case 7:
+                  // 清除日历中的所有课程信息
+                  calendarMgr?.getCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+                    calendar = data;
+                    if (calendar == undefined){
+                      this.showMessage($r('app.string.calendar_null'), 500);
+                    } else {
+                      calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
+                        this.calendar_permission_denied(error);
+                      });
+                      this.showMessage($r('app.string.clear_success'), 500);
+                      calendar = undefined;
+                    }
+                  }).catch((err: BusinessError) => {
+                    if (err.message == 'GetCalendar failed!')
+                      this.showMessage($r('app.string.clear_success'), 500);
+                    else
+                      this.calendar_permission_denied(err);
+                  });
+                  break;
+                case 8:
+                  let selected3: number = 0;
+                  switch (Schedule.remindBefore[0]) {
+                    case 10: selected3 = 1; break;
+                    case 20: selected3 = 2; break;
+                    case 30: selected3 = 3; break;
+                    case 45: selected3 = 4; break;
+                    case 60: selected3 = 5; break;
+                    case 90: selected3 = 6; break;
+                    case 120: selected3 = 7; break;
+                  }
+                  // 在上课几分钟前提醒
+                  this.getUIContext().showTextPickerDialog({
+                    selected: selected3,
+                    range: ['不提醒', '上课前 10 分钟', '上课前 20 分钟', "上课前 30 分钟",
+                      "上课前 45 分钟", "上课前 1 小时", "上课前 90 分钟", "上课前 2 小时"],
+                    defaultPickerItemHeight: 36,
+                    canLoop: false,
+                    onAccept: (value: TextPickerResult) => {
+                      // 删除日程
+                      if (calendar != undefined)
+                        calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
+                      calendarMgr?.createCalendar(calendarAccount).then((data: calendarManager.Calendar) => {
+                        calendar = data;
+                        // 确保日历账户创建成功后，再进行后续相关操作
+                        // 将课程写入日历
+                        if (calendar != undefined) {
+                          //获取日历账户
+                          calendarMgr?.getCalendar(calendarAccount, (err, data) => {
+                            if (err) {
+                              this.calendar_permission_denied(err);
+                            } else {
+                              const config: calendarManager.CalendarConfig = {
+                                enableReminder: true, // 打开日程提醒
+                                color: '#BCC7DF' // 设置日历账户颜色
+                              };
+                              data.setConfig(config).then(() => { // 设置日历配置信息
+                                let valueData: number[] = [-1, 10, 20, 30, 45, 60, 90, 120]
+                                Schedule.setRemindBefore(Number(valueData[Number(value.index)]));
+                                if (value.index == 0) {
+                                  this.showMessage('已更改为 不提醒', 500);
+                                } else {
+                                  this.showMessage(`已更改为 在${value.value}提醒`, 500);
+                                }
+                                let eventId: number | undefined = undefined;
+                                for (let layer1 = 0; layer1 <= 6; layer1++) // 星期几 -1
+                                  if (scheduleManager.parsedSchedule[layer1] != undefined) // 防止不存在元素
+                                    for (let layer2 of scheduleManager.parsedSchedule[layer1]) // 星期几的每一节课
+                                      for (let layer3 of layer2) { // 叠课判断
+                                        // 确保数组有序
+                                        layer3.weekOfTerm.sort((a, b) => a - b);
+                                        layer3.timeSpan.sort((a, b) => a - b);
+                                        // 非上课周排除
+                                        let excludeDates: number[] = [];
+                                        for (let i = 1; i < layer3.weekOfTerm.length; i++) {
+                                          for (let j = layer3.weekOfTerm[i - 1] + 1; j < layer3.weekOfTerm[i]; j++) {
+                                            excludeDates.push(tools.getClassTimestamp(scheduleManager.termStart -
+                                              28800000, j,
+                                              layer3.dayOfWeek,
+                                              Schedule.commonClassStamp[layer3.timeSpan[0]][0]));
                                           }
                                         }
-                                }).catch((err: BusinessError) => { this.calendar_permission_denied(err); });
-                              }
-                            });
-                          }
-                        }).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
-                      }
-                    })
-                    break;
-                  case 10:
-                    // 帮助
-                    this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
-                      .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
-                    break;
-                  case 11:
-                    // 关于
-                    this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
-                      .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
-                    break;
-                  case 12:
-                    scheduleManager.formattedSchedule[30][0];
-                    break;
-                  default:
-                   this.showMessage($r('app.string.under_construction'), 500);
-                }
-              })
+                                        //设置日程
+                                        const event: calendarManager.Event = {
+                                          title: `${layer3.name}@${layer3.location == '' ? 'null' : layer3.location}`, // 日程标题
+                                          type: calendarManager.EventType.NORMAL, // 日程类型
+                                          startTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
+                                            layer3.weekOfTerm[0],
+                                            (layer3.dayOfWeek + 1) % 7,
+                                            Schedule.commonClassStamp[layer3.timeSpan[0]][0]), // 日程开始时间
+                                          endTime: tools.getClassTimestamp(scheduleManager.termStart - 28800000,
+                                            layer3.weekOfTerm[0],
+                                            (layer3.dayOfWeek + 1) % 7,
+                                            Schedule.commonClassStamp[layer3.timeSpan[1]][1]), // 日程结束时间
+                                          reminderTime: Schedule.remindBefore, // 距开始时间提前remindBefore分钟提醒
+                                          recurrenceRule: {
+                                            // 日程重复规则
+                                            recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
+                                            count: layer3.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                                            interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
+                                            // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
+                                            excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
+                                          }
+                                        };
+                                        if (calendar != undefined) {
+                                          calendar.addEvent(event).then((data: number) => {
+                                            eventId = data;
+                                          });
+                                        }
+                                      }
+                              }).catch((err: BusinessError) => { this.calendar_permission_denied(err); });
+                            }
+                          });
+                        }
+                      }).catch((error: BusinessError) => { this.calendar_permission_denied(error); });
+                    }
+                  })
+                  break;
+                case 10:
+                  // 帮助
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
+                    .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+                  break;
+                case 11:
+                  // 关于
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
+                    .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+                  break;
+                case 12:
+                  scheduleManager.formattedSchedule[30][0];
+                  break;
+                default:
+                 this.showMessage($r('app.string.under_construction'), 500);
+              }
             })
-          }
-          .divider({
-            strokeWidth: '0.6vp',
-            color: $r('app.color.grid_border'),
-            startMargin: '12vp',
-            endMargin: '12vp'
           })
-          .backgroundColor($r('app.color.grid_background'))
-          .borderRadius('16vp')
+        }
+        .divider({
+          strokeWidth: '0.6vp',
+          color: $r('app.color.grid_border'),
+          startMargin: '12vp',
+          endMargin: '12vp'
+        })
+        .backgroundColor($r('app.color.grid_background'))
+        .borderRadius('16vp')
 
-        }, (item: ItemData) => JSON.stringify(item))
+      }, (item: ItemData) => JSON.stringify(item))
 
-        ListItem()
-          .visibility(Visibility.Hidden)
-          .height('50vp')
-      }
-      .scrollBar(BarState.Off)
-      .width('100%')
+      ListItem()
+        .visibility(Visibility.Hidden)
+        .height('50vp')
+    }
+    .scrollBar(BarState.Off)
+    .height('100%')
+    .width('100%')
+    .padding({ top: 20, left: 15, right: 15 })
+    .overlay(this.settingExitButton(), { align: Alignment.Bottom })
+  }
 
+  @Builder
+  settingExitButton(){
+    Column() {
       Button($r('app.string.exit_app'), { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.NORMAL)
-        .width('80%')
         .fontColor(Color.Red)
         .backgroundColor($r('app.color.normal_background_transparent'))
         .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR, {
@@ -936,6 +941,7 @@ struct Index {
           adaptiveColor: AdaptiveColor.DEFAULT,
           scale: 0.1
         })
+        .width('100%')
         .margin({ bottom: 15 })
         .onClick(() => {
           const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -948,9 +954,9 @@ struct Index {
           })
         })
     }
-    .height('100%')
-    .width('100%')
-    .padding({ top: 20, left: 15, right: 15 })
+    .width('80%')
+    .justifyContent(FlexAlign.End)
+    .hitTestBehavior(HitTestMode.Transparent)
   }
 
   /**

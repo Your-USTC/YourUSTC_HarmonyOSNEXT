@@ -414,7 +414,7 @@
     },
     {
       "name": "runtime_error",
-      "value": "(｡•́︿•̀｡)\n上次运行时发生了错误，你可以："
+      "value": "(｡•́︿•̀｡)\n上次运行时可能发生了错误，你可以："
     },
     {
       "name": "dangerous_behavior",
