@@ -3,6 +3,7 @@ import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { LengthUnit } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
@@ -560,20 +561,24 @@ struct Index {
         Column() {
           Row() {
             if (this.showExamDetail) {
-              Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-                Image($r('app.media.refresh')).height(20).width(20);
+
+              Button({
+                type: ButtonType.Circle,
+                buttonStyle: ButtonStyleMode.NORMAL
+              }) {
+                Image($r('app.media.refresh'))
+                  .height(20)
+                  .width(20)
               }
               .height(36)
               .width(36)
               .onClick(() => {
-                scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                this.todayCourse =
-                  scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-                Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
-              });
+                // TODO: 初始化考试信息
+              })
+
             } else {
-              Blank().width(36);
+              Blank()
+                .width(36)
             }
             
             Blank()
@@ -597,7 +602,82 @@ struct Index {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
           })
+
+          if (this.showExamDetail) {
+
+            Divider()
+
+            if (false) { // TODO: 判断有无考试
+
+              Column() {
+                Image($r('app.media.no_course_today'))
+                  .height(50)
+                Text($r('app.string.no_exam'))
+              }
+              .margin({ top: 12, bottom: 12 })
+
+            } else {
+
+              // TODO: 删除示例考试 👇👇
+              Row() {
+                Column() {
+                  Row() {
+                    Text('14')
+                      .fontColor(
+                        14 > 7 ? $r('app.color.green') : (
+                          14 > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
+                        )
+                      )
+                      .fontSize(30)
+                      .fontWeight(FontWeight.Bold)
+                      .margin({ right: 4 })
+
+                    Text($r('app.string.days_before'))
+                      .fontColor(
+                        14 > 7 ? $r('app.color.green') : (
+                          14 > 3 ? $r('app.color.bright_blue') : $r('app.color.red')
+                        )
+                      )
+                      .maxLines(2)
+                      .lineSpacing({ value: 3, unit: LengthUnit.FP })
+                      .maxFontSize(18)
+                      .minFontSize(10)
+                      .fontWeight(FontWeight.Bold)
+                      .padding({ bottom: 4 })
+                      .layoutWeight(1)
+                  }
+                  .alignItems(VerticalAlign.Bottom)
+                }
+                .width('25%')
+
+                Column() {
+                  Text('数学分析(B1)')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                    .margin({ bottom: 5 })
+
+                  Text(`\udb80\uddb8 西区 第三教学楼 3C103`)
+                  // 3段字符串拼接
+
+                  Text(`\udb80\udfdc 2025-11-23 14:30~16:30`)
+                  // 可以直接用网页上的字符串
+                }
+                .width('75%')
+                .alignItems(HorizontalAlign.Start)
+                .padding({ left: 5 })
+              }
+              .width('90%')
+              .margin({ top: 7, bottom: 7 })
+
+              if (false) {
+                Divider()
+                  .width('95%')
+              }
+              // TODO: 删除示例考试 👆👆
+            }
+          }
         }
+        .justifyContent(FlexAlign.Center)
       }
       .width('100%')
       .borderRadius(20)
