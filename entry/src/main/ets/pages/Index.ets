@@ -232,7 +232,7 @@ struct Index {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
           .onClick(() => {
             this.webBackPress = !this.webBackPress;
-            UnifiedPreferences.putSync('webBackPress', this.webAutoDarkMode);
+            UnifiedPreferences.putSync('webBackPress', this.webBackPress);
           });
       }
     }
@@ -925,6 +925,7 @@ struct Index {
       }
       .scrollBar(BarState.Off)
       .width('100%')
+      .height('100%')
 
       Button($r('app.string.exit_app'), { type: ButtonType.Capsule })
         .buttonStyle(ButtonStyleMode.NORMAL)
