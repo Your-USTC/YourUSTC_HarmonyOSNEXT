@@ -64,21 +64,26 @@ export const startTimeQueryJS = `
 `
 
 export const examInfoQueryJS = `
-Array.from(document.querySelectorAll('#exams tbody tr')).map(
-    tr => {
-        const trCells = tr.cells;
-        return ({
-            id: trCells[0].innerText,
-            type: trCells[1].innerText,
-            name: trCells[2].innerText,
-            date: trCells[3].innerText,
-            classroom: trCells[4].innerText,
-            building: trCells[5].innerText,
-            campus: trCells[6].innerText,
-            info: trCells[7].innerText
-        })
-    }
-)
+const getExamInfo = () => {
+    const examInfoTable = document.querySelector('#table-content');
+    if (examInfoTable == null) {return null;}
+    return Array.from(document.querySelectorAll('#exams tbody tr')).map(
+        tr => {
+            const trCells = tr.cells;
+            return ({
+                id: trCells[0].innerText,
+                type: trCells[1].innerText,
+                name: trCells[2].innerText,
+                date: trCells[3].innerText,
+                classroom: trCells[4].innerText,
+                building: trCells[5].innerText,
+                campus: trCells[6].innerText,
+                info: trCells[7].innerText
+            })
+        }
+    )
+}
+getExamInfo()
 `
 
 /**
