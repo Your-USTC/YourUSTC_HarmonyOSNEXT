@@ -1,6 +1,6 @@
 
 import { preferences } from '@kit.ArkData'
-import { LengthUnit } from '@kit.ArkUI'
+import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI'
 import * as tools from '../utils/tools'
 import { obtainedData } from '../pages/Schedule'
 import examManager, { examAttribute } from '../utils/ExamManager';
@@ -12,11 +12,15 @@ struct ExamDetail {
   context: UIContext = this.getUIContext();
   @State examInfo: examAttribute[] = [];
   @State currentTime: Date = new Date();
+  showExamDetail: CustomDialogController | null = null;
+  aboutToDisappear(): void {
+    this.showExamDetail = null;  // 在自定义组件即将析构销毁时将showExamDetail置空
+  }
 
   onPageShow(): void {
     const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-    if (routerParams != undefined) {
-      examManager.storeExam(routerParams.timeTable);
+    if (routerParams != undefined && routerParams.timeTable != '') {
+      examManager.storeExam(JSON.parse(routerParams.timeTable));
     }
     examManager.readStoredExam();
     this.examInfo = examManager.allExamInfo;
@@ -51,29 +55,47 @@ struct ExamDetail {
         Image($r('app.media.plus_square'))
           .padding({right: 12})
           .height(20)
-          // .onClick(() => {
-          //   this.ShowClassDetail = null;
-          //   this.ShowClassDetail = new CustomDialogController({
-          //     builder: ClassDetailDialog({
-          //       toChange: this.thisWeekSchedule,
-          //       weekDisplayed: this.weekDisplayed,
-          //       isChangeSchedule: false
-          //     }),
-          //     autoCancel: true,
-          //     gridCount: 4,
-          //     onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
-          //       if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-          //         dismissDialogAction.dismiss();
-          //       }
-          //       if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
-          //         dismissDialogAction.dismiss();
-          //       }
-          //     }
-          //   })
-          //   if (this.ShowClassDetail != null) {
-          //     this.ShowClassDetail.open();
-          //   }
-          // })
+          .onClick(() => {
+            let editExam: examAttribute = {
+              id: '',
+              type: '',
+              name: '',
+              date: `${this.currentTime.getFullYear()}-${(this.currentTime.getMonth() + 1).toString().padStart(2, '0')}-${this.currentTime.getDate().toString().padStart(2, '0')} ${this.currentTime.getHours().toString().padStart(2, '0')}:${this.currentTime.getMinutes().toString().padStart(2, '0')}~${(this.currentTime.getHours() + 2).toString().padStart(2, '0')}:${this.currentTime.getMinutes().toString().padStart(2, '0')}`,
+              classroom: '',
+              building: '',
+              campus: '',
+              info: '',
+              beginTimeStamp: this.currentTime.getTime(),
+              endTimeStamp: this.currentTime.getTime() + 7200000
+            };
+            this.showExamDetail = null;
+            this.showExamDetail = new CustomDialogController({
+              builder: ClassDetailDialog({
+                toChange: this.examInfo,
+                oriExamInfo: editExam,
+                examInfo: editExam,
+                isChangeSchedule: true,
+                date: editExam.date.slice(0, 10),
+                startHour: Number(editExam.date.slice(11, 13)),
+                startMinute: Number(editExam.date.slice(14, 16)),
+                endHour: Number(editExam.date.slice(17, 19)),
+                endMinute: Number(editExam.date.slice(20, 22))
+              }),
+              autoCancel: true,
+              gridCount: 4,
+              onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                  dismissDialogAction.dismiss();
+                }
+                if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                  dismissDialogAction.dismiss();
+                }
+              }
+            })
+            if (this.showExamDetail != null) {
+              this.showExamDetail.open();
+            }
+          })
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(20)
@@ -102,11 +124,10 @@ struct ExamDetail {
         ForEach(this.examInfo, (singleExam: examAttribute) => {
           ListItem() {
             Row() {
-              if (this.currentTime.getTime() < new Date(singleExam.date.slice(0, 16)).getTime()) {
+              if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
                 Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                   Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                      new Date(singleExam.date.slice(0, 16)).getTime(), 0).toString())
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
                       .fontSize(36)
                       .fontWeight(FontWeight.Bold)
                       .fontColor($r('app.color.green'))
@@ -120,8 +141,7 @@ struct ExamDetail {
                   .alignItems(VerticalAlign.Bottom)
 
                   Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                      new Date(singleExam.date.slice(0, 16)).getTime(), 1).toString())
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
                       .fontSize(28)
                       .fontWeight(FontWeight.Bold)
                       .fontColor($r('app.color.hour'))
@@ -134,9 +154,7 @@ struct ExamDetail {
                   .alignItems(VerticalAlign.Bottom)
 
                   Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(),
-                      new Date(singleExam.date.slice(0, 16)).getTime(),
-                      2).toString())
+                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2).toString())
                       .fontSize(28)
                       .fontWeight(FontWeight.Bold)
                       .fontColor($r('app.color.minute'))
@@ -149,6 +167,12 @@ struct ExamDetail {
                   .alignItems(VerticalAlign.Bottom)
                 }
                 .width('30%');
+              } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
+                Text($r('app.string.exam_processing'))
+                  .fontSize(20)
+                  .fontColor($r('app.color.transparent_text'))
+                  .width('30%')
+                  .textAlign(TextAlign.Start);
               } else {
                 Text($r('app.string.exam_ended'))
                   .fontSize(20)
@@ -183,6 +207,59 @@ struct ExamDetail {
           .margin({ top: 7, bottom: 7 })
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
+          .onClick(() => {
+            let oriExam: examAttribute = {
+              id: singleExam.id,
+              type: singleExam.type,
+              name: singleExam.name,
+              date: singleExam.date,
+              classroom: singleExam.classroom,
+              building: singleExam.building,
+              campus: singleExam.campus,
+              info: singleExam.info,
+              beginTimeStamp: singleExam.beginTimeStamp,
+              endTimeStamp: singleExam.endTimeStamp
+            };
+            let editExam: examAttribute = {
+              id: singleExam.id,
+              type: singleExam.type,
+              name: singleExam.name,
+              date: singleExam.date,
+              classroom: singleExam.classroom,
+              building: singleExam.building,
+              campus: singleExam.campus,
+              info: singleExam.info,
+              beginTimeStamp: singleExam.beginTimeStamp,
+              endTimeStamp: singleExam.endTimeStamp
+            };
+            this.showExamDetail = null;
+            this.showExamDetail = new CustomDialogController({
+              builder: ClassDetailDialog({
+                toChange: this.examInfo,
+                oriExamInfo: oriExam,
+                examInfo: editExam,
+                isChangeSchedule: true,
+                date: oriExam.date.slice(0, 10),
+                startHour: Number(oriExam.date.slice(11, 13)),
+                startMinute: Number(oriExam.date.slice(14, 16)),
+                endHour: Number(oriExam.date.slice(17, 19)),
+                endMinute: Number(oriExam.date.slice(20, 22))
+              }),
+              autoCancel: true,
+              gridCount: 4,
+              onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+                if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                  dismissDialogAction.dismiss();
+                }
+                if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                  dismissDialogAction.dismiss();
+                }
+              }
+            })
+            if (this.showExamDetail != null) {
+              this.showExamDetail.open();
+            }
+          });
         });
 
       }
@@ -196,5 +273,191 @@ struct ExamDetail {
     .height('100%')
     .width('100%')
 
+  }
+}
+
+@CustomDialog
+@Component
+struct ClassDetailDialog {
+  @Link toChange: examAttribute[];
+  isChangeSchedule: boolean = true;
+  @State isOkButtonEnabled: boolean = true;
+  examInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0};
+  oriExamInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0};
+  controller?: CustomDialogController;
+  date: string = '2025-11-11';
+  startHour: number = 0;
+  startMinute: number = 0;
+  endHour: number = 0;
+  endMinute: number = 0;
+
+  build() {
+    Column() {
+      Row() {
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.trash_red')).width(24).height(24);
+          }
+          .onClick(() => {
+            examManager.deleteExam(this.oriExamInfo);
+            this.toChange = examManager.allExamInfo;
+            if (this.controller != undefined) {
+              this.controller.close();
+            }
+          })
+          .height(42)
+          .width(42);
+        }
+        Blank();
+
+        Text(this.isChangeSchedule ? $r('app.string.exam_detail') : $r('app.string.exam_detail_new'))
+          .fontSize(24)
+          .fontWeight("bold")
+          .textAlign(TextAlign.Center)
+          .height(42);
+
+        Blank();
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.copy')).width(24).height(24);
+          }
+          .onClick(() => {
+            this.examInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
+            examManager.addExam(this.examInfo);
+            this.toChange = examManager.allExamInfo;
+            if (this.controller != undefined) {
+              this.controller.close();
+            }
+          })
+          .height(42)
+          .width(42)
+          .enabled(this.isOkButtonEnabled);
+        }
+      }
+      .width('100%');
+
+      Column() {
+        Row() {
+          Text($r('app.string.class_detail_name'));
+          TextInput({ text: (this.examInfo.name == '' ? $r('app.string.temporary_null') : this.examInfo.name) })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.name = input)
+            .selectAll(true);
+        }
+        .margin({ bottom: 5 });
+
+        Row() {
+          Text($r('app.string.exam_detail_date'));
+          CalendarPicker({ selected: new Date(this.examInfo.date.slice(0,10)) })
+            .onChange((value) => {
+              console.info(`CalendarPicker onChange: ${value.toString()}`);
+              this.date = `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
+            })
+        }
+        .margin({ bottom: 5 });
+
+        Row() {
+          Text($r('app.string.exam_detail_start_time'));
+          CounterComponent({
+            options: {
+              type: CounterType.INLINE,
+              inlineOptions: {
+                value: this.startHour,
+                min: 0,
+                step: 1,
+                max: 23,
+                textWidth: 25,
+                onChange: (value: number) => {
+                  this.startHour = value;
+                }
+              }
+            }
+          })
+          Text(' : ')
+          CounterComponent({
+            options: {
+              type: CounterType.INLINE,
+              inlineOptions: {
+                value: this.startMinute,
+                min: 0,
+                step: 1,
+                max: 59,
+                textWidth: 25,
+                onChange: (value: number) => {
+                  this.startMinute = value;
+                }
+              }
+            }
+          })
+        }
+        .margin({ bottom: 5 });
+        Row() {
+          Text($r('app.string.exam_detail_start_time'));
+          CounterComponent({
+            options: {
+              type: CounterType.INLINE,
+              inlineOptions: {
+                value: this.endHour,
+                min: 0,
+                step: 1,
+                max: 23,
+                textWidth: 25,
+                onChange: (value: number) => {
+                  this.endHour = value;
+                }
+              }
+            }
+          })
+          Text(' : ')
+          CounterComponent({
+            options: {
+              type: CounterType.INLINE,
+              inlineOptions: {
+                value: this.endMinute,
+                min: 0,
+                step: 1,
+                max: 59,
+                textWidth: 25,
+                onChange: (value: number) => {
+                  this.endMinute = value;
+                }
+              }
+            }
+          })
+        }
+        .margin({ bottom: 5 });
+      }
+      .alignItems(HorizontalAlign.Start)
+      .width('80%');
+
+      Blank('16');
+      Row() {
+        Button($r('app.string.cancel'))
+          .onClick(() => {
+            if (this.controller != undefined)
+              this.controller.close();
+          })
+          .width('50%')
+          .buttonStyle(ButtonStyleMode.TEXTUAL);
+
+        Button($r('app.string.ok'))
+          .onClick(() => {
+            if (this.isChangeSchedule)
+              examManager.deleteExam(this.oriExamInfo);
+            this.examInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
+            examManager.addExam(this.examInfo);
+            this.toChange = examManager.allExamInfo;
+            if (this.controller != undefined)
+              this.controller.close();
+          })
+          .width('50%')
+          .buttonStyle(ButtonStyleMode.EMPHASIZED)
+          .enabled(this.isOkButtonEnabled);
+      }
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor($r('app.color.grid_background'));
   }
 }

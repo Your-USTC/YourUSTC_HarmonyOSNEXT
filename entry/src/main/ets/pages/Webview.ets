@@ -147,7 +147,7 @@ struct Webview {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
             this.webviewController.terminateRenderProcess();
             this.getUIContext().getRouter().back({
-              url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
+              url: 'pages/Index'
             })
           })
         Image($r('app.media.back'))

@@ -138,10 +138,7 @@ struct Webview {
                 if (this.webviewController.accessBackward()) {
                   this.webviewController.backward();
                 } else {
-                  this.getUIContext().getRouter().back({
-                    params: this.obtainedData,
-                    url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-                  });
+                  this.getUIContext().getRouter().back();
                 }
                 return true;
               }
@@ -228,7 +225,13 @@ struct Webview {
           .width(`${this.loadingProgress}%`)
           .height(5)
           .startPoint([0, 0])
-          .backgroundColor($r('app.color.pink'))
+          .backgroundColor($r('app.color.pink'));
+        LoadingProgress()
+          .width(45)
+          .height(45)
+          .padding({ left: 5, top: 5})
+          .color($r('app.color.pink'))
+          .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible)
       }
       .layoutWeight(1)
     }

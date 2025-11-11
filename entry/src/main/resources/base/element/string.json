@@ -173,12 +173,28 @@
       "value": "返回"
     },
     {
+      "name": "exam_detail_new",
+      "value": "添加考试"
+    },
+    {
       "name": "class_detail",
       "value": "课程详情"
     },
     {
       "name": "class_detail_new",
       "value": "添加课程"
+    },
+    {
+      "name": "exam_detail_date",
+      "value": "日期："
+    },
+    {
+      "name": "exam_detail_start_time",
+      "value": "开始时间："
+    },
+    {
+      "name": "exam_detail_end_time",
+      "value": "结束时间："
     },
     {
       "name": "class_detail_name",
@@ -397,6 +413,10 @@
       "value": "暂无考试信息"
     },
     {
+      "name": "exam_processing",
+      "value": "考试正在进行"
+    },
+    {
       "name": "exam_ended",
       "value": "考试已结束"
     },
@@ -441,6 +461,10 @@
       "value": "清空所有数据"
     },
     {
+      "name": "delete_exam_info",
+      "value": "清空考试信息"
+    },
+    {
       "name": "delete_schedule",
       "value": "删除课表"
     },
@@ -458,7 +482,7 @@
     },
     {
       "name": "manual_fault",
-      "value": "(test)产生一个错误"
+      "value": "退出到恢复模式"
     }
   ]
 }

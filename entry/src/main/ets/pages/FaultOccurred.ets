@@ -9,11 +9,14 @@ import { common } from '@kit.AbilityKit';
 struct FaultOccurred {
   private button1ClickTimes: number = 0;
   private button2ClickTimes: number = 0;
+  private button3ClickTimes: number = 0;
   @State button1Text: ResourceStr = $r('app.string.delete_schedule');
   @State button2Text: ResourceStr = $r('app.string.delete_all_data');
+  @State button3Text: ResourceStr = $r('app.string.delete_exam_info');
 
   build() {
     Column() {
+      Image($r('app.media.fault_occurred')).height(100) // 仅占位
       Text($r('app.string.runtime_error'))
         .fontColor($r('app.color.normal_text'))
         .fontSize(20)
@@ -37,7 +40,7 @@ struct FaultOccurred {
         });
       Button(this.button2Text)
         .backgroundColor($r('app.color.red'))
-        .margin({ top: 20, bottom: 10 })
+        .margin({ top: 20 })
         .onClick(() => {
           this.button2ClickTimes++;
           if (this.button2ClickTimes == 2) {
@@ -45,6 +48,18 @@ struct FaultOccurred {
             this.button2Text = $r('app.string.clear_success');
           } else if (this.button2ClickTimes == 1){
             this.button2Text = $r('app.string.click_again_to_delete');
+          }
+        });
+      Button(this.button3Text)
+        .backgroundColor($r('app.color.red'))
+        .margin({ top: 20, bottom: 10 })
+        .onClick(() => {
+          this.button3ClickTimes++;
+          if (this.button3ClickTimes == 2) {
+            UnifiedPreferences.deleteSync('examInfo');
+            this.button3Text = $r('app.string.clear_success');
+          } else if (this.button3ClickTimes == 1){
+            this.button3Text = $r('app.string.click_again_to_delete');
           }
         });
       Text($r('app.string.dangerous_behavior'))

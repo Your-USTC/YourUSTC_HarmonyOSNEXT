@@ -473,7 +473,7 @@ struct Index {
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                      Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                      Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]}~${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                     }
@@ -535,7 +535,7 @@ struct Index {
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                    Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]} - ${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                    Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]}~${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }

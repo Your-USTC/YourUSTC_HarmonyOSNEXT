@@ -601,7 +601,8 @@ struct ClassDetailDialog {
           TextInput({ text: (this.classInfo.name == '' ? $r('app.string.temporary_null') : this.classInfo.name) })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.name = input);
+            .onChange((input: string) => this.classInfo.name = input)
+            .selectAll(true);
         }
         .margin({ bottom: 5 });
 
@@ -610,7 +611,8 @@ struct ClassDetailDialog {
           TextInput({ text: (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher) })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.teacher = input);
+            .onChange((input: string) => this.classInfo.teacher = input)
+            .selectAll(true);
         }
         .margin({ bottom: 5 });
 
@@ -621,7 +623,8 @@ struct ClassDetailDialog {
           })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.location = input);
+            .onChange((input: string) => this.classInfo.location = input)
+            .selectAll(true);
         }
         .margin({ bottom: 5 });
 
@@ -630,7 +633,8 @@ struct ClassDetailDialog {
           TextInput({ text: (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id) })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.id = input);
+            .onChange((input: string) => this.classInfo.id = input)
+            .selectAll(true);
         }
         .margin({ bottom: 5 });
 
@@ -643,7 +647,7 @@ struct ClassDetailDialog {
             .onSelect((index: number) => {
               this.rectifyTimeSpan[0] = index + 1;
             });
-          Text(' - ');
+          Text(' ~ ');
           Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
             { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
             .value(this.rectifyTimeSpan[1].toString())
