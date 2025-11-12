@@ -507,6 +507,22 @@
     {
       "name": "manual_fault",
       "value": "退出到恢复模式"
+    },
+    {
+      "name": "homepage",
+      "value": "App 主页"
+    },
+    {
+      "name": "terms_of_use",
+      "value": "用户协议"
+    },
+    {
+      "name": "privacy_policy",
+      "value": "隐私政策"
+    },
+    {
+      "name": "credits",
+      "value": "开发者 (按拼音排序) :\n25-少-DSC\n25-计-LMC\n25-微-ZYM"
     }
   ]
 }
