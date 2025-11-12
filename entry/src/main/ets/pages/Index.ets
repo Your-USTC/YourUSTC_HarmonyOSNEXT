@@ -318,6 +318,7 @@ struct Index {
                 .fontSize(20)
                 .fontWeight(FontWeight.Bold)
                 .textShadow({ radius: 1 })
+                .textIndent(40)
             }
             .width('80%')
             .margin({ bottom: 10 })
