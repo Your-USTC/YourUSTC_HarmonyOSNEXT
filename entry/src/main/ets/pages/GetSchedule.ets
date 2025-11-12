@@ -92,6 +92,7 @@ struct Webview {
           .fontSize(18)
           .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .height(48)
         Blank()
         Image($r('app.media.refresh'))
           .padding({ right: 12 })
@@ -119,8 +120,8 @@ struct Webview {
       }
       .id('header')
       .width('100%')
-      .height(48)
       .backgroundColor($r('app.color.shaded_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       Stack({ alignContent: Alignment.TopStart}) {
         Web({ src: this.url, controller: this.webviewController })
