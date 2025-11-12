@@ -23,13 +23,18 @@ export class CheckInTools {
     '您的‘困’兽已被暂时封印，有效期至下一堂无聊的课。',
     '签到成功！所以……昨晚说要早睡，你做到了吗？'
   ];
+  private static TIME_TO_INDEX: number[][] = [
+    [0, 2, 5, 7, 8, 9, 10, 11, 12, 13, 14], // 半夜: 0~4点
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], // 早晨: 4~9点
+    [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], // 白天: 9~18点
+    [0, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15], // 晚上: 18~24点
+  ]
   private static millisecondsInADay = 86400000;
   private static defaultTimestamp = '1000000000'; // 用于没有签到记录时的Unix时间戳
 
   static getTodayDate(): number { // 保留年、月、日，忽略时、分、秒
     const date = new Date();
-    const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    return normalizedDate.getTime();
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
   }
 
   static timeSinceLastCheckIn(): number {
@@ -39,7 +44,17 @@ export class CheckInTools {
   }
 
   static getRandomContent(): string {
-    return CheckInTools.CHECK_IN_CONTENT_LIST[Math.floor(Math.random() * CheckInTools.CHECK_IN_CONTENT_LIST.length)];
+    const randomItem = (list: number[]) => list[Math.floor(Math.random() * list.length)];
+    const hour = new Date().getHours();
+    if (hour < 4) {
+      return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[0])];
+    } else if (hour < 9) {
+      return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[1])];
+    } else if (hour < 18) {
+      return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[2])];
+    } else {
+      return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[3])];
+    }
   }
 
   static loadCheckInOnStartup(): [number, number, boolean, string] {
