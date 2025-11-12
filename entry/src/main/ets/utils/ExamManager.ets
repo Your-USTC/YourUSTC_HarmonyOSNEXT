@@ -42,7 +42,7 @@ class examManager {
   storeExam(data: examAttribute[]) {
     for (let i = 0; i < data.length; i++){
       data[i].beginTimeStamp = new Date(data[i].date.slice(0, 16)).getTime();
-      data[i].endTimeStamp = new Date(data[i].date.slice(0, 11) + data[i].date.slice(18, 22)).getTime();
+      data[i].endTimeStamp = new Date(data[i].date.slice(0, 11) + data[i].date.slice(17, 22)).getTime();
     }
     data.sort((a, b) => a.beginTimeStamp - b.beginTimeStamp);
     UnifiedPreferences.putSync('examInfo', JSON.stringify(data));
@@ -50,7 +50,8 @@ class examManager {
 
   addExam(newExam: examAttribute) {
     newExam.beginTimeStamp = new Date(newExam.date.slice(0, 16)).getTime();
-    newExam.endTimeStamp = new Date(newExam.date.slice(0, 11) + newExam.date.slice(18, 22)).getTime();
+    newExam.endTimeStamp = new Date(newExam.date.slice(0, 11) + newExam.date.slice(17, 22)).getTime();
+    console.log('aaa',newExam.date.slice(0, 11) + newExam.date.slice(17, 22));
     this.allExamInfo.push(newExam);
     this.allExamInfo.sort((a, b) => a.beginTimeStamp - b.beginTimeStamp);
     UnifiedPreferences.putSync('examInfo', JSON.stringify(this.allExamInfo));
@@ -58,8 +59,10 @@ class examManager {
 
   deleteExam(deletedExam: examAttribute) {
     for (let i = 0; i < this.allExamInfo.length; i++)
-      if (areExamAttributesEqual(deletedExam, this.allExamInfo[i]))
+      if (areExamAttributesEqual(deletedExam, this.allExamInfo[i])) {
         this.allExamInfo.splice(i, 1);
+        break;
+      }
     this.storeExam(this.allExamInfo);
   }
 }

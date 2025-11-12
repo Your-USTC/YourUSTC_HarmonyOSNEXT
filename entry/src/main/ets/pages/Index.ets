@@ -17,6 +17,7 @@ import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
+import { visionBase } from '@kit.CoreVisionKit'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -465,13 +466,15 @@ struct Index {
                     .padding({ right: 10 });
 
                     Column() {
-                      Text(`\udb81\uddf3 ${course.teacher == '' ? '' : course.teacher}`)
+                      Text(`\udb81\uddf3 ${course.teacher}`)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
+                        .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
 
-                      Text(`\udb80\uddb8 ${course.location == '' ? '' : course.location}`)
+                      Text(`\udb80\uddb8 ${course.location}`)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
+                        .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
 
                       Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]}~${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
                         .maxLines(1)
@@ -527,13 +530,15 @@ struct Index {
                   .padding({ right: 10 });
 
                   Column() {
-                    Text(`\udb81\uddf3 ${course.teacher == '' ? '' : course.teacher}`)
+                    Text(`\udb81\uddf3 ${course.teacher}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
+                      .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
 
-                    Text(`\udb80\uddb8 ${course.location == '' ? '' : course.location}`)
+                    Text(`\udb80\uddb8 ${course.location}`)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
+                      .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
 
                     Text(`\udb80\udfdc ${Schedule.commonClassTime[course.timeSpan[0]][0]}~${Schedule.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
                       .maxLines(1)

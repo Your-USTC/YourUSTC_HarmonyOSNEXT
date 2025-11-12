@@ -598,7 +598,7 @@ struct ClassDetailDialog {
       Column() {
         Row() {
           Text($r('app.string.class_detail_name'));
-          TextInput({ text: (this.classInfo.name == '' ? $r('app.string.temporary_null') : this.classInfo.name) })
+          TextInput({ text: this.classInfo.name })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.name = input)
@@ -608,7 +608,7 @@ struct ClassDetailDialog {
 
         Row() {
           Text($r('app.string.class_detail_teacher'));
-          TextInput({ text: (this.classInfo.teacher == '' ? $r('app.string.temporary_null') : this.classInfo.teacher) })
+          TextInput({ text: this.classInfo.teacher })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.teacher = input)
@@ -618,9 +618,7 @@ struct ClassDetailDialog {
 
         Row() {
           Text($r('app.string.class_detail_location'));
-          TextInput({
-            text: (this.classInfo.location == '' ? $r('app.string.temporary_null') : this.classInfo.location)
-          })
+          TextInput({ text: this.classInfo.location })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.location = input)
@@ -630,7 +628,7 @@ struct ClassDetailDialog {
 
         Row() {
           Text($r('app.string.class_detail_id'));
-          TextInput({ text: (this.classInfo.id == '' ? $r('app.string.temporary_null') : this.classInfo.id) })
+          TextInput({ text: this.classInfo.id })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.classInfo.id = input)

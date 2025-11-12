@@ -34,7 +34,7 @@ struct ExamDetail {
           .padding({ left: 12 })
           .height(20)
           .onClick(() => {
-            this.context.getRouter().back()
+            this.context.getRouter().back();
           })
         Image($r('app.media.refresh'))
           .padding({ left: 12 })
@@ -74,12 +74,12 @@ struct ExamDetail {
                 toChange: this.examInfo,
                 oriExamInfo: editExam,
                 examInfo: editExam,
-                isChangeSchedule: true,
+                isChangeSchedule: false,
                 date: editExam.date.slice(0, 10),
-                startHour: Number(editExam.date.slice(11, 13)),
-                startMinute: Number(editExam.date.slice(14, 16)),
-                endHour: Number(editExam.date.slice(17, 19)),
-                endMinute: Number(editExam.date.slice(20, 22))
+                startHour: this.currentTime.getHours(),
+                startMinute: this.currentTime.getMinutes(),
+                endHour: this.currentTime.getHours() + 2,
+                endMinute: this.currentTime.getMinutes()
               }),
               autoCancel: true,
               gridCount: 4,
@@ -191,9 +191,12 @@ struct ExamDetail {
                     .fontSize(18)
                     .margin({ bottom: 5 })
                 }
-                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`);
-                Text(`\udb80\udfdc ${singleExam.date}`);
-                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`);
+                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
+                  .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None: Visibility.Visible);
+                Text(`\udb80\udfdc ${singleExam.date}`)
+                  .visibility(singleExam.date == '' ? Visibility.None: Visibility.Visible);
+                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
+                  .visibility(singleExam.id + singleExam.info == '' ? Visibility.None: Visibility.Visible);
               }
               .width('70%')
               .alignItems(HorizontalAlign.Start)
@@ -281,11 +284,10 @@ struct ExamDetail {
 struct ClassDetailDialog {
   @Link toChange: examAttribute[];
   isChangeSchedule: boolean = true;
-  @State isOkButtonEnabled: boolean = true;
   examInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0};
   oriExamInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0};
   controller?: CustomDialogController;
-  date: string = '2025-11-11';
+  date: string = '2025-07-21';
   startHour: number = 0;
   startMinute: number = 0;
   endHour: number = 0;
@@ -322,6 +324,14 @@ struct ClassDetailDialog {
             Image($r('app.media.copy')).width(24).height(24);
           }
           .onClick(() => {
+            if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute){
+              let temp: number = this.startHour;
+              this.startHour = this.endHour;
+              this.endHour = temp;
+              temp = this.startMinute;
+              this.startMinute = this.endMinute;
+              this.endMinute = temp;
+            }
             this.examInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
             examManager.addExam(this.examInfo);
             this.toChange = examManager.allExamInfo;
@@ -330,16 +340,16 @@ struct ClassDetailDialog {
             }
           })
           .height(42)
-          .width(42)
-          .enabled(this.isOkButtonEnabled);
+          .width(42);
         }
       }
+      .margin({ bottom: 5 })
       .width('100%');
 
       Column() {
         Row() {
-          Text($r('app.string.class_detail_name'));
-          TextInput({ text: (this.examInfo.name == '' ? $r('app.string.temporary_null') : this.examInfo.name) })
+          Text($r('app.string.exam_detail_object'));
+          TextInput({ text: this.oriExamInfo.name })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.examInfo.name = input)
@@ -349,10 +359,9 @@ struct ClassDetailDialog {
 
         Row() {
           Text($r('app.string.exam_detail_date'));
-          CalendarPicker({ selected: new Date(this.examInfo.date.slice(0,10)) })
+          CalendarPicker({ selected: new Date(this.oriExamInfo.date.slice(0, 10)) })
             .onChange((value) => {
-              console.info(`CalendarPicker onChange: ${value.toString()}`);
-              this.date = `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
+              this.date = `${value.getFullYear().toString().padStart(4, '0')}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
             })
         }
         .margin({ bottom: 5 });
@@ -393,7 +402,7 @@ struct ClassDetailDialog {
         }
         .margin({ bottom: 5 });
         Row() {
-          Text($r('app.string.exam_detail_start_time'));
+          Text($r('app.string.exam_detail_end_time'));
           CounterComponent({
             options: {
               type: CounterType.INLINE,
@@ -427,9 +436,54 @@ struct ClassDetailDialog {
           })
         }
         .margin({ bottom: 5 });
+
+        Row() {
+          Text($r('app.string.class_detail_location'));
+          TextInput({ text: this.oriExamInfo.campus, placeholder: $r('app.string.campus') })
+            .layoutWeight(3)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.campus = input)
+            .textAlign(TextAlign.Center)
+            .selectAll(true)
+            .showUnderline(true);
+          TextInput({ text: this.oriExamInfo.building, placeholder: $r('app.string.building') })
+            .layoutWeight(5)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.building = input)
+            .textAlign(TextAlign.Center)
+            .selectAll(true)
+            .showUnderline(true);
+          TextInput({ text: this.oriExamInfo.classroom, placeholder: $r('app.string.classroom') })
+            .layoutWeight(3)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.classroom = input)
+            .textAlign(TextAlign.Center)
+            .selectAll(true)
+            .showUnderline(true);
+        }
+        .margin({ bottom: 5 });
+
+        Row() {
+          Text($r('app.string.exam_detail_other'));
+          TextInput({ text: this.oriExamInfo.id, placeholder: $r('app.string.id') })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.id = input)
+            .textAlign(TextAlign.Center)
+            .selectAll(true)
+            .showUnderline(true);
+          TextInput({ text: this.oriExamInfo.info, placeholder: $r('app.string.note') })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.info = input)
+            .textAlign(TextAlign.Center)
+            .selectAll(true)
+            .showUnderline(true);
+        }
+        .margin({ bottom: 5 });
       }
       .alignItems(HorizontalAlign.Start)
-      .width('80%');
+      .width('85%');
 
       Blank('16');
       Row() {
@@ -445,6 +499,14 @@ struct ClassDetailDialog {
           .onClick(() => {
             if (this.isChangeSchedule)
               examManager.deleteExam(this.oriExamInfo);
+            if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute){
+              let temp: number = this.startHour;
+              this.startHour = this.endHour;
+              this.endHour = temp;
+              temp = this.startMinute;
+              this.startMinute = this.endMinute;
+              this.endMinute = temp;
+            }
             this.examInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
             examManager.addExam(this.examInfo);
             this.toChange = examManager.allExamInfo;
@@ -452,8 +514,7 @@ struct ClassDetailDialog {
               this.controller.close();
           })
           .width('50%')
-          .buttonStyle(ButtonStyleMode.EMPHASIZED)
-          .enabled(this.isOkButtonEnabled);
+          .buttonStyle(ButtonStyleMode.EMPHASIZED);
       }
     }
     .width('100%')
