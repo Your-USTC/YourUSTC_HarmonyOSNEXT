@@ -320,7 +320,6 @@ struct Index {
                 .textShadow({ radius: 1 })
             }
             .width('80%')
-            .height(60)
             .margin({ bottom: 10 })
             .justifyContent(FlexAlign.Center)
 

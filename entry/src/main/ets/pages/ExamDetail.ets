@@ -50,6 +50,7 @@ struct ExamDetail {
         Text($r('app.string.exam_detail'))
           .fontSize(18)
           .fontColor($r('app.color.normal_text'))
+          .height(48)
 
         Blank()
         Image($r('app.media.plus_square'))
@@ -109,8 +110,8 @@ struct ExamDetail {
           })
       }
       .width('100%')
-      .height(48)
       .backgroundColor($r('app.color.shaded_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       List() {
         ListItem() {
@@ -118,7 +119,10 @@ struct ExamDetail {
             Image($r('app.media.course_finish_today')).width(100);
             Text($r('app.string.no_exam_info')).fontSize(18).padding({ top: 10 });
           }
+          .justifyContent(FlexAlign.Center)
         }
+        .width('100%')
+        .height('100%')
         .visibility(this.examInfo.length == 0 ? Visibility.Visible : Visibility.None)
 
         ForEach(this.examInfo, (singleExam: examAttribute) => {

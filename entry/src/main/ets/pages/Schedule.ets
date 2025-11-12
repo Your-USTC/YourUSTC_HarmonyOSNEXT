@@ -116,6 +116,7 @@ struct Schedule {
         Text($r('app.string.local_schedule'))
           .fontSize(18)
           .fontColor($r('app.color.normal_text'))
+          .height(48)
 
         Blank()
 
@@ -159,8 +160,8 @@ struct Schedule {
           })
       }
       .width('100%')
-      .height(48)
       .backgroundColor($r('app.color.shaded_background'))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       /**
        * 周数信息与翻页
