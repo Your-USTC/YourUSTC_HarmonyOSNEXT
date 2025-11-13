@@ -545,7 +545,7 @@ struct ClassDetailDialog {
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false];
+  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 10], [13, 16]]) as number[];
 
@@ -674,7 +674,7 @@ struct ClassDetailDialog {
             .textAlign(TextAlign.Start);
           Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') }, { value: $r('app.string.wednesday') },
             { value: $r('app.string.thursday') }, { value: $r('app.string.friday') }, { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
-            .value(`${this.classInfo.dayOfWeek + 1}`)
+            .value(/*`${this.classInfo.dayOfWeek + 1}`*/$r('app.string.monday'))
             .onSelect((index: number) => {
               this.classInfo.dayOfWeek = index;
             });
