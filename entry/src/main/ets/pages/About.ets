@@ -108,12 +108,12 @@ struct About {
       Row() {
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
-            .height(30)
-            .width(30)
+            .height(20)
+            .width(20)
             .draggable(false)
         }
-        .height(48)
-        .width(48)
+        .height(36)
+        .width(36)
         .margin({ left: 10 })
         .onClick(() => {
           this.getUIContext().getRouter().back();
@@ -121,12 +121,12 @@ struct About {
         Blank();
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
-            .height(30)
-            .width(30)
+            .height(20)
+            .width(20)
             .draggable(false)
         }
-        .height(48)
-        .width(48)
+        .height(36)
+        .width(36)
         .margin({ right: 10 })
         .onClick(() => {
           const uiContext: UIContext | undefined = AppStorage.get('context');
@@ -156,9 +156,39 @@ struct About {
       .objectFit(ImageFit.Contain)
       .backgroundColor($r('app.color.shaded_background'))
       .draggable(false)
+      .overlay(this.SimpleHeader(), { align: Alignment.Top, offset: { x: 0, y: 48 } })
       .onDisAppear(() => {
         this.iconClickTime = 0
         this.isShowEggImage = false
       })
   }
+
+  @Builder
+  SimpleHeader() {
+    Row() {
+      Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+        Image($r('app.media.close'))
+          .height(20)
+          .draggable(false)
+      }
+      .height(36)
+      .width(36)
+      .backgroundColor($r('app.color.normal_background_transparent'))
+      .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR, {
+        colorMode: ThemeColorMode.LIGHT,
+        adaptiveColor: AdaptiveColor.DEFAULT,
+        scale: 0.1
+      })
+      .onClick(() => {
+        this.iconClickTime = 0
+        this.isShowEggImage = false
+      })
+
+      Blank()
+    }
+    .width('100%')
+    .height(36)
+    .padding({ left: 10, right: 10 })
+  }
+
 }

@@ -19,6 +19,7 @@ import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
+import examManager, { examAttribute } from '../utils/ExamManager'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -89,6 +90,7 @@ struct Index {
 
   @State todayCourse: classAttribute[] = [];
   @State tomorrowCourse: classAttribute[] = [];
+  @State exams: examAttribute[] = [];
 
   @State showCheckIn: boolean = UnifiedPreferences.getBoolSync('showCheckIn', true);
   @State showRecentCourse: boolean = UnifiedPreferences.getBoolSync('showRecentCourse', true);
@@ -121,6 +123,8 @@ struct Index {
         this.isTodayCourseEnd = false;
         break;
       }
+    examManager.readStoredExam();
+    this.exams = examManager.allExamInfo;
   }
 
   /**
@@ -577,11 +581,8 @@ struct Index {
               .height(36)
               .width(36)
               .onClick(() => {
-                scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                this.todayCourse =
-                  scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-                Math.floor((scheduleManager.today + 1) / 7)][(scheduleManager.today + 1) % 7];
+                examManager.readStoredExam();
+                this.exams = examManager.allExamInfo;
               });
             } else {
               Blank().width(36);
@@ -609,6 +610,94 @@ struct Index {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
           })
+          ForEach(this.exams, (singleExam: examAttribute, index) => {
+            Divider().width(index == 0 ? '100%' : '95%')
+            Row() {
+              if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
+                Column() {
+                  Column() {
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
+                        .fontSize(36)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.green'))
+                      Text($r('app.string.day'))
+                        .fontColor($r('app.color.green'))
+                        .lineSpacing({ value: 5, unit: LengthUnit.FP })
+                        .maxFontSize(18)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
+
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
+                        .fontSize(28)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.hour'))
+                      Text($r('app.string.hour'))
+                        .fontColor($r('app.color.hour'))
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
+
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2).toString())
+                        .fontSize(28)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.minute'))
+                      Text($r('app.string.minute'))
+                        .fontColor($r('app.color.minute'))
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
+                  }
+                  .alignItems(HorizontalAlign.End);
+                }
+                .width('25%')
+                .alignItems(HorizontalAlign.Center);
+              } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
+                Text($r('app.string.exam_processing'))
+                  .fontSize(20)
+                  .fontColor($r('app.color.transparent_text'))
+                  .width('25%')
+                  .textAlign(TextAlign.Start);
+              } else {
+                Text($r('app.string.exam_ended'))
+                  .fontSize(20)
+                  .fontColor($r('app.color.transparent_text'))
+                  .width('25%')
+                  .textAlign(TextAlign.Start);
+              }
+
+              Column() {
+                Row() {
+                  Text(singleExam.name + '  ')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                    .margin({ bottom: 5 })
+                  Text(singleExam.type)
+                    .fontSize(18)
+                    .margin({ bottom: 5 })
+                }
+                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
+                  .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None: Visibility.Visible);
+                Text(`\udb80\udfdc ${singleExam.date}`)
+                  .visibility(singleExam.date == '' ? Visibility.None: Visibility.Visible);
+                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
+                  .visibility(singleExam.id + singleExam.info == '' ? Visibility.None: Visibility.Visible);
+              }
+              .width('75%')
+              .alignItems(HorizontalAlign.Start)
+              .padding({ left: 10 })
+            }
+            .backgroundColor($r('app.color.grid_background'))
+            .borderRadius(20);
+          })
         }
       }
       .width('100%')
@@ -620,9 +709,6 @@ struct Index {
     .width('100%')
     .height('100%')
     .padding({ top: 20, left: 15, right: 15 })
-
-    Button("[开发用] 清空首选项").onClick(() => {UnifiedPreferences.clear();})
-    // TODO: 把该功能放到设置页面
   }
 
   /**
