@@ -457,6 +457,10 @@
       "value": "form_description"
     },
     {
+      "name": "welcome_to_your_ustc",
+      "value": "\uD83D\uDC4B欢迎来到「你的科大」！\uD83D\uDC4B"
+    },
+    {
       "name": "EntryFormAbility_label",
       "value": "form_label"
     },
@@ -509,8 +513,8 @@
       "value": "退出到恢复模式"
     },
     {
-      "name": "homepage",
-      "value": "App 主页"
+      "name": "github",
+      "value": "在 GitHub 上为我们⭐！"
     },
     {
       "name": "terms_of_use",
@@ -522,7 +526,15 @@
     },
     {
       "name": "credits",
-      "value": "开发团队 (按拼音排序) :\n25-少-DSC\n25-计-LMC\n25-微-ZYM"
+      "value": "开发者 (按拼音排序) :\n25-少-DSC 25-计-LMC 25-微-ZYM\n\n启动图片来源：pid 101123644\nQ版角色图片绘制：Gemini & ZYM"
+    },
+    {
+      "name": "copy_success",
+      "value": "已复制到剪贴板"
+    },
+    {
+      "name": "copy_failed",
+      "value": "复制失败┭┮﹏┭┮"
     }
   ]
 }

@@ -57,13 +57,12 @@ struct Index {
     Column() {
       // 按钮图片
       Image(this.currentIndex === index ? selectedImg : normalImg)
-        .width(24)
-        .height(24)
+        .width(28)
+        .height(28)
         .objectFit(ImageFit.Contain)
         .draggable(false)
       // 按钮文字
       Text(title)
-        .margin({ top: 4 })
         .fontSize(10)
         .fontColor(this.currentIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
     }
@@ -775,7 +774,7 @@ struct Index {
                   FunctionOrder.resetFunc(this.context);
                   this.refreshTabGrid(1);
                   try {
-                    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.have_cleared'), duration: 500 })
+                    this.showMessage($r('app.string.have_cleared'), 500);
                   } catch (error) {
                     console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                   }
