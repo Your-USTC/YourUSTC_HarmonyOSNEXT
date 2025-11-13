@@ -108,12 +108,12 @@ struct About {
       Row() {
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
-            .height(30)
-            .width(30)
+            .height(20)
+            .width(20)
             .draggable(false)
         }
-        .height(48)
-        .width(48)
+        .height(36)
+        .width(36)
         .margin({ left: 10 })
         .onClick(() => {
           this.getUIContext().getRouter().back();
@@ -121,12 +121,12 @@ struct About {
         Blank();
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
-            .height(30)
-            .width(30)
+            .height(20)
+            .width(20)
             .draggable(false)
         }
-        .height(48)
-        .width(48)
+        .height(36)
+        .width(36)
         .margin({ right: 10 })
         .onClick(() => {
           const uiContext: UIContext | undefined = AppStorage.get('context');
