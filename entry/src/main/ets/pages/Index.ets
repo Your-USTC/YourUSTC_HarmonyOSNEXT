@@ -695,6 +695,7 @@ struct Index {
               .alignItems(HorizontalAlign.Start)
               .padding({ left: 10 })
             }
+            .padding({top: 5, bottom: 5})
             .backgroundColor($r('app.color.grid_background'))
             .borderRadius(20);
           })
@@ -702,7 +703,7 @@ struct Index {
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5 })
+      .margin({ top: 5, bottom: 15 })
       .backgroundColor($r('app.color.grid_background'));
     }
     .scrollBar(BarState.Off)
