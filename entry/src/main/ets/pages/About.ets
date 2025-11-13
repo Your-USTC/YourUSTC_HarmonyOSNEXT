@@ -108,12 +108,12 @@ struct About {
       Row() {
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
-            .height(20)
-            .width(20)
+            .height(24)
+            .width(24)
             .draggable(false)
         }
-        .height(36)
-        .width(36)
+        .height(42)
+        .width(42)
         .margin({ left: 10 })
         .onClick(() => {
           this.getUIContext().getRouter().back();
@@ -121,15 +121,14 @@ struct About {
         Blank();
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
-            .height(20)
-            .width(20)
+            .height(24)
+            .width(24)
             .draggable(false)
         }
-        .height(36)
-        .width(36)
+        .height(42)
+        .width(42)
         .margin({ right: 10 })
         .onClick(() => {
-          const uiContext: UIContext | undefined = AppStorage.get('context');
           const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在App Gallery搜索，或者去github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/找到它');
           const systemPasteboard = pasteboard.getSystemPasteboard();
           systemPasteboard.setData(pasteboardData);

@@ -423,10 +423,10 @@ struct Index {
 
           if (this.showRecentCourse) {
             Divider();
-            if (this.todayCourse.length == 0) {
+            if (this.todayCourse.length === 0) {
               Column() {
                 Image($r('app.media.no_course_today'))
-                  .height(50)
+                  .height(75)
                   .draggable(false)
                 Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'));
               }
@@ -494,7 +494,7 @@ struct Index {
 
                   if (index < this.todayCourse.length - 1) {
                     Divider()
-                      .width('95%');
+                      .width('90%');
                   }
                 }
               });
@@ -521,7 +521,7 @@ struct Index {
               ForEach(this.tomorrowCourse, (course: classAttribute, index) => {
                 if (index > 0) {
                   Divider()
-                    .width('95%');
+                    .width('90%');
                 }
                 Row() {
                   Column() {
@@ -610,102 +610,102 @@ struct Index {
             this.getUIContext().getRouter().pushUrl({ url: 'pages/ExamDetail' })
               .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
           })
-          ForEach(this.exams, (singleExam: examAttribute, index) => {
-            Divider().width(index == 0 ? '100%' : '95%')
-            Row() {
-              if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
-                Column() {
+
+          if (this.showExamDetail) {
+            Divider();
+            if (this.exams.length === 0) {
+              Column() {
+                Image($r('app.media.no_exam1'))
+                  .height(75)
+                  .draggable(false)
+                Text($r('app.string.no_exam_info1'));
+              }
+              .margin({ top: 12, bottom: 12 });
+            } else {
+              ForEach(this.exams, (singleExam: examAttribute, index: number) => {
+                Row() {
+                  if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
+                    Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
+                      Row() {
+                        Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
+                          .fontSize(36)
+                          .fontWeight(FontWeight.Bold)
+                          .fontColor($r('app.color.green'))
+                        Text($r('app.string.day'))
+                          .fontColor($r('app.color.green'))
+                          .lineSpacing({ value: 5, unit: LengthUnit.FP })
+                          .maxFontSize(18)
+                          .fontWeight(FontWeight.Bold)
+                          .padding({ bottom: 5 })
+                      }
+                      .alignItems(VerticalAlign.Bottom)
+
+                      Row() {
+                        Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
+                          .fontSize(28)
+                          .fontWeight(FontWeight.Bold)
+                          .fontColor($r('app.color.hour'))
+                        Text($r('app.string.hour'))
+                          .fontColor($r('app.color.hour'))
+                          .fontSize(14)
+                          .fontWeight(FontWeight.Bold)
+                          .padding({ bottom: 5 })
+                      }
+                      .alignItems(VerticalAlign.Bottom)
+                    }
+                    .width('30%');
+                  } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
+                    Text($r('app.string.exam_processing'))
+                      .fontSize(20)
+                      .fontColor($r('app.color.transparent_text'))
+                      .width('30%')
+                      .textAlign(TextAlign.Start);
+                  } else {
+                    Text($r('app.string.exam_ended'))
+                      .fontSize(20)
+                      .fontColor($r('app.color.transparent_text'))
+                      .width('30%')
+                      .textAlign(TextAlign.Start);
+                  }
+
                   Column() {
                     Row() {
-                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
-                        .fontSize(36)
+                      Text(singleExam.name + '  ')
+                        .fontSize(18)
                         .fontWeight(FontWeight.Bold)
-                        .fontColor($r('app.color.green'))
-                      Text($r('app.string.day'))
-                        .fontColor($r('app.color.green'))
-                        .lineSpacing({ value: 5, unit: LengthUnit.FP })
-                        .maxFontSize(18)
-                        .fontWeight(FontWeight.Bold)
-                        .padding({ bottom: 5 })
+                        .margin({ bottom: 5 })
+                      Text(singleExam.type)
+                        .fontSize(18)
+                        .margin({ bottom: 5 })
                     }
-                    .alignItems(VerticalAlign.Bottom)
 
-                    Row() {
-                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
-                        .fontSize(28)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor($r('app.color.hour'))
-                      Text($r('app.string.hour'))
-                        .fontColor($r('app.color.hour'))
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Bold)
-                        .padding({ bottom: 5 })
-                    }
-                    .alignItems(VerticalAlign.Bottom)
-
-                    Row() {
-                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2).toString())
-                        .fontSize(28)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor($r('app.color.minute'))
-                      Text($r('app.string.minute'))
-                        .fontColor($r('app.color.minute'))
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Bold)
-                        .padding({ bottom: 5 })
-                    }
-                    .alignItems(VerticalAlign.Bottom)
+                    Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
+                      .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None : Visibility.Visible);
+                    Text(`\udb80\udfdc ${singleExam.date}`)
+                      .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible);
+                    Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
+                      .visibility(singleExam.id + singleExam.info == '' ? Visibility.None : Visibility.Visible);
                   }
-                  .alignItems(HorizontalAlign.End);
+                  .width('70%')
+                  .alignItems(HorizontalAlign.Start);
                 }
-                .width('25%')
-                .alignItems(HorizontalAlign.Center);
-              } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
-                Text($r('app.string.exam_processing'))
-                  .fontSize(20)
-                  .fontColor($r('app.color.transparent_text'))
-                  .width('25%')
-                  .textAlign(TextAlign.Start);
-              } else {
-                Text($r('app.string.exam_ended'))
-                  .fontSize(20)
-                  .fontColor($r('app.color.transparent_text'))
-                  .width('25%')
-                  .textAlign(TextAlign.Start);
-              }
+                .width('90%')
+                .margin({ top: 7, bottom: 7 })
+                .borderRadius(20);
 
-              Column() {
-                Row() {
-                  Text(singleExam.name + '  ')
-                    .fontSize(18)
-                    .fontWeight(FontWeight.Bold)
-                    .margin({ bottom: 5 })
-                  Text(singleExam.type)
-                    .fontSize(18)
-                    .margin({ bottom: 5 })
+                if (index < this.exams.length - 1) {
+                  Divider().width('90%');
                 }
-                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
-                  .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None: Visibility.Visible);
-                Text(`\udb80\udfdc ${singleExam.date}`)
-                  .visibility(singleExam.date == '' ? Visibility.None: Visibility.Visible);
-                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
-                  .visibility(singleExam.id + singleExam.info == '' ? Visibility.None: Visibility.Visible);
-              }
-              .width('75%')
-              .alignItems(HorizontalAlign.Start)
-              .padding({ left: 10 })
+              })
             }
-            .backgroundColor($r('app.color.grid_background'))
-            .borderRadius(20);
-          })
+          }
         }
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5 })
+      .margin({ top: 5, bottom: 10 })
       .backgroundColor($r('app.color.grid_background'));
     }
-    .scrollBar(BarState.Off)
     .width('100%')
     .height('100%')
     .padding({ top: 20, left: 15, right: 15 })
@@ -1023,7 +1023,6 @@ struct Index {
         .visibility(Visibility.Hidden)
         .height('50vp')
     }
-    .scrollBar(BarState.Off)
     .height('100%')
     .width('100%')
     .padding({ top: 20, left: 15, right: 15 })

@@ -318,7 +318,7 @@
     },
     {
       "name": "class_finish_today",
-      "value": "今天的课都上完了~"
+      "value": "啊~今天的课都上完了"
     },
     {
       "name": "tomorrow_class",
@@ -433,8 +433,12 @@
       "value": "分"
     },
     {
-      "name": "no_exam_info",
-      "value": "暂无考试信息"
+      "name": "no_exam_info1",
+      "value": "嘿嘿 最近——没·考·试！"
+    },
+    {
+      "name": "no_exam_info2",
+      "value": "呼~考试都结束了？还是说…\n你没去右上角添加考试信息？"
     },
     {
       "name": "exam_processing",
@@ -483,6 +487,22 @@
     {
       "name": "dangerous_behavior",
       "value": "以上操作不可逆！"
+    },
+    {
+      "name": "import_schedule",
+      "value": "从剪贴板导入课表"
+    },
+    {
+      "name": "export_schedule",
+      "value": "导出课表到剪贴板"
+    },
+    {
+      "name": "import_exam",
+      "value": "从剪贴板导入考试"
+    },
+    {
+      "name": "export_exam",
+      "value": "导出考试到剪贴板"
     },
     {
       "name": "delete_all_data",

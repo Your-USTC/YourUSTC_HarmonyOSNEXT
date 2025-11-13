@@ -117,26 +117,22 @@ struct ExamDetail {
       .backgroundColor($r('app.color.shaded_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
-      List() {
-        ListItem() {
-          Column() {
-            Image($r('app.media.course_finish_today'))
-              .width(100)
-              .draggable(false)
-            Text($r('app.string.no_exam_info')).fontSize(18).padding({ top: 10 });
-          }
-          .justifyContent(FlexAlign.Center)
+      if (this.examInfo.length === 0) {
+        Column() {
+          Image($r('app.media.no_exam2'))
+            .width(100)
+            .draggable(false)
+          Text($r('app.string.no_exam_info2')).fontSize(18);
         }
-        .width('100%')
-        .height('100%')
-        .visibility(this.examInfo.length == 0 ? Visibility.Visible : Visibility.None)
-
-        ForEach(this.examInfo, (singleExam: examAttribute) => {
-          ListItem() {
-            Row() {
-              if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
-                Column() {
-                  Column() {
+        .height('80%')
+        .justifyContent(FlexAlign.Center);
+      } else {
+        List() {
+          ForEach(this.examInfo, (singleExam: examAttribute) => {
+            ListItem() {
+              Row() {
+                if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
+                  Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                     Row() {
                       Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
                         .fontSize(36)
@@ -177,115 +173,120 @@ struct ExamDetail {
                     }
                     .alignItems(VerticalAlign.Bottom)
                   }
-                  .alignItems(HorizontalAlign.End);
+                  .width('30%');
+                } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
+                  Text($r('app.string.exam_processing'))
+                    .fontSize(20)
+                    .fontColor($r('app.color.transparent_text'))
+                    .width('30%')
+                    .textAlign(TextAlign.Start);
+                } else {
+                  Text($r('app.string.exam_ended'))
+                    .fontSize(20)
+                    .fontColor($r('app.color.transparent_text'))
+                    .width('30%')
+                    .textAlign(TextAlign.Start);
                 }
-                .width('25%')
-                .alignItems(HorizontalAlign.Center);
-              } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
-                Text($r('app.string.exam_processing'))
-                  .fontSize(20)
-                  .fontColor($r('app.color.transparent_text'))
-                  .width('25%')
-                  .textAlign(TextAlign.Start);
-              } else {
-                Text($r('app.string.exam_ended'))
-                  .fontSize(20)
-                  .fontColor($r('app.color.transparent_text'))
-                  .width('25%')
-                  .textAlign(TextAlign.Start);
-              }
 
-              Column() {
-                Row() {
-                  Text(singleExam.name + '  ')
-                    .fontSize(18)
-                    .fontWeight(FontWeight.Bold)
-                    .margin({ bottom: 5 })
-                  Text(singleExam.type)
-                    .fontSize(18)
-                    .margin({ bottom: 5 })
+                Column() {
+                  Row() {
+                    Text(singleExam.name + '  ')
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Bold)
+                      .margin({ bottom: 5 })
+                    Text(singleExam.type)
+                      .fontSize(18)
+                      .margin({ bottom: 5 })
+                  }
+
+                  Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
+                    .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None :
+                      Visibility.Visible);
+                  Text(`\udb80\udfdc ${singleExam.date}`)
+                    .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible);
+                  Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
+                    .visibility(singleExam.id + singleExam.info == '' ? Visibility.None : Visibility.Visible);
                 }
-                Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
-                  .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None: Visibility.Visible);
-                Text(`\udb80\udfdc ${singleExam.date}`)
-                  .visibility(singleExam.date == '' ? Visibility.None: Visibility.Visible);
-                Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
-                  .visibility(singleExam.id + singleExam.info == '' ? Visibility.None: Visibility.Visible);
+                .width('70%')
+                .alignItems(HorizontalAlign.Start)
+                .padding({ left: 10 })
               }
-              .width('75%')
-              .alignItems(HorizontalAlign.Start)
-              .padding({ left: 10 })
+              .backgroundColor($r('app.color.grid_background'))
+              .borderRadius(20);
             }
-            .backgroundColor($r('app.color.grid_background'))
-            .borderRadius(20);
-          }
-          .width('90%')
-          .padding({ top: 10, bottom: 10, left: 16, right: 16 })
-          .margin({ top: 7, bottom: 7 })
-          .backgroundColor($r('app.color.grid_background'))
-          .borderRadius(20)
-          .onClick(() => {
-            let oriExam: examAttribute = {
-              id: singleExam.id,
-              type: singleExam.type,
-              name: singleExam.name,
-              date: singleExam.date,
-              classroom: singleExam.classroom,
-              building: singleExam.building,
-              campus: singleExam.campus,
-              info: singleExam.info,
-              beginTimeStamp: singleExam.beginTimeStamp,
-              endTimeStamp: singleExam.endTimeStamp
-            };
-            let editExam: examAttribute = {
-              id: singleExam.id,
-              type: singleExam.type,
-              name: singleExam.name,
-              date: singleExam.date,
-              classroom: singleExam.classroom,
-              building: singleExam.building,
-              campus: singleExam.campus,
-              info: singleExam.info,
-              beginTimeStamp: singleExam.beginTimeStamp,
-              endTimeStamp: singleExam.endTimeStamp
-            };
-            this.showExamDetail = null;
-            this.showExamDetail = new CustomDialogController({
-              builder: ClassDetailDialog({
-                toChange: this.examInfo,
-                oriExamInfo: oriExam,
-                examInfo: editExam,
-                isChangeSchedule: true,
-                date: oriExam.date.slice(0, 10),
-                startHour: Number(oriExam.date.slice(11, 13)),
-                startMinute: Number(oriExam.date.slice(14, 16)),
-                endHour: Number(oriExam.date.slice(17, 19)),
-                endMinute: Number(oriExam.date.slice(20, 22))
-              }),
-              autoCancel: true,
-              gridCount: 4,
-              onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
-                if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-                  dismissDialogAction.dismiss();
-                }
-                if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
-                  dismissDialogAction.dismiss();
-                }
-              }
+            .width('90%')
+            .padding({
+              top: 10,
+              bottom: 10,
+              left: 16,
+              right: 16
             })
-            if (this.showExamDetail != null) {
-              this.showExamDetail.open();
-            }
+            .margin({ top: 7, bottom: 7 })
+            .backgroundColor($r('app.color.grid_background'))
+            .borderRadius(20)
+            .onClick(() => {
+              let oriExam: examAttribute = {
+                id: singleExam.id,
+                type: singleExam.type,
+                name: singleExam.name,
+                date: singleExam.date,
+                classroom: singleExam.classroom,
+                building: singleExam.building,
+                campus: singleExam.campus,
+                info: singleExam.info,
+                beginTimeStamp: singleExam.beginTimeStamp,
+                endTimeStamp: singleExam.endTimeStamp
+              };
+              let editExam: examAttribute = {
+                id: singleExam.id,
+                type: singleExam.type,
+                name: singleExam.name,
+                date: singleExam.date,
+                classroom: singleExam.classroom,
+                building: singleExam.building,
+                campus: singleExam.campus,
+                info: singleExam.info,
+                beginTimeStamp: singleExam.beginTimeStamp,
+                endTimeStamp: singleExam.endTimeStamp
+              };
+              this.showExamDetail = null;
+              this.showExamDetail = new CustomDialogController({
+                builder: ClassDetailDialog({
+                  toChange: this.examInfo,
+                  oriExamInfo: oriExam,
+                  examInfo: editExam,
+                  isChangeSchedule: true,
+                  date: oriExam.date.slice(0, 10),
+                  startHour: Number(oriExam.date.slice(11, 13)),
+                  startMinute: Number(oriExam.date.slice(14, 16)),
+                  endHour: Number(oriExam.date.slice(17, 19)),
+                  endMinute: Number(oriExam.date.slice(20, 22))
+                }),
+                autoCancel: true,
+                gridCount: 4,
+                onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+                  if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+                    dismissDialogAction.dismiss();
+                  }
+                  if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+                    dismissDialogAction.dismiss();
+                  }
+                }
+              })
+              if (this.showExamDetail != null) {
+                this.showExamDetail.open();
+              }
+            });
           });
-        });
 
+        }
+        .width('100%')
+        .height('100%')
+        .alignListItem(ListItemAlign.Center)
+        .scrollBar(BarState.Auto)
+        .padding({ top: 7, bottom: 48 })
+        .backgroundColor($r('app.color.normal_background'))
       }
-      .width('100%')
-      .height('100%')
-      .alignListItem(ListItemAlign.Center)
-      .scrollBar(BarState.Auto)
-      .padding({ top: 7, bottom: 48 })
-      .backgroundColor($r('app.color.normal_background'))
     }
     .height('100%')
     .width('100%')

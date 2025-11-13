@@ -49,10 +49,7 @@ struct Webview {
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
             if (this.obtainedData.startTime !== '0') {
-              this.getUIContext().getRouter().back({
-                params: this.obtainedData,
-                url: 'pages/Schedule'
-              });
+              this.getUIContext().getRouter().back();
               return;
             }
             this.getUIContext().getRouter().back();
@@ -69,10 +66,7 @@ struct Webview {
                   if (this.webviewController.accessBackward()) {
                     this.webviewController.backward();
                   } else {
-                    this.getUIContext().getRouter().back({
-                      params: this.obtainedData,
-                      url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-                    });
+                    this.getUIContext().getRouter().back();
                   }
                 }),
               LongPressGesture()
@@ -105,20 +99,47 @@ struct Webview {
           .height(20)
           .draggable(false)
           .onClick(() => {
-            this.webviewController.runJavaScript(timeTableQueryJSShort, (error, result) => {
-              if (error) {
-                this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
-                return;
-              }
-              if (result === 'null') {
-                this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 3500 );
-                return;
-              }
-              this.gotTimeTable = true;
-              this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
-              console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
-              this.obtainedData.timeTable = result;
-            });
+            if (this.isTimeTablePage && !this.gotTimeTable) {
+              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                if (error) { /* 理论上这里不会出什么错误 */ return;}
+                this.obtainedData.startTime = result;
+              });
+              this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
+                if (error) {
+                  this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
+                  return;
+                }
+                if (result === 'null') {
+                  this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                  return;
+                }
+                this.gotTimeTable = true;
+                this.obtainedData.timeTable = result;
+                this.getUIContext().getRouter().back({
+                  params: this.obtainedData,
+                  url: 'pages/Schedule'
+                });
+              });
+            }
+            if (this.isExamInfoPage && !this.gotExamInfo) {
+              this.webviewController.runJavaScript(examInfoQueryJS, (error, result) => {
+                if (error) {
+                  this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
+                  return;
+                }
+                if (result === 'null') {
+                  this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
+                  return;
+                }
+                this.gotExamInfo = true;
+                this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
+                this.obtainedData.timeTable = result;
+                this.getUIContext().getRouter().back({
+                  params: this.obtainedData,
+                  url: 'pages/ExamDetail'
+                });
+              })
+            }
           })
       }
       .id('header')

@@ -22,52 +22,79 @@ struct FaultOccurred {
       Text($r('app.string.runtime_error'))
         .fontColor($r('app.color.normal_text'))
         .fontSize(20)
+        .margin({ bottom: 10 })
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
-      Button(this.button1Text)
-        .backgroundColor($r('app.color.red'))
-        .margin({ top: 20})
-        .onClick(() => {
-          this.button1ClickTimes++;
-          if (this.button1ClickTimes == 2) {
-            UnifiedPreferences.deleteSync(LAST_DAY_KEY);
-            UnifiedPreferences.deleteSync(TOTAL_DAYS_KEY);
-            UnifiedPreferences.deleteSync(CONSECUTIVE_DAYS_KEY);
-            UnifiedPreferences.deleteSync(SCHEDULE_KEY);
-            UnifiedPreferences.deleteSync(START_TIME_KEY);
-            this.button1Text = $r('app.string.clear_success');
-          } else if (this.button1ClickTimes == 1){
-            this.button1Text = $r('app.string.click_again_to_delete');
-          }
-        });
-      Button(this.button2Text)
-        .backgroundColor($r('app.color.red'))
-        .margin({ top: 20 })
-        .onClick(() => {
-          this.button2ClickTimes++;
-          if (this.button2ClickTimes == 2) {
-            UnifiedPreferences.clear();
-            this.button2Text = $r('app.string.clear_success');
-          } else if (this.button2ClickTimes == 1){
-            this.button2Text = $r('app.string.click_again_to_delete');
-          }
-        });
-      Button(this.button3Text)
-        .backgroundColor($r('app.color.red'))
-        .margin({ top: 20, bottom: 10 })
-        .onClick(() => {
-          this.button3ClickTimes++;
-          if (this.button3ClickTimes == 2) {
-            UnifiedPreferences.deleteSync('examInfo');
-            this.button3Text = $r('app.string.clear_success');
-          } else if (this.button3ClickTimes == 1){
-            this.button3Text = $r('app.string.click_again_to_delete');
-          }
-        });
+      Flex() {
+        Button(this.button1Text)
+          .backgroundColor($r('app.color.red'))
+          .onClick(() => {
+            this.button1ClickTimes++;
+            if (this.button1ClickTimes == 2) {
+              UnifiedPreferences.deleteSync(LAST_DAY_KEY);
+              UnifiedPreferences.deleteSync(TOTAL_DAYS_KEY);
+              UnifiedPreferences.deleteSync(CONSECUTIVE_DAYS_KEY);
+              UnifiedPreferences.deleteSync(SCHEDULE_KEY);
+              UnifiedPreferences.deleteSync(START_TIME_KEY);
+              this.button1Text = $r('app.string.clear_success');
+            } else if (this.button1ClickTimes == 1) {
+              this.button1Text = $r('app.string.click_again_to_delete');
+            }
+          });
+        Button(this.button2Text)
+          .backgroundColor($r('app.color.red'))
+          .margin({ left: 8 })
+          .onClick(() => {
+            this.button2ClickTimes++;
+            if (this.button2ClickTimes == 2) {
+              UnifiedPreferences.clear();
+              this.button2Text = $r('app.string.clear_success');
+            } else if (this.button2ClickTimes == 1) {
+              this.button2Text = $r('app.string.click_again_to_delete');
+            }
+          });
+        Button(this.button3Text)
+          .backgroundColor($r('app.color.red'))
+          .margin({ left: 8 })
+          .onClick(() => {
+            this.button3ClickTimes++;
+            if (this.button3ClickTimes == 2) {
+              UnifiedPreferences.deleteSync('examInfo');
+              this.button3Text = $r('app.string.clear_success');
+            } else if (this.button3ClickTimes == 1) {
+              this.button3Text = $r('app.string.click_again_to_delete');
+            }
+          });
+      }
+      .borderStyle(BorderStyle.Solid)
+      .width('auto')
+      .borderWidth(2)
+      .borderColor($r('app.color.red'))
+      .padding({ top: 10, bottom: 10, left: 10, right: 10 });
       Text($r('app.string.dangerous_behavior'))
         .fontSize(24)
         .fontWeight(FontWeight.Bolder)
         .fontColor($r('app.color.red'));
+      Row() {
+        Button($r('app.string.import_schedule'))
+          .margin({ right: 8 })
+          .buttonStyle(ButtonStyleMode.TEXTUAL)
+          .onClick(() => {});
+        Button($r('app.string.export_schedule'))
+          .buttonStyle(ButtonStyleMode.TEXTUAL)
+          .onClick(() => {});
+      }
+      .margin({ top: 10 });
+      Row() {
+        Button($r('app.string.import_exam'))
+          .margin({ right: 8 })
+          .buttonStyle(ButtonStyleMode.TEXTUAL)
+          .onClick(() => {});
+        Button($r('app.string.export_exam'))
+          .buttonStyle(ButtonStyleMode.TEXTUAL)
+          .onClick(() => {});
+      }
+      .margin({ top: 10 });
       Button($r('app.string.normal_restart'))
         .margin({ top: 10 })
         .onClick(() => {
@@ -81,7 +108,8 @@ struct FaultOccurred {
           })
         })
       Button($r('app.string.contact_developer'))
-        .margin({ top: 20})
+        .buttonStyle(ButtonStyleMode.NORMAL)
+        .margin({ top: 10})
         .onClick(() => {
           (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
             action: 'ohos.want.action.viewData',
