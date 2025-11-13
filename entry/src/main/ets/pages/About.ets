@@ -5,6 +5,10 @@ import { LengthUnit } from '@kit.ArkUI'
 @Component
 struct About {
 
+  private context = this.getUIContext()
+  private iconClickTime: number = 0
+  @State isShowEggImage: boolean = false
+
   build() {
 
     Column() {
@@ -13,6 +17,13 @@ struct About {
         .height(100)
         .width(100)
         .draggable(false)
+        .onClick(() => {
+          this.iconClickTime++
+          if (this.iconClickTime >= 6) {
+            this.isShowEggImage = true
+          }
+        })
+        .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
 
       Text($r('app.string.app_name'))
         .fontSize(36)
@@ -28,7 +39,7 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
               params: {
                 title: $r('app.string.homepage'),
@@ -48,7 +59,7 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
               params: {
                 title: $r('app.string.terms_of_use'),
@@ -68,7 +79,7 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
               params: {
                 title: $r('app.string.privacy_policy'),
@@ -92,5 +103,20 @@ struct About {
     .backgroundColor($r('app.color.normal_background'))
     .padding({ bottom: 40 })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  EggImage() {
+    Image($rawfile('nic.png'))
+      .width('100%')
+      .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .objectFit(ImageFit.Contain)
+      .backgroundColor($r('app.color.shaded_background'))
+      .draggable(false)
+      .onDisAppear(() => {
+        this.iconClickTime = 0
+        this.isShowEggImage = false
+      })
   }
 }
