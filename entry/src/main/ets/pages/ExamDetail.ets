@@ -135,59 +135,63 @@ struct ExamDetail {
           ListItem() {
             Row() {
               if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
-                Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
-                  Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
-                      .fontSize(36)
-                      .fontWeight(FontWeight.Bold)
-                      .fontColor($r('app.color.green'))
-                    Text($r('app.string.day'))
-                      .fontColor($r('app.color.green'))
-                      .lineSpacing({ value: 5, unit: LengthUnit.FP })
-                      .maxFontSize(18)
-                      .fontWeight(FontWeight.Bold)
-                      .padding({ bottom: 5 })
-                  }
-                  .alignItems(VerticalAlign.Bottom)
+                Column() {
+                  Column() {
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 0).toString())
+                        .fontSize(36)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.green'))
+                      Text($r('app.string.day'))
+                        .fontColor($r('app.color.green'))
+                        .lineSpacing({ value: 5, unit: LengthUnit.FP })
+                        .maxFontSize(18)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
 
-                  Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
-                      .fontSize(28)
-                      .fontWeight(FontWeight.Bold)
-                      .fontColor($r('app.color.hour'))
-                    Text($r('app.string.hour'))
-                      .fontColor($r('app.color.hour'))
-                      .fontSize(14)
-                      .fontWeight(FontWeight.Bold)
-                      .padding({ bottom: 5 })
-                  }
-                  .alignItems(VerticalAlign.Bottom)
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
+                        .fontSize(28)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.hour'))
+                      Text($r('app.string.hour'))
+                        .fontColor($r('app.color.hour'))
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
 
-                  Row() {
-                    Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2).toString())
-                      .fontSize(28)
-                      .fontWeight(FontWeight.Bold)
-                      .fontColor($r('app.color.minute'))
-                    Text($r('app.string.minute'))
-                      .fontColor($r('app.color.minute'))
-                      .fontSize(14)
-                      .fontWeight(FontWeight.Bold)
-                      .padding({ bottom: 5 })
+                    Row() {
+                      Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2).toString())
+                        .fontSize(28)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor($r('app.color.minute'))
+                      Text($r('app.string.minute'))
+                        .fontColor($r('app.color.minute'))
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Bold)
+                        .padding({ bottom: 5 })
+                    }
+                    .alignItems(VerticalAlign.Bottom)
                   }
-                  .alignItems(VerticalAlign.Bottom)
+                  .alignItems(HorizontalAlign.End);
                 }
-                .width('30%');
+                .width('25%')
+                .alignItems(HorizontalAlign.Center);
               } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
                 Text($r('app.string.exam_processing'))
                   .fontSize(20)
                   .fontColor($r('app.color.transparent_text'))
-                  .width('30%')
+                  .width('25%')
                   .textAlign(TextAlign.Start);
               } else {
                 Text($r('app.string.exam_ended'))
                   .fontSize(20)
                   .fontColor($r('app.color.transparent_text'))
-                  .width('30%')
+                  .width('25%')
                   .textAlign(TextAlign.Start);
               }
 
@@ -208,7 +212,7 @@ struct ExamDetail {
                 Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
                   .visibility(singleExam.id + singleExam.info == '' ? Visibility.None: Visibility.Visible);
               }
-              .width('70%')
+              .width('75%')
               .alignItems(HorizontalAlign.Start)
               .padding({ left: 10 })
             }

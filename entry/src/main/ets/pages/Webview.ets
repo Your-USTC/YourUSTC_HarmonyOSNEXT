@@ -147,9 +147,7 @@ struct Webview {
             this.webviewController.terminateRenderProcess();
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
             this.webviewController.terminateRenderProcess();
-            this.getUIContext().getRouter().back({
-              url: 'pages/Index'
-            })
+            this.getUIContext().getRouter().back()
           })
         Image($r('app.media.back'))
           .padding(({ left: 12, right: 4 }))
