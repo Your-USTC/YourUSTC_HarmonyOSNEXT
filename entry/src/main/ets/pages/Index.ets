@@ -71,8 +71,11 @@ struct Index {
     .width('100%')
     .onClick(() => {
       this.currentIndex = index
-      this.tabsController.changeIndex(this.currentIndex)
-      this.refreshTabGrid(this.currentIndex)
+      this.tabsController.changeIndex(this.currentIndex);
+      if (this.currentIndex === 1) {
+        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+      }
     })
   }
 
@@ -173,15 +176,8 @@ struct Index {
 
   @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
   onPageShow(): void {
-    this.refreshTabGrid(1)
-  }
-  private async refreshTabGrid(tabIndex: number){
-    switch(tabIndex){
-      case 1:
-        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
-        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-        break;
-    }
+    FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+    this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
   }
 
   /**
@@ -765,14 +761,16 @@ struct Index {
                       } catch (error) {
                         console.error(`Preference load ERROR: [${error.name}] ${error.message}`);
                       }
-                      this.refreshTabGrid(1);
+                      FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+                      this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
                     }
                   })
                   break;
                 case 4:
                   // 重置最近使用
                   FunctionOrder.resetFunc(this.context);
-                  this.refreshTabGrid(1);
+                  FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+                  this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
                   try {
                     this.showMessage($r('app.string.have_cleared'), 500);
                   } catch (error) {
@@ -1016,6 +1014,10 @@ struct Index {
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;
+      if (this.currentIndex === 1) {
+        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+      }
     })
   }
 }
