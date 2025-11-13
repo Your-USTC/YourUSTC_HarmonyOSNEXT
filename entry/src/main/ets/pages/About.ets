@@ -1,13 +1,29 @@
 
+import { LengthUnit } from '@kit.ArkUI'
+
 @Entry
 @Component
 struct About {
 
+  private context = this.getUIContext()
+  private iconClickTime: number = 0
+  @State isShowEggImage: boolean = false
+
   build() {
+
     Column() {
+
       Image($r('app.media.icon_round'))
         .height(100)
         .width(100)
+        .draggable(false)
+        .onClick(() => {
+          this.iconClickTime++
+          if (this.iconClickTime >= 6) {
+            this.isShowEggImage = true
+          }
+        })
+        .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
 
       Text($r('app.string.app_name'))
         .fontSize(36)
@@ -23,9 +39,12 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.homepage'), url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'}
+              params: {
+                title: $r('app.string.homepage'),
+                url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -40,9 +59,12 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.terms_of_use'), url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/blob/main/LICENSE'}
+              params: {
+                title: $r('app.string.terms_of_use'),
+                url: $rawfile('TermsOfUse.html')
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -57,9 +79,12 @@ struct About {
             color: $r('app.color.active_text')
           })
           .onClick(() => {
-            this.getUIContext().getRouter().pushUrl({
+            this.context.getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.privacy_policy'), url: 'https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1802923490693635520'}
+              params: {
+                title: $r('app.string.privacy_policy'),
+                url: $rawfile('PrivacyPolicy.html')
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -69,13 +94,29 @@ struct About {
 
       Text($r('app.string.credits'))
         .textAlign(TextAlign.Center)
+        .lineSpacing({ value: 5, unit: LengthUnit.FP })
         .margin({ top: 20 })
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
-    .backgroundColor($r('app.color.grid_background'))
+    .backgroundColor($r('app.color.normal_background'))
     .padding({ bottom: 40 })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  EggImage() {
+    Image($rawfile('nic.png'))
+      .width('100%')
+      .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .objectFit(ImageFit.Contain)
+      .backgroundColor($r('app.color.shaded_background'))
+      .draggable(false)
+      .onDisAppear(() => {
+        this.iconClickTime = 0
+        this.isShowEggImage = false
+      })
   }
 }

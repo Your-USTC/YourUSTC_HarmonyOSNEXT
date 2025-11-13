@@ -16,7 +16,9 @@ struct FaultOccurred {
 
   build() {
     Column() {
-      Image($r('app.media.fault_occurred')).height(100) // 仅占位
+      Image($r('app.media.fault_occurred'))    // 仅占位
+        .height(100)
+        .draggable(false)
       Text($r('app.string.runtime_error'))
         .fontColor($r('app.color.normal_text'))
         .fontSize(20)

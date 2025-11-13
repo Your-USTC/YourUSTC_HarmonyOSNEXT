@@ -3,6 +3,8 @@ import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { visionBase } from '@kit.CoreVisionKit'
+import { LengthUnit } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
@@ -17,7 +19,6 @@ import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
-import { visionBase } from '@kit.CoreVisionKit'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -59,6 +60,7 @@ struct Index {
         .width(24)
         .height(24)
         .objectFit(ImageFit.Contain)
+        .draggable(false)
       // 按钮文字
       Text(title)
         .margin({ top: 4 })
@@ -192,10 +194,8 @@ struct Index {
       Row() {
         Image(item.img)
           .height('22vp')
-          .margin({
-            left: '16vp',
-            right: '12vp'
-          })
+          .margin({ left: '16vp', right: '12vp' })
+          .draggable(false)
         Text(item.title)
           .fontSize('16fp')
           .fontColor($r('app.color.normal_text'))
@@ -205,6 +205,7 @@ struct Index {
         Image($r('app.media.right_arrow'))
           .width('12vp')
           .height('12vp')
+          .draggable(false)
       } else if (item.id == 0) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
           .onClick(() => {
@@ -319,6 +320,7 @@ struct Index {
                 .fontWeight(FontWeight.Bold)
                 .textShadow({ radius: 1 })
                 .textIndent(40)
+                .lineSpacing({ value: 10, unit: LengthUnit.FP })
             }
             .width('80%')
             .margin({ bottom: 10 })
@@ -367,7 +369,10 @@ struct Index {
           Row() {
             if (this.showRecentCourse) {
               Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-                Image($r('app.media.refresh')).height(20).width(20);
+                Image($r('app.media.refresh'))
+                  .height(20)
+                  .width(20)
+                  .draggable(false)
               }
               .height(36)
               .width(36)
@@ -408,6 +413,7 @@ struct Index {
               .width(28)
               .margin({ left: 8 })
               .objectFit(ImageFit.Contain)
+              .draggable(false)
           }
           .width('100%')
           .padding({ left: 8, right: 8, top: 8, bottom: 8 })
@@ -421,7 +427,8 @@ struct Index {
             if (this.todayCourse.length == 0) {
               Column() {
                 Image($r('app.media.no_course_today'))
-                  .height(50);
+                  .height(50)
+                  .draggable(false)
                 Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'));
               }
               .margin({ top: 12, bottom: 12 });
@@ -495,7 +502,8 @@ struct Index {
               if (this.isTodayCourseEnd) {
                 Column() {
                   Image($r('app.media.course_finish_today'))
-                    .height(50);
+                    .height(50)
+                    .draggable(false)
                   Text($r('app.string.class_finish_today'));
                 }
                 .margin({ top: 12, bottom: 12 });
@@ -566,7 +574,10 @@ struct Index {
           Row() {
             if (this.showExamDetail) {
               Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-                Image($r('app.media.refresh')).height(20).width(20);
+                Image($r('app.media.refresh'))
+                  .height(20)
+                  .width(20)
+                  .draggable(false)
               }
               .height(36)
               .width(36)
@@ -595,6 +606,7 @@ struct Index {
               .width(28)
               .margin({ left: 8 })
               .objectFit(ImageFit.Contain)
+              .draggable(false)
           }
           .width('100%')
           .padding({ left: 8, right: 8, top: 8, bottom: 8 })
@@ -609,6 +621,7 @@ struct Index {
       .margin({ top: 5 })
       .backgroundColor($r('app.color.grid_background'));
     }
+    .scrollBar(BarState.Off)
     .width('100%')
     .height('100%')
     .padding({ top: 20, left: 15, right: 15 })

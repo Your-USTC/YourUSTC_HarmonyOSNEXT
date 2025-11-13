@@ -33,12 +33,14 @@ struct ExamDetail {
         Image($r('app.media.close'))
           .padding({ left: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.context.getRouter().back();
           })
         Image($r('app.media.refresh'))
           .padding({ left: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => {
             examManager.readStoredExam();
             this.currentTime = new Date();
@@ -56,6 +58,7 @@ struct ExamDetail {
         Image($r('app.media.plus_square'))
           .padding({right: 12})
           .height(20)
+          .draggable(false)
           .onClick(() => {
             let editExam: examAttribute = {
               id: '',
@@ -100,6 +103,7 @@ struct ExamDetail {
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.context.getRouter().pushUrl({
               url: 'pages/GetSchedule',
@@ -116,7 +120,9 @@ struct ExamDetail {
       List() {
         ListItem() {
           Column() {
-            Image($r('app.media.course_finish_today')).width(100);
+            Image($r('app.media.course_finish_today'))
+              .width(100)
+              .draggable(false)
             Text($r('app.string.no_exam_info')).fontSize(18).padding({ top: 10 });
           }
           .justifyContent(FlexAlign.Center)
@@ -302,7 +308,10 @@ struct ClassDetailDialog {
       Row() {
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.trash_red')).width(24).height(24);
+            Image($r('app.media.trash_red'))
+              .width(24)
+              .height(24)
+              .draggable(false)
           }
           .onClick(() => {
             examManager.deleteExam(this.oriExamInfo);
@@ -325,7 +334,10 @@ struct ClassDetailDialog {
         Blank();
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.copy')).width(24).height(24);
+            Image($r('app.media.copy'))
+              .width(24)
+              .height(24)
+              .draggable(false)
           }
           .onClick(() => {
             if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute){
