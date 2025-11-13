@@ -1,10 +1,14 @@
 
+import { LengthUnit } from '@kit.ArkUI'
+
 @Entry
 @Component
 struct About {
 
   build() {
+
     Column() {
+
       Image($r('app.media.icon_round'))
         .height(100)
         .width(100)
@@ -25,7 +29,10 @@ struct About {
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.homepage'), url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'}
+              params: {
+                title: $r('app.string.homepage'),
+                url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -42,7 +49,10 @@ struct About {
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.terms_of_use'), url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/blob/main/LICENSE'}
+              params: {
+                title: $r('app.string.terms_of_use'),
+                url: $rawfile('TermsOfUse.html')
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -59,7 +69,10 @@ struct About {
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
               url: 'pages/Webview',
-              params: { title: $r('app.string.privacy_policy'), url: 'https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1802923490693635520'}
+              params: {
+                title: $r('app.string.privacy_policy'),
+                url: $rawfile('PrivacyPolicy.html')
+              }
             }).catch((err: Error) => {
               console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
@@ -69,12 +82,13 @@ struct About {
 
       Text($r('app.string.credits'))
         .textAlign(TextAlign.Center)
+        .lineSpacing({ value: 5, unit: LengthUnit.FP })
         .margin({ top: 20 })
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
-    .backgroundColor($r('app.color.grid_background'))
+    .backgroundColor($r('app.color.normal_background'))
     .padding({ bottom: 40 })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }

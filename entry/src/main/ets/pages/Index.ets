@@ -3,6 +3,8 @@ import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { visionBase } from '@kit.CoreVisionKit'
+import { LengthUnit } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
@@ -17,7 +19,6 @@ import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
-import { visionBase } from '@kit.CoreVisionKit'
 
 // 日历初始化
 let calendar: calendarManager.Calendar | undefined = undefined;
@@ -319,6 +320,7 @@ struct Index {
                 .fontWeight(FontWeight.Bold)
                 .textShadow({ radius: 1 })
                 .textIndent(40)
+                .lineSpacing({ value: 10, unit: LengthUnit.FP })
             }
             .width('80%')
             .margin({ bottom: 10 })
@@ -609,6 +611,7 @@ struct Index {
       .margin({ top: 5 })
       .backgroundColor($r('app.color.grid_background'));
     }
+    .scrollBar(BarState.Off)
     .width('100%')
     .height('100%')
     .padding({ top: 20, left: 15, right: 15 })
