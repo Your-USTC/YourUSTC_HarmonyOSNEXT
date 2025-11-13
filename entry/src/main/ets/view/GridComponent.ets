@@ -32,6 +32,7 @@ export default struct GridComponent {
                 .objectFit(ImageFit.Contain)
                 .width('40vp')
                 .height('40vp')
+                .draggable(false)
               Text(item)
                 .fontSize('12fp')
                 .textAlign(TextAlign.Center)

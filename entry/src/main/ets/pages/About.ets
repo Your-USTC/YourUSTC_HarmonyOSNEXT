@@ -12,6 +12,7 @@ struct About {
       Image($r('app.media.icon_round'))
         .height(100)
         .width(100)
+        .draggable(false)
 
       Text($r('app.string.app_name'))
         .fontSize(36)

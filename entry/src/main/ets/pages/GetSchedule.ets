@@ -45,6 +45,7 @@ struct Webview {
         Image($r('app.media.close'))
           .padding({ left: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
             if (this.obtainedData.startTime !== '0') {
@@ -97,10 +98,12 @@ struct Webview {
         Image($r('app.media.refresh'))
           .padding({ right: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => this.webviewController.refresh())
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.webviewController.runJavaScript(timeTableQueryJSShort, (error, result) => {
               if (error) {

@@ -107,6 +107,7 @@ struct Schedule {
         Image($r('app.media.close'))
           .padding({left: 12, right: 32})
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.getUIContext().getRouter().back()
           })
@@ -123,6 +124,7 @@ struct Schedule {
         Image($r('app.media.plus_square'))
           .padding({right: 12})
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.ShowClassDetail = null;
             this.ShowClassDetail = new CustomDialogController({
@@ -150,6 +152,7 @@ struct Schedule {
         Image($r('app.media.get'))
           .padding({right: 12})
           .height(20)
+          .draggable(false)
           .onClick(() => {
             this.getUIContext().getRouter().pushUrl({
               url: 'pages/GetSchedule',
@@ -182,6 +185,7 @@ struct Schedule {
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)
+          .draggable(false)
           .onClick(() => {
             if (this.weekDisplayed > 1) {
               this.weekDisplayed--;
@@ -200,6 +204,7 @@ struct Schedule {
           .height(18)
           .width(40)
           .objectFit(ImageFit.Contain)
+          .draggable(false)
           .onClick(() => {
             if (this.weekDisplayed < 20) {
               this.weekDisplayed++;
@@ -419,7 +424,9 @@ struct Schedule {
           GridItem({style:GridItemStyle.NONE}){
             Column() {
               Image($r('app.media.no_course_this_week'))
-                .height(100).width(100);
+                .height(100)
+                .width(100)
+                .draggable(false)
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center);
             }
           }
@@ -547,7 +554,10 @@ struct ClassDetailDialog {
       Row() {
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.trash_red')).width(24).height(24);
+            Image($r('app.media.trash_red'))
+              .width(24)
+              .height(24)
+              .draggable(false)
           }
           .onClick(() => {
             scheduleManager.deleteSchedule(this.oriClassInfo);
@@ -570,7 +580,10 @@ struct ClassDetailDialog {
         Blank();
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.copy')).width(24).height(24);
+            Image($r('app.media.copy'))
+              .width(24)
+              .height(24)
+              .draggable(false)
           }
           .onClick(() => {
             this.classInfo.weekOfTerm = [];
