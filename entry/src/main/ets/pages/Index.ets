@@ -734,8 +734,7 @@ struct Index {
               }, (item: GridData,index:number) => index + JSON.stringify(item))
             }
             .padding({ bottom: '40vp' })
-            .width('100%')
-            .edgeEffect(EdgeEffect.None)
+            .edgeEffect(EdgeEffect.Spring)
             .scrollBar(BarState.Off)
             .onReachStart(() => {
               this.listPosition = ScrollPosition.start;

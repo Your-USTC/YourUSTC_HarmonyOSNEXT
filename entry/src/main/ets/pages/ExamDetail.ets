@@ -17,12 +17,19 @@ struct ExamDetail {
   }
 
   onPageShow(): void {
-    const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
-    if (routerParams != undefined && routerParams.timeTable != '') {
-      examManager.storeExam(JSON.parse(routerParams.timeTable));
+    try {
+      const routerParams = this.getUIContext().getRouter().getParams() as obtainedData;
+      if (routerParams != undefined && routerParams.timeTable != '') {
+        examManager.storeExam(JSON.parse(routerParams.timeTable));
+      }
+      examManager.readStoredExam();
+      this.examInfo = examManager.allExamInfo;
+    } catch (error) {
+      examManager.readStoredExam();
+      this.currentTime = new Date();
+      this.examInfo = examManager.allExamInfo;
+      console.error(`onPageShow ERROR: [${error.name}] ${error.message}`);
     }
-    examManager.readStoredExam();
-    this.examInfo = examManager.allExamInfo;
   }
 
   build() {

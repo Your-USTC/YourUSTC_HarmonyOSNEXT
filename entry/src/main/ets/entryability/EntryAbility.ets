@@ -15,8 +15,6 @@ const DOMAIN = 0x0000;
 
 // 日历相关
 export let calendarMgr: calendarManager.CalendarManager | null = null;
-export let mContext: common.UIAbilityContext | null = null;
-
 export default class EntryAbility extends UIAbility {
   routerPath: string = '';
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -62,12 +60,11 @@ export default class EntryAbility extends UIAbility {
     }
 
     // 日历相关
-    mContext = this.context;
     const permissions: Permissions[] = ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR'];
     let atManager = abilityAccessCtrl.createAtManager();
-    atManager.requestPermissionsFromUser(mContext, permissions).then((result: PermissionRequestResult) => {
+    atManager.requestPermissionsFromUser(this.context, permissions).then((result: PermissionRequestResult) => {
       console.info(`成功获取权限: ${JSON.stringify(result)}`);
-      calendarMgr = calendarManager.getCalendarManager(mContext);
+      calendarMgr = calendarManager.getCalendarManager(this.context);
     }).catch((error: BusinessError) => {
       console.error(`获取权限失败。Code: ${error.code}, message: ${error.message}`);
     })
@@ -92,6 +89,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onNewWant(want: Want) {
+    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onNewWant');
     if (want?.parameters?.router) {
       router.pushUrl({
         url: want.parameters.router.toString()
@@ -110,6 +108,18 @@ export default class EntryAbility extends UIAbility {
     // Ability has brought to foreground
     UnifiedPreferences.putSync('FaultOccurred', true);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+    if (this.routerPath) {
+      try {
+        router?.pushUrl({
+          url: this.routerPath,
+        }).catch((err: Error) => {
+          console.error(`路由跳转失败: ${err.name} ${err.message}`);
+        });
+      } catch (err) {
+        console.error(`路由跳转失败: ${err.name} ${err.message}`);
+      }
+    }
+    this.routerPath = '';
   }
 
   onBackground(): void {
