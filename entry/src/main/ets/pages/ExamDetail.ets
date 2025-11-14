@@ -381,8 +381,19 @@ struct ClassDetailDialog {
         .margin({ bottom: 5 });
 
         Row() {
+          Text($r('app.string.exam_detail_type'));
+          TextInput({ text: this.oriExamInfo.type })
+            .layoutWeight(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .onChange((input: string) => this.examInfo.type = input)
+            .selectAll(true);
+        }
+        .margin({ bottom: 5 });
+
+        Row() {
           Text($r('app.string.exam_detail_date'));
           CalendarPicker({ selected: new Date(this.oriExamInfo.date.slice(0, 10)) })
+            .edgeAlign(CalendarAlign.CENTER)
             .onChange((value) => {
               this.date = `${value.getFullYear().toString().padStart(4, '0')}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
             })

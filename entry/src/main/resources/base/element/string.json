@@ -189,6 +189,10 @@
       "value": "科目："
     },
     {
+      "name": "exam_detail_type",
+      "value": "类型："
+    },
+    {
       "name": "campus",
       "value": "校区"
     },
@@ -486,7 +490,7 @@
     },
     {
       "name": "dangerous_behavior",
-      "value": "以上操作不可逆！"
+      "value": "以下操作不可逆！"
     },
     {
       "name": "import_schedule",

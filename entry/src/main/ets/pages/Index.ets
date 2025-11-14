@@ -653,18 +653,18 @@ struct Index {
                       .margin({ bottom: 2 })
                       .alignItems(VerticalAlign.Bottom)
                     }
-                    .width('28%');
+                    .width('30%');
                   } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
                     Text($r('app.string.exam_processing'))
                       .fontSize(20)
                       .fontColor($r('app.color.transparent_text'))
-                      .width('28%')
+                      .width('30%')
                       .textAlign(TextAlign.Start);
                   } else {
                     Text($r('app.string.exam_ended'))
                       .fontSize(20)
                       .fontColor($r('app.color.transparent_text'))
-                      .width('28%')
+                      .width('30%')
                       .textAlign(TextAlign.Start);
                   }
 
@@ -684,7 +684,7 @@ struct Index {
                     Text(`\udb80\udfdc ${singleExam.date}`)
                       .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible);
                   }
-                  .width('72%')
+                  .width('70%')
                   .alignItems(HorizontalAlign.Start);
                 }
                 .width('90%')
@@ -701,12 +701,12 @@ struct Index {
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5, bottom: 30 })
+      .margin({ top: 5, bottom: 7 })
       .backgroundColor($r('app.color.grid_background'));
     }
     .width('100%')
     .height('100%')
-    .padding({ top: 20, left: 15, right: 15 })
+    .padding({ top: 20, left: 7, right: 7 })
   }
 
   /**
@@ -1028,7 +1028,7 @@ struct Index {
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height('70vp')
+        .height('50vp')
     }
     .height('100%')
     .width('100%')

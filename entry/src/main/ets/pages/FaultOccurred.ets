@@ -25,6 +25,10 @@ struct FaultOccurred {
         .margin({ bottom: 10 })
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
+      Text($r('app.string.dangerous_behavior'))
+        .fontSize(24)
+        .fontWeight(FontWeight.Bolder)
+        .fontColor($r('app.color.red'));
       Flex() {
         Button(this.button1Text)
           .backgroundColor($r('app.color.red'))
@@ -71,11 +75,6 @@ struct FaultOccurred {
       .borderWidth(2)
       .borderColor($r('app.color.red'))
       .padding({ top: 10, bottom: 10, left: 10, right: 10 });
-      Text($r('app.string.dangerous_behavior'))
-        .fontSize(24)
-        .fontWeight(FontWeight.Bolder)
-        .fontColor($r('app.color.red'))
-        .margin({ top: 20 });
       Row() {
         Button($r('app.string.import_schedule'))
           .margin({ right: 8 })
