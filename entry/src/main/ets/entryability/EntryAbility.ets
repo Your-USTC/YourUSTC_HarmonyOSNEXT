@@ -5,7 +5,7 @@ import {
   PermissionRequestResult,
   Permissions, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { router, window } from '@kit.ArkUI';
 import { calendarManager } from '@kit.CalendarKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -18,6 +18,7 @@ export let calendarMgr: calendarManager.CalendarManager | null = null;
 export let mContext: common.UIAbilityContext | null = null;
 
 export default class EntryAbility extends UIAbility {
+  routerPath: string = '';
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     try {
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
@@ -26,6 +27,9 @@ export default class EntryAbility extends UIAbility {
     }
     UnifiedPreferences.init(this.context)
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    if (want?.parameters?.router) {
+      this.routerPath = want.parameters.router.toString();
+    }
   }
 
   onDestroy(): void {
@@ -67,6 +71,24 @@ export default class EntryAbility extends UIAbility {
     }).catch((error: BusinessError) => {
       console.error(`获取权限失败。Code: ${error.code}, message: ${error.message}`);
     })
+
+    if (this.routerPath) {
+      windowStage.loadContent(this.routerPath, (err) => {  });
+      console.info(`从快捷方式打开了${this.routerPath}`);
+    } else {
+      windowStage.loadContent('pages/Index', (err) => {  });
+    }
+  }
+
+  onNewWant(want: Want) {
+    if (want?.parameters?.router) {
+      router.replaceUrl({
+        url: `pages/${want.parameters.router}`,
+        params: want.parameters // 传递完整参数
+      }).catch((err: Error) => {
+        console.error(`路由跳转失败: ${err.name} ${err.message}`);
+      });
+    }
   }
 
   onWindowStageDestroy(): void {

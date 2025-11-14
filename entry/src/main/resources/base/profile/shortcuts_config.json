@@ -1,0 +1,34 @@
+{
+  "shortcuts": [
+    {
+      "shortcutId": "menu_schedule",
+      "label": "$string:your_schedule",
+      "icon": "$media:KeChengBiao",
+      "wants": [
+        {
+          "bundleName": "com.nic.yourustc",
+          "moduleName": "entry",
+          "abilityName": "EntryAbility",
+          "parameters": {
+            "router": "pages/Schedule"
+          }
+        }
+      ]
+    },
+    {
+      "shortcutId": "menu_exam_detail",
+      "label": "$string:exam_detail",
+      "icon": "$media:KaoShiXinXi",
+      "wants": [
+        {
+          "bundleName": "com.nic.yourustc",
+          "moduleName": "entry",
+          "abilityName": "EntryAbility",
+          "parameters": {
+            "router": "pages/ExamDetail"
+          }
+        }
+      ]
+    }
+  ]
+}
