@@ -22,6 +22,7 @@ export interface obtainedData {
 
 let schedulePre: preferences.Preferences | null = null;
 export let remindBefore: number[] = [];
+export let examRemindBefore: number[] = [];
 
 export function initSchedulePre(curContext: Context | undefined) {
   try {
@@ -29,6 +30,9 @@ export function initSchedulePre(curContext: Context | undefined) {
     remindBefore[0] = schedulePre.getSync('remindBefore', 0) as number;
     if (remindBefore[0] == -1)
       remindBefore = [];
+    examRemindBefore[0] = schedulePre.getSync('examRemindBefore', 0) as number;
+    if (examRemindBefore[0] == -1)
+      examRemindBefore = [];
   } catch (error) {
     console.error(`Get preferences sync ERROR: [${error.name}] ${error.message}`)
   }
@@ -41,6 +45,22 @@ export function setRemindBefore(minute: number) {
     remindBefore[0] = minute;
   try {
     schedulePre?.putSync('remindBefore', minute);
+  } catch (error) {
+    console.error(`put sync ERROR: [${error.name}] ${error.message}`)
+  }
+  schedulePre?.flush()
+    .catch((error: Error) => {
+      console.error(`flush ERROR: [${error.name}] ${error.message}`)
+    })
+}
+
+export function setExamRemindBefore(minute: number) {
+  if (minute == -1)
+    examRemindBefore = [];
+  else
+    examRemindBefore[0] = minute;
+  try {
+    schedulePre?.putSync('examRemindBefore', minute);
   } catch (error) {
     console.error(`put sync ERROR: [${error.name}] ${error.message}`)
   }
