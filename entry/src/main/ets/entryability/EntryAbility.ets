@@ -57,6 +57,23 @@ export default class EntryAbility extends UIAbility {
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
       });
+
+      if (this.routerPath) {
+        windowStage.loadContent(this.routerPath, (err) => {
+          if (err.code) {
+            console.error('Failed to load content. Error:' + JSON.stringify(err));
+            return;
+          }
+          if (this.routerPath) {
+            router.pushUrl({
+              url: 'pages/Index'
+            }).catch((err: Error) => {
+              console.error(`路由跳转失败: ${err.name} ${err.message}`);
+            });
+          }
+        });
+        this.routerPath = '';
+      }
     }
 
     // 日历相关
@@ -68,24 +85,6 @@ export default class EntryAbility extends UIAbility {
     }).catch((error: BusinessError) => {
       console.error(`获取权限失败。Code: ${error.code}, message: ${error.message}`);
     })
-
-    if (this.routerPath) {
-      windowStage.loadContent(this.routerPath, (err) => {
-        if (err.code) {
-          console.error('Failed to load content. Error:' + JSON.stringify(err));
-          return;
-        }
-        if (this.routerPath) {
-          router.pushUrl({
-            url: 'pages/Index'
-          }).catch((err: Error) => {
-            console.error(`路由跳转失败: ${err.name} ${err.message}`);
-          });
-        }
-      });
-    } else {
-      windowStage.loadContent('pages/Index', (err) => {  });
-    }
   }
 
   onNewWant(want: Want) {
@@ -118,8 +117,8 @@ export default class EntryAbility extends UIAbility {
       } catch (err) {
         console.error(`路由跳转失败: ${err.name} ${err.message}`);
       }
+      this.routerPath = '';
     }
-    this.routerPath = '';
   }
 
   onBackground(): void {
