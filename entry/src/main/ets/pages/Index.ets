@@ -701,7 +701,7 @@ struct Index {
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5, bottom: 10 })
+      .margin({ top: 5, bottom: 30 })
       .backgroundColor($r('app.color.grid_background'));
     }
     .width('100%')
@@ -1019,7 +1019,7 @@ struct Index {
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height('50vp')
+        .height('70vp')
     }
     .height('100%')
     .width('100%')
