@@ -408,7 +408,7 @@ struct Schedule {
           GridItem({ style: GridItemStyle.NONE }) {
             Column() {
               Text(commonClassTime[item][0])
-                .fontSize(8)
+                .fontSize('8fp')
 
               Blank()
 
@@ -419,7 +419,7 @@ struct Schedule {
               Blank()
 
               Text(commonClassTime[item][1])
-                .fontSize(8)
+                .fontSize('8fp')
             }
             .width('100%')
             .height('100%')
