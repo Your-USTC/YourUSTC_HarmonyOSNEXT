@@ -998,7 +998,16 @@ struct Index {
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
                 case 12:
-                  scheduleManager.formattedSchedule[30][0];
+                  // 退出到恢复模式
+                  UnifiedPreferences.putSync('RecoveryMode', true)
+                  const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                  context.terminateSelf((err) => {
+                    if (!err) {
+                      context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                        console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                      })
+                    }
+                  })
                   break;
                 default:
                  this.showMessage($r('app.string.under_construction'), 500);
