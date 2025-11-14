@@ -3,7 +3,6 @@ import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { visionBase } from '@kit.CoreVisionKit'
 import { LengthUnit } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
@@ -636,7 +635,7 @@ struct Index {
                           .lineSpacing({ value: 5, unit: LengthUnit.FP })
                           .maxFontSize(18)
                           .fontWeight(FontWeight.Bold)
-                          .padding({ bottom: 5 })
+                          .padding({ bottom: 6 })
                       }
                       .alignItems(VerticalAlign.Bottom)
 
@@ -651,20 +650,21 @@ struct Index {
                           .fontWeight(FontWeight.Bold)
                           .padding({ bottom: 5 })
                       }
+                      .margin({ bottom: 2 })
                       .alignItems(VerticalAlign.Bottom)
                     }
-                    .width('30%');
+                    .width('28%');
                   } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
                     Text($r('app.string.exam_processing'))
                       .fontSize(20)
                       .fontColor($r('app.color.transparent_text'))
-                      .width('30%')
+                      .width('28%')
                       .textAlign(TextAlign.Start);
                   } else {
                     Text($r('app.string.exam_ended'))
                       .fontSize(20)
                       .fontColor($r('app.color.transparent_text'))
-                      .width('30%')
+                      .width('28%')
                       .textAlign(TextAlign.Start);
                   }
 
@@ -683,10 +683,8 @@ struct Index {
                       .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None : Visibility.Visible);
                     Text(`\udb80\udfdc ${singleExam.date}`)
                       .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible);
-                    Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
-                      .visibility(singleExam.id + singleExam.info == '' ? Visibility.None : Visibility.Visible);
                   }
-                  .width('70%')
+                  .width('72%')
                   .alignItems(HorizontalAlign.Start);
                 }
                 .width('90%')

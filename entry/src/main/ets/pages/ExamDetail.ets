@@ -143,7 +143,7 @@ struct ExamDetail {
                         .lineSpacing({ value: 5, unit: LengthUnit.FP })
                         .maxFontSize(18)
                         .fontWeight(FontWeight.Bold)
-                        .padding({ bottom: 5 })
+                        .padding({ bottom: 6 })
                     }
                     .alignItems(VerticalAlign.Bottom)
 
@@ -158,6 +158,7 @@ struct ExamDetail {
                         .fontWeight(FontWeight.Bold)
                         .padding({ bottom: 5 })
                     }
+                    .margin({ bottom: 2 })
                     .alignItems(VerticalAlign.Bottom)
 
                     Row() {
@@ -171,6 +172,7 @@ struct ExamDetail {
                         .fontWeight(FontWeight.Bold)
                         .padding({ bottom: 5 })
                     }
+                    .margin({ bottom: 2 })
                     .alignItems(VerticalAlign.Bottom)
                   }
                   .width('30%');
