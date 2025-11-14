@@ -40,7 +40,7 @@ class examManager {
   }
 
   storeExam(data: examAttribute[]) {
-    for (let i = 0; i < data.length; i++){
+    for (let i = 0; i < data.length; i++) {
       data[i].beginTimeStamp = new Date(data[i].date.slice(0, 16)).getTime();
       data[i].endTimeStamp = new Date(data[i].date.slice(0, 11) + data[i].date.slice(17, 22)).getTime();
     }

@@ -68,14 +68,31 @@ export default class EntryAbility extends UIAbility {
     }).catch((error: BusinessError) => {
       console.error(`获取权限失败。Code: ${error.code}, message: ${error.message}`);
     })
+
+    if (this.routerPath) {
+      windowStage.loadContent(this.routerPath, (err) => {
+        if (err.code) {
+          console.error('Failed to load content. Error:' + JSON.stringify(err));
+          return;
+        }
+        if (this.routerPath) {
+          router.pushUrl({
+            url: 'pages/Index'
+          }).catch((err: Error) => {
+            console.error(`路由跳转失败: ${err.name} ${err.message}`);
+          });
+        }
+      });
+    } else {
+      windowStage.loadContent('pages/Index', (err) => {  });
+    }
   }
 
   onNewWant(want: Want) {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onNewWant');
     if (want?.parameters?.router) {
-      router?.pushUrl({
-        url: `${want.parameters.router}`,
-        params: want.parameters // 传递完整参数
+      router.pushUrl({
+        url: want.parameters.router.toString()
       }).catch((err: Error) => {
         console.error(`路由跳转失败: ${err.name} ${err.message}`);
       });
