@@ -73,7 +73,19 @@ export default class EntryAbility extends UIAbility {
     })
 
     if (this.routerPath) {
-      windowStage.loadContent(this.routerPath, (err) => {  });
+      windowStage.loadContent(this.routerPath, (err) => {
+        if (err.code) {
+          console.error('Failed to load content. Error:' + JSON.stringify(err));
+          return;
+        }
+        if (this.routerPath) {
+          router.pushUrl({
+            url: 'pages/Index'
+          }).catch((err: Error) => {
+            console.error(`路由跳转失败: ${err.name} ${err.message}`);
+          });
+        }
+      });
     } else {
       windowStage.loadContent('pages/Index', (err) => {  });
     }
