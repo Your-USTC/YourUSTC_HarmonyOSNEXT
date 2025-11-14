@@ -1,5 +1,4 @@
 
-import { preferences } from '@kit.ArkData'
 import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI'
 import * as tools from '../utils/tools'
 import { obtainedData } from '../pages/Schedule'
