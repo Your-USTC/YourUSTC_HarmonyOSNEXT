@@ -74,7 +74,8 @@ struct FaultOccurred {
       Text($r('app.string.dangerous_behavior'))
         .fontSize(24)
         .fontWeight(FontWeight.Bolder)
-        .fontColor($r('app.color.red'));
+        .fontColor($r('app.color.red'))
+        .margin({ top: 20 });
       Row() {
         Button($r('app.string.import_schedule'))
           .margin({ right: 8 })

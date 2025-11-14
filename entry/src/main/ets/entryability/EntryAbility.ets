@@ -37,7 +37,8 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    if (UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
+    if (UnifiedPreferences.getBoolSync('RecoveryMode', false) || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
+      UnifiedPreferences.putSync('RecoveryMode', false)
       windowStage.loadContent('pages/FaultOccurred', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));

@@ -1,6 +1,7 @@
 
 import { LengthUnit } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
+import { image } from '@kit.ImageKit'
 
 @Entry
 @Component
@@ -9,6 +10,15 @@ struct About {
   private context = this.getUIContext()
   private iconClickTime: number = 0
   @State isShowEggImage: boolean = false
+  @State imagePixelMap?: image.PixelMap = undefined
+
+  async aboutToAppear() {
+    this.imagePixelMap = await this.getPixmapFromMedia($r('app.media.nic'))
+  }
+
+  aboutToDisappear(): void {
+    this.imagePixelMap?.release()
+  }
 
   build() {
 
@@ -148,46 +158,38 @@ struct About {
 
   @Builder
   EggImage() {
-    Image($rawfile('nic.png'))
+    Image(this.imagePixelMap ?? $r('app.media.nic'))
       .width('100%')
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .objectFit(ImageFit.Contain)
       .backgroundColor($r('app.color.shaded_background'))
-      .draggable(false)
-      .overlay(this.SimpleHeader(), { align: Alignment.Top, offset: { x: 0, y: 48 } })
+      .borderRadius(20)
+      .draggable(true)
       .onDisAppear(() => {
         this.iconClickTime = 0
         this.isShowEggImage = false
       })
   }
 
-  @Builder
-  SimpleHeader() {
-    Row() {
-      Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-        Image($r('app.media.close'))
-          .height(20)
-          .draggable(false)
-      }
-      .height(36)
-      .width(36)
-      .backgroundColor($r('app.color.normal_background_transparent'))
-      .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR, {
-        colorMode: ThemeColorMode.LIGHT,
-        adaptiveColor: AdaptiveColor.DEFAULT,
-        scale: 0.1
-      })
-      .onClick(() => {
-        this.iconClickTime = 0
-        this.isShowEggImage = false
-      })
+  private async getPixmapFromMedia(resource: Resource) {
 
-      Blank()
+    let createPixelMap: image.PixelMap
+    try {
+
+      const unit8Array = await this.getUIContext().getHostContext()!.resourceManager?.getMediaContent(resource.id)
+      const imageSource = image.createImageSource(unit8Array.buffer.slice(0, unit8Array.buffer.byteLength))
+      createPixelMap = await imageSource.createPixelMap({
+        desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
+      })
+      await imageSource.release()
+      this.imagePixelMap?.release()
+
+    } catch (error) {
+
+      console.error(`getPixmapFromMedia ERROR: [${error.code}] ${error.message}`)
+      return
     }
-    .width('100%')
-    .height(36)
-    .padding({ left: 10, right: 10 })
+    return createPixelMap
   }
-
 }
