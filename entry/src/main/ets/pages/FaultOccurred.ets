@@ -75,26 +75,32 @@ struct FaultOccurred {
       .borderWidth(2)
       .borderColor($r('app.color.red'))
       .padding({ top: 10, bottom: 10, left: 10, right: 10 });
-      Row() {
-        Button($r('app.string.import_schedule'))
-          .margin({ right: 8 })
-          .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .onClick(() => {});
-        Button($r('app.string.export_schedule'))
-          .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .onClick(() => {});
+
+      Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center, alignContent: FlexAlign.Start }) {
+        Row() {
+          Button($r('app.string.import_schedule'))
+            .margin({ right: 8 })
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
+            .onClick(() => {});
+          Button($r('app.string.export_schedule'))
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
+            .onClick(() => {});
+        }
+        .margin({ top: 10 });
+
+        Row() {
+          Button($r('app.string.import_exam'))
+            .margin({ right: 8 })
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
+            .onClick(() => {});
+          Button($r('app.string.export_exam'))
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
+            .onClick(() => {});
+        }
+        .margin({ top: 10 });
       }
-      .margin({ top: 10 });
-      Row() {
-        Button($r('app.string.import_exam'))
-          .margin({ right: 8 })
-          .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .onClick(() => {});
-        Button($r('app.string.export_exam'))
-          .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .onClick(() => {});
-      }
-      .margin({ top: 10 });
+      .width('100%')
+
       Button($r('app.string.normal_restart'))
         .margin({ top: 10 })
         .onClick(() => {
