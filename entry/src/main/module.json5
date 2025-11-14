@@ -15,6 +15,10 @@
     "abilities": [
       {
         "name": "EntryAbility",
+        "metadata": [{
+          "name": "ohos.ability.shortcuts",
+          "resource": "$profile:shortcuts_config"
+        }],
         "srcEntry": "./ets/entryability/EntryAbility.ets",
         "description": "$string:EntryAbility_desc",
         "icon": "$media:layered_image",
