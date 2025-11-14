@@ -74,7 +74,6 @@ export default class EntryAbility extends UIAbility {
 
     if (this.routerPath) {
       windowStage.loadContent(this.routerPath, (err) => {  });
-      console.info(`从快捷方式打开了${this.routerPath}`);
     } else {
       windowStage.loadContent('pages/Index', (err) => {  });
     }
@@ -82,9 +81,8 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want) {
     if (want?.parameters?.router) {
-      router.replaceUrl({
-        url: `pages/${want.parameters.router}`,
-        params: want.parameters // 传递完整参数
+      router.pushUrl({
+        url: want.parameters.router.toString()
       }).catch((err: Error) => {
         console.error(`路由跳转失败: ${err.name} ${err.message}`);
       });
