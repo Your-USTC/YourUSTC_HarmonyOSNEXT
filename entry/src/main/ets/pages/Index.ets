@@ -1168,7 +1168,7 @@ struct Index {
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height('50vp')
+        .height(200)
     }
     .height('100%')
     .width('100%')
