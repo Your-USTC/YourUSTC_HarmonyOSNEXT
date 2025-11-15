@@ -710,7 +710,8 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .padding({ top: 20, left: 7, right: 7 })
+    .scrollBar(BarState.Auto)
+    .padding({ top: 20, left: 12, right: 12 })
   }
 
   /**
@@ -1162,17 +1163,18 @@ struct Index {
           endMargin: '12vp'
         })
         .backgroundColor($r('app.color.grid_background'))
-        .borderRadius('16vp')
+        .borderRadius(20)
 
       }, (item: ItemData) => JSON.stringify(item))
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height(200)
+        .height('50vp')
     }
     .height('100%')
     .width('100%')
-    .padding({ top: 20, left: 15, right: 15 })
+    .padding({ top: 20, left: 12, right: 12 })
+    .scrollBar(BarState.Auto)
     .overlay(this.settingExitButton(), { align: Alignment.Bottom })
   }
 
@@ -1219,7 +1221,7 @@ struct Index {
        * Tab: 首页
        */
       TabContent() { this.pageStart() }
-      .padding({ left: 12, right: 12 })
+      .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
 
@@ -1227,7 +1229,7 @@ struct Index {
        * Tab: 功能
        */
       TabContent() { this.pageFunction() }
-      .padding({ left: 12, right: 12 })
+      .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
 
@@ -1235,7 +1237,7 @@ struct Index {
        * Tab: 设置
        */
       TabContent() { this.pageSettings() }
-      .padding({ left: 12, right: 12 })
+      .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
 
