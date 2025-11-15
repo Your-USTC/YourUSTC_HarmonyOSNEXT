@@ -3,7 +3,7 @@
     {
       "shortcutId": "menu_schedule",
       "label": "$string:your_schedule",
-      "icon": "$media:KeChengBiao",
+      "icon": "$media:shortcut_schedule",
       "wants": [
         {
           "bundleName": "com.nic.yourustc",
@@ -18,7 +18,7 @@
     {
       "shortcutId": "menu_exam_detail",
       "label": "$string:exam_detail",
-      "icon": "$media:KaoShiXinXi",
+      "icon": "$media:shortcut_exam",
       "wants": [
         {
           "bundleName": "com.nic.yourustc",
