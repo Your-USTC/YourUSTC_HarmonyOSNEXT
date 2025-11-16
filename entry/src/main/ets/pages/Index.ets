@@ -999,8 +999,8 @@ struct Index {
                                               }
                                               // 设置日程
                                               const event: calendarManager.Event = {
-                                                title: `${layer3.name}${layer3.location == '' ? '' :
-                                                  '@' + layer3.location}`, // 日程标题
+                                                title: layer3.name, // 日程标题
+                                                location: layer3.location,
                                                 type: calendarManager.EventType.NORMAL, // 日程类型
                                                 startTime: tools.getClassTimestamp(scheduleManager.termStart,
                                                   layer3.weekOfTerm[0],
@@ -1101,8 +1101,8 @@ struct Index {
                                     for (let layer1 of this.exams) {
                                       // 设置日程
                                       const event: calendarManager.Event = {
-                                        title: `${layer1.name}${layer1.building + layer1.classroom == '' ? '' :
-                                          '@' + layer1.building + layer1.classroom}`, // 日程标题
+                                        title: layer1.name, // 日程标题
+                                        location: layer1.building + layer1.classroom,
                                         type: calendarManager.EventType.NORMAL, // 日程类型
                                         startTime: new Date(layer1.date.slice(0, 16)).getTime(), // 日程开始时间
                                         endTime: new Date(layer1.date.slice(0, 11) +
