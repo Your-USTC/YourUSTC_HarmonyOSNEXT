@@ -6,7 +6,7 @@ import { common } from '@kit.AbilityKit'
 import UnifiedPreference from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit'
 
-const desktopUrl: string[] = [] // 需要默认访问桌面版站点时使用
+const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 
 @Entry
 @Component

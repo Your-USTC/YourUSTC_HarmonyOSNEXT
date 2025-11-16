@@ -39,11 +39,11 @@ struct Index {
 
 
       List({ initialIndex: 0 }) {
-        ForEach(this.arr, (item: number, index: number) => {
+        ForEach(this.arr, (index: number) => {
           ListItem() {
             Column() {
               Row() {
-                Text(item.toString());
+                Text($r(`app.string.help${index}_title`));
                 Image($r('app.media.chevron_right'))
                   .height(20)
                   .rotate({ angle: this.rotateAngle[index] })
@@ -78,10 +78,10 @@ struct Index {
               });
 
               if (this.isContentShow[index]) { // 判断当前按钮为“收起”显示内容区域
-                Text('这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域这是内容区域')
+                Text($r(`app.string.help${index}_content`))
                   .backgroundColor($r('app.color.grid_border'))
                   .borderRadius({ bottomLeft: 20, bottomRight: 20 })
-                  .textAlign(TextAlign.Center)
+                  .textAlign(TextAlign.Start)
                   .lineSpacing({ value: 5, unit: LengthUnit.FP })
                   .width('100%')
                   .padding({ top: 10, bottom: 10, left: 20, right: 20 })

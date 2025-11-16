@@ -148,7 +148,7 @@ struct About {
             } else {
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
             }
-          })
+          });
         });
       }
       .width('100%')

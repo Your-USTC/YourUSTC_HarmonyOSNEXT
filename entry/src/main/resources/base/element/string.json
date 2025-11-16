@@ -454,11 +454,11 @@
     },
     {
       "name": "write_calendar_permission_reason",
-      "value": "用于写入上课提醒"
+      "value": "用于写入上课和考试提醒"
     },
     {
       "name": "read_calendar_permission_reason",
-      "value": "用于检测是否已写入上课提醒"
+      "value": "用于检测是否已写入和考试上课提醒"
     },
     {
       "name": "EntryFormAbility_desc",

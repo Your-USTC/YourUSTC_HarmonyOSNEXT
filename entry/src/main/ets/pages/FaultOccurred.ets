@@ -1,7 +1,7 @@
 
 import UnifiedPreferences, {CONSECUTIVE_DAYS_KEY, LAST_DAY_KEY,
   PREF_NAME,SCHEDULE_KEY, START_TIME_KEY, TOTAL_DAYS_KEY } from '../utils/UnifyPreference';
-import { BusinessError } from '@kit.BasicServicesKit';
+import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 
 @Entry
@@ -35,9 +35,6 @@ struct FaultOccurred {
           .onClick(() => {
             this.button1ClickTimes++;
             if (this.button1ClickTimes == 2) {
-              UnifiedPreferences.deleteSync(LAST_DAY_KEY);
-              UnifiedPreferences.deleteSync(TOTAL_DAYS_KEY);
-              UnifiedPreferences.deleteSync(CONSECUTIVE_DAYS_KEY);
               UnifiedPreferences.deleteSync(SCHEDULE_KEY);
               UnifiedPreferences.deleteSync(START_TIME_KEY);
               this.button1Text = $r('app.string.clear_success');
@@ -84,7 +81,18 @@ struct FaultOccurred {
             .onClick(() => {});
           Button($r('app.string.export_schedule'))
             .buttonStyle(ButtonStyleMode.TEXTUAL)
-            .onClick(() => {});
+            .onClick(() => {
+              const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, JSON.stringify({ data: UnifiedPreferences.getSync('scheduleInfo', '[]'), time: UnifiedPreferences.getSync('termStartTime', '2025-07-21') }));
+              const systemPasteboard = pasteboard.getSystemPasteboard();
+              systemPasteboard.setData(pasteboardData);
+              systemPasteboard.getData().then((data) => {
+                if (data) {
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_success'), duration: 1000 });
+                } else {
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
+                }
+              });
+            });
         }
         .margin({ top: 10 });
 
@@ -95,7 +103,18 @@ struct FaultOccurred {
             .onClick(() => {});
           Button($r('app.string.export_exam'))
             .buttonStyle(ButtonStyleMode.TEXTUAL)
-            .onClick(() => {});
+            .onClick(() => {
+              const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, `${UnifiedPreferences.getSync('examInfo', '[]')}`);
+              const systemPasteboard = pasteboard.getSystemPasteboard();
+              systemPasteboard.setData(pasteboardData);
+              systemPasteboard.getData().then((data) => {
+                if (data) {
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_success'), duration: 1000 });
+                } else {
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
+                }
+              });
+            });
         }
         .margin({ top: 10 });
       }

@@ -565,7 +565,7 @@ struct ClassDetailDialog {
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true, false, false, true, true, true, true, false, false, false, false];
+  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true, false, false, false, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 10], [13, 16]]) as number[];
 

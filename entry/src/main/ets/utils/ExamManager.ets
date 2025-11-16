@@ -58,7 +58,7 @@ class examManager {
   }
 
   deleteExam(deletedExam: examAttribute) {
-    for (let i = 0; i < this.allExamInfo.length; i++)
+    for (let i = this.allExamInfo.length - 1; i >= 0; i--)
       if (areExamAttributesEqual(deletedExam, this.allExamInfo[i])) {
         this.allExamInfo.splice(i, 1);
         break;

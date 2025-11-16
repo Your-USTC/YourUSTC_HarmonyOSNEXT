@@ -128,6 +128,9 @@ struct Index {
       }
     examManager.readStoredExam();
     this.exams = examManager.allExamInfo;
+    for (let i = this.exams.length - 1; i >= 0; i--)
+      if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
+        this.exams.splice(i, 1);
   }
 
   /**
@@ -586,6 +589,9 @@ struct Index {
               .onClick(() => {
                 examManager.readStoredExam();
                 this.exams = examManager.allExamInfo;
+                for (let i = this.exams.length - 1; i >= 0; i--)
+                  if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
+                    this.exams.splice(i, 1);
               });
             } else {
               Blank().width(36);
@@ -644,7 +650,8 @@ struct Index {
                       .alignItems(VerticalAlign.Bottom)
 
                       Row() {
-                        Text(tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1).toString())
+                        Text(Number((tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 1)
+                          + tools.formatTimeDiff(this.currentTime.getTime(), singleExam.beginTimeStamp, 2) / 60).toExponential(1)).toString())
                           .fontSize(28)
                           .fontWeight(FontWeight.Bold)
                           .fontColor($r('app.color.hour'))
@@ -658,14 +665,8 @@ struct Index {
                       .alignItems(VerticalAlign.Bottom)
                     }
                     .width('30%');
-                  } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
-                    Text($r('app.string.exam_processing'))
-                      .fontSize(20)
-                      .fontColor($r('app.color.transparent_text'))
-                      .width('30%')
-                      .textAlign(TextAlign.Start);
                   } else {
-                    Text($r('app.string.exam_ended'))
+                    Text($r('app.string.exam_processing'))
                       .fontSize(20)
                       .fontColor($r('app.color.transparent_text'))
                       .width('30%')
@@ -705,13 +706,13 @@ struct Index {
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5, bottom: 7 })
+      .margin({ top: 5, bottom: 12 })
       .backgroundColor($r('app.color.grid_background'));
     }
     .width('100%')
     .height('100%')
     .scrollBar(BarState.Auto)
-    .padding({ top: 20, left: 12, right: 12 })
+    .padding({ top: 12, left: 12, right: 12 })
   }
 
   /**
@@ -1000,7 +1001,7 @@ struct Index {
                                               // 设置日程
                                               const event: calendarManager.Event = {
                                                 title: layer3.name, // 日程标题
-                                                location: layer3.location,
+                                                location: { location: layer3.location },
                                                 type: calendarManager.EventType.NORMAL, // 日程类型
                                                 startTime: tools.getClassTimestamp(scheduleManager.termStart,
                                                   layer3.weekOfTerm[0],
@@ -1102,7 +1103,7 @@ struct Index {
                                       // 设置日程
                                       const event: calendarManager.Event = {
                                         title: layer1.name, // 日程标题
-                                        location: layer1.building + layer1.classroom,
+                                        location: { location: layer1.building + layer1.classroom },
                                         type: calendarManager.EventType.NORMAL, // 日程类型
                                         startTime: new Date(layer1.date.slice(0, 16)).getTime(), // 日程开始时间
                                         endTime: new Date(layer1.date.slice(0, 11) +
