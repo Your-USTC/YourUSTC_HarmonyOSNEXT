@@ -1,6 +1,5 @@
 
-import UnifiedPreferences, {CONSECUTIVE_DAYS_KEY, LAST_DAY_KEY,
-  PREF_NAME,SCHEDULE_KEY, START_TIME_KEY, TOTAL_DAYS_KEY } from '../utils/UnifyPreference';
+import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
 import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 import { common } from '@kit.AbilityKit';
 
@@ -75,10 +74,22 @@ struct FaultOccurred {
 
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center, alignContent: FlexAlign.Start }) {
         Row() {
-          Button($r('app.string.import_schedule'))
-            .margin({ right: 8 })
-            .buttonStyle(ButtonStyleMode.TEXTUAL)
-            .onClick(() => {});
+          Row() {
+            PasteButton({ icon: PasteIconStyle.LINES, buttonType: ButtonType.Circle})
+              .size({ width: 30, height: 30 })
+              .onClick((event: ClickEvent, result: PasteButtonOnClickResult, error?: BusinessError<void>) => {
+                if (result === PasteButtonOnClickResult.SUCCESS) {
+                  console.info("success");
+                  // 授权成功，接下来读取剪贴板
+                } else {
+                  console.error("errCode: " + error?.code);
+                  console.error("errMessage: " + error?.message);
+                }
+              });
+            Text($r('app.string.import_schedule'))
+          }
+          .margin({ right: 8 })
+
           Button($r('app.string.export_schedule'))
             .buttonStyle(ButtonStyleMode.TEXTUAL)
             .onClick(() => {
@@ -97,10 +108,21 @@ struct FaultOccurred {
         .margin({ top: 10 });
 
         Row() {
-          Button($r('app.string.import_exam'))
-            .margin({ right: 8 })
-            .buttonStyle(ButtonStyleMode.TEXTUAL)
-            .onClick(() => {});
+          Row() {
+            PasteButton({ icon: PasteIconStyle.LINES, buttonType: ButtonType.Circle})
+              .size({ width: 30, height: 30 })
+              .onClick((event: ClickEvent, result: PasteButtonOnClickResult, error?: BusinessError<void>) => {
+                if (result === PasteButtonOnClickResult.SUCCESS) {
+                  console.info("success");
+                } else {
+                  console.error("errCode: " + error?.code);
+                  console.error("errMessage: " + error?.message);
+                }
+              });
+            Text($r('app.string.import_exam'));
+          }
+          .margin({ right: 8 });
+
           Button($r('app.string.export_exam'))
             .buttonStyle(ButtonStyleMode.TEXTUAL)
             .onClick(() => {

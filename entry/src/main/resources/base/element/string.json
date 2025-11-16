@@ -370,7 +370,7 @@
     },
     {
       "name": "click_empty_gridData1",
-      "value": "最近使用的功能会在此显示"
+      "value": "前面的区域，以后再来探索吧"
     },
     {
       "name": "click_empty_gridData2",
@@ -378,11 +378,11 @@
     },
     {
       "name": "click_empty_gridData3",
-      "value": "这里还没住进回忆，快去创造第一个吧！(๑˃ᴗ˂)ﻭ"
+      "value": "这里还没住进回忆，快去创造第一个吧！"
     },
     {
       "name": "click_empty_gridData4",
-      "value": "空空如也，快去给我找点事做！(´･ω･`)"
+      "value": "空空如也，快去给我找点事做！"
     },
     {
       "name": "click_empty_gridData5",
@@ -538,7 +538,7 @@
     },
     {
       "name": "github",
-      "value": "在 GitHub 上为我们⭐！"
+      "value": "在 GitHub 上为我们点亮\uD83C\uDF1F！"
     },
     {
       "name": "terms_of_use",
@@ -559,6 +559,14 @@
     {
       "name": "copy_failed",
       "value": "复制失败┭┮﹏┭┮"
+    },
+    {
+      "name": "save_image_success",
+      "value": "我在相册里等你哦(⁄ ⁄•⁄ω⁄•⁄ ⁄)"
+    },
+    {
+      "name": "save_image_fail",
+      "value": "图片保存失败"
     }
   ]
 }

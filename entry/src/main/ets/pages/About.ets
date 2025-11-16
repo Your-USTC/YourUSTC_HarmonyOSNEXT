@@ -2,6 +2,10 @@
 import { LengthUnit } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
 import { image } from '@kit.ImageKit'
+import { common } from '@kit.AbilityKit'
+import { photoAccessHelper } from '@kit.MediaLibraryKit'
+import { fileIo } from '@kit.CoreFileKit'
+import { http } from '@kit.NetworkKit'
 
 @Entry
 @Component
@@ -30,7 +34,8 @@ struct About {
           .draggable(false)
           .constraintSize({ maxWidth: 300 })
           .onClick(() => {
-            this.iconClickTime++
+            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.under_construction') });
+            this.iconClickTime++;
             if (this.iconClickTime >= 6) {
               this.isShowEggImage = true
             }
@@ -144,9 +149,9 @@ struct About {
           systemPasteboard.setData(pasteboardData);
           systemPasteboard.getData().then((data) => {
             if (data) {
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_success'), duration: 1000 });
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_success') });
             } else {
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed') });
             }
           });
         });
@@ -161,15 +166,70 @@ struct About {
     Image(this.imagePixelMap ?? $r('app.media.nic'))
       .width('100%')
       .height('100%')
+      .background($r('app.color.normal_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .objectFit(ImageFit.Contain)
-      .backgroundColor($r('app.color.shaded_background'))
-      .borderRadius(20)
-      .draggable(true)
+      .draggable(false)
+      .overlay(this.ExitAndSave(), { align: Alignment.Top })
       .onDisAppear(() => {
         this.iconClickTime = 0
-        this.isShowEggImage = false
-      })
+        this.isShowEggImage = false;
+      });
+  }
+
+  @Builder
+  ExitAndSave() {
+    Row() {
+      Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+        Image($r('app.media.close'))
+          .height(24)
+          .width(24)
+          .draggable(false)
+      }
+      .height(42)
+      .width(42)
+      .margin({ left: 10 })
+      .onClick(() => { this.isShowEggImage = false; })
+      Blank();
+      SaveButton({ icon: SaveIconStyle.FULL_FILLED })
+        .width(42)
+        .height(42)
+        .iconSize(24)
+        .offset({ x: -10 })
+        .onClick(async (event: ClickEvent, result: SaveButtonOnClickResult, error?) => {
+          if (result === SaveButtonOnClickResult.SUCCESS) {
+            try {
+              let helper = photoAccessHelper.getPhotoAccessHelper(this.getUIContext().getHostContext());
+              let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'png');
+              let file = await fileIo.open(uri, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+              let imagePackerApi = image.createImagePacker();
+              let packOpts: image.PackingOption = { format: 'image/png', quality: 100 };
+              imagePackerApi.packToFile(this.imagePixelMap, file.fd, packOpts, (err) => {
+                if (err) {
+                  console.error(`Failed to pack the image to file.code ${err.code},message is ${err.message}`);
+                } else {
+                  console.info('Succeeded in packing the image to file.');
+                  imagePackerApi.release((err) => {
+                    if (err) {
+                      console.error(`Failed to release the image source instance.code ${err.code},message is ${err.message}`);
+                    } else {
+                      console.info('Succeeded in releasing the image source instance.');
+                      fileIo.close(file.fd);
+                    }
+                  })
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_success') });
+                }
+              });
+            } catch (error) {
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_fail') });
+            }
+          } else {
+            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_fail') });
+          }
+        });
+    }
+    // .alignItems(VerticalAlign.Top)
+    .width('100%');
   }
 
   private async getPixmapFromMedia(resource: Resource) {
