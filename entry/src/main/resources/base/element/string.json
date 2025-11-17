@@ -110,11 +110,11 @@
     },
     {
       "name": "about",
-      "value": "关于「你的科大」"
+      "value": "关于「你的科大」App"
     },
     {
       "name": "exit_app",
-      "value": "\uDB80\uDC36  退出「你的科大」"
+      "value": "\uDB80\uDC36  退出「你的科大」App"
     },
     {
       "name": "show_check_in",
@@ -526,7 +526,7 @@
     },
     {
       "name": "normal_restart",
-      "value": "退出后再次尝试正常启动"
+      "value": "尝试正常重新启动"
     },
     {
       "name": "contact_developer",
@@ -567,6 +567,22 @@
     {
       "name": "save_image_fail",
       "value": "图片保存失败。解决方案：切后台再回到此处重新保存。"
+    },
+    {
+      "name": "downloading_d",
+      "value": "正在下载 %d 个文件……"
+    },
+    {
+      "name": "download_failed_s",
+      "value": "下载失败，错误码：%s"
+    },
+    {
+      "name": "jump_to_save_path",
+      "value": "已保存到文件管理的下载目录，即将跳转……"
+    },
+    {
+      "name": "loading",
+      "value": "少女祈祷中……"
     }
   ]
 }

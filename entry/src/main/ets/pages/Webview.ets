@@ -4,21 +4,28 @@ import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_U
 import { BusinessError } from '@kit.BasicServicesKit'
 import { common } from '@kit.AbilityKit'
 import UnifiedPreference from '../utils/UnifyPreference'
-import { call } from '@kit.TelephonyKit'
+import { call } from '@kit.TelephonyKit';
+import { picker, fileUri } from  '@kit.CoreFileKit';
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
+
+let eachDownloadPercent = new Map<string, number>();
 
 @Entry
 @Component
 struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
+  downloadDelegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @State uaMode: number = MOBILE_MODE;
   title: string = '';
   url: string = '';
   webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
   webBackPress: boolean = UnifiedPreference.getBoolSync('webBackPress', true);
   @State loadingProgress: number = 0;
+  @State downloadPercent: number = 100;
+  @State downloadItemNum: number = 0;
+  @State showDownloadProgress: boolean = false;
   haveJumped: boolean = true;
   haveLogin: boolean = false;
 
@@ -280,6 +287,42 @@ struct Webview {
               this.webviewController.setCustomUserAgent(MOBILE_UA);
               this.uaMode = MOBILE_MODE;
             }
+            try {
+              this.downloadDelegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
+                this.downloadItemNum++;
+                this.showDownloadProgress = true;
+                getDownloadPathFromPicker().then((downloadPath) => {
+                  webDownloadItem.start(downloadPath + '/' + webDownloadItem.getSuggestedFileName());
+                });
+              })
+              this.downloadDelegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
+                eachDownloadPercent.set(webDownloadItem.getGuid(), webDownloadItem.getPercentComplete());
+                this.downloadPercent = 0;
+                for (const value of eachDownloadPercent.values())
+                  this.downloadPercent += value / this.downloadItemNum;
+                // 下载速度：console.info("download update speed: " + webDownloadItem.getCurrentSpeed())
+              })
+              this.downloadDelegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
+                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.download_failed_s', webDownloadItem.getLastErrorCode()) })
+              })
+              this.downloadDelegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
+                this.downloadItemNum--;
+                if (this.downloadItemNum === 0)
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.jump_to_save_path'), duration: 2800 })
+                  setTimeout(() => {
+                    eachDownloadPercent.clear();
+                    this.showDownloadProgress = false;
+                    try {
+                      (this.getUIContext().getHostContext() as common.UIAbilityContext).openLink('filemanager://openDirectory', { parameters: { 'fileUri': '' } });
+                    } catch (paramError) {
+                      console.error(`Failed to start link. Code is ${paramError.code}, message is ${paramError.message}`);
+                    }
+                  }, 3000);
+              })
+              this.webviewController.setDownloadDelegate(this.downloadDelegate);
+            } catch (error) {
+              console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+            }
           })
           .onAlert((event) => {
             if (event) {
@@ -336,15 +379,64 @@ struct Webview {
           .height(5)
           .startPoint([0, 0])
           .backgroundColor($r('app.color.pink'))
-        LoadingProgress()
-          .width(45)
-          .height(45)
-          .padding({ left: 5, top: 5})
-          .color($r('app.color.pink'))
-          .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible)
-
+        Row() {
+          Row({space: 5}) {
+            LoadingProgress()
+              .width(45)
+              .height(45)
+              .color($r('app.color.pink'));
+            Text($r('app.string.loading'))
+              .fontColor($r('app.color.pink'));
+          }
+          .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible);
+          Blank();
+          Row({ space: 5 }) {
+            Text($r('app.string.downloading_d', this.downloadItemNum))
+              .fontColor($r('app.color.pink'));
+            Progress({ value: this.downloadPercent, total: 100, type: ProgressType.Ring })
+              .color($r('app.color.pink'))
+              .style({ strokeWidth: 4, enableScanEffect: true })
+              .height(24);
+          }
+          .backgroundColor($r('app.color.grid_background'))
+          .borderRadius(20)
+          .padding({ left: 10, top: 5, right: 10, bottom: 5})
+          .visibility(this.showDownloadProgress ? Visibility.Visible : Visibility.None);
+        }
+        .width('100%')
+        .padding({ left: 5, top: 5, right: 5 })
       }
       .layoutWeight(1)
     }
   }
+}
+
+
+function getDownloadPathFromPicker(): Promise<string> {
+  return new Promise<string>(resolve => {
+    try {
+      const documentSaveOptions = new picker.DocumentSaveOptions();
+      documentSaveOptions.pickerMode = picker.DocumentPickerMode.DOWNLOAD;
+      const documentPicker = new picker.DocumentViewPicker();
+      documentPicker.save(documentSaveOptions).then(async (documentSaveResult: Array<string>) => {
+        if (documentSaveResult.length <= 0) {
+          resolve('');
+          return;
+        }
+        const uriString = documentSaveResult[0];
+        console.log(uriString);
+        if (!uriString) {
+          resolve('');
+          return;
+        }
+        const uri = new fileUri.FileUri(uriString);
+        resolve(uri.path);
+      }).catch((err: BusinessError) => {
+        console.error(`ErrorCode: ${err.code},  Message: ${err.message}`);
+        resolve('');
+      });
+    } catch (error) {
+      resolve('');
+    }
+  })
 }

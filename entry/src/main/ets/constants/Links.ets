@@ -14,7 +14,7 @@ export interface Link {
   url: string | Resource
 }
 
-export let LINK = new Map<string, Link>()
+export const LINK = new Map<string, Link>()
 
   // 课程与学习
   .set("0.0", { title: $r('app.string.JiaoWuXiTong'), url: 'https://jw.ustc.edu.cn' })
@@ -33,6 +33,7 @@ export let LINK = new Map<string, Link>()
   .set("0.13", { title: $r('app.string.PingKeSheQu'), url: 'https://icourse.club'})
   .set("0.14", { title: $r('app.string.WolframAlpha'), url: 'https://wolframalpha.com'})
   .set("0.15", { title: $r('app.string.WoKeXueShe'), url: 'https://ot.ustc.edu.cn/'})
+  .set("0.16", { title: $r('app.string.KeChengZiLiao'), url: 'https://share.feixu.site'})
 
   // 服务与工具
   .set("1.0", { title: $r('app.string.ZhiHuiMenHu'), url: 'http://i.ustc.edu.cn'})

@@ -1,7 +1,7 @@
 
 import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
 import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
-import { common } from '@kit.AbilityKit';
+import { common, Want } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -145,14 +145,18 @@ struct FaultOccurred {
       Button($r('app.string.normal_restart'))
         .margin({ top: 10 })
         .onClick(() => {
-          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-          context.terminateSelf((err: BusinessError) => {
-            if (!err) {
-              context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-              })
-            }
-          })
+          UnifiedPreferences.putSync('RecoveryMode', false);
+          UnifiedPreferences.putSync('FaultOccurred', false);
+          let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
+          let want: Want = {
+            bundleName: 'com.nic.yourustc',
+            abilityName: 'EntryAbility'
+          };
+          try {
+            applicationContext.restartApp(want);
+          } catch (error) {
+            console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
+          }
         })
       Button($r('app.string.contact_developer'))
         .buttonStyle(ButtonStyleMode.NORMAL)
