@@ -25,6 +25,7 @@ struct Webview {
   @State loadingProgress: number = 0;
   @State downloadPercent: number = 100;
   @State downloadItemNum: number = 0;
+  downloadItemTotal: number = 0;
   @State showDownloadProgress: boolean = false;
   haveJumped: boolean = true;
   haveLogin: boolean = false;
@@ -290,6 +291,7 @@ struct Webview {
             try {
               this.downloadDelegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
                 this.downloadItemNum++;
+                this.downloadItemTotal++;
                 this.showDownloadProgress = true;
                 getDownloadPathFromPicker().then((downloadPath) => {
                   webDownloadItem.start(downloadPath + '/' + webDownloadItem.getSuggestedFileName());
@@ -299,7 +301,7 @@ struct Webview {
                 eachDownloadPercent.set(webDownloadItem.getGuid(), webDownloadItem.getPercentComplete());
                 this.downloadPercent = 0;
                 for (const value of eachDownloadPercent.values())
-                  this.downloadPercent += value / this.downloadItemNum;
+                  this.downloadPercent += value / this.downloadItemTotal;
                 // 下载速度：console.info("download update speed: " + webDownloadItem.getCurrentSpeed())
               })
               this.downloadDelegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
@@ -312,6 +314,7 @@ struct Webview {
                   setTimeout(() => {
                     eachDownloadPercent.clear();
                     this.showDownloadProgress = false;
+                    this.downloadItemTotal = 0;
                     try {
                       (this.getUIContext().getHostContext() as common.UIAbilityContext).openLink('filemanager://openDirectory', { parameters: { 'fileUri': '' } });
                     } catch (paramError) {
@@ -405,6 +408,7 @@ struct Webview {
         }
         .width('100%')
         .padding({ left: 5, top: 5, right: 5 })
+        .hitTestBehavior(HitTestMode.Transparent)
       }
       .layoutWeight(1)
     }
