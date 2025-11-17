@@ -17,8 +17,8 @@ export class SettingsData {
       ],
       [
         new ItemData(7, $r('app.string.clear_calendar'), $r('app.media.eraser_line')),
-        new ItemData(8, $r('app.string.add_class_notification'), $r('app.media.calendar_badge_clock')),
-        new ItemData(9, $r('app.string.add_exam_notification'), $r('app.media.calendar_badge_clock'))
+        new ItemData(8, $r('app.string.add_class_notification'), $r('app.media.calendar_badge_clock_class')),
+        new ItemData(9, $r('app.string.add_exam_notification'), $r('app.media.calendar_badge_clock_exam'))
       ],
       [
         new ItemData(10, $r('app.string.help'), $r('app.media.questionmark_circle')),

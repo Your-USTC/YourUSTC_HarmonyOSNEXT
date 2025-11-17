@@ -7,6 +7,7 @@ import UnifiedPreference from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit'
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
+const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
 
 @Entry
 @Component
@@ -18,6 +19,8 @@ struct Webview {
   webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
   webBackPress: boolean = UnifiedPreference.getBoolSync('webBackPress', true);
   @State loadingProgress: number = 0;
+  haveJumped: boolean = true;
+  haveLogin: boolean = false;
 
   showMessage(message: string | ResourceStr, duration: number) {
     try {
@@ -134,6 +137,8 @@ struct Webview {
       this.title = params.title ?? '';
       this.url = params.url ?? '';
     }
+    if (autoJumpUrl.includes(this.url))
+      this.haveJumped = false;
   }
 
   build() {
@@ -145,9 +150,7 @@ struct Webview {
           .draggable(false)
           .onClick(() => {
             this.webviewController.terminateRenderProcess();
-            console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
-            this.webviewController.terminateRenderProcess();
-            this.getUIContext().getRouter().back()
+            this.getUIContext().getRouter().back();
           })
         Image($r('app.media.back'))
           .padding(({ left: 12, right: 4 }))
@@ -162,9 +165,7 @@ struct Webview {
                     this.webviewController.backward();
                   } else {
                     this.webviewController.terminateRenderProcess();
-                    this.getUIContext().getRouter().back({
-                      url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-                    });
+                    this.getUIContext().getRouter().back();
                   }
                 }),
               LongPressGesture()
@@ -212,6 +213,20 @@ struct Webview {
           .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
           .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+          .onPageBegin(() => {
+            if (!this.haveJumped) {
+              if (this.haveLogin && this.webviewController.accessStep(-2) && !this.webviewController.accessStep(-3)) {
+                this.webviewController.backOrForward(-2);
+                this.webviewController.loadUrl(this.url);
+                this.haveJumped = true;
+              } else {
+                if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+                  this.haveLogin = true;
+                  this.showMessage($r('app.string.get_schedule_hint'), 5000);
+                }
+              }
+            }
+          })
           .onLoadIntercept((event) => {
             if (event) {
               let uri: string = event.data.getRequestUrl();
@@ -237,9 +252,7 @@ struct Webview {
                   this.webviewController.backward();
                 } else {
                   this.webviewController.terminateRenderProcess();
-                  this.getUIContext().getRouter().back({
-                    url: this.getUIContext().getRouter().getLength() === '3' ? 'pages/Schedule' : 'pages/Index'
-                  });
+                  this.getUIContext().getRouter().back();
                 }
                 return true;
               }
@@ -267,6 +280,54 @@ struct Webview {
               this.webviewController.setCustomUserAgent(MOBILE_UA);
               this.uaMode = MOBILE_MODE;
             }
+          })
+          .onAlert((event) => {
+            if (event) {
+              this.getUIContext().showAlertDialog({
+                title: "来自 " + event.url + " 的警告",
+                message: event.message,
+                confirm:{
+                  value: "确认",
+                  action: () => {
+                    event.result.handleConfirm();
+                  }
+                },
+                cancel: () => { event.result.handleCancel(); }
+              })
+            }
+            return true;
+          })
+          .onConfirm((event) => {
+            if (event) {
+              this.getUIContext().showAlertDialog({
+                title: "来自 " + event.url + " 的消息",
+                message: event.message,
+                primaryButton: {
+                  value: 'cancel',
+                  action: () => { event.result.handleCancel(); }
+                },
+                secondaryButton: {
+                  value: 'ok',
+                  action: () => { event.result.handleConfirm(); }
+                },
+                cancel: () => { event.result.handleCancel(); }
+              })
+            }
+            return true;
+          })
+          .onPrompt((event) => {
+            if (event) {
+              this.getUIContext().showAlertDialog({
+                title: "来自 " + event.url + " 的消息",
+                message: event.message + "\n󰊗此处应有输入框，但是我们没有在学校网站碰到过需要输入框的消息，因此没做（滑稽）。如果你不幸遇到了，在󰁡菜单中选择「在系统浏览器中打开」，并稍后在 GitHub 上向我们反馈。",
+                confirm:{
+                  value: "好吧",
+                  action: () => { event.result.handleCancel(); }
+                },
+                cancel: () => { event.result.handleCancel(); }
+              })
+            }
+            return true;
           })
 
         Line()

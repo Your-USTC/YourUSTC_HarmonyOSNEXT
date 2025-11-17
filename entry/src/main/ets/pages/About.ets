@@ -17,11 +17,13 @@ struct About {
   @State imagePixelMap?: image.PixelMap = undefined
 
   async aboutToAppear() {
+    console.log('aboutToAppear!!')
     this.imagePixelMap = await this.getPixmapFromMedia($r('app.media.nic'))
   }
 
   aboutToDisappear(): void {
-    this.imagePixelMap?.release()
+    console.log('aboutToAppear!!!')
+    this.imagePixelMap?.release();
   }
 
   build() {
@@ -36,7 +38,7 @@ struct About {
           .onClick(() => {
             this.getUIContext().getPromptAction().showToast({ message: $r('app.string.under_construction') });
             this.iconClickTime++;
-            if (this.iconClickTime >= 6) {
+            if (this.iconClickTime >= 7) {
               this.isShowEggImage = true
             }
           })
@@ -172,7 +174,7 @@ struct About {
       .draggable(false)
       .overlay(this.ExitAndSave(), { align: Alignment.Top })
       .onDisAppear(() => {
-        this.iconClickTime = 0
+        this.iconClickTime = 0;
         this.isShowEggImage = false;
       });
   }
