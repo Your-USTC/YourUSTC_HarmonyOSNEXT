@@ -570,7 +570,7 @@
     },
     {
       "name": "downloading_d",
-      "value": "正在下载 %d 个文件……"
+      "value": "正在下载 %d 个文件…"
     },
     {
       "name": "download_failed_s",
@@ -582,7 +582,7 @@
     },
     {
       "name": "loading",
-      "value": "少女祈祷中……"
+      "value": "少女祈祷中…"
     }
   ]
 }

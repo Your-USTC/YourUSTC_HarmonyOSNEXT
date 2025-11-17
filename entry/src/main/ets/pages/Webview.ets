@@ -398,14 +398,15 @@ struct Webview {
               .fontColor($r('app.color.pink'));
             Progress({ value: this.downloadPercent, total: 100, type: ProgressType.Ring })
               .color($r('app.color.pink'))
-              .style({ strokeWidth: 4, enableScanEffect: true })
-              .height(24);
+              .style({ strokeWidth: 4, enableScanEffect: true, shadow: true })
+              .height(30);
           }
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
-          .padding({ left: 10, top: 5, right: 10, bottom: 5})
+          .padding({ left: 13, top: 5, right: 5, bottom: 5})
           .visibility(this.showDownloadProgress ? Visibility.Visible : Visibility.None);
         }
+        .alignItems(VerticalAlign.Top)
         .width('100%')
         .padding({ left: 5, top: 5, right: 5 })
         .hitTestBehavior(HitTestMode.Transparent)
