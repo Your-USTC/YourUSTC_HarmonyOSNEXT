@@ -7,7 +7,7 @@
 
 ## 注意事项
 
-克隆/下载本仓库后，请先将根目录 `build-profile.json5.bak` 文件名中的 `.bak` 扩展名去除，方可在 DevEco Studio 中正确打开。
+克隆/下载本仓库后，请先将根目录 `build-profile.json5.bak` 文件名中的 `.bak` 扩展名去除，方可在 DevEco Studio 中正确构建。
 
 ## 项目结构
 
@@ -34,13 +34,19 @@ entry/src/main/ets/
 ├── entryformability
 │   └── EntryFormAbility.ets                // 卡片生命周期接口
 ├── pages
+│   ├── About.ets                           // 关于页面
+│   ├── ExamDetail.ets                      // 本地考试信息页面
+│   ├── FaultOccurred.ets                   // 
+│   ├── GetSchedule.ets                     // 
+│   ├── Help.ets                            // 帮助页面
 │   ├── Index.ets                           // 首页 (主程序)
 │   ├── Schedule.ets                        // 本地课表页面
 │   └── Webview.ets                         // 浏览器页面
 ├── utils
 │   ├── CheckIn.ets                         // 签到功能
+│   ├── ExamManager.ets                     // 考试信息管理类
 │   ├── FunctionOrder.ets                   // 最近使用功能
-│   ├── TimeTable.ets                       // [JavaScript] 获取课表功能
+│   ├── TimeTable.ets                       // 课表管理类与在线课表获取脚本
 │   ├── UnifyPreference.ets                 // 全局共享首选项读写功能
 │   └── tools.ets                           // 公共工具区
 ├── view

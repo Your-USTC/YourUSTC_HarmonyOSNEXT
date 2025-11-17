@@ -148,7 +148,10 @@ struct Webview {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       Stack({ alignContent: Alignment.TopStart}) {
-        Web({ src: this.url, controller: this.webviewController })
+        Web({
+          src: 'https://id.ustc.edu.cn/cas/login?service=https://jw.ustc.edu.cn/ucas-sso/login',
+          controller: this.webviewController
+        })
           .domStorageAccess(true)
           .javaScriptAccess(true)
           .width('100%')
