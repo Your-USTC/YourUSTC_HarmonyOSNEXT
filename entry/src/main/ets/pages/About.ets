@@ -2,10 +2,8 @@
 import { LengthUnit } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
 import { image } from '@kit.ImageKit'
-import { common } from '@kit.AbilityKit'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { fileIo } from '@kit.CoreFileKit'
-import { http } from '@kit.NetworkKit'
 
 @Entry
 @Component
@@ -22,7 +20,7 @@ struct About {
   }
 
   aboutToDisappear(): void {
-    console.log('aboutToAppear!!!')
+    console.log('aboutToDisappear!!!')
     this.imagePixelMap?.release();
   }
 
@@ -168,11 +166,12 @@ struct About {
     Image(this.imagePixelMap ?? $r('app.media.nic'))
       .width('100%')
       .height('100%')
-      .background($r('app.color.normal_background'))
+      .background($r('app.color.shaded_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .objectFit(ImageFit.Contain)
-      .draggable(false)
-      .overlay(this.ExitAndSave(), { align: Alignment.Top })
+      .borderRadius(20)
+      .draggable(true)
+      .overlay(this.ExitAndSave(), { align: Alignment.Top, offset: { x: 0, y: 45 } })
       .onDisAppear(() => {
         this.iconClickTime = 0;
         this.isShowEggImage = false;
@@ -196,7 +195,7 @@ struct About {
       SaveButton({ icon: SaveIconStyle.FULL_FILLED })
         .width(42)
         .height(42)
-        .iconSize(24)
+        .iconSize(20)
         .offset({ x: -10 })
         .onClick(async (event: ClickEvent, result: SaveButtonOnClickResult, error?) => {
           if (result === SaveButtonOnClickResult.SUCCESS) {
@@ -231,7 +230,8 @@ struct About {
         });
     }
     // .alignItems(VerticalAlign.Top)
-    .width('100%');
+    .width('100%')
+    .height(42)
   }
 
   private async getPixmapFromMedia(resource: Resource) {
