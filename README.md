@@ -9,11 +9,11 @@
 
 [![Release](https://img.shields.io/github/v/release/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/releases/latest)
 &nbsp;
-[![Downloads](https://img.shields.io/github/downloads/Your-USTC/YourUSTC_HarmonyOSNEXT/total?style=social&logo=github)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Your-USTC/YourUSTC_HarmonyOSNEXT/total)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/releases/latest)
 
 ![Repo size](https://img.shields.io/github/repo-size/Your-USTC/YourUSTC_HarmonyOSNEXT)
 &nbsp;
-![Top lang](https://img.shields.io/badge/ArkTS-blue)
+![ArkTS](https://img.shields.io/badge/ArkTS-blue)
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
@@ -23,16 +23,43 @@
 
 ## 功能介绍
 
+### 课程与考试信息管理
+
+- [x] 从教务系统半自动提取课表/考试信息，并导入到本地
+- [x] 在首页显示今日与明日课程、考试倒计时信息
+- [x] 点击课程/考试能显示详情
+- [x] 可手动添加、修改、删除课程/考试，可编辑内容较全面
+- [x] 可将课程/考试导入系统日历，设置提醒时间，也可清除本 App 创建的所有日程
+- [x] 针对可能的错误和崩溃启用恢复模式
+
+### 校园常用功能链接
+
+- [x] 在功能页分类显示链接，并用内嵌浏览器打开
+- [x] 显示“最近使用”，并可清空/定制显示数量
+- [x] 内嵌浏览器支持切换 UA、前进后退、上传/下载文件、释放缓存、在系统浏览器中打开等功能
+
+### 用户界面 (UI) 和其它
+
+- [x] 鸿蒙多端设备（手机/平板/PC）基本适配
+- [x] 浅色/深色模式良好适配（包括网页）
+- [x] 定制首页功能显示情况
+- [ ] 在服务卡片中展示“你的课表”和“考试信息”……
+
 ## 软件截图
 
-<image src="resources/light_1.png" width="160"/>
-<image src="resources/dark_2.png" width="160"/>
-<image src="resources/light_3.png" width="160"/>
-<image src="resources/light_4.png" width="160"/>
+<image src="resources/light_1.png" width="160"/><image src="resources/dark_2.png" width="160"/><image src="resources/light_3.png" width="160"/><image src="resources/light_4.png" width="160"/>
 
-## 开发准备
+## 开发指南
 
-## 项目结构
+### 环境构建
+
+1. 系统要求：Windows ≥ 10 (x64)
+2. 开发环境：DevEco Studio 6.0.0
+3. 克隆本仓库
+4. 将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
+5. 在 DevEco Studio 中打开项目，即可在模拟器和 HarmonyOS NEXT 设备（需要自行配置签名）上运行
+
+### 项目结构
 
 <details>
 <summary>查看</summary>
