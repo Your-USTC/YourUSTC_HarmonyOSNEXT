@@ -47,10 +47,7 @@
 
 ## 软件截图
 
-<image src="resources/light_1.png" width="160"/>
-<image src="resources/dark_2.png" width="160"/>
-<image src="resources/light_3.png" width="160"/>
-<image src="resources/light_4.png" width="160"/>
+<image src="resources/light_1.png" width="160"/><image src="resources/dark_2.png" width="160"/><image src="resources/light_3.png" width="160"/><image src="resources/light_4.png" width="160"/>
 
 ## 开发指南
 
