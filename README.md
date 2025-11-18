@@ -17,7 +17,7 @@
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
-#### [用户协议](https://gnu.ac.cn/licenses/gpl-3.0-standalone.html)&nbsp;&nbsp;|&nbsp;&nbsp;[隐私政策](https://gnu.ac.cn/licenses/gpl-3.0-standalone.html)
+#### [用户协议](https://gnu.ac.cn/licenses/gpl-3.0-standalone.html)&nbsp;&nbsp;|&nbsp;&nbsp;[隐私政策](https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1802923490693635520)
 
 </div>
 
