@@ -13,7 +13,7 @@
 
 ![Repo size](https://img.shields.io/github/repo-size/Your-USTC/YourUSTC_HarmonyOSNEXT)
 &nbsp;
-![Top lang](https://img.shields.io/badge/ArkTS-blue)
+![ArkTS](https://img.shields.io/badge/ArkTS-blue)
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
