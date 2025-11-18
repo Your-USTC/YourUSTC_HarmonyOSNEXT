@@ -4,15 +4,15 @@
 # <image src="AppScope/resources/base/media/icon_round.png" height="28" width="28"/> 你的科大 <font size="4">for HarmonyOS NEXT</font>
 
 [![Stars](https://img.shields.io/github/stars/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT)
-&nbsp;&nbsp;
+&nbsp;
 [![Forks](https://img.shields.io/github/forks/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT)
 
 [![Release](https://img.shields.io/github/v/release/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/releases/latest)
-&nbsp;&nbsp;
+&nbsp;
 [![Downloads](https://img.shields.io/github/downloads/Your-USTC/YourUSTC_HarmonyOSNEXT/total?style=social&logo=github)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/releases/latest)
 
 ![Repo size](https://img.shields.io/github/repo-size/Your-USTC/YourUSTC_HarmonyOSNEXT)
-&nbsp;&nbsp;
+&nbsp;
 ![Top lang](https://img.shields.io/badge/ArkTS-blue)
 
 ### 中国科大一站式导航 · 开启你的智慧校园
