@@ -339,7 +339,7 @@ struct Webview {
                   }
                 },
                 cancel: () => { event.result.handleCancel(); }
-              })
+              });
             }
             return true;
           })
@@ -383,7 +383,7 @@ struct Webview {
           .startPoint([0, 0])
           .backgroundColor($r('app.color.pink'))
         Row() {
-          Row({space: 5}) {
+          Row({ space: 5 }) {
             LoadingProgress()
               .width(45)
               .height(45)

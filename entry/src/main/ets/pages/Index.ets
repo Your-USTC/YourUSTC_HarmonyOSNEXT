@@ -322,9 +322,7 @@ struct Index {
               Text(this.checkInContent)
                 .fontColor($r('app.color.active_text'))
                 .fontSize(20)
-                .fontWeight(FontWeight.Bold)
                 .textShadow({ radius: 1 })
-                .textIndent(40)
                 .lineSpacing({ value: 10, unit: LengthUnit.FP })
             }
             .width('80%')

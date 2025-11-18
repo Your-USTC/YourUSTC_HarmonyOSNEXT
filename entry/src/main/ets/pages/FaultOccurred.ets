@@ -2,6 +2,13 @@
 import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
 import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 import { common, Want } from '@kit.AbilityKit';
+import { examAttribute } from '../utils/ExamManager';
+import { classAttribute } from '../pages/Schedule';
+
+interface exportClassInfo {
+  data: string,
+  termBegin: string
+}
 
 @Entry
 @Component
@@ -79,11 +86,33 @@ struct FaultOccurred {
               .size({ width: 30, height: 30 })
               .onClick((event: ClickEvent, result: PasteButtonOnClickResult, error?: BusinessError<void>) => {
                 if (result === PasteButtonOnClickResult.SUCCESS) {
-                  console.info("success");
-                  // 授权成功，接下来读取剪贴板
+                  pasteboard.getSystemPasteboard().getData((err: BusinessError, pasteData: pasteboard.PasteData) => {
+                    if (err) {
+                      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_failed') });
+                      return;
+                    }
+                    const pasteText: string = pasteData.getPrimaryText();
+                    try {
+                      const test: exportClassInfo = JSON.parse(pasteText);
+                      const checkResult: classAttribute[] = JSON.parse(test.data);
+                      UnifiedPreferences.putSync('scheduleInfo', test.data);
+                      UnifiedPreferences.putSync('termStartTime', test.termBegin);
+                      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_success') });
+                    } catch (error) {
+                      this.getUIContext().showAlertDialog({
+                        title: $r('app.string.import_failed'),
+                        subtitle: error,
+                        message: "当前剪贴板内容：" + pasteText,
+                        confirm:{
+                          value: "确认",
+                          action: () => {}
+                        },
+                        cancel: () => {}
+                      });
+                    }
+                  });
                 } else {
-                  console.error("errCode: " + error?.code);
-                  console.error("errMessage: " + error?.message);
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_failed') });
                 }
               });
             Text($r('app.string.import_schedule'))
@@ -93,7 +122,7 @@ struct FaultOccurred {
           Button($r('app.string.export_schedule'))
             .buttonStyle(ButtonStyleMode.TEXTUAL)
             .onClick(() => {
-              const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, JSON.stringify({ data: UnifiedPreferences.getSync('scheduleInfo', '[]'), time: UnifiedPreferences.getSync('termStartTime', '2025-07-21') }));
+              const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, JSON.stringify({ data: UnifiedPreferences.getSync('scheduleInfo', '[[[]]]'), termBegin: UnifiedPreferences.getSync('termStartTime', '20250721') }));
               const systemPasteboard = pasteboard.getSystemPasteboard();
               systemPasteboard.setData(pasteboardData);
               systemPasteboard.getData().then((data) => {
@@ -113,10 +142,34 @@ struct FaultOccurred {
               .size({ width: 30, height: 30 })
               .onClick((event: ClickEvent, result: PasteButtonOnClickResult, error?: BusinessError<void>) => {
                 if (result === PasteButtonOnClickResult.SUCCESS) {
-                  console.info("success");
+                  pasteboard.getSystemPasteboard().getData((err: BusinessError, pasteData: pasteboard.PasteData) => {
+                    if (err) {
+                      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_failed') });
+                      return;
+                    }
+                    const pasteText: string = pasteData.getPrimaryText();
+                    try {
+                      const parsedData: examAttribute[] = JSON.parse(pasteText);
+                      if (typeof parsedData !== 'object' || parsedData === null) {
+                        throw new Error('格式错误');
+                      }
+                      UnifiedPreferences.putSync('examInfo', pasteText);
+                      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_success') });
+                    } catch (error) {
+                      this.getUIContext().showAlertDialog({
+                        title: $r('app.string.import_failed'),
+                        subtitle: error,
+                        message: "当前剪贴板内容：" + pasteText,
+                        confirm:{
+                          value: "确认",
+                          action: () => {}
+                        },
+                        cancel: () => {}
+                      });
+                    }
+                  });
                 } else {
-                  console.error("errCode: " + error?.code);
-                  console.error("errMessage: " + error?.message);
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_failed') });
                 }
               });
             Text($r('app.string.import_exam'));

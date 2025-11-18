@@ -509,6 +509,14 @@
       "value": "导出考试到剪贴板"
     },
     {
+      "name": "import_success",
+      "value": "导入成功"
+    },
+    {
+      "name": "import_failed",
+      "value": "导入失败"
+    },
+    {
       "name": "delete_all_data",
       "value": "清空所有数据"
     },
