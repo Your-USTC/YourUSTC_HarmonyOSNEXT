@@ -19,6 +19,7 @@ import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
+import { fileIo } from '@kit.CoreFileKit'
 
 // 指定日历账户信息
 const calendarAccount: calendarManager.CalendarAccount = {
@@ -815,16 +816,19 @@ struct Index {
                   this.showCheckIn = !this.showCheckIn;
                   UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
                   break;
+
                 case 1:
                   // 显示课表
                   this.showRecentCourse = !this.showRecentCourse;
                   UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
                   break;
+
                 case 2:
                   // 显示考试
                   this.showExamDetail = !this.showExamDetail;
                   UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
                   break;
+
                 case 3:
                   // 选择最近使用
                   let maxRecordPre: preferences.Preferences = preferences.getPreferencesSync(this.context, { name: 'FunctionOrderNum' });
@@ -853,6 +857,7 @@ struct Index {
                     }
                   })
                   break;
+
                 case 4:
                   // 重置最近使用
                   FunctionOrder.resetFunc(this.context);
@@ -864,14 +869,17 @@ struct Index {
                     console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
                   }
                   break;
+
                 case 5:
                   this.webAutoDarkMode = !this.webAutoDarkMode;
                   UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
                   break;
+
                 case 6:
                   this.webBackPress = !this.webBackPress;
                   UnifiedPreferences.putSync('webBackPress', this.webBackPress);
                   break;
+
                 case 7:
                   // 清除日历中的所有提醒信息
                   let getPermission: boolean = true;
@@ -915,6 +923,7 @@ struct Index {
                     }
                   }, 500);
                   break;
+
                 case 8:
                   let selected3: number = 0;
                   switch (Schedule.remindBefore[0]) {
@@ -1036,6 +1045,7 @@ struct Index {
                     }
                   })
                   break;
+
                 case 9:
                   let selected4: number = 0;
                   switch (Schedule.examRemindBefore[0]) {
@@ -1127,17 +1137,46 @@ struct Index {
                     }
                   })
                   break;
+
                 case 10:
+                  let cacheDir = this.getUIContext().getHostContext()!.cacheDir;
+                  console.info(cacheDir);
+                  fileIo.listFile(cacheDir).then((filenames) => {
+                    for (let i = 0; i < filenames.length; i++) {
+                      let dirPath = cacheDir + '/' + filenames[i];
+                      console.log(dirPath);
+                      // Determine whether it is a folder
+                      let isDirectory: boolean = false;
+                      try {
+                        isDirectory = fileIo.statSync(dirPath).isDirectory();
+                      } catch (e) {
+                        console.error(JSON.stringify(e));
+                      }
+                      if (isDirectory) {
+                        fileIo.rmdirSync(dirPath);
+                      } else {
+                        fileIo.unlink(dirPath).then(() => {
+                          console.info('remove file succeed');
+                        }).catch((err: Error) => {
+                          console.error('remove file failed with error message: ' + err.message);
+                        });
+                      }
+                    }
+                  })
+                  this.showMessage($r('app.string.wipe_cache_success'), 500);
+                  break;
+
+                case 11:
                   // 帮助
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 11:
+                case 12:
                   // 关于
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 12:
+                case 13:
                   // 退出到恢复模式
                   UnifiedPreferences.putSync('RecoveryMode', true)
                   const context = this.getUIContext().getHostContext() as common.UIAbilityContext;

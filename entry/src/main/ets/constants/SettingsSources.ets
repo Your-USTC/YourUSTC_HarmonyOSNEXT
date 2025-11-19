@@ -11,19 +11,20 @@ export class SettingsData {
       ],
       [
         new ItemData(3, $r('app.string.setMaxRecord'), $r('app.media.more')),
-        new ItemData(4, $r('app.string.ClearFunctionHistory'), $r('app.media.clean')),
+        new ItemData(4, $r('app.string.ClearFunctionHistory'), $r('app.media.eraser_line')),
         new ItemData(5, $r('app.string.web_auto_dark_mode'), $r('app.media.moon_fill'), $r('app.string.setting_toggle')),
         new ItemData(6, $r('app.string.web_back_press'), $r('app.media.house'), $r('app.string.setting_toggle'))
       ],
       [
-        new ItemData(7, $r('app.string.clear_calendar'), $r('app.media.eraser_line')),
+        new ItemData(7, $r('app.string.clear_calendar'), $r('app.media.bell_slash')),
         new ItemData(8, $r('app.string.add_class_notification'), $r('app.media.calendar_badge_clock_class')),
         new ItemData(9, $r('app.string.add_exam_notification'), $r('app.media.calendar_badge_clock_exam'))
       ],
       [
-        new ItemData(10, $r('app.string.help'), $r('app.media.questionmark_circle')),
-        new ItemData(11, $r('app.string.about'), $r('app.media.info_circle')),
-        new ItemData(12, $r('app.string.manual_fault'), $r('app.media.exclamationmark_circle'))
+        new ItemData(10, $r('app.string.wipe_cache'), $r('app.media.clean')),
+        new ItemData(11, $r('app.string.help'), $r('app.media.questionmark_circle')),
+        new ItemData(12, $r('app.string.about'), $r('app.media.info_circle')),
+        new ItemData(13, $r('app.string.manual_fault'), $r('app.media.exclamationmark_circle'))
       ]
     ];
     return settingListData;
