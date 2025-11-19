@@ -113,6 +113,10 @@
       "value": "清除应用缓存"
     },
     {
+      "name": "wipe_cookie",
+      "value": "清理 Cookies"
+    },
+    {
       "name": "wipe_cache_success",
       "value": "清理成功"
     },
@@ -154,7 +158,7 @@
     },
     {
       "name": "clear_calendar",
-      "value": "清除所有提醒"
+      "value": "清除所有提醒日程"
     },
     {
       "name": "calendar_null",
@@ -306,7 +310,7 @@
     },
     {
       "name": "trim_memory",
-      "value": "释放缓存"
+      "value": "释放内存"
     },
     {
       "name": "switch_ua",

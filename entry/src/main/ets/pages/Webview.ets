@@ -5,7 +5,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 import { common } from '@kit.AbilityKit'
 import UnifiedPreference from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
-import { picker, fileUri } from  '@kit.CoreFileKit';
+import { picker, fileUri, fileIo } from  '@kit.CoreFileKit';
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
@@ -81,11 +81,22 @@ struct Webview {
           )
         )
 
-      MenuItem({ content: $r('app.string.trim_memory'), startIcon: $r('app.media.arrowshape_3_triangle_path')})
+      MenuItem({ content: $r('app.string.wipe_cookie'), startIcon: $r('app.media.default_function_icon') })
+        .onClick(() => {
+          try {
+            fileIo.rmdirSync('/data/storage/el2/base/cache/web/Cookies');
+            this.showMessage($r('app.string.wipe_cache_success'), 500);
+          } catch (error) {
+            console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+          }
+        })
+
+      MenuItem({ content: $r('app.string.trim_memory'), startIcon: $r('app.media.arrowshape_3_triangle_path') })
         .onClick(() => {
           try {
             // 设置当前内存压力等级为适中，释放少量内存
             webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_MODERATE);
+            this.showMessage($r('app.string.wipe_cache_success'), 500);
           } catch (error) {
             console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
           }

@@ -195,20 +195,13 @@ struct Index {
    * 全局资源: 设置
    */
   clearCache = async () => {
-    let path = this.context.filesDir;
-    statfs.getFreeSize(path, (err: BusinessError, number: number) => {
-      if (err) {
-        console.error(`Invoke getFreeSize failed, code is ${err.code}, message is ${err.message}`);
-      } else {
-        console.info(`Invoke getFreeSize succeeded, size is ${number}`);
-      }
-    });
-
     let paths: Array<string> = [];
     let moduleContext: common.Context;
     moduleContext = await application.createModuleContext(this.context, 'entry');
     // 缓存路径/data/storage/el2/base/cache
     paths.push(moduleContext.cacheDir);
+    // 缓存路径/data/storage/el2/base/cache/web
+    paths.push(moduleContext.cacheDir + '/web');
     // 缓存路径/data/storage/el2/base/haps/entry/cache
     paths.push(this.context.cacheDir);
     // 缓存路径/data/storage/el1/base/cache
@@ -224,7 +217,8 @@ struct Index {
       fileIo.listFile(path).then((filenames) => {
         for (let i = 0; i < filenames.length; i++) {
           let dirPath = path + '/' + filenames[i];
-          console.info(dirPath);
+          if (dirPath === '/data/storage/el2/base/cache/web' || dirPath === '/data/storage/el2/base/cache/web/Cookies')
+            continue;
           // 判断是否为文件夹
           let isDirectory: boolean = false;
           try {
@@ -232,13 +226,10 @@ struct Index {
           } catch (err) {
             console.error(`remove file failed with error message: ${err.message}`);
           }
-
           if (isDirectory) {
             fileIo.rmdirSync(dirPath);
           } else {
-            fileIo.unlink(dirPath).then(() => {
-              console.info('remove file succeed');
-            }).catch((err: Error) => {
+            fileIo.unlink(dirPath).catch((err: Error) => {
               console.error(`remove file failed with error message: ${err.message}`);
             });
           }
