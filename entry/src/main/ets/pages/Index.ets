@@ -1,5 +1,5 @@
 
-import { abilityAccessCtrl, common } from '@kit.AbilityKit'
+import { abilityAccessCtrl, application, common, contextConstant } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
@@ -19,7 +19,7 @@ import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
-import { fileIo } from '@kit.CoreFileKit'
+import { fileIo, statfs } from '@kit.CoreFileKit'
 
 // 指定日历账户信息
 const calendarAccount: calendarManager.CalendarAccount = {
@@ -194,6 +194,59 @@ struct Index {
   /**
    * 全局资源: 设置
    */
+  clearCache = async () => {
+    let path = this.context.filesDir;
+    statfs.getFreeSize(path, (err: BusinessError, number: number) => {
+      if (err) {
+        console.error(`Invoke getFreeSize failed, code is ${err.code}, message is ${err.message}`);
+      } else {
+        console.info(`Invoke getFreeSize succeeded, size is ${number}`);
+      }
+    });
+
+    let paths: Array<string> = [];
+    let moduleContext: common.Context;
+    moduleContext = await application.createModuleContext(this.context, 'entry');
+    // 缓存路径/data/storage/el2/base/cache
+    paths.push(moduleContext.cacheDir);
+    // 缓存路径/data/storage/el2/base/haps/entry/cache
+    paths.push(this.context.cacheDir);
+    // 缓存路径/data/storage/el1/base/cache
+    moduleContext.area = contextConstant.AreaMode.EL1;
+    paths.push(moduleContext.cacheDir);
+    // 缓存路径/data/storage/el1/base/haps/entry/cache
+    this.context.area = contextConstant.AreaMode.EL1;
+    paths.push(this.context.cacheDir);
+
+    // 遍历paths数组，彻底删除每个文件夹下的缓存数据
+    for (let i = 0; i < paths.length; i++) {
+      let path = paths[i];
+      fileIo.listFile(path).then((filenames) => {
+        for (let i = 0; i < filenames.length; i++) {
+          let dirPath = path + '/' + filenames[i];
+          console.info(dirPath);
+          // 判断是否为文件夹
+          let isDirectory: boolean = false;
+          try {
+            isDirectory = fileIo.statSync(dirPath).isDirectory();
+          } catch (err) {
+            console.error(`remove file failed with error message: ${err.message}`);
+          }
+
+          if (isDirectory) {
+            fileIo.rmdirSync(dirPath);
+          } else {
+            fileIo.unlink(dirPath).then(() => {
+              console.info('remove file succeed');
+            }).catch((err: Error) => {
+              console.error(`remove file failed with error message: ${err.message}`);
+            });
+          }
+        }
+      });
+    }
+  }
+
   @Builder
   settingCell(item: ItemData) {
     Row() {
@@ -1139,30 +1192,7 @@ struct Index {
                   break;
 
                 case 10:
-                  let cacheDir = this.getUIContext().getHostContext()!.cacheDir;
-                  console.info(cacheDir);
-                  fileIo.listFile(cacheDir).then((filenames) => {
-                    for (let i = 0; i < filenames.length; i++) {
-                      let dirPath = cacheDir + '/' + filenames[i];
-                      console.log(dirPath);
-                      // Determine whether it is a folder
-                      let isDirectory: boolean = false;
-                      try {
-                        isDirectory = fileIo.statSync(dirPath).isDirectory();
-                      } catch (e) {
-                        console.error(JSON.stringify(e));
-                      }
-                      if (isDirectory) {
-                        fileIo.rmdirSync(dirPath);
-                      } else {
-                        fileIo.unlink(dirPath).then(() => {
-                          console.info('remove file succeed');
-                        }).catch((err: Error) => {
-                          console.error('remove file failed with error message: ' + err.message);
-                        });
-                      }
-                    }
-                  })
+                  this.clearCache();
                   this.showMessage($r('app.string.wipe_cache_success'), 500);
                   break;
 
