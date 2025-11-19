@@ -144,7 +144,7 @@ struct About {
         .width(42)
         .margin({ right: 10 })
         .onClick(() => {
-          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在App Gallery搜索，或者去github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/找到它');
+          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在华为应用市场搜索，或者去https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT找到它！');
           const systemPasteboard = pasteboard.getSystemPasteboard();
           systemPasteboard.setData(pasteboardData);
           systemPasteboard.getData().then((data) => {
