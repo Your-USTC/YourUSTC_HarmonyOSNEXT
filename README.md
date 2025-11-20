@@ -17,7 +17,7 @@
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
-###### [用户协议 & 隐私政策](https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1823357930158713536)
+###### [用户协议 & 隐私政策](entry/src/main/resources/rawfile/TermsOfUse.html)
 
 </div>
 
@@ -131,4 +131,4 @@ entry/src/main/
 
 [<image src="https://gnu.ac.cn/graphics/gplv3-or-later.svg" height="18"/> **GNU General Public License v3.0 (GPLv3)**](LICENSE)
 
-YourUSTC  Copyright (C) 2025  YourUSTC Developer Team
+YourUSTC  Copyright © 2025  YourUSTC Developer Team
