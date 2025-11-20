@@ -81,7 +81,7 @@ struct Webview {
           )
         )
 
-      MenuItem({ content: $r('app.string.wipe_cookie'), startIcon: $r('app.media.clean') })
+      MenuItem({ content: $r('app.string.wipe_cookie'), startIcon: $r('app.media.remove_cookie') })
         .onClick(() => {
           try {
             fileIo.rmdirSync('/data/storage/el2/base/cache/web/Cookies');
