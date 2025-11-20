@@ -378,7 +378,7 @@
     },
     {
       "name": "under_construction",
-      "value": "前面的区域，以后再来探索吧"
+      "value": "前面的区域，以后再来探索吧！"
     },
     {
       "name": "click_empty_gridData1",
@@ -390,23 +390,23 @@
     },
     {
       "name": "click_empty_gridData3",
-      "value": "这里还没住进回忆，快去创造第一个吧！"
-    },
-    {
-      "name": "click_empty_gridData4",
       "value": "空空如也，快去给我找点事做！"
     },
     {
-      "name": "click_empty_gridData5",
+      "name": "click_empty_gridData4",
       "value": "报告主人！你的「最近使用」专区目前是“无人问津”状态～"
     },
     {
-      "name": "click_empty_gridData6",
-      "value": "网页不能从这一侧打开"
+      "name": "click_empty_gridData5",
+      "value": "嘘——你的足迹将在这里浮现"
     },
     {
-      "name": "click_empty_gridData7",
-      "value": "嘘——你的足迹将在这里浮现"
+      "name": "egg_hint1",
+      "value": "\uD835\uDC6A\uD835\uDC8A\uD835\uDC82\uD835\uDC8D\uD835\uDC8D\uD835\uDC90～(∠・ω < )⌒★"
+    },
+    {
+      "name": "egg_hint2",
+      "value": "☆⌒( > ω・∠)～ollɐıɔ"
     },
     {
       "name": "have_cleared",
@@ -494,7 +494,7 @@
     },
     {
       "name": "schedule_card_title",
-      "value": "你的课表"
+      "value": "今日课程"
     },
     {
       "name": "runtime_error",
@@ -566,7 +566,7 @@
     },
     {
       "name": "terms_of_use_and_privacy_policy",
-      "value": "用户协议&隐私政策"
+      "value": "用户协议 & 隐私政策"
     },
     {
       "name": "credits",

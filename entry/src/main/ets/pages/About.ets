@@ -4,6 +4,7 @@ import { pasteboard } from '@kit.BasicServicesKit'
 import { image } from '@kit.ImageKit'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { fileIo } from '@kit.CoreFileKit'
+import { getRandomInt } from '../utils/tools';
 
 @Entry
 @Component
@@ -34,7 +35,7 @@ struct About {
           .draggable(false)
           .constraintSize({ maxWidth: 300 })
           .onClick(() => {
-            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.under_construction') });
+            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
             this.iconClickTime++;
             if (this.iconClickTime >= 7) {
               this.isShowEggImage = true

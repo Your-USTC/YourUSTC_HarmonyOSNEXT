@@ -47,7 +47,7 @@ export default struct GridComponent {
             if (this.gridIndex == -1) {
               if (FunctionOrder.order.length <= index) {
                 this.getUIContext().getPromptAction().showToast({
-                  message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 7).toString()),
+                  message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 5).toString()),
                   // 在 string.ets 里添加时别忘了改 tools.getRandomInt(1, 7)！！
                   duration: 500
                 })
