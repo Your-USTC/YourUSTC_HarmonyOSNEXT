@@ -163,19 +163,25 @@ struct About {
 
   @Builder
   EggImage() {
-    Image(this.imagePixelMap ?? $r('app.media.nic'))
-      .width('100%')
-      .height('100%')
-      .background($r('app.color.shaded_background'))
+    WithTheme({ colorMode: ThemeColorMode.LIGHT }) {
+      Column() {
+        Image(this.imagePixelMap ?? $r('app.media.nic'))
+          .width('100%')
+          .height('100%')
+          .objectFit(ImageFit.Contain)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .onDisAppear(() => {
+            this.iconClickTime = 0;
+            this.isShowEggImage = false;
+          });
+      }
+      .linearGradient({
+        angle: 45,
+        colors: [[0xb1b2cd, 0.0], [0xf9f9fb, 0.75], [0xffffff, 1.0]]
+      })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .objectFit(ImageFit.Contain)
-      .borderRadius(20)
-      .draggable(true)
-      .overlay(this.ExitAndSave(), { align: Alignment.Top, offset: { x: 0, y: 45 } })
-      .onDisAppear(() => {
-        this.iconClickTime = 0;
-        this.isShowEggImage = false;
-      });
+      .overlay(this.ExitAndSave(), { align: Alignment.Top, offset: { x: 0, y: 45 } });
+    }
   }
 
   @Builder
@@ -195,7 +201,7 @@ struct About {
       SaveButton({ icon: SaveIconStyle.FULL_FILLED })
         .width(42)
         .height(42)
-        .iconSize(20)
+        .iconSize(24)
         .offset({ x: -10 })
         .onClick(async (event: ClickEvent, result: SaveButtonOnClickResult, error?) => {
           if (result === SaveButtonOnClickResult.SUCCESS) {
