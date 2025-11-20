@@ -68,7 +68,7 @@ struct About {
           })
 
         Row() {
-          Text($r('app.string.terms_of_use'))
+          Text($r('app.string.terms_of_use_and_privacy_policy'))
             .fontColor($r('app.color.active_text'))
             .decoration({
               type: TextDecorationType.Underline,
@@ -78,7 +78,7 @@ struct About {
               this.context.getRouter().pushUrl({
                 url: 'pages/Webview',
                 params: {
-                  title: $r('app.string.terms_of_use'),
+                  title: $r('app.string.terms_of_use_and_privacy_policy'),
                   url: $rawfile('TermsOfUse.html')
                 }
               }).catch((err: Error) => {
@@ -88,7 +88,7 @@ struct About {
 
           Text('  |  ')
 
-          Text($r('app.string.privacy_policy'))
+          Text($r('app.string.open_source_license'))
             .fontColor($r('app.color.active_text'))
             .decoration({
               type: TextDecorationType.Underline,
@@ -98,8 +98,8 @@ struct About {
               this.context.getRouter().pushUrl({
                 url: 'pages/Webview',
                 params: {
-                  title: $r('app.string.privacy_policy'),
-                  url: $rawfile('PrivacyPolicy.html')
+                  title: $r('app.string.open_source_license'),
+                  url: $rawfile('OpenSourceLicense.html')
                 }
               }).catch((err: Error) => {
                 console.error(`Router ERROR: [${err.name}] ${err.message}`)

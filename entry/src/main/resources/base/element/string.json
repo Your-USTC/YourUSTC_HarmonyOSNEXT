@@ -561,16 +561,16 @@
       "value": "在 GitHub 上为我们点亮\uD83C\uDF1F！"
     },
     {
-      "name": "terms_of_use",
-      "value": "用户协议"
+      "name": "open_source_license",
+      "value": "开源许可"
     },
     {
-      "name": "privacy_policy",
-      "value": "隐私政策"
+      "name": "terms_of_use_and_privacy_policy",
+      "value": "用户协议&隐私政策"
     },
     {
       "name": "credits",
-      "value": "开发者 (按拼音排序) :\n25-少-DSC 25-计-LMC 25-微-ZYM\n\n启动图片来源：pid 101123644\nQ版角色图片绘制：Gemini & ZYM\n\n本项目起源于“计算机程序设计”大作业"
+      "value": "开发者 (按拼音排序) :\n25-少-杜思成 25-计-李铭承 25-微-祝一铭\n\n启动图片来源：pid 101123644\nQ版角色创意/绘制：祝一铭 & Gemini\n\n本项目起源于“计算机程序设计”大作业"
     },
     {
       "name": "copy_success",
