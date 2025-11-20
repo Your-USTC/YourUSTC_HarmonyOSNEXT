@@ -1,7 +1,7 @@
 
 <div align="center">
 
-# <image src="AppScope/resources/base/media/icon_round.png" height="28" width="28"/> 你的科大 <font size="4">for HarmonyOS NEXT</font>
+# <image src="AppScope/resources/base/media/icon_round.png" height="28" width="28"/> 你的科大 <br> <font size="4">for HarmonyOS NEXT</font>
 
 [![Stars](https://img.shields.io/github/stars/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT)
 &nbsp;
@@ -17,7 +17,7 @@
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
-#### [用户协议](https://gnu.ac.cn/licenses/gpl-3.0-standalone.html)&nbsp;&nbsp;|&nbsp;&nbsp;[隐私政策](https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1802923490693635520)
+###### [用户协议 & 隐私政策](https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1823357930158713536)
 
 </div>
 
