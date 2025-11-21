@@ -28,7 +28,6 @@ struct Webview {
   downloadItemTotal: number = 0;
   @State showDownloadProgress: boolean = false;
   haveJumped: boolean = true;
-  haveLogin: boolean = false;
 
   showMessage(message: string | ResourceStr, duration: number) {
     try {
@@ -236,14 +235,14 @@ struct Webview {
           .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .onPageBegin(() => {
-            if (!this.haveJumped) {
-              if (this.haveLogin && this.webviewController.accessStep(-2) && !this.webviewController.accessStep(-3)) {
+            if (!this.haveJumped) { // 不在白名单中的网站已在 aboutToAppear 中设置不跳转
+              if ((this.webviewController.accessStep(-2) && !this.webviewController.accessStep(-3)) ||
+                (this.webviewController.accessBackward() && !this.webviewController.accessStep(-2))) {
                 this.webviewController.backOrForward(-2);
                 this.webviewController.loadUrl(this.url);
                 this.haveJumped = true;
               } else {
                 if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
-                  this.haveLogin = true;
                   this.showMessage($r('app.string.get_schedule_hint'), 5000);
                 }
               }

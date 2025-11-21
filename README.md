@@ -17,7 +17,7 @@
 
 ### 中国科大一站式导航 · 开启你的智慧校园
 
-###### [用户协议 & 隐私政策](entry/src/main/resources/rawfile/TermsOfUse.html)
+###### [用户协议 & 隐私政策](https://cdn.jsdelivr.net/gh/Your-USTC/YourUSTC_HarmonyOSNEXT@main/entry/src/main/resources/rawfile/TermsOfUse.html)
 
 </div>
 
