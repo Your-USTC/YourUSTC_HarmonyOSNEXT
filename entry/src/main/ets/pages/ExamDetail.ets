@@ -222,13 +222,8 @@ struct ExamDetail {
               .backgroundColor($r('app.color.grid_background'))
               .borderRadius(20);
             }
-            .width('90%')
-            .padding({
-              top: 10,
-              bottom: 10,
-              left: 16,
-              right: 16
-            })
+            .width('100%')
+            .padding({ top: 10, bottom: 10, left: 16, right: 16 })
             .margin({ top: 7, bottom: 7 })
             .backgroundColor($r('app.color.grid_background'))
             .borderRadius(20)
@@ -292,7 +287,7 @@ struct ExamDetail {
         .height('100%')
         .alignListItem(ListItemAlign.Center)
         .scrollBar(BarState.Auto)
-        .padding({ top: 7, bottom: 48 })
+        .padding({ left: 12, right: 12 })
         .backgroundColor($r('app.color.normal_background'))
       }
     }

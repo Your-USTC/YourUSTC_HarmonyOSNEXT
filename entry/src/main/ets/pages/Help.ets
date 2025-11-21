@@ -1,10 +1,10 @@
 
 import { LengthUnit } from '@kit.ArkUI';
+import { getContArray } from '../utils/tools';
 
 @Entry
 @Component
 struct Index {
-  private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
   @State isContentShow: boolean[] = new Array(15).fill(false);
   context: UIContext = this.getUIContext();
   @State rotateAngle: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -39,7 +39,7 @@ struct Index {
 
 
       List({ initialIndex: 0 }) {
-        ForEach(this.arr, (index: number) => {
+        ForEach(getContArray([[0, 5]]), (index: number) => {
           ListItem() {
             Column() {
               Row() {
