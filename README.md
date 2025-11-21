@@ -60,11 +60,11 @@
 
 即使你不是中国科学技术大学的学生，你也可以修改本项目以适配自己的学校，以下是构建步骤：
 
-1. 系统要求：Windows ≥ 10 (x64)
-2. 开发环境：DevEco Studio 6.0.0
-3. 克隆本仓库
+1. 注册一个华为[开发者账号](https://developer.huawei.com/consumer/cn/)，如果仅运行在自己的设备上则无需实名
+2. 下载 [DevEco Studio 6.0.0](https://developer.huawei.com/consumer/cn/deveco-studio/)
+3. Fork 本仓库并将 Fork 后你自己的仓库下载到本地
 4. 将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
-5. 修改相应链接和课表/考试提取函数
+5. 修改相应 链接/图标 和 课表/考试 提取函数
 6. 在 DevEco Studio 中打开项目，即可在 HarmonyOS NEXT 设备上运行。需要登录华为账号并在右上角<image src="resources/signature.png" style="vertical-align: top; height: 1.2em;"/>处签名
 
 ### 项目结构
