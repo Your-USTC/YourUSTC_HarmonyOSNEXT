@@ -236,9 +236,11 @@ struct Webview {
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .onPageBegin(() => {
             if (!this.haveJumped) { // 不在白名单中的网站已在 aboutToAppear 中设置不跳转
-              if ((this.webviewController.accessStep(-2) && !this.webviewController.accessStep(-3)) ||
-                (this.webviewController.accessBackward() && !this.webviewController.accessStep(-2))) {
-                this.webviewController.backOrForward(-2);
+              if (this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {
+                let i: number = -1;
+                while (this.webviewController.accessStep(i))
+                  i--;
+                this.webviewController.backOrForward(i + 1);
                 this.webviewController.loadUrl(this.url);
                 this.haveJumped = true;
               } else {
