@@ -632,6 +632,7 @@ struct Index {
               .onClick(() => {
                 examManager.readStoredExam();
                 this.exams = examManager.allExamInfo;
+                this.currentTime = new Date();
                 for (let i = this.exams.length - 1; i >= 0; i--)
                   if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
                     this.exams.splice(i, 1);
