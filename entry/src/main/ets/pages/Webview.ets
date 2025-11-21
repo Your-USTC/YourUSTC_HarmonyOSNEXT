@@ -84,10 +84,13 @@ struct Webview {
       MenuItem({ content: $r('app.string.wipe_cookie'), startIcon: $r('app.media.remove_cookie') })
         .onClick(() => {
           try {
-            fileIo.rmdirSync('/data/storage/el2/base/cache/web/Cookies');
+            // this.webviewController.removeCache(true);
+            // fileIo.rmdirSync('/data/storage/el2/base/cache/web/Cookies');
+            webview.WebCookieManager.clearAllCookiesSync();
+            // webview.WebCookieManager.clearSessionCookieSync();
             this.showMessage($r('app.string.wipe_cache_success'), 500);
           } catch (error) {
-            console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+            console.error(`rmdirSync ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
           }
         })
 
