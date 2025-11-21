@@ -1,0 +1,23 @@
+name: Issue Auto Label and Assign
+# 1. 定义触发事件：当 Issue 被创建时
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  automate-issue:
+    runs-on: ubuntu-latest
+    steps:
+      # 2. 添加标签
+      - name: Add 'triage' label to new issue
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "待处理"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3. 分配负责人 (单人或多人)
+      - name: Assign issue to maintainer
+        uses: actions-ecosystem/action-assign@v1
+        with:
+          assignees: "Nalcyron"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
