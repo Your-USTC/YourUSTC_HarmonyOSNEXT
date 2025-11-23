@@ -99,6 +99,7 @@ function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean 
   if (a.dayOfWeek !== b.dayOfWeek) return false;
   if (a.location !== b.location) return false;
   if (a.id !== b.id) return false;
+  if (a.color !== b.color) return false;
 
   // 数组类型通过辅助函数比较
   if (!tools.areNumberArraysEqual(a.weekOfTerm, b.weekOfTerm)) return false;
