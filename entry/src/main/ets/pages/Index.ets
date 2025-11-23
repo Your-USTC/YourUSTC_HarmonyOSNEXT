@@ -113,25 +113,7 @@ struct Index {
     this.checkInConsecutive = GeneratedDestructArray_1[1];
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
-    scheduleManager.getFormattedSchedule(); // 初始化首页课表
-    if (scheduleManager.isTermEnd) {
-      this.todayCourse = [];
-      this.tomorrowCourse = [];
-    } else {
-      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
-    }
-    for (let todaySingleCourse of this.todayCourse)
-      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-        + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
-        this.isTodayCourseEnd = false;
-        break;
-      }
-    examManager.readStoredExam();
-    this.exams = examManager.allExamInfo;
-    for (let i = this.exams.length - 1; i >= 0; i--)
-      if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
-        this.exams.splice(i, 1);
+    this.refreshInfo();
   }
 
   /**
@@ -296,6 +278,32 @@ struct Index {
     })
   }
 
+  /*
+   * 常用功能
+   */
+  refreshInfo() {
+    this.currentTime = new Date();
+    scheduleManager.getFormattedSchedule(); // 初始化首页课表
+    if (scheduleManager.isTermEnd) {
+      this.todayCourse = [];
+      this.tomorrowCourse = [];
+    } else {
+      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
+    }
+    for (let todaySingleCourse of this.todayCourse)
+      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+        + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
+        this.isTodayCourseEnd = false;
+        break;
+      }
+    examManager.readStoredExam();
+    this.exams = examManager.allExamInfo;
+    for (let i = this.exams.length - 1; i >= 0; i--)
+      if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
+        this.exams.splice(i, 1);
+  }
+
   showMessage(message: string | ResourceStr, duration: number) {
     try {
       this.getUIContext().getPromptAction().showToast({
@@ -306,6 +314,7 @@ struct Index {
       console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
     }
   }
+
   calendar_permission_denied(error: BusinessError) {
     this.getUIContext().showAlertDialog({
       title: $r('app.string.error_occurred'),
@@ -326,7 +335,7 @@ struct Index {
         action: () => {
           let atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
           atManager.requestPermissionOnSetting(this.context, ['ohos.permission.READ_CALENDAR', 'ohos.permission.WRITE_CALENDAR']).then((data: Array<abilityAccessCtrl.GrantStatus>) => {
-            console.info(`requestPermissionOnSetting success, result: ${data}`);
+            // success
           }).catch((err: BusinessError) => {
             console.error(`requestPermissionOnSetting fail, code: ${err.code}, message: ${err.message}`);
           });
@@ -425,23 +434,7 @@ struct Index {
               .height(36)
               .width(36)
               .onClick(() => {
-                scheduleManager.getFormattedSchedule(); // 初始化首页课表
-                this.currentTime = new Date();
-                if (scheduleManager.isTermEnd) {
-                  this.todayCourse = [];
-                  this.tomorrowCourse = [];
-                } else {
-                  this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-                  this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
-                }
-                this.isTodayCourseEnd = true;
-                for (let todaySingleCourse of this.todayCourse) {
-                  if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                    + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
-                    this.isTodayCourseEnd = false;
-                    break;
-                  }
-                }
+                this.refreshInfo();
               })
             } else {
               Blank().width(36);
@@ -630,12 +623,7 @@ struct Index {
               .height(36)
               .width(36)
               .onClick(() => {
-                examManager.readStoredExam();
-                this.exams = examManager.allExamInfo;
-                this.currentTime = new Date();
-                for (let i = this.exams.length - 1; i >= 0; i--)
-                  if (this.currentTime.getTime() > this.exams[i].endTimeStamp)
-                    this.exams.splice(i, 1);
+                this.refreshInfo();
               });
             } else {
               Blank().width(36);
@@ -1152,7 +1140,7 @@ struct Index {
                                       this.showMessage(`已更改为 在${value.value}提醒`, 500);
                                     }
                                     let eventId: number | undefined = undefined;
-                                    for (let layer1 of this.exams) {
+                                    for (let layer1 of examManager.allExamInfo) {
                                       // 设置日程
                                       const event: calendarManager.Event = {
                                         title: layer1.name, // 日程标题
@@ -1200,11 +1188,10 @@ struct Index {
                   break;
                 case 13:
                   // 退出到恢复模式
-                  UnifiedPreferences.putSync('RecoveryMode', true)
-                  const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-                  context.terminateSelf((err) => {
+                  UnifiedPreferences.putSync('RecoveryMode', true);
+                  (this.context as common.UIAbilityContext).terminateSelf((err) => {
                     if (!err) {
-                      context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                      this.context.getApplicationContext().killAllProcesses().catch((error: Error) => {
                         console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
                       })
                     }

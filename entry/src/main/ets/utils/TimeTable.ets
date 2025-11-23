@@ -177,6 +177,7 @@ class scheduleManager {
   }
 
   getFormattedSchedule(): void {
+    this.currentTime = new Date();
     this.getParsedSchedule();
     this.formattedSchedule = [];
     for (let i = 0; i <= 21; i++) { // 初始化三个维度

@@ -444,7 +444,7 @@ function getDownloadPathFromPicker(): Promise<string> {
           return;
         }
         const uriString = documentSaveResult[0];
-        console.log(uriString);
+        // console.log(uriString);
         if (!uriString) {
           resolve('');
           return;
