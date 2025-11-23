@@ -12,7 +12,8 @@ export interface classAttribute {
   timeSpan: number[],      // 应当仅包含开始和结束是第几节课
   dayOfWeek: number,
   location: string,
-  id: string
+  id: string,
+  color: ResourceColor
 }
 
 export interface obtainedData {
@@ -488,7 +489,8 @@ struct Schedule {
                   timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
                   dayOfWeek: lesson.dayOfWeek,
                   location: lesson.location,
-                  id: lesson.id
+                  id: lesson.id,
+                  color: lesson.color
                 };
                 let editLesson: classAttribute = {
                   name: lesson.name,
@@ -497,7 +499,8 @@ struct Schedule {
                   timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
                   dayOfWeek: lesson.dayOfWeek,
                   location: lesson.location,
-                  id: lesson.id
+                  id: lesson.id,
+                  color: lesson.color
                 };
                 let rectifyWeekOfTerm: boolean[] = [];
                 for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
@@ -535,7 +538,7 @@ struct Schedule {
               .columnStart((indexDay + 1) % 7 + 2)
               .columnEnd((indexDay + 1) % 7 + 2)
               .padding(2)
-              .backgroundColor($r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()))
+              .backgroundColor(lesson.color)
               .border({
                 width: 1,
                 color: $r('app.color.grid_border')
@@ -559,15 +562,22 @@ struct Schedule {
 @Component
 struct ClassDetailDialog {
   @Link toChange: classAttribute[][];
-  classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0 };
-  oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0 };
+  classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+    weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    color: $r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()) };
+  oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+    weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    color: $r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()) };
+
   controller?: CustomDialogController;
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true, false, false, false, true, true, true, false, false, false, false];
+  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
+    false, false, false, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 10], [13, 16]]) as number[];
+
 
   build() {
     Column() {
@@ -690,14 +700,29 @@ struct ClassDetailDialog {
         .margin({ bottom: 5 })
 
         Row() {
-          Text($r('app.string.class_detail_day_of_week'))
-            .textAlign(TextAlign.Start);
-          Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') }, { value: $r('app.string.wednesday') },
-            { value: $r('app.string.thursday') }, { value: $r('app.string.friday') }, { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
-            .value(`${this.classInfo.dayOfWeek + 1}`)
-            .onSelect((index: number) => {
-              this.classInfo.dayOfWeek = index;
-            });
+          Row() {
+            Text($r('app.string.class_detail_day_of_week'))
+              .textAlign(TextAlign.Start);
+            Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') },
+              { value: $r('app.string.wednesday') },
+              { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
+              { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
+              .value(`${this.classInfo.dayOfWeek + 1}`)
+              .onSelect((index: number) => {
+                this.classInfo.dayOfWeek = index;
+              });
+          }
+          .layoutWeight(1)
+          Row() {
+            Text($r('app.string.class_detail_color'))
+              .textAlign(TextAlign.Start);
+            Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
+              { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }])
+              .value(' ')
+              .onSelect((index: number) => {
+                this.classInfo.color = $r(`app.color.schedule_grid_${index + 1}`);
+              });
+          }
         }
 
         Row() {

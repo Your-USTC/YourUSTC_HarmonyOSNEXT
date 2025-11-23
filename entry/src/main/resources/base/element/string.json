@@ -273,6 +273,10 @@
       "value": "星期："
     },
     {
+      "name": "class_detail_color",
+      "value": "颜色："
+    },
+    {
       "name": "error_occurred",
       "value": "发生错误"
     },

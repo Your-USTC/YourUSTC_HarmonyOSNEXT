@@ -12,7 +12,7 @@ import UnifiedPreference from '../../utils/UnifyPreference';
 struct Class_schedule_dailyCard {
 
   private currentTime: Date = new Date();
-  @State todayCourse: classAttribute[] = [{ name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0 }];
+  @State todayCourse: classAttribute[] = [{ name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0, color: $r('app.color.schedule_grid_1') }];
   @State isTodayCourseEnd: boolean = true;
   @State tomorrowCourse: classAttribute[] = [];
 

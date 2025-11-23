@@ -38,9 +38,9 @@ export class CheckInTools {
   ];
   private static TIME_TO_INDEX: number[][] = [
     [0, 2, 5, 7, 8, 9, 10, 11, 12, 13, 14, 18, 21, 22, 23, 24, 25, 26, 27, 28], // 半夜: 0~4点
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 27, 28, 29], // 早晨: 4~9点
-    [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 23, 24, 25, 27, 28], // 白天: 9~18点
-    [0, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 22, 23, 24, 25, 27, 28, 30], // 晚上: 18~24点
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 27, 28, 29], // 早晨: 5~9点
+    [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 23, 24, 25, 27, 28], // 白天: 10~18点
+    [0, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 22, 23, 24, 25, 27, 28, 30], // 晚上: 19~24点
   ]
   private static millisecondsInADay = 86400000;
   private static defaultTimestamp = '1000000000'; // 用于没有签到记录时的Unix时间戳
@@ -59,11 +59,11 @@ export class CheckInTools {
   static getRandomContent(): string {
     const randomItem = (list: number[]) => list[Math.floor(Math.random() * list.length)];
     const hour = new Date().getHours();
-    if (hour < 4) {
+    if (hour < 5) {
       return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[0])];
-    } else if (hour < 9) {
+    } else if (hour < 10) {
       return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[1])];
-    } else if (hour < 18) {
+    } else if (hour < 19) {
       return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[2])];
     } else {
       return CheckInTools.CHECK_IN_CONTENT_LIST[randomItem(CheckInTools.TIME_TO_INDEX[3])];

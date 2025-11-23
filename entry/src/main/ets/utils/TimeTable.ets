@@ -150,7 +150,14 @@ class scheduleManager {
       const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
       this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
-      UnifiedPreferences.putSync(SCHEDULE_KEY, timeTable);
+      for (let i of this.parsedSchedule)
+        for (let j of i)
+          if (j != null)
+            for (let k of j)
+              if (k.color == undefined)
+                k.color = $r('app.color.schedule_grid_' + tools.getRandomInt(1, 10));
+
+      UnifiedPreferences.putSync(SCHEDULE_KEY, JSON.stringify(this.parsedSchedule));
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
       if (this.weekDisplayed > 20) {
         this.weekDisplayed = 1;
@@ -172,6 +179,7 @@ class scheduleManager {
         : this.currentTime.getTime();
       this.weekEnd = this.weekStart + 518400000;
     } catch (err) {
+      console.error('parsed')
       this.getParsedSchedule();
     }
   }
