@@ -554,7 +554,7 @@
     },
     {
       "name": "normal_restart",
-      "value": "尝试正常重新启动"
+      "value": "下次尝试正常启动"
     },
     {
       "name": "contact_developer",

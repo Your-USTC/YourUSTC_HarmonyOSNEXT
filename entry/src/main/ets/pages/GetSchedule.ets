@@ -254,12 +254,16 @@ struct Webview {
           .height(5)
           .startPoint([0, 0])
           .backgroundColor($r('app.color.pink'));
-        LoadingProgress()
-          .width(45)
-          .height(45)
-          .padding({ left: 5, top: 5})
-          .color($r('app.color.pink'))
-          .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible)
+        Row({ space: 5 }) {
+          LoadingProgress()
+            .width(45)
+            .height(45)
+            .color($r('app.color.pink'));
+          Text($r('app.string.loading'))
+            .fontColor($r('app.color.pink'));
+        }
+        .padding({ left: 5, top: 5 })
+        .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible);
       }
       .layoutWeight(1)
     }

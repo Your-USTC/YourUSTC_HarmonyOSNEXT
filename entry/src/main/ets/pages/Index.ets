@@ -1252,7 +1252,7 @@ struct Index {
     }
     .width('80%')
     .justifyContent(FlexAlign.End)
-    .hitTestBehavior(HitTestMode.Transparent)
+    .hitTestBehavior(HitTestMode.Transparent);
   }
 
   /**
