@@ -199,7 +199,6 @@ struct FaultOccurred {
         .margin({ top: 10 })
         .onClick(() => {
           UnifiedPreferences.putSync('RecoveryMode', false);
-          UnifiedPreferences.putSync('FaultOccurred', false);
           const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
           context.terminateSelf((err) => {
             if (!err) {
@@ -207,7 +206,7 @@ struct FaultOccurred {
                 console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
               })
             }
-          });
+          })
         })
       Button($r('app.string.contact_developer'))
         .buttonStyle(ButtonStyleMode.NORMAL)
