@@ -33,7 +33,6 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
-    UnifiedPreferences.putSync('FaultOccurred', false);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
@@ -41,7 +40,7 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    if (UnifiedPreferences.getBoolSync('RecoveryMode', false) || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
+    if (UnifiedPreferences.getBoolSync('RecoveryMode', false)) {
       UnifiedPreferences.putSync('RecoveryMode', false)
       windowStage.loadContent('pages/FaultOccurred', (err) => {
         if (err.code) {
@@ -51,7 +50,6 @@ export default class EntryAbility extends UIAbility {
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
       });
     } else {
-      UnifiedPreferences.putSync('FaultOccurred', true);
       windowStage.loadContent('pages/Index', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -96,13 +94,11 @@ export default class EntryAbility extends UIAbility {
 
   onForeground(): void {
     // Ability has brought to foreground
-    UnifiedPreferences.putSync('FaultOccurred', true);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
   }
 
   onBackground(): void {
     // Ability has back to background
-    UnifiedPreferences.putSync('FaultOccurred', false);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }
