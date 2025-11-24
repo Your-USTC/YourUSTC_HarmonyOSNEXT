@@ -277,6 +277,10 @@
       "value": "颜色："
     },
     {
+      "name": "color_format_error",
+      "value": "格式错误"
+    },
+    {
       "name": "error_occurred",
       "value": "发生错误"
     },

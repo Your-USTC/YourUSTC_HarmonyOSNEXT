@@ -7,7 +7,7 @@ import { getContArray } from '../utils/tools';
 struct Index {
   @State isContentShow: boolean[] = new Array(15).fill(false);
   context: UIContext = this.getUIContext();
-  @State rotateAngle: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  @State rotateAngle: number[] = new Array(15).fill(0);
 
   build() {
 
@@ -39,7 +39,7 @@ struct Index {
 
 
       List({ initialIndex: 0 }) {
-        ForEach(getContArray([[0, 5]]), (index: number) => {
+        ForEach(getContArray([[0, 6]]), (index: number) => {
           ListItem() {
             Column() {
               Row() {

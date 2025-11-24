@@ -61,46 +61,6 @@
       "value": "#65CCE1"
     },
     {
-      "name": "schedule_grid_1",
-      "value": "#FFF5C4"
-    },
-    {
-      "name": "schedule_grid_2",
-      "value": "#FFD0AF"
-    },
-    {
-      "name": "schedule_grid_3",
-      "value": "#FFC1AC"
-    },
-    {
-      "name": "schedule_grid_4",
-      "value": "#FFC7CD"
-    },
-    {
-      "name": "schedule_grid_5",
-      "value": "#CCBBFF"
-    },
-    {
-      "name": "schedule_grid_6",
-      "value": "#ACC5FF"
-    },
-    {
-      "name": "schedule_grid_7",
-      "value": "#AEDEFF"
-    },
-    {
-      "name": "schedule_grid_8",
-      "value": "#B7FFFA"
-    },
-    {
-      "name": "schedule_grid_9",
-      "value": "#A4FFD6"
-    },
-    {
-      "name": "schedule_grid_10",
-      "value": "#D7FF9C"
-    },
-    {
       "name": "hour",
       "value": "#7A73C9"
     },

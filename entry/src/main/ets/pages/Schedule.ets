@@ -13,7 +13,7 @@ export interface classAttribute {
   dayOfWeek: number,
   location: string,
   id: string,
-  color: ResourceColor
+  color: string
 }
 
 export interface obtainedData {
@@ -85,6 +85,7 @@ export const commonClassStamp: number[][]= [
   [50400000, 53100000], [53400000, 56100000], [57300000, 60000000], [60300000, 63000000], [63300000, 66000000],
   [70200000, 72900000], [73200000, 75900000], [76200000, 78900000]
 ];
+
 
 @Entry
 @Component
@@ -563,11 +564,11 @@ struct Schedule {
 struct ClassDetailDialog {
   @Link toChange: classAttribute[][];
   classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
-    color: $r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()) };
+    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
   oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
-    color: $r('app.color.schedule_grid_' + tools.getRandomInt(1, 10).toString()) };
+    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
 
   controller?: CustomDialogController;
   weekDisplayed: number = 1;
@@ -576,7 +577,17 @@ struct ClassDetailDialog {
   rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
     false, false, false, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
-  @State weekOfTerm: number[] = tools.getContArray([[2, 10], [13, 16]]) as number[];
+  @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
+  @State isColorLegal: ResourceStr | undefined = undefined;
+  scroller: Scroller = new Scroller();
+
+  private createArray = (start: number, end: number): Array<SelectOption> => {
+    const arr: Array<SelectOption> = [];
+    for (let i = start; i <= end; i++) {
+      arr.push({ value: i.toString() });
+    }
+    return arr;
+  };
 
 
   build() {
@@ -639,67 +650,65 @@ struct ClassDetailDialog {
       }
       .width('100%');
 
-      Column() {
-        Row() {
-          Text($r('app.string.class_detail_name'));
-          TextInput({ text: this.classInfo.name })
-            .layoutWeight(1)
-            .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.name = input)
-            .selectAll(true);
-        }
-        .margin({ bottom: 5 });
+      Scroll(this.scroller) {
+        Column() {
+          Row() {
+            Text($r('app.string.class_detail_name'));
+            TextInput({ text: this.classInfo.name })
+              .layoutWeight(1)
+              .textOverflow(TextOverflow.Ellipsis)
+              .onChange((input: string) => this.classInfo.name = input)
+              .selectAll(true);
+          }
+          .margin({ bottom: 5 });
 
-        Row() {
-          Text($r('app.string.class_detail_teacher'));
-          TextInput({ text: this.classInfo.teacher })
-            .layoutWeight(1)
-            .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.teacher = input)
-            .selectAll(true);
-        }
-        .margin({ bottom: 5 });
+          Row() {
+            Text($r('app.string.class_detail_teacher'));
+            TextInput({ text: this.classInfo.teacher })
+              .layoutWeight(1)
+              .textOverflow(TextOverflow.Ellipsis)
+              .onChange((input: string) => this.classInfo.teacher = input)
+              .selectAll(true);
+          }
+          .margin({ bottom: 5 });
 
-        Row() {
-          Text($r('app.string.class_detail_location'));
-          TextInput({ text: this.classInfo.location })
-            .layoutWeight(1)
-            .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.location = input)
-            .selectAll(true);
-        }
-        .margin({ bottom: 5 });
+          Row() {
+            Text($r('app.string.class_detail_location'));
+            TextInput({ text: this.classInfo.location })
+              .layoutWeight(1)
+              .textOverflow(TextOverflow.Ellipsis)
+              .onChange((input: string) => this.classInfo.location = input)
+              .selectAll(true);
+          }
+          .margin({ bottom: 5 });
 
-        Row() {
-          Text($r('app.string.class_detail_id'));
-          TextInput({ text: this.classInfo.id })
-            .layoutWeight(1)
-            .textOverflow(TextOverflow.Ellipsis)
-            .onChange((input: string) => this.classInfo.id = input)
-            .selectAll(true);
-        }
-        .margin({ bottom: 5 });
+          Row() {
+            Text($r('app.string.class_detail_id'));
+            TextInput({ text: this.classInfo.id })
+              .layoutWeight(1)
+              .textOverflow(TextOverflow.Ellipsis)
+              .onChange((input: string) => this.classInfo.id = input)
+              .selectAll(true);
+          }
+          .margin({ bottom: 5 });
 
-        Row() {
-          Text($r('app.string.class_detail_time'))
-            .textAlign(TextAlign.Start);
-          Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
-            { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
-            .value(this.rectifyTimeSpan[0].toString())
-            .onSelect((index: number) => {
-              this.rectifyTimeSpan[0] = index + 1;
-            });
-          Text(' ~ ');
-          Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
-            { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }, { value: '11' }, { value: '12' }, { value: '13' }])
-            .value(this.rectifyTimeSpan[1].toString())
-            .onSelect((index: number) => {
-              this.rectifyTimeSpan[1] = index + 1;
-            });
-        }
-        .margin({ bottom: 5 })
+          Row() {
+            Text($r('app.string.class_detail_time'))
+              .textAlign(TextAlign.Start);
+            Select(this.createArray(1, 13))
+              .value(this.rectifyTimeSpan[0].toString())
+              .onSelect((index: number) => {
+                this.rectifyTimeSpan[0] = index + 1;
+              });
+            Text(' ~ ');
+            Select(this.createArray(1, 13))
+              .value(this.rectifyTimeSpan[1].toString())
+              .onSelect((index: number) => {
+                this.rectifyTimeSpan[1] = index + 1;
+              });
+          }
+          .margin({ bottom: 5 })
 
-        Row() {
           Row() {
             Text($r('app.string.class_detail_day_of_week'))
               .textAlign(TextAlign.Start);
@@ -712,60 +721,85 @@ struct ClassDetailDialog {
                 this.classInfo.dayOfWeek = index;
               });
           }
-          .layoutWeight(1)
+          .margin({ bottom: 5 })
+
           Row() {
             Text($r('app.string.class_detail_color'))
               .textAlign(TextAlign.Start);
-            Select([{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }, { value: '6' },
-              { value: '7' }, { value: '8' }, { value: '9' }, { value: '10' }])
-              .value(' ')
-              .onSelect((index: number) => {
-                this.classInfo.color = $r(`app.color.schedule_grid_${index + 1}`);
-              });
-          }
-        }
-
-        Row() {
-          Text($r('app.string.class_detail_weeks', tools.shrinkContArrayToString(this.weekOfTerm)))
-            .textAlign(TextAlign.Start)
+            Stack({ alignContent: Alignment.TopEnd }) {
+              TextInput({ text: this.classInfo.color })
+                .textOverflow(TextOverflow.Ellipsis)
+                .onChange((input: string) => {
+                  this.classInfo.color = input;
+                  if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
+                    this.isColorLegal = undefined;
+                    this.isOkButtonEnabled = true;
+                  } else {
+                    this.isColorLegal = $r('app.string.color_format_error');
+                    this.isOkButtonEnabled = false;
+                  }
+                })
+                .width('100%')
+                .showError(this.isColorLegal)
+                .selectAll(true)
+              Circle()
+                .fill(this.isColorLegal === undefined ? this.classInfo.color : $r('app.color.grid_background'))
+                .width(25)
+                .height(25)
+                .margin({ top: 8, right: 8 })
+                .stroke($r('app.color.grid_border'));
+            }
             .layoutWeight(1)
-            .maxLines(2)
-            .textOverflow({ overflow: TextOverflow.Ellipsis });
-          CheckboxGroup({ group: 'checkboxGroup' })
-            .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
-            .onChange((itemName: CheckboxGroupResult) => {
-              for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++)
-                this.rectifyWeekOfTerm[checkboxRepeat] = false;
-              let selectAny: boolean = false;
-              for (let checkboxRepeat of itemName.name) {
-                this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
-                selectAny = true;
-              }
-              this.isOkButtonEnabled = selectAny;
-              this.weekOfTerm = [];
-              for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-                if (this.rectifyWeekOfTerm[weekRepeat])
-                  this.weekOfTerm.push(weekRepeat);
-            });
-          Text($r('app.string.select_all'));
-        }
-        .width('100%');
-
-        ForEach(tools.getContArray([[0, 3]]), (checkboxId: number) => {
-          Row() {
-            ForEach(tools.getContArray([[1, 5]]), (checkboxId2: number) => {
-              Checkbox({ name: (checkboxId * 5 + checkboxId2).toString(), group: 'checkboxGroup' })
-                .shape(CheckBoxShape.ROUNDED_SQUARE)
-                .select(this.rectifyWeekOfTerm[checkboxId * 5 + checkboxId2]);
-              Text((checkboxId * 5 + checkboxId2).toString()).width('8%');
-            })
           }
-        });
-      }
-      .alignItems(HorizontalAlign.Start)
-      .width('80%');
+          .margin({ bottom: 5 })
 
-      Blank('16');
+          Row() {
+            Text($r('app.string.class_detail_weeks', tools.shrinkContArrayToString(this.weekOfTerm)))
+              .textAlign(TextAlign.Start)
+              .layoutWeight(1)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis });
+            CheckboxGroup({ group: 'checkboxGroup' })
+              .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
+              .onChange((itemName: CheckboxGroupResult) => {
+                for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++) {
+                  this.rectifyWeekOfTerm[checkboxRepeat] = false;
+                }
+                let selectAny: boolean = false;
+                for (let checkboxRepeat of itemName.name) {
+                  this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
+                  selectAny = true;
+                }
+                this.isOkButtonEnabled = selectAny;
+                this.weekOfTerm = [];
+                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+                  if (this.rectifyWeekOfTerm[weekRepeat]) {
+                    this.weekOfTerm.push(weekRepeat);
+                  }
+                }
+              });
+            Text($r('app.string.select_all'));
+          }
+          .width('100%');
+
+          ForEach(tools.getContArray([[0, 3]]), (checkboxId: number) => {
+            Row() {
+              ForEach(tools.getContArray([[1, 5]]), (checkboxId2: number) => {
+                Checkbox({ name: (checkboxId * 5 + checkboxId2).toString(), group: 'checkboxGroup' })
+                  .shape(CheckBoxShape.ROUNDED_SQUARE)
+                  .select(this.rectifyWeekOfTerm[checkboxId * 5 + checkboxId2]);
+                Text((checkboxId * 5 + checkboxId2).toString()).width('8%');
+              })
+            }
+          });
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('80%');
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .scrollBar(BarState.Auto);
+
       Row() {
         Button($r('app.string.cancel'))
           .onClick(() => {
@@ -797,7 +831,8 @@ struct ClassDetailDialog {
           .width('50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
           .enabled(this.isOkButtonEnabled);
-      };
+      }
+      .margin({ top: 16 });
 
     }
     .width('100%')
