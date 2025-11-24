@@ -578,7 +578,7 @@ struct ClassDetailDialog {
     false, false, false, true, true, true, false, false, false, false];
   @State isOkButtonEnabled: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
-  @State isColorLegal: ResourceStr | undefined = undefined;
+  @State isColorLegal: boolean = true;
   scroller: Scroller = new Scroller();
 
   private createArray = (start: number, end: number): Array<SelectOption> => {
@@ -726,28 +726,27 @@ struct ClassDetailDialog {
           Row() {
             Text($r('app.string.class_detail_color'))
               .textAlign(TextAlign.Start);
-            Stack({ alignContent: Alignment.TopEnd }) {
+            Stack({ alignContent: Alignment.End }) {
               TextInput({ text: this.classInfo.color })
                 .textOverflow(TextOverflow.Ellipsis)
                 .onChange((input: string) => {
                   this.classInfo.color = input;
                   if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
-                    this.isColorLegal = undefined;
+                    this.isColorLegal = true;
                     this.isOkButtonEnabled = true;
                   } else {
-                    this.isColorLegal = $r('app.string.color_format_error');
+                    this.isColorLegal = false;
                     this.isOkButtonEnabled = false;
                   }
                 })
                 .width('100%')
-                .showError(this.isColorLegal)
-                .selectAll(true)
+                .selectAll(true);
               Circle()
-                .fill(this.isColorLegal === undefined ? this.classInfo.color : $r('app.color.grid_background'))
+                .fill(this.isColorLegal ? this.classInfo.color : '#00000000')
                 .width(25)
                 .height(25)
-                .margin({ top: 8, right: 8 })
-                .stroke($r('app.color.grid_border'));
+                .margin({ right: 8 })
+                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
             }
             .layoutWeight(1)
           }
