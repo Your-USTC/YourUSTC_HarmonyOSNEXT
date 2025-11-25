@@ -1189,9 +1189,10 @@ struct Index {
                 case 13:
                   // 退出到恢复模式
                   UnifiedPreferences.putSync('RecoveryMode', true);
-                  (this.context as common.UIAbilityContext).terminateSelf((err) => {
+                  const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                  context.terminateSelf((err) => {
                     if (!err) {
-                      this.context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                      context.getApplicationContext().killAllProcesses().catch((error: Error) => {
                         console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
                       })
                     }
