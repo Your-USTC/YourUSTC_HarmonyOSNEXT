@@ -58,14 +58,13 @@
 
 ### 环境构建
 
-即使你不是中国科学技术大学的学生，你也可以修改本项目以适配自己的学校，以下是构建步骤：
-
-1. 注册一个华为[开发者账号](https://developer.huawei.com/consumer/cn/)，如果仅运行在自己的设备上则无需实名
+1. 注册一个华为[开发者账号](https://developer.huawei.com/consumer/cn/)，如果仅运行在自己的设备上则无需实名认证
 2. 下载 [DevEco Studio 6.0.0](https://developer.huawei.com/consumer/cn/deveco-studio/)
 3. Fork 本仓库并将 Fork 后你自己的仓库下载到本地
 4. 将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
-5. 修改相应 链接/图标 和 课表/考试 提取函数
-6. 在 DevEco Studio 中打开项目，即可在 HarmonyOS NEXT 设备上运行。需要登录华为账号并在右上角<image src="resources/signature.png" style="vertical-align: top; height: 1.2em;"/>处签名
+5. （可选）修改相应 链接/图标 和 课表/考试 提取函数
+6. 在手机/平板的系统设置中，打开“xxx的xxx”（例如：user的Mate 70 Pro+），连续点击“软件版本”7次，启用“开发者选项”（需要输入密码并重启）
+7. 在 DevEco Studio 中打开项目，将手机/平板连接到电脑并信任你的电脑，然后点击标题栏中的绿色三角形，即可安装到你的手机/平板上。需要登录华为账号并在右上角<image src="resources/signature.png" style="vertical-align: top; height: 1.2em;"/>处签名
 
 ### 项目结构
 
