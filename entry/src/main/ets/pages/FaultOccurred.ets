@@ -200,14 +200,26 @@ struct FaultOccurred {
         .onClick(() => {
           UnifiedPreferences.putSync('RecoveryMode', false);
           UnifiedPreferences.putSync('FaultOccurred', false);
-          const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-          context.terminateSelf((err) => {
-            if (!err) {
-              context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-              })
+          let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
+          let want: Want = {
+            bundleName: 'com.nic.yourustc',
+            abilityName: 'EntryAbility'
+          };
+          try {
+            applicationContext.restartApp(want);
+          } catch (error) {
+            console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
+            if (error.code === 16000064) {
+              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+              context.terminateSelf((err) => {
+                if (!err) {
+                  context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                    console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                  })
+                }
+              });
             }
-          });
+          }
         })
       Button($r('app.string.contact_developer'))
         .buttonStyle(ButtonStyleMode.NORMAL)

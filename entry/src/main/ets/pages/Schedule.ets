@@ -648,7 +648,8 @@ struct ClassDetailDialog {
           .enabled(this.isOkButtonEnabled);
         }
       }
-      .width('100%');
+      .width('100%')
+      .margin({ bottom: 16 });
 
       Scroll(this.scroller) {
         Column() {
@@ -796,8 +797,9 @@ struct ClassDetailDialog {
         .width('80%');
       }
       .width('100%')
-      .layoutWeight(1)
-      .scrollBar(BarState.Auto);
+      .height('60%')
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring);
 
       Row() {
         Button($r('app.string.cancel'))
