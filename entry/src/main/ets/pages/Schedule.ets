@@ -1,5 +1,4 @@
 
-import { CustomContentDialog, PopoverDialog, PopoverOptions } from '@kit.ArkUI';
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import scheduleManager from '../utils/TimeTable';
@@ -590,16 +589,6 @@ struct ClassDetailDialog {
     return arr;
   };
 
-  @State showColorPicker: boolean = false;
-
-  @Builder colorPicker() {
-    Column() {
-      Text('Color Picker Here')
-    }
-    .width('100%')
-    .height(200)
-    .justifyContent(FlexAlign.Center)
-  }
 
   build() {
     Column() {
@@ -659,8 +648,7 @@ struct ClassDetailDialog {
           .enabled(this.isOkButtonEnabled);
         }
       }
-      .width('100%')
-      .margin({ bottom: 16 });
+      .width('100%');
 
       Scroll(this.scroller) {
         Column() {
@@ -758,21 +746,7 @@ struct ClassDetailDialog {
                 .width(25)
                 .height(25)
                 .margin({ right: 8 })
-                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
-                .onClick(() => {
-                  this.showColorPicker = true;
-                });
-              PopoverDialog({
-                visible: this.showColorPicker,
-                targetBuilder: () => {},
-                popover: {
-                  width: 203,
-                  placement: Placement.Top,
-                  offset: { x: -56, y: 0 },
-                  arrowOffset: '100%',
-                  builder: () => { this.colorPicker() },
-                },
-              })
+                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
             }
             .layoutWeight(1)
           }
@@ -822,7 +796,8 @@ struct ClassDetailDialog {
         .width('80%');
       }
       .width('100%')
-      .height('60%')
+      .layoutWeight(1)
+      .constraintSize({ maxHeight: 480 })
       .scrollBar(BarState.Auto)
       .edgeEffect(EdgeEffect.Spring);
 
@@ -858,7 +833,7 @@ struct ClassDetailDialog {
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
           .enabled(this.isOkButtonEnabled);
       }
-      .margin({ top: 16 });
+      .margin({ top: 10 });
 
     }
     .width('100%')
