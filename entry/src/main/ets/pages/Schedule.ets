@@ -2,6 +2,7 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import scheduleManager from '../utils/TimeTable';
+import { PopoverDialog } from '@kit.ArkUI';
 
 
 // 课程信息类型
@@ -576,7 +577,7 @@ struct ClassDetailDialog {
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
   rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
     false, false, false, true, true, true, false, false, false, false];
-  @State isOkButtonEnabled: boolean = true;
+  @State isWeeksLegal: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
   @State isColorLegal: boolean = true;
   scroller: Scroller = new Scroller();
@@ -589,6 +590,16 @@ struct ClassDetailDialog {
     return arr;
   };
 
+  @State showColorPicker: boolean = false;
+  @Builder
+  colorPicker() {
+    Column() {
+      Text('Color Picker Here')
+    }
+    .width('100%')
+    .height(200)
+    .justifyContent(FlexAlign.Center)
+  }
 
   build() {
     Column() {
@@ -645,7 +656,7 @@ struct ClassDetailDialog {
           })
           .height(42)
           .width(42)
-          .enabled(this.isOkButtonEnabled);
+          .enabled(this.isWeeksLegal && this.isColorLegal);
         }
       }
       .width('100%');
@@ -733,10 +744,8 @@ struct ClassDetailDialog {
                   this.classInfo.color = input;
                   if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
                     this.isColorLegal = true;
-                    this.isOkButtonEnabled = true;
                   } else {
                     this.isColorLegal = false;
-                    this.isOkButtonEnabled = false;
                   }
                 })
                 .width('100%')
@@ -745,10 +754,24 @@ struct ClassDetailDialog {
                 .fill(this.isColorLegal ? this.classInfo.color : '#00000000')
                 .width(25)
                 .height(25)
-                .margin({ right: 8 })
-                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
+                .offset({ x: -8 })
+                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
+                .onClick(() => {
+                  this.showColorPicker = true;
+                });
             }
-            .layoutWeight(1)
+            .layoutWeight(1);
+            PopoverDialog({
+              visible: this.showColorPicker,
+              targetBuilder: () => {},
+              popover: {
+                width: 200,
+                placement: Placement.Top,
+                offset: { x: 0, y: 0 },
+                arrowOffset: '100%',
+                builder: () => { this.colorPicker() },
+              },
+            })
           }
           .margin({ bottom: 5 })
 
@@ -769,7 +792,7 @@ struct ClassDetailDialog {
                   this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
                   selectAny = true;
                 }
-                this.isOkButtonEnabled = selectAny;
+                this.isWeeksLegal = selectAny;
                 this.weekOfTerm = [];
                 for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
                   if (this.rectifyWeekOfTerm[weekRepeat]) {
@@ -831,7 +854,7 @@ struct ClassDetailDialog {
           })
           .width('50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
-          .enabled(this.isOkButtonEnabled);
+          .enabled(this.isWeeksLegal && this.isColorLegal);
       }
       .margin({ top: 10 });
 
