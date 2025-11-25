@@ -752,10 +752,13 @@ struct ClassDetailDialog {
                 .selectAll(true);
               Circle()
                 .fill(this.isColorLegal ? this.classInfo.color : '#00000000')
-                .width(25)
+                .width(32)
+                .height(32)
+                .offset({ x: -4 })
+                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
+              Image($r('app.media.paintpalette'))
                 .height(25)
-                .offset({ x: -8 })
-                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
+                .offset({ x: -7 })
                 .onClick(() => {
                   this.showColorPicker = true;
                 });
