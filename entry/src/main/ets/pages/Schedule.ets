@@ -825,7 +825,7 @@ struct ClassDetailDialog {
       .layoutWeight(1)
       .constraintSize({ maxHeight: 480 })
       .scrollBar(BarState.Auto)
-      .edgeEffect(EdgeEffect.Spring);
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
 
       Row() {
         Button($r('app.string.cancel'))

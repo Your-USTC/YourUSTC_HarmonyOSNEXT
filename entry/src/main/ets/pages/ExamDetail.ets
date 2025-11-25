@@ -470,7 +470,6 @@ struct ClassDetailDialog {
             }
           })
         }
-        .margin({ bottom: 5 });
 
         Row() {
           Text($r('app.string.class_detail_location'));
@@ -496,7 +495,6 @@ struct ClassDetailDialog {
             .selectAll(true)
             .showUnderline(true);
         }
-        .margin({ bottom: 5 });
 
         Row() {
           Text($r('app.string.exam_detail_other'));
@@ -515,12 +513,10 @@ struct ClassDetailDialog {
             .selectAll(true)
             .showUnderline(true);
         }
-        .margin({ bottom: 5 });
       }
       .alignItems(HorizontalAlign.Start)
       .width('85%');
 
-      Blank('16');
       Row() {
         Button($r('app.string.cancel'))
           .onClick(() => {
@@ -551,6 +547,7 @@ struct ClassDetailDialog {
           .width('50%')
           .buttonStyle(ButtonStyleMode.EMPHASIZED);
       }
+      .margin({ top: 10 })
     }
     .width('100%')
     .padding(16)
