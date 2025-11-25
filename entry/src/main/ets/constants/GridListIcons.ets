@@ -67,4 +67,3 @@ export let index_to_pic = new Map<string, ResourceStr>()
   .set('3.8', $r('app.media.QuanJingDiTu'))             // 全景地图
   .set('3.9', $r('app.media.XiaoYuanBanChe'))           // 校园班车
   .set('3.10', $r('app.media.YingJuGouPiao'))           // 影剧购票
-  .set('3.11', $r('app.media.AIZhuShou'))               // AI 助手
