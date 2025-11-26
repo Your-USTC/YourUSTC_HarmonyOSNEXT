@@ -1331,6 +1331,8 @@ export struct InputDialog {
           this.inputUID = value;
         })
       TextInput({ placeholder: '密码', text: this.inputPassword })
+        .type(InputType.Password)
+        .showPasswordIcon(true)
         .width('80%')
         .onChange((value: string) => {
           this.inputPassword = value;
