@@ -16,7 +16,7 @@ import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
 import SettingsData from '../constants/SettingsSources'
-import UnifiedPreferences from '../utils/UnifyPreference'
+import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY } from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
 import { fileIo, statfs } from '@kit.CoreFileKit'
@@ -49,6 +49,13 @@ struct Index {
 
   @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
+
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: InputDialog({
+
+    }),
+    autoCancel: true
+  })
 
   /**
    * 函数: 构建 Tab 按钮
@@ -171,6 +178,9 @@ struct Index {
   onPageShow(): void {
     FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
     this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+    if (UnifiedPreferences.getBoolSync(REMIND_KEY, true) && !UnifiedPreferences.getSync(UID_KEY,'')) {
+      this.dialogController.open()
+    }
   }
 
   /**
@@ -1300,5 +1310,59 @@ struct Index {
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
       }
     })
+  }
+}
+
+@CustomDialog
+export struct InputDialog {
+  controller: CustomDialogController;
+  @State inputUID: string = '';
+  @State inputPassword: string = '';
+
+  build() {
+    Column() {
+      Text('请输入学号和密码')
+        .fontSize(18)
+        .margin({ bottom: 10 })
+
+      TextInput({ placeholder: '学号', text: this.inputUID })
+        .width('80%')
+        .onChange((value: string) => {
+          this.inputUID = value;
+        })
+      TextInput({ placeholder: '密码', text: this.inputPassword })
+        .width('80%')
+        .onChange((value: string) => {
+          this.inputPassword = value;
+        })
+
+      Row() {
+        Button($r('app.string.ok'))
+          .onClick(() => {
+            if (this.inputUID && this.inputPassword) {
+              UnifiedPreferences.putSync(UID_KEY, this.inputUID);
+              UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
+              this.controller.close();
+            } else {
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete'), duration: 1500 });
+            }
+          })
+        Button($r('app.string.cancel'))
+          .onClick(() => {
+            this.controller.close()
+          })
+          .margin({ right: 10 })
+        Button($r('app.string.no_reminding'))
+          .onClick(() => {
+            UnifiedPreferences.putSync(REMIND_KEY, false);
+            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
+            this.controller.close()
+          })
+          .margin({ right: 10 })
+      }
+      .margin({ top: 20 })
+    }
+    .padding(20)
+    .width('80%')
   }
 }
