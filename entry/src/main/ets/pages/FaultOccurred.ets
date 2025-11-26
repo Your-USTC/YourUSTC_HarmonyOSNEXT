@@ -96,13 +96,13 @@ struct FaultOccurred {
                       const test: exportClassInfo = JSON.parse(pasteText);
                       const checkResult: classAttribute[] = JSON.parse(test.data);
                       if (typeof checkResult !== 'object' || checkResult === null) {
-                        throw new Error('格式错误');
+                        throw new Error();
                       }
                       for (let checker of checkResult) {
                         if (checker.name == undefined || checker.teacher == undefined || checker.weekOfTerm == undefined
                           || checker.timeSpan == undefined || checker.dayOfWeek == undefined || checker.location == undefined
                           || checker.id == undefined || checker.color == undefined)
-                          throw new Error('格式错误');
+                          throw new Error();
                       }
                       UnifiedPreferences.putSync('scheduleInfo', test.data);
                       UnifiedPreferences.putSync('termStartTime', test.termBegin);
@@ -110,8 +110,8 @@ struct FaultOccurred {
                     } catch (error) {
                       this.getUIContext().showAlertDialog({
                         title: $r('app.string.import_failed'),
-                        subtitle: "格式不正确。请检查是否复制了完整的字符串",
-                        message: "当前剪贴板前 100 个字符：" + pasteText.slice(0, 100),
+                        subtitle: $r('app.string.import_from_clipboard_failed'),
+                        message: ( pasteText === undefined ) ? $r('app.string.empty_clipboard') : $r('app.string.first_100_char_s', pasteText.slice(0, 100)),
                         confirm:{
                           value: "确认",
                           action: () => {}
@@ -160,7 +160,7 @@ struct FaultOccurred {
                     try {
                       const parsedData: examAttribute[] = JSON.parse(pasteText);
                       if (typeof parsedData !== 'object' || parsedData === null) {
-                        throw new Error('格式错误');
+                        throw new Error();
                       }
                       for (let singleData of parsedData)
                         if (singleData.id == undefined || singleData.type == undefined || singleData.name == undefined
@@ -169,15 +169,15 @@ struct FaultOccurred {
                           || singleData.info == undefined || singleData.beginTimeStamp == undefined
                           || singleData.endTimeStamp == undefined || singleData.beginTimeStamp > singleData.endTimeStamp
                           || !/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}~\d{2}:\d{2}$/.test(singleData.date)) {
-                          throw new Error('格式错误');
+                          throw new Error();
                         }
                       UnifiedPreferences.putSync('examInfo', pasteText);
                       this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_success') });
                     } catch (error) {
                       this.getUIContext().showAlertDialog({
                         title: $r('app.string.import_failed'),
-                        subtitle: "格式错误，请检查是否复制了完整的字符串",
-                        message: "当前剪贴板前 100 个字符：" + pasteText.slice(0, 100),
+                        subtitle: $r('app.string.import_from_clipboard_failed'),
+                        message: ( pasteText === undefined ) ? $r('app.string.empty_clipboard') : $r('app.string.first_100_char_s', pasteText.slice(0, 100)),
                         confirm:{
                           value: "确认",
                           action: () => {}

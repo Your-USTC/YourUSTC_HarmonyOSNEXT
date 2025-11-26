@@ -324,18 +324,57 @@ struct Webview {
               })
               this.downloadDelegate.onDownloadFinish((webDownloadItem: webview.WebDownloadItem) => {
                 this.downloadItemNum--;
-                if (this.downloadItemNum === 0)
-                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.jump_to_save_path'), duration: 2800 })
-                  setTimeout(() => {
-                    eachDownloadPercent.clear();
-                    this.showDownloadProgress = false;
-                    this.downloadItemTotal = 0;
-                    try {
-                      (this.getUIContext().getHostContext() as common.UIAbilityContext).openLink('filemanager://openDirectory', { parameters: { 'fileUri': '' } });
-                    } catch (paramError) {
-                      console.error(`Failed to start link. Code is ${paramError.code}, message is ${paramError.message}`);
+                if (this.downloadItemNum === 0) {
+                  this.getUIContext().showAlertDialog(
+                    {
+                      title: $r('app.string.download_finish'),
+                      message: $r('app.string.whether_open_file_manager'),
+                      autoCancel: true,
+                      alignment: DialogAlignment.Center,
+                      gridCount: 4,
+                      primaryButton: {
+                        value: $r('app.string.cancel'),
+                        action: () => {
+                          eachDownloadPercent.clear();
+                          this.showDownloadProgress = false;
+                          this.downloadItemTotal = 0;
+                        }
+                      },
+                      secondaryButton: {
+                        enabled: true,
+                        defaultFocus: true,
+                        style: DialogButtonStyle.HIGHLIGHT,
+                        value: $r('app.string.ok'),
+                        action: () => {
+                          eachDownloadPercent.clear();
+                          this.showDownloadProgress = false;
+                          this.downloadItemTotal = 0;
+                          try {
+                            (this.getUIContext().getHostContext() as common.UIAbilityContext).openLink('filemanager://openDirectory', { parameters: { 'fileUri': '' } });
+                          } catch (paramError) {
+                            console.error(`Failed to start link. Code is ${paramError.code}, message is ${paramError.message}`);
+                          }
+                        }
+                      },
+                      cancel: () => {
+                        eachDownloadPercent.clear();
+                        this.showDownloadProgress = false;
+                        this.downloadItemTotal = 0;
+                      },
+                      onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+                        eachDownloadPercent.clear();
+                        this.showDownloadProgress = false;
+                        this.downloadItemTotal = 0;
+                        if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
+                          dismissDialogAction.dismiss();
+                        }
+                        if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
+                          dismissDialogAction.dismiss();
+                        }
+                      }
                     }
-                  }, 3000);
+                  );
+                }
               })
               this.webviewController.setDownloadDelegate(this.downloadDelegate);
             } catch (error) {

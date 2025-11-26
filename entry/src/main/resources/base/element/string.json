@@ -410,11 +410,11 @@
     },
     {
       "name": "egg_hint1",
-      "value": "\uD835\uDC6A\uD835\uDC8A\uD835\uDC82\uD835\uDC8D\uD835\uDC8D\uD835\uDC90～(∠・ω < )⌒★"
+      "value": "\uD835\uDC6A\uD835\uDC8A\uD835\uDC82\uD835\uDC8D\uD835\uDC8D\uD835\uDC90\uff5e(\u2220\u30fb\u03c9 < )\u2312\u2605"
     },
     {
       "name": "egg_hint2",
-      "value": "☆⌒( > ω・∠)～ollɐıɔ"
+      "value": "\u2606\u2312( > \u03c9\u30fb\u2220)\uff5eoll\u0250\u0131\u0254"
     },
     {
       "name": "have_cleared",
@@ -506,7 +506,7 @@
     },
     {
       "name": "runtime_error",
-      "value": "(｡•́︿•̀｡)\n上次运行时可能发生了错误，你可以："
+      "value": "(\uff61\u2022\u0301\ufe3f\u2022\u0300\uff61)\n上次运行时可能发生了错误，你可以："
     },
     {
       "name": "dangerous_behavior",
@@ -557,6 +557,18 @@
       "value": "尝试正常重新启动"
     },
     {
+      "name": "import_from_clipboard_failed",
+      "value": "格式不正确 \u2022\u1dc4\u0847\u2022\u1dc5  请检查是否复制了完整的字符串"
+    },
+    {
+      "name": "empty_clipboard",
+      "value": "当前剪贴板为空"
+    },
+    {
+      "name": "first_100_char_s",
+      "value": "当前剪贴板前 100 个字符：「%s」"
+    },
+    {
       "name": "contact_developer",
       "value": "联系开发者"
     },
@@ -586,11 +598,11 @@
     },
     {
       "name": "copy_failed",
-      "value": "复制失败┭┮﹏┭┮"
+      "value": "复制失败 \u252d\u252e\ufe4f\u252d\u252e"
     },
     {
       "name": "save_image_success",
-      "value": "我在相册里等你哦(⁄ ⁄•⁄ω⁄•⁄ ⁄)"
+      "value": "我在相册里等你哦 (\u2044 \u2044\u2022\u2044\u03c9\u2044\u2022\u2044 \u2044)"
     },
     {
       "name": "save_image_fail",
@@ -605,8 +617,12 @@
       "value": "下载失败，错误码：%s"
     },
     {
-      "name": "jump_to_save_path",
-      "value": "已保存到文件管理的下载目录，即将跳转……"
+      "name": "download_finish",
+      "value": "下载完毕(\uff61\u2022\u0300\u1d17-)\u2727"
+    },
+    {
+      "name": "whether_open_file_manager",
+      "value": "是否现在去文件管理的「下载」文件夹查看？"
     },
     {
       "name": "loading",
