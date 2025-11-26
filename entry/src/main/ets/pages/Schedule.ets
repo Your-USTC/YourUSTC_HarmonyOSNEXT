@@ -156,7 +156,7 @@ struct Schedule {
                 weekDisplayed: this.weekDisplayed,
                 isChangeSchedule: false
               }),
-              autoCancel: true,
+              autoCancel: false,
               gridCount: 4,
               onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
                 if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
@@ -520,7 +520,7 @@ struct Schedule {
                     rectifyWeekOfTerm: rectifyWeekOfTerm,
                     weekOfTerm: [...editLesson.weekOfTerm]
                   }),
-                  autoCancel: true,
+                  autoCancel: false,
                   gridCount: 4,
                   onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
                     if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
@@ -802,6 +802,8 @@ struct ClassDetailDialog {
                     this.weekOfTerm.push(weekRepeat);
                   }
                 }
+                if (!this.scroller.isAtEnd())
+                  this.scroller.scrollEdge(Edge.End);
               });
             Text($r('app.string.select_all'));
           }
