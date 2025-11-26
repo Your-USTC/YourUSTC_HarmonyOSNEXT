@@ -5,6 +5,8 @@ export const colorSet: string[] = ["#FFF5C4", "#FFC1AC", "#FFC7CD", "#CCBBFF", "
   "#DD5BFF91", "#A375FF", "#2196F3", "#1DE9B6", "#FA6278", "#FF9100", "#2979FF"];
 export const colorSetLen = colorSet.length;
 
+export const weekTranslate: ResourceStr[] = [$r('app.string.monday'), $r('app.string.tuesday'), $r('app.string.wednesday'),
+  $r('app.string.thursday'), $r('app.string.friday'), $r('app.string.saturday'), $r('app.string.sunday'), ];
 
 export function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
