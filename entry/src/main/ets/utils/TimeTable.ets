@@ -85,6 +85,25 @@ const getExamInfo = () => {
 }
 getExamInfo()
 `
+export const fillInformationJS = `
+const observer = new MutationObserver(() => {
+  const nodeUID = document.getElementById('nameInput');
+  const nodePassword = document.querySelector('input[type="password"][maxlength="200"]');
+  if (nodeUID && nodePassword) {
+    nodeUID.focus();
+    nodeUID.value = infoProvider.getUID();
+    nodeUID.dispatchEvent(new Event('input', { bubbles: true }));
+    nodePassword.focus();
+    nodePassword.value = infoProvider.getPassword();
+    nodePassword.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('submitBtn').dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
+    observer.disconnect();
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
+`
 
 /**
  * 比较两个 classAttribute 对象是否完全相同
