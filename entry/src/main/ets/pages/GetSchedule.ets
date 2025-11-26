@@ -1,15 +1,26 @@
 
 import { webview } from '@kit.ArkWeb'
-import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS } from '../utils/TimeTable'
+import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS,
+  fillInformationJS } from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
-import UnifiedPreference from '../utils/UnifyPreference'
+import UnifiedPreference, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
 
+class accountInfoProvider {
+  constructor() {}
+  getUID(): string {
+    return UnifiedPreference.getSync(UID_KEY);
+  }
+  getPassword(): string {
+    return UnifiedPreference.getSync(PASSWORD_KEY);
+  }
+}
 
 @Entry
 @Component
 struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
+  @State infoProvider: accountInfoProvider = new accountInfoProvider();
   title: string = '';
   url: string = '';
   @State isTimeTablePage: boolean = false;
@@ -152,6 +163,13 @@ struct Webview {
           src: 'https://id.ustc.edu.cn/cas/login?service=https://jw.ustc.edu.cn/ucas-sso/login',
           controller: this.webviewController
         })
+          .javaScriptProxy({
+            object: this.infoProvider,
+            name: "infoProvider",
+            methodList: ["getUID", "getPassword"],
+            controller: this.webviewController,
+            asyncMethodList: []
+          })
           .domStorageAccess(true)
           .javaScriptAccess(true)
           .width('100%')
@@ -198,6 +216,11 @@ struct Webview {
             }
           })
           .onPageEnd(() => {
+            if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+              this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
+                console.info(`自动填写uid：${UnifiedPreference.getSync(UID_KEY)}`);
+              });
+            }
             if (this.isTimeTablePage && !this.gotTimeTable) {
               this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                 if (error) { /* 理论上这里不会出什么错误 */ return;}
