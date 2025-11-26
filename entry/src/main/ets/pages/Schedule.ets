@@ -254,109 +254,21 @@ struct Schedule {
         /**
          * 表头
          */
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.sunday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(2)
-        .columnEnd(2)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.monday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(3)
-        .columnEnd(3)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.tuesday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(4)
-        .columnEnd(4)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.wednesday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(5)
-        .columnEnd(5)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.thursday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(6)
-        .columnEnd(6)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.friday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(7)
-        .columnEnd(7)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
-        })
-
-        GridItem({ style: GridItemStyle.NONE }) {
-          Text($r('app.string.saturday'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(12)
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(8)
-        .columnEnd(8)
-        .padding(1)
-        .border({
-          width: { bottom: 1, left: 1 },
-          color: $r('app.color.grid_border')
+        ForEach(tools.getContArray([[2, 8]]), (item: number) => {
+          GridItem({ style: GridItemStyle.NONE }) {
+            Text(tools.weekTranslate[(item + 4) % 7])
+              .fontWeight(FontWeight.Bold)
+              .fontSize(12)
+          }
+          .rowStart(0)
+          .rowEnd(0)
+          .columnStart(item)
+          .columnEnd(item)
+          .padding(1)
+          .border({
+            width: { bottom: 1, left: 1 },
+            color: $r('app.color.grid_border')
+          })
         })
 
         GridItem({ style: GridItemStyle.NONE }) {
@@ -603,6 +515,7 @@ struct ClassDetailDialog {
 
   build() {
     Column() {
+      // 标题区
       Row() {
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
@@ -661,6 +574,7 @@ struct ClassDetailDialog {
       }
       .width('100%');
 
+      // 详情区
       Scroll(this.scroller) {
         Column() {
           Row() {
@@ -727,7 +641,7 @@ struct ClassDetailDialog {
               { value: $r('app.string.wednesday') },
               { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
               { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
-              .value(`${this.classInfo.dayOfWeek + 1}`)
+              .value(tools.weekTranslate[this.classInfo.dayOfWeek])
               .onSelect((index: number) => {
                 this.classInfo.dayOfWeek = index;
               });
@@ -829,6 +743,7 @@ struct ClassDetailDialog {
       .scrollBar(BarState.Auto)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
 
+      // 确定/取消 区
       Row() {
         Button($r('app.string.cancel'))
           .onClick(() => {
