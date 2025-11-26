@@ -13,6 +13,10 @@ export const START_TIME_KEY = 'termStartTime';
 
 export const millisecondsPerWeek = 604800000;
 
+export const UID_KEY = 'studentUID';
+export const PASSWORD_KEY = 'password';
+export const REMIND_KEY = 'remindSetUID';
+
 class UnifiedPreferences {
   private preferences: preferences.Preferences | null = null;
   private initContext: Context | undefined = undefined;
