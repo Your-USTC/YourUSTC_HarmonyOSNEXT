@@ -361,6 +361,7 @@ struct Schedule {
               Image($r('app.media.no_course_this_week'))
                 .height(100)
                 .width(100)
+                .interpolation(ImageInterpolation.Medium)
                 .draggable(false)
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center);
             }
@@ -480,7 +481,7 @@ struct ClassDetailDialog {
     weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
   oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    weekOfTerm: [], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
 
   controller?: CustomDialogController;

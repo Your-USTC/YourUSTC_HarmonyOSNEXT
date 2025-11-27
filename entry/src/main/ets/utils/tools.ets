@@ -29,6 +29,10 @@ export function stringToRgba(color: string): number[] {
     r = parseInt(hex.slice(2, 4), 16);
     g = parseInt(hex.slice(4, 6), 16);
     b = parseInt(hex.slice(6, 8), 16);
+  } else {
+    r = parseInt(hex.slice(0, 2), 16);
+    g = parseInt(hex.slice(2, 4), 16);
+    b = parseInt(hex.slice(4, 6), 16);
   }
   // 确保 RGB 值在 0-255 范围内（防止异常值）
   a = Math.max(0, Math.min(255, a));

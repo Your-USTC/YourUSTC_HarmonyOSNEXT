@@ -127,6 +127,7 @@ struct ExamDetail {
         Column() {
           Image($r('app.media.no_exam2'))
             .width(100)
+            .interpolation(ImageInterpolation.Medium)
             .draggable(false)
           Text($r('app.string.no_exam_info2')).fontSize(18);
         }
