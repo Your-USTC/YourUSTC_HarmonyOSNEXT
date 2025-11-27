@@ -277,6 +277,10 @@
       "value": "颜色："
     },
     {
+      "name": "change_all_color",
+      "value": "同时更改所有同名课程颜色"
+    },
+    {
       "name": "color_format_error",
       "value": "格式错误"
     },

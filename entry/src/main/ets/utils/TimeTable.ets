@@ -92,7 +92,7 @@ getExamInfo()
  * @param b 第二个对象
  * @returns 是否完全相同
  */
-function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
+export function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
   // 基本类型直接比较
   if (a.name !== b.name) return false;
   if (a.teacher !== b.teacher) return false;
@@ -211,7 +211,7 @@ class scheduleManager {
                 this.formattedSchedule[week][i].push(k);
   }
 
-  addSchedule(toChangeInfo: classAttribute) {
+  addSchedule(toChangeInfo: classAttribute, changeAllColor: boolean) {
     let i: number = toChangeInfo.dayOfWeek;
     let j: number = toChangeInfo.timeSpan[0] - 1;
     if (this.parsedSchedule[i] == undefined)
@@ -219,6 +219,15 @@ class scheduleManager {
     if (this.parsedSchedule[i][j] == undefined)
       this.parsedSchedule[i][j] = [];
     this.parsedSchedule[i][j].push(toChangeInfo);
+
+    if (changeAllColor)
+      for (let i of this.parsedSchedule)
+        for (let j of i)
+          if (j != null)
+            for (let k of j)
+              if (k.name === toChangeInfo.name)
+                k.color = toChangeInfo.color;
+
     this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
   }
