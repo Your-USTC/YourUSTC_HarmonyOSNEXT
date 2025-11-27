@@ -507,55 +507,51 @@ struct ClassDetailDialog {
 
   aboutToAppear(): void {
     this.classColor = this.oriClassInfo.color;
-    this.colorARGB= tools.stringToRgba(this.oriClassInfo.color);
   }
 
   private colorARGB: number[] = [255, 255, 199, 205];
   @State classColor: string = '#FFC7CD';
   @State showColorPicker: boolean = false;
+  @State colorDialogText: string = '#FFC7CD';
   @Builder
   colorPicker() {
     Column() {
-      Text(this.classInfo.color);
-      Slider({
-        value: this.colorARGB[0],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
+      Text(this.colorDialogText);
+      Slider({ value: this.colorARGB[0], min: 0, max: 255, style: SliderStyle.InSet })
         .selectedColor('#00d00721')
         .onChange((value: number) => {
           this.colorARGB[0] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
-      Slider({
-        value: this.colorARGB[1],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
+      Slider({ value: this.colorARGB[1], min: 0, max: 255, style: SliderStyle.InSet })
         .selectedColor('#FF0000')
         .onChange((value: number) => {
           this.colorARGB[1] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
-      Slider({
-        value: this.colorARGB[2],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
+      Slider({ value: this.colorARGB[2], min: 0, max: 255, style: SliderStyle.InSet })
         .selectedColor('#00FF00')
         .onChange((value: number) => {
           this.colorARGB[2] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
-      Slider({
-        value: this.colorARGB[3],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
+      Slider({ value: this.colorARGB[3], min: 0, max: 255, style: SliderStyle.InSet })
         .selectedColor('#0000FF')
         .onChange((value: number) => {
           this.colorARGB[3] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
       Row() {
         Checkbox()
@@ -737,6 +733,8 @@ struct ClassDetailDialog {
                 .height(25)
                 .offset({ x: -7 })
                 .onClick(() => {
+                  this.colorARGB = tools.stringToRgba(this.classColor);
+                  this.colorDialogText = this.classColor;
                   this.showColorPicker = true;
                 });
             }
