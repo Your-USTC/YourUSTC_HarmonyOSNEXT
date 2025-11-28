@@ -648,7 +648,7 @@ struct Index {
             } else {
               Blank().width(36);
             }
-            
+
             Blank()
 
             Text($r('app.string.exam_detail'))
@@ -1334,6 +1334,15 @@ export struct InputDialog {
   inputPassword: string = UnifiedPreferences.getSync(PASSWORD_KEY, '');
   isFromSetting: boolean= true;
 
+  oriInputUID: string = '';
+  oriInputPassword: string = '';
+  @State accountChanged: boolean = false;
+
+  aboutToAppear(): void {
+    this.oriInputUID = this.inputUID;
+    this.oriInputPassword = this.inputPassword;
+  }
+
   build() {
     Column() {
       Text('请输入学号和密码')
@@ -1341,14 +1350,17 @@ export struct InputDialog {
         .margin({ bottom: 10 })
 
       TextInput({ placeholder: '学号', text: this.inputUID })
+        .type(InputType.USER_NAME)
+        .enableAutoFill(this.accountChanged)
         .width('80%')
         .margin({ bottom: 5 })
         .onChange((value: string) => {
           this.inputUID = value;
         })
       TextInput({ placeholder: '密码', text: this.inputPassword })
-        .type(InputType.Password)
+        .type(InputType.NEW_PASSWORD)
         .showPasswordIcon(true)
+        .enableAutoFill(this.accountChanged)
         .width('80%')
         .onChange((value: string) => {
           this.inputPassword = value;
@@ -1357,6 +1369,10 @@ export struct InputDialog {
       Row() {
         Button($r('app.string.ok'))
           .onClick(() => {
+            if (this.inputUID !== this.oriInputUID || this.inputPassword !== this.oriInputPassword)
+              this.accountChanged = true;
+            else
+              this.accountChanged = false;
             if (this.inputUID && this.inputPassword) {
               UnifiedPreferences.putSync(UID_KEY, this.inputUID);
               UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
@@ -1368,7 +1384,7 @@ export struct InputDialog {
           .margin({ right: 5 })
         Button($r('app.string.cancel'))
           .onClick(() => {
-            this.controller.close()
+            this.controller.close();
           })
           .margin({ right: 10 })
         if (!this.isFromSetting) {
@@ -1376,7 +1392,7 @@ export struct InputDialog {
             .onClick(() => {
               UnifiedPreferences.putSync(REMIND_KEY, false);
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
-              this.controller.close()
+              this.controller.close();
             })
             .margin({ right: 10 })
         }
