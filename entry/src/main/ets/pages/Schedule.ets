@@ -714,7 +714,7 @@ struct ClassDetailDialog {
                 .textOverflow(TextOverflow.Ellipsis)
                 .onChange((input: string) => {
                   console.log('abcdefg'); // 此处证明了this.classColor = input;不会导致死循环
-                  if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
+                  if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
                     this.isColorLegal = true;
                     this.classInfo.color = input;
                     this.colorARGB = tools.stringToRgba(input);
@@ -735,8 +735,17 @@ struct ClassDetailDialog {
                 .height(25)
                 .offset({ x: -7 })
                 .onClick(() => {
-                  this.colorARGB = tools.stringToRgba(this.classColor);
-                  this.colorDialogText = this.classColor;
+                  if (this.classColor.length === 4) {
+                    this.colorDialogText = this.classColor[0] + this.classColor[1] + this.classColor[1]
+                      + this.classColor[2] + this.classColor[2] + this.classColor[3] + this.classColor[3];
+                  } else if (this.classColor.length === 5) {
+                    this.colorDialogText = this.classColor[0] + this.classColor[1] + this.classColor[1]
+                      + this.classColor[2] + this.classColor[2] + this.classColor[3] + this.classColor[3]
+                      + this.classColor[4] + this.classColor[4];
+                  } else {
+                    this.colorDialogText = this.classColor;
+                  }
+                  this.colorARGB = tools.stringToRgba(this.colorDialogText);
                   this.showColorPicker = true;
                 });
             }
