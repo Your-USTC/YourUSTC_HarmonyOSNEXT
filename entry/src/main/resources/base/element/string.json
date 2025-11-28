@@ -643,6 +643,10 @@
     {
       "name": "no_reminding",
       "value": "不再提醒"
+    },
+    {
+      "name": "set_account_info",
+      "value": "设置统一身份认证信息"
     }
   ]
 }
