@@ -5,6 +5,43 @@ export const colorSet: string[] = ["#FFF5C4", "#FFC1AC", "#FFC7CD", "#CCBBFF", "
   "#DD5BFF91", "#A375FF", "#2196F3", "#1DE9B6", "#FA6278", "#FF9100", "#2979FF"];
 export const colorSetLen = colorSet.length;
 
+/**
+ * 将 #RGB 系列颜色值转换为 RGBA 数值（0-255 范围）
+ * @param color 支持格式：#RGB、#RGBA、#RRGGBB、#RRGGBBAA（必须以 # 开头）
+ * @returns number[] [r: number; g: number; b: number; a: number] RGBA 数值对象（范围 0-255）
+ * @throws 无效颜色格式时抛出错误
+ */
+export function stringToRgba(color: string): number[] {
+  // 正则表达式匹配所有合法格式（忽略大小写）
+  const regex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
+  const match = color.match(regex);
+  let r = 255, g = 199, b = 205, a = 255; // 默认不透明
+  if (!match) {
+    return [a, r, g, b];
+  }
+  let hex = match[1].toLowerCase();
+  // 处理短格式（#RGB / #RGBA）：扩展为长格式
+  if (hex.length === 3 || hex.length === 4) {
+    hex = hex.split('').map(char => char.repeat(2)).join('');
+  } else if (hex.length === 8) {
+    // 提取各通道值（16进制转10进制）
+    a = parseInt(hex.slice(0, 2), 16);
+    r = parseInt(hex.slice(2, 4), 16);
+    g = parseInt(hex.slice(4, 6), 16);
+    b = parseInt(hex.slice(6, 8), 16);
+  } else {
+    r = parseInt(hex.slice(0, 2), 16);
+    g = parseInt(hex.slice(2, 4), 16);
+    b = parseInt(hex.slice(4, 6), 16);
+  }
+  // 确保 RGB 值在 0-255 范围内（防止异常值）
+  a = Math.max(0, Math.min(255, a));
+  r = Math.max(0, Math.min(255, r));
+  g = Math.max(0, Math.min(255, g));
+  b = Math.max(0, Math.min(255, b));
+  return [a, r, g, b];
+}
+
 export const weekTranslate: ResourceStr[] = [$r('app.string.monday'), $r('app.string.tuesday'), $r('app.string.wednesday'),
   $r('app.string.thursday'), $r('app.string.friday'), $r('app.string.saturday'), $r('app.string.sunday'), ];
 

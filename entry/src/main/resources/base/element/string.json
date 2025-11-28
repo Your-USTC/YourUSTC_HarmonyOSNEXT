@@ -277,6 +277,10 @@
       "value": "颜色："
     },
     {
+      "name": "change_all_color",
+      "value": "同时更改所有同名课程颜色"
+    },
+    {
       "name": "color_format_error",
       "value": "格式错误"
     },
@@ -639,6 +643,10 @@
     {
       "name": "no_reminding",
       "value": "不再提醒"
+    },
+    {
+      "name": "set_account_info",
+      "value": "设置统一身份认证信息"
     }
   ]
 }

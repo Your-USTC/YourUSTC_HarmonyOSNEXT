@@ -111,7 +111,7 @@ observer.observe(document.body, { childList: true, subtree: true });
  * @param b 第二个对象
  * @returns 是否完全相同
  */
-function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
+export function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
   // 基本类型直接比较
   if (a.name !== b.name) return false;
   if (a.teacher !== b.teacher) return false;
@@ -173,17 +173,18 @@ class scheduleManager {
 
       let courseToColor = new Map<string, string>();
       for (let i of this.parsedSchedule)
-        for (let j of i)
-          if (j != null)
-            for (let k of j)
-              if (k.color == undefined) {
-                if (courseToColor.has(k.name))
-                  k.color = courseToColor.get(k.name) as string;
-                else {
-                  k.color = tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)];
-                  courseToColor.set(k.name, k.color);
+        if (i != null)
+          for (let j of i)
+            if (j != null)
+              for (let k of j)
+                if (k.color == undefined) {
+                  if (courseToColor.has(k.name))
+                    k.color = courseToColor.get(k.name) as string;
+                  else {
+                    k.color = tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)];
+                    courseToColor.set(k.name, k.color);
+                  }
                 }
-              }
 
       UnifiedPreferences.putSync(SCHEDULE_KEY, JSON.stringify(this.parsedSchedule));
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
@@ -230,7 +231,7 @@ class scheduleManager {
                 this.formattedSchedule[week][i].push(k);
   }
 
-  addSchedule(toChangeInfo: classAttribute) {
+  addSchedule(toChangeInfo: classAttribute, changeAllColor: boolean) {
     let i: number = toChangeInfo.dayOfWeek;
     let j: number = toChangeInfo.timeSpan[0] - 1;
     if (this.parsedSchedule[i] == undefined)
@@ -238,6 +239,16 @@ class scheduleManager {
     if (this.parsedSchedule[i][j] == undefined)
       this.parsedSchedule[i][j] = [];
     this.parsedSchedule[i][j].push(toChangeInfo);
+
+    if (changeAllColor)
+      for (let i of this.parsedSchedule)
+        if (i != null)
+          for (let j of i)
+            if (j != null)
+              for (let k of j)
+                if (k.name === toChangeInfo.name)
+                  k.color = toChangeInfo.color;
+
     this.refreshParsedSchedule({ timeTable: `[${JSON.stringify(this.parsedSchedule)}]`, startTime: this.termStart.toString() });
     this.getFormattedSchedule();
   }

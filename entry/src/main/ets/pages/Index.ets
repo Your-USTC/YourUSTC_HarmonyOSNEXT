@@ -50,9 +50,16 @@ struct Index {
   @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
 
-  dialogController: CustomDialogController = new CustomDialogController({
+  dialogController1: CustomDialogController = new CustomDialogController({
     builder: InputDialog({
+      isFromSetting: true
+    }),
+    autoCancel: true
+  })
 
+  dialogController2: CustomDialogController = new CustomDialogController({
+    builder: InputDialog({
+      isFromSetting: false
     }),
     autoCancel: true
   })
@@ -179,7 +186,7 @@ struct Index {
     FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
     this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
     if (UnifiedPreferences.getBoolSync(REMIND_KEY, true) && !UnifiedPreferences.getSync(UID_KEY,'')) {
-      this.dialogController.open()
+      this.dialogController2.open();
     }
   }
 
@@ -479,6 +486,7 @@ struct Index {
               Column() {
                 Image($r('app.media.no_course_today'))
                   .height(75)
+                  .interpolation(ImageInterpolation.Medium)
                   .draggable(false)
                 Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'));
               }
@@ -553,7 +561,8 @@ struct Index {
               if (this.isTodayCourseEnd) {
                 Column() {
                   Image($r('app.media.course_finish_today'))
-                    .height(50)
+                    .height(75)
+                    .interpolation(ImageInterpolation.Medium)
                     .draggable(false)
                   Text($r('app.string.class_finish_today'));
                 }
@@ -668,6 +677,7 @@ struct Index {
               Column() {
                 Image($r('app.media.no_exam1'))
                   .height(75)
+                  .interpolation(ImageInterpolation.Medium)
                   .draggable(false)
                 Text($r('app.string.no_exam_info1'));
               }
@@ -854,6 +864,9 @@ struct Index {
             .height('48vp')
             .onClick(() => {
               switch (cell.id) { // 根据 cell.id 区分设置项
+                case -1:
+                  this.dialogController1.open();
+                  break;
                 case 0:
                   // 显示签到
                   this.showCheckIn = !this.showCheckIn;
@@ -1318,6 +1331,7 @@ export struct InputDialog {
   controller: CustomDialogController;
   @State inputUID: string = '';
   @State inputPassword: string = '';
+  isFromSetting: boolean= true;
 
   build() {
     Column() {
@@ -1327,6 +1341,7 @@ export struct InputDialog {
 
       TextInput({ placeholder: '学号', text: this.inputUID })
         .width('80%')
+        .margin({ bottom: 5 })
         .onChange((value: string) => {
           this.inputUID = value;
         })
@@ -1349,18 +1364,21 @@ export struct InputDialog {
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete'), duration: 1500 });
             }
           })
+          .margin({ right: 5 })
         Button($r('app.string.cancel'))
           .onClick(() => {
             this.controller.close()
           })
           .margin({ right: 10 })
-        Button($r('app.string.no_reminding'))
-          .onClick(() => {
-            UnifiedPreferences.putSync(REMIND_KEY, false);
-            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
-            this.controller.close()
-          })
-          .margin({ right: 10 })
+        if (!this.isFromSetting) {
+          Button($r('app.string.no_reminding'))
+            .onClick(() => {
+              UnifiedPreferences.putSync(REMIND_KEY, false);
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
+              this.controller.close()
+            })
+            .margin({ right: 10 })
+        }
       }
       .margin({ top: 20 })
     }

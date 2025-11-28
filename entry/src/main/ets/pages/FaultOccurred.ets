@@ -94,16 +94,20 @@ struct FaultOccurred {
                     const pasteText: string = pasteData.getPrimaryText();
                     try {
                       const test: exportClassInfo = JSON.parse(pasteText);
-                      const checkResult: classAttribute[] = JSON.parse(test.data);
+                      const checkResult: classAttribute[][][] = JSON.parse(test.data);
                       if (typeof checkResult !== 'object' || checkResult === null) {
                         throw new Error();
                       }
-                      for (let checker of checkResult) {
-                        if (checker.name == undefined || checker.teacher == undefined || checker.weekOfTerm == undefined
-                          || checker.timeSpan == undefined || checker.dayOfWeek == undefined || checker.location == undefined
-                          || checker.id == undefined || checker.color == undefined)
-                          throw new Error();
-                      }
+                      for (let layer1 of checkResult)
+                        if (layer1 != null)
+                          for (let layer2 of layer1)
+                            if (layer2 != null)
+                              for (let checker of layer2) {
+                                if (checker.name == undefined || checker.teacher == undefined || checker.weekOfTerm == undefined
+                                  || checker.timeSpan == undefined || checker.dayOfWeek == undefined || checker.location == undefined
+                                  || checker.id == undefined || checker.color == undefined)
+                                  throw new Error();
+                              }
                       UnifiedPreferences.putSync('scheduleInfo', test.data);
                       UnifiedPreferences.putSync('termStartTime', test.termBegin);
                       this.getUIContext().getPromptAction().showToast({ message: $r('app.string.import_success') });
