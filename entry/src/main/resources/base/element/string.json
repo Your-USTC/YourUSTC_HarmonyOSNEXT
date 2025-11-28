@@ -631,6 +631,22 @@
     {
       "name": "loading",
       "value": "少女祈祷中…"
+    },
+    {
+      "name": "incomplete",
+      "value": "请完成输入后再确认"
+    },
+    {
+      "name": "input_later",
+      "value": "稍后可通过设置页面登记学号和密码"
+    },
+    {
+      "name": "no_reminding",
+      "value": "不再提醒"
+    },
+    {
+      "name": "set_account_info",
+      "value": "设置统一身份认证信息"
     }
   ]
 }
