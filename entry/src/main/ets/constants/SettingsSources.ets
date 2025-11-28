@@ -5,7 +5,7 @@ export class SettingsData {
   getSettingListData(): Array<Array<ItemData>> {
     let settingListData: ItemData[][] = [
       [
-        new ItemData(-1, $r('app.string.set_account_info'), $r('app.media.checkmark_square'))
+        new ItemData(-1, $r('app.string.set_account_info'), $r('app.media.key_horizontal'))
       ],
       [
         new ItemData(0, $r('app.string.show_check_in'), $r('app.media.checkmark_square'), $r('app.string.setting_toggle')),

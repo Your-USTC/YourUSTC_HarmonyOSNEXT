@@ -23,9 +23,9 @@ struct Webview {
   @State infoProvider: accountInfoProvider = new accountInfoProvider();
   title: string = '';
   url: string = '';
-  @State isTimeTablePage: boolean = false;
+  isTimeTablePage: boolean = false;
   gotTimeTable: boolean = false;
-  @State isExamInfoPage: boolean = false;
+  isExamInfoPage: boolean = false;
   gotExamInfo: boolean = false;
   obtainedData: obtainedData = {timeTable: '', startTime: '0'};
   webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);

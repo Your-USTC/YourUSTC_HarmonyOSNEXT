@@ -376,18 +376,20 @@ struct Schedule {
               GridItem({ style: GridItemStyle.PLAIN }) {
                 Column() {
                   Text(lesson.name)
+                    .fontColor('#000000')
                     .fontWeight(FontWeight.Bold)
                     .fontSize(13)
-                    .fontColor($r('app.color.normal_text'))
                     .maxLines(4)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                   Text(lesson.location)
+                    .fontColor('#000000')
                     .fontSize(9)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.MARQUEE })
 
                   Text(lesson.teacher)
+                    .fontColor('#000000')
                     .fontSize(9)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.MARQUEE })
