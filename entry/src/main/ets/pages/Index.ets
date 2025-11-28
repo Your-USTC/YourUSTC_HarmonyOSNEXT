@@ -308,6 +308,7 @@ struct Index {
       this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
       this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
     }
+    this.isTodayCourseEnd = true;
     for (let todaySingleCourse of this.todayCourse)
       if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
         + Schedule.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
@@ -1329,8 +1330,8 @@ struct Index {
 @CustomDialog
 export struct InputDialog {
   controller: CustomDialogController;
-  @State inputUID: string = '';
-  @State inputPassword: string = '';
+  inputUID: string = UnifiedPreferences.getSync(UID_KEY, '');
+  inputPassword: string = UnifiedPreferences.getSync(PASSWORD_KEY, '');
   isFromSetting: boolean= true;
 
   build() {
