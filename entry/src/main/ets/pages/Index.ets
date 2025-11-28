@@ -479,6 +479,7 @@ struct Index {
               Column() {
                 Image($r('app.media.no_course_today'))
                   .height(75)
+                  .interpolation(ImageInterpolation.Medium)
                   .draggable(false)
                 Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'));
               }
@@ -553,7 +554,8 @@ struct Index {
               if (this.isTodayCourseEnd) {
                 Column() {
                   Image($r('app.media.course_finish_today'))
-                    .height(50)
+                    .height(75)
+                    .interpolation(ImageInterpolation.Medium)
                     .draggable(false)
                   Text($r('app.string.class_finish_today'));
                 }
@@ -668,6 +670,7 @@ struct Index {
               Column() {
                 Image($r('app.media.no_exam1'))
                   .height(75)
+                  .interpolation(ImageInterpolation.Medium)
                   .draggable(false)
                 Text($r('app.string.no_exam_info1'));
               }

@@ -1,7 +1,7 @@
 
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
-import scheduleManager from '../utils/TimeTable';
+import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
 import { PopoverDialog } from '@kit.ArkUI';
 
 
@@ -361,6 +361,7 @@ struct Schedule {
               Image($r('app.media.no_course_this_week'))
                 .height(100)
                 .width(100)
+                .interpolation(ImageInterpolation.Medium)
                 .draggable(false)
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center);
             }
@@ -480,10 +481,12 @@ struct ClassDetailDialog {
     weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
   oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
+    weekOfTerm: [], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
 
   controller?: CustomDialogController;
+  scroller: Scroller = new Scroller();
+
   weekDisplayed: number = 1;
   isChangeSchedule: boolean = true;
   rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
@@ -492,7 +495,7 @@ struct ClassDetailDialog {
   @State isWeeksLegal: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
   @State isColorLegal: boolean = true;
-  scroller: Scroller = new Scroller();
+  changeAllColor: boolean = true;
 
   private createArray = (start: number, end: number): Array<SelectOption> => {
     const arr: Array<SelectOption> = [];
@@ -502,14 +505,67 @@ struct ClassDetailDialog {
     return arr;
   };
 
+  aboutToAppear(): void {
+    this.classColor = this.oriClassInfo.color;
+  }
+
+  private colorARGB: number[] = [255, 255, 199, 205];
+  @State classColor: string = '#FFC7CD';
   @State showColorPicker: boolean = false;
+  @State colorDialogText: string = '#FFC7CD';
   @Builder
   colorPicker() {
     Column() {
-      Text('Color Picker Here')
+      Text(this.colorDialogText);
+      Slider({ value: this.colorARGB[0], min: 0, max: 255, style: SliderStyle.InSet })
+        .selectedColor('#00d00721')
+        .onChange((value: number) => {
+          this.colorARGB[0] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+        });
+      Slider({ value: this.colorARGB[1], min: 0, max: 255, style: SliderStyle.InSet })
+        .selectedColor('#FF0000')
+        .onChange((value: number) => {
+          this.colorARGB[1] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+        });
+      Slider({ value: this.colorARGB[2], min: 0, max: 255, style: SliderStyle.InSet })
+        .selectedColor('#00FF00')
+        .onChange((value: number) => {
+          this.colorARGB[2] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+        });
+      Slider({ value: this.colorARGB[3], min: 0, max: 255, style: SliderStyle.InSet })
+        .selectedColor('#0000FF')
+        .onChange((value: number) => {
+          this.colorARGB[3] = value;
+          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+        });
+      Row() {
+        Checkbox()
+          .select(this.changeAllColor)
+          .shape(CheckBoxShape.CIRCLE)
+          .onChange((value: boolean) => {
+            this.changeAllColor = value;
+          });
+        Text($r('app.string.change_all_color'));
+      }
     }
+    .padding(16)
     .width('100%')
-    .height(200)
+    .height(240)
     .justifyContent(FlexAlign.Center)
   }
 
@@ -561,7 +617,7 @@ struct ClassDetailDialog {
               this.rectifyTimeSpan[1] = swapTemp;
             }
             this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-            scheduleManager.addSchedule(this.classInfo);
+            scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
             this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
             if (this.controller != undefined) {
               this.controller.close();
@@ -652,20 +708,23 @@ struct ClassDetailDialog {
             Text($r('app.string.class_detail_color'))
               .textAlign(TextAlign.Start);
             Stack({ alignContent: Alignment.End }) {
-              TextInput({ text: this.classInfo.color })
+              TextInput({ text: this.classColor })
                 .textOverflow(TextOverflow.Ellipsis)
                 .onChange((input: string) => {
-                  this.classInfo.color = input;
+                  console.log('abcdefg'); // 此处证明了this.classColor = input;不会导致死循环
                   if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
                     this.isColorLegal = true;
+                    this.classInfo.color = input;
+                    this.colorARGB = tools.stringToRgba(input);
                   } else {
                     this.isColorLegal = false;
                   }
+                  this.classColor = input;
                 })
                 .width('100%')
                 .selectAll(true);
               Circle()
-                .fill(this.isColorLegal ? this.classInfo.color : '#00000000')
+                .fill(this.isColorLegal ? this.classColor : '#00d00721')
                 .width(32)
                 .height(32)
                 .offset({ x: -4 })
@@ -674,6 +733,8 @@ struct ClassDetailDialog {
                 .height(25)
                 .offset({ x: -7 })
                 .onClick(() => {
+                  this.colorARGB = tools.stringToRgba(this.classColor);
+                  this.colorDialogText = this.classColor;
                   this.showColorPicker = true;
                 });
             }
@@ -682,11 +743,27 @@ struct ClassDetailDialog {
               visible: this.showColorPicker,
               targetBuilder: () => {},
               popover: {
-                width: 200,
+                width: 280,
                 placement: Placement.Top,
-                offset: { x: 0, y: 0 },
-                arrowOffset: '100%',
+                arrowPointPosition: ArrowPointPosition.END,
                 builder: () => { this.colorPicker() },
+                onStateChange: (popup) => {
+                  if (!popup.isVisible) {
+                    // 关闭弹窗后记录颜色值
+                    this.showColorPicker = false;
+                    if (this.colorARGB[0] === 255) {
+                      this.classColor = '#' + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+                        + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+                        + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+                    } else {
+                      this.classColor = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+                        + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+                        + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+                        + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+                    }
+                    this.classInfo.color = this.classColor;
+                  }
+                }
               },
             })
           }
@@ -765,10 +842,13 @@ struct ClassDetailDialog {
               this.rectifyTimeSpan[1] = swapTemp;
             }
             this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-            if (this.isChangeSchedule)
-              scheduleManager.deleteSchedule(this.oriClassInfo);
-            scheduleManager.addSchedule(this.classInfo);
-            this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+            if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+              if (this.isChangeSchedule) {
+                scheduleManager.deleteSchedule(this.oriClassInfo);
+              }
+              scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
+              this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
+            }
             if (this.controller != undefined)
               this.controller.close();
           })
