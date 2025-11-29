@@ -27,6 +27,7 @@
         "startWindowBackground": "$color:normal_background",
         "exported": true,
         "launchType": "singleton",
+        "orientation": "auto_rotation_restricted",
         "skills": [
           {
             "entities": [

@@ -3,7 +3,7 @@ import { abilityAccessCtrl, application, common, contextConstant } from '@kit.Ab
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { LengthUnit } from '@kit.ArkUI'
+import { LengthUnit, mediaquery } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
@@ -46,6 +46,27 @@ enum ScrollPosition {
 @Entry
 @Component
 struct Index {
+  /*
+   * 以下是监听屏幕旋转
+   */
+  @State tabWidth: string = '100%';
+  @State tabHeight: string = '52vp';
+  @State tabVertical: boolean = false;
+  portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
+    if (mediaQueryResult.matches) { // 横屏
+      this.tabWidth = '52vp';
+      this.tabHeight = '100%';
+      this.tabVertical = true;
+    } else { // 竖屏
+      this.tabWidth = '100%';
+      this.tabHeight = '52vp';
+      this.tabVertical = false;
+    }
+  }
+  /*
+   * 以上是监听屏幕旋转
+   */
 
   @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
@@ -128,6 +149,13 @@ struct Index {
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
     this.refreshInfo();
+    this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
+      this.onPortrait(mediaQueryResult)
+    }); // 开启监听屏幕旋转
+  }
+
+  aboutToDisappear(): void {
+    this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
   }
 
   /**
@@ -1313,9 +1341,12 @@ struct Index {
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
 
     }
-    .width('100%')
-    .backgroundColor($r('app.color.shaded_background'))
-    .barHeight(52)
+    .backgroundColor(this.tabVertical ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
+    .barBackgroundColor($r('app.color.shaded_background'))
+    .barHeight(this.tabHeight)
+    .barWidth(this.tabWidth)
+    .vertical(this.tabVertical)
+    .barPosition(this.tabVertical ? BarPosition.Start : BarPosition.End)
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;
