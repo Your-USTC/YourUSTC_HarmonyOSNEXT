@@ -193,6 +193,18 @@
       "value": "课程详情"
     },
     {
+      "name": "unsaved_change",
+      "value": "有未保存的更改"
+    },
+    {
+      "name": "back_to_schedule_or_not",
+      "value": "是否返回课表页面？"
+    },
+    {
+      "name": "delete_or_not",
+      "value": "你真的要删掉这门课吗？"
+    },
+    {
       "name": "class_detail_new",
       "value": "添加课程"
     },

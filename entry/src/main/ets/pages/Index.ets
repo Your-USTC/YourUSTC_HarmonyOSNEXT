@@ -416,7 +416,8 @@ struct Index {
           dismissDialogAction.dismiss();
         }
       }
-    })}
+    })
+  }
 
   /**
    * 页面: 首页
