@@ -4,7 +4,7 @@ import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQuer
   fillInformationJS } from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
-import UnifiedPreference, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
+import UnifiedPreference, { PASSWORD_KEY, UID_KEY}  from '../utils/UnifyPreference'
 
 class accountInfoProvider {
   constructor() {}
@@ -30,6 +30,7 @@ struct Webview {
   obtainedData: obtainedData = {timeTable: '', startTime: '0'};
   webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
+  haveTriedLogin: boolean = false;
 
   showMessage(message: string | ResourceStr, duration: number) {
     try {
@@ -216,7 +217,8 @@ struct Webview {
             }
           })
           .onPageEnd(() => {
-            if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+              this.haveTriedLogin = true;
               this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
                 console.info(`自动填写uid：${UnifiedPreference.getSync(UID_KEY)}`);
               });

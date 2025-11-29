@@ -3,14 +3,25 @@ import { webview } from '@kit.ArkWeb'
 import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { common } from '@kit.AbilityKit'
-import UnifiedPreference from '../utils/UnifyPreference'
+import UnifiedPreference, { PASSWORD_KEY, UID_KEY} from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
-import { picker, fileUri, fileIo } from  '@kit.CoreFileKit';
+import { picker, fileUri } from  '@kit.CoreFileKit';
+import { fillInformationJS } from '../utils/TimeTable'
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
 
 let eachDownloadPercent = new Map<string, number>();
+
+class accountInfoProvider {
+  constructor() {}
+  getUID(): string {
+    return UnifiedPreference.getSync(UID_KEY);
+  }
+  getPassword(): string {
+    return UnifiedPreference.getSync(PASSWORD_KEY);
+  }
+}
 
 @Entry
 @Component
@@ -28,6 +39,9 @@ struct Webview {
   downloadItemTotal: number = 0;
   @State showDownloadProgress: boolean = false;
   haveJumped: boolean = true;
+  @State infoProvider: accountInfoProvider = new accountInfoProvider();
+  haveTriedLogin: boolean = false;
+
 
   showMessage(message: string | ResourceStr, duration: number) {
     try {
@@ -227,6 +241,13 @@ struct Webview {
 
       Stack({ alignContent: Alignment.TopStart}) {
         Web({ src: this.url, controller: this.webviewController })
+          .javaScriptProxy({
+            object: this.infoProvider,
+            name: "infoProvider",
+            methodList: ["getUID", "getPassword"],
+            controller: this.webviewController,
+            asyncMethodList: []
+          })
           .domStorageAccess(true)
           .javaScriptAccess(true)
           .width('100%')
@@ -248,6 +269,14 @@ struct Webview {
                   this.showMessage($r('app.string.get_schedule_hint'), 5000);
                 }
               }
+            }
+          })
+          .onPageEnd(() => {
+            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+              this.haveTriedLogin = true;
+              this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
+                console.info(`自动填写uid：${UnifiedPreference.getSync(UID_KEY)}`);
+              });
             }
           })
           .onLoadIntercept((event) => {
