@@ -574,9 +574,16 @@ struct ClassDetailDialog {
   @Builder
   colorPicker() {
     Column() {
-      Text(this.colorDialogText);
+      Text(this.colorDialogText)
+        .fontColor('#000000')
+
       Slider({ value: this.colorARGB[0], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#00d00721')
+        .blockColor($r('app.color.normal_background'))
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: $r('app.color.normal_text'), offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[0] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -584,8 +591,14 @@ struct ClassDetailDialog {
               + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
               + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[1], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#FF0000')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#FF0000', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[1] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -593,8 +606,14 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[2], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#00FF00')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#00FF00', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[2] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -602,8 +621,14 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[3], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#0000FF')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#0000FF', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[3] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -611,6 +636,7 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Row() {
         Checkbox()
           .select(this.changeAllColor)
@@ -618,12 +644,15 @@ struct ClassDetailDialog {
           .onChange((value: boolean) => {
             this.changeAllColor = value;
           });
-        Text($r('app.string.change_all_color'));
+        Text($r('app.string.change_all_color'))
+          .fontColor('#000000')
+          .layoutWeight(1);
       }
     }
+    .backgroundColor(this.colorDialogText)
     .padding(16)
     .width('100%')
-    .height(240)
+    .height(250)
     .justifyContent(FlexAlign.Center)
   }
 
@@ -810,9 +839,9 @@ struct ClassDetailDialog {
               visible: this.showColorPicker,
               targetBuilder: () => {},
               popover: {
-                width: 280,
+                width: 200,
                 placement: Placement.Top,
-                arrowPointPosition: ArrowPointPosition.END,
+                enableArrow: false,
                 builder: () => { this.colorPicker() },
                 onStateChange: (popup) => {
                   if (!popup.isVisible) {
