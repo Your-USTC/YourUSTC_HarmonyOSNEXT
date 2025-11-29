@@ -182,7 +182,6 @@ struct Schedule {
         .fontColor('#000000')
         .backgroundColor(this.colorDialogText)
         .padding(3)
-        .
 
       Slider({
         value: this.colorARGB[0],
@@ -190,7 +189,6 @@ struct Schedule {
         max: 255,
         style: SliderStyle.InSet
       })
-        .blockColor($r('app.color.normal_background'))
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
           { color: $r('app.color.transparent'), offset: 0 },
@@ -210,7 +208,6 @@ struct Schedule {
         max: 255,
         style: SliderStyle.InSet
       })
-        .blockColor('#FFFFFF')
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
           { color: $r('app.color.transparent'), offset: 0 },
@@ -230,7 +227,6 @@ struct Schedule {
         max: 255,
         style: SliderStyle.InSet
       })
-        .blockColor('#FFFFFF')
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
           { color: $r('app.color.transparent'), offset: 0 },
