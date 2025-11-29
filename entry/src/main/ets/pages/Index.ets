@@ -3,7 +3,7 @@ import { abilityAccessCtrl, application, common, contextConstant } from '@kit.Ab
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { LengthUnit, mediaquery } from '@kit.ArkUI'
+import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
@@ -19,7 +19,7 @@ import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY } from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
-import { fileIo, statfs } from '@kit.CoreFileKit'
+import { fileIo } from '@kit.CoreFileKit'
 
 // 指定日历账户信息
 const calendarAccount: calendarManager.CalendarAccount = {
@@ -54,14 +54,34 @@ struct Index {
   @State tabVertical: boolean = false;
   portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
-    if (mediaQueryResult.matches) { // 横屏
-      this.tabWidth = '52vp';
-      this.tabHeight = '100%';
-      this.tabVertical = true;
-    } else { // 竖屏
-      this.tabWidth = '100%';
-      this.tabHeight = '52vp';
-      this.tabVertical = false;
+    let windowClass: window.Window | undefined = undefined;
+    try {
+      let promise = window.getLastWindow(this.context);
+      promise.then((data)=> {
+        //Get window object
+        windowClass = data;
+        try {
+          //Get window properties
+          let properties = windowClass.getWindowProperties();
+          let rect = properties.windowRect;
+          if (rect.width > rect.height) { // 横屏
+            this.tabWidth = '52vp';
+            this.tabHeight = '100%';
+            this.tabVertical = true;
+          } else { // 竖屏
+            this.tabWidth = '100%';
+            this.tabHeight = '52vp';
+            this.tabVertical = false;
+          }
+          //rect.width: Window Width, rect.height: Window height
+        } catch (exception) {
+          console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
+        }
+        console.info('Succeeded in obtaining the top window. Data: ' + JSON.stringify(data));
+      }).catch((err: BusinessError)=>{
+        console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+      });} catch (exception) {
+      console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(exception));
     }
   }
   /*
@@ -1359,7 +1379,7 @@ struct Index {
 }
 
 @CustomDialog
-export struct InputDialog {
+struct InputDialog {
   controller: CustomDialogController;
   inputUID: string = UnifiedPreferences.getSync(UID_KEY, '');
   inputPassword: string = UnifiedPreferences.getSync(PASSWORD_KEY, '');
