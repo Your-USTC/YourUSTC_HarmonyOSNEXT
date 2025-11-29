@@ -1424,7 +1424,12 @@ struct InputDialog {
               this.accountChanged = true;
             else
               this.accountChanged = false;
-            if (this.inputUID && this.inputPassword) {
+            if (
+              /^[A-Z]{2}\d{8}$/.test(this.inputUID) &&
+              /[a-z]/.test(this.inputPassword) &&
+              /[A-Z]/.test(this.inputPassword) &&
+              /\d/.test(this.inputPassword)
+            ) {
               UnifiedPreferences.putSync(UID_KEY, this.inputUID);
               UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
               this.controller.close();

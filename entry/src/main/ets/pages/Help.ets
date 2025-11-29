@@ -39,7 +39,7 @@ struct Index {
 
 
       List({ initialIndex: 0 }) {
-        ForEach(getContArray([[0, 6]]), (index: number) => {
+        ForEach(getContArray([[0, 7]]), (index: number) => {
           ListItem() {
             Column() {
               Row() {

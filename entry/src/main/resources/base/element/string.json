@@ -634,7 +634,7 @@
     },
     {
       "name": "incomplete",
-      "value": "请完成输入后再确认"
+      "value": "请检查输入后再确认"
     },
     {
       "name": "input_later",
