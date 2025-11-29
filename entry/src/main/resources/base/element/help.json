@@ -46,23 +46,23 @@
     },
     {
       "name": "help5_content",
-      "value": "　　有一个神秘的触发方式！不过我可不会告诉你。来本项目 GitHub 上的源码中找罢，别忘了顺手点一个\uD83C\uDF1F！"
+      "value": "　　有一个神秘的触发方式，不过我可不会告诉你！来本项目 GitHub 上的源码中找罢，别忘了顺手点一个\uD83C\uDF1F！"
     },
     {
       "name": "help6_title",
-      "value": "未完待续……"
+      "value": "为什么建议提供学号而不是GID用于自动登录？"
     },
     {
       "name": "help6_content",
-      "value": "　　如果你有任何疑惑，欢迎来 GitHub 与我们讨论！"
+      "value": "　　尽管统一身份认证系统同时支持这两种账号，教务系统(https://jw.ustc.edu.cn)只能通过学号登录。因此只有提供学号（通常是PB或SA开头）才能正常使用。"
     },
     {
       "name": "help7_title",
-      "value": ""
+      "value": "未完待续……"
     },
     {
       "name": "help7_content",
-      "value": ""
+      "value": "　　如果你有任何疑惑，欢迎来 GitHub 与我们讨论！"
     },
     {
       "name": "help8_title",
