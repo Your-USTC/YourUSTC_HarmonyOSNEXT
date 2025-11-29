@@ -2,7 +2,8 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
-import { PopoverDialog } from '@kit.ArkUI';
+import { mediaquery, PopoverDialog, window } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 
 // 课程信息类型
@@ -91,11 +92,55 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
+
+  private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  /*
+   * 以下是监听屏幕旋转
+   */
+  @State isLandscape: boolean = false;
+  @State screenWidth: number = 0;
+  @State screenHeight: number = 0;
+  portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
+    let windowClass: window.Window | undefined = undefined;
+    try {
+      let promise = window.getLastWindow(this.context);
+      promise.then((data)=> {
+        //Get window object
+        windowClass = data;
+        try {
+          //Get window properties
+          let properties = windowClass.getWindowProperties();
+          let rect = properties.windowRect;
+          this.screenWidth = rect.width;
+          this.screenHeight = rect.height;
+          if (rect.width > rect.height) { // 横屏
+            this.isLandscape = true;
+          } else { // 竖屏
+            this.isLandscape = false;
+          }
+          //rect.width: Window Width, rect.height: Window height
+        } catch (exception) {
+          console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
+        }
+        console.info('Succeeded in obtaining the top window. Data: ' + JSON.stringify(data));
+      }).catch((err: Error)=>{
+        console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+      });} catch (exception) {
+      console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(exception));
+    }
+  }
+  /*
+   * 以上是监听屏幕旋转
+   */
+
   @State weekDisplayed: number = 0;
   @State termStart: number = 0;
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
   @State thisWeekSchedule: classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
+  ShowClassDetail: CustomDialogController | null = null;
 
   /*
    * 详情弹窗部分
@@ -206,9 +251,15 @@ struct Schedule {
     console.info(`课表 weekEnd: ${tools.timestampToDateTime(this.weekEnd)}`)
   }
 
-  ShowClassDetail: CustomDialogController | null = null;
+  aboutToAppear(): void {
+    this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
+      this.onPortrait(mediaQueryResult)
+    }); // 开启监听屏幕旋转
+  }
+
   aboutToDisappear(): void {
     this.ShowClassDetail = null;  // 在自定义组件即将析构销毁时将ShowClassDetail置空
+    this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
   }
 
   build() {
@@ -467,17 +518,20 @@ struct Schedule {
             Column() {
               Text(commonClassTime[item][0])
                 .fontSize('8fp')
+                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
 
               Blank()
 
               Text(item.toString())
                 .fontWeight(FontWeight.Bold)
                 .fontSize(14)
+                .align(Alignment.Center)
 
               Blank()
 
               Text(commonClassTime[item][1])
                 .fontSize('8fp')
+                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
             }
             .width('100%')
             .height('100%')
@@ -522,8 +576,8 @@ struct Schedule {
                     .fontColor('#000000')
                     .fontWeight(FontWeight.Bold)
                     .fontSize(13)
-                    .maxLines(4)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .maxLines(this.screenHeight < 2000 ? 1 : 4)
+                    .textOverflow({ overflow: (this.screenHeight < 2000 ? TextOverflow.MARQUEE : TextOverflow.Ellipsis) })
 
                   Text(lesson.location)
                     .fontColor('#000000')
@@ -586,7 +640,9 @@ struct Schedule {
       }
       .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
-      .rowsTemplate('1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
+      .rowsTemplate(this.screenHeight < 2000 ?
+        '2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr' :
+        '1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
       .margin({ bottom: 48 })
       .padding(0)
 
@@ -999,9 +1055,16 @@ struct ClassDetailDialog {
   @Builder
   colorPicker() {
     Column() {
-      Text(this.colorDialogText);
+      Text(this.colorDialogText)
+        .fontColor('#000000')
+
       Slider({ value: this.colorARGB[0], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#00d00721')
+        .blockColor($r('app.color.normal_background'))
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: $r('app.color.normal_text'), offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[0] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -1009,8 +1072,14 @@ struct ClassDetailDialog {
               + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
               + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[1], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#FF0000')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#FF0000', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[1] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -1018,8 +1087,14 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[2], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#00FF00')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#00FF00', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[2] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -1027,8 +1102,14 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Slider({ value: this.colorARGB[3], min: 0, max: 255, style: SliderStyle.InSet })
-        .selectedColor('#0000FF')
+        .blockColor('#FFFFFF')
+        .selectedColor($r('app.color.transparent'))
+        .trackColor(new LinearGradient([
+          { color: $r('app.color.transparent'), offset: 0 },
+          { color: '#0000FF', offset: 1 },
+        ]))
         .onChange((value: number) => {
           this.colorARGB[3] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -1036,6 +1117,7 @@ struct ClassDetailDialog {
             + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
             + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
         });
+
       Row() {
         Checkbox()
           .select(this.changeAllColor)
@@ -1043,12 +1125,15 @@ struct ClassDetailDialog {
           .onChange((value: boolean) => {
             this.changeAllColor = value;
           });
-        Text($r('app.string.change_all_color'));
+        Text($r('app.string.change_all_color'))
+          .fontColor('#000000')
+          .layoutWeight(1);
       }
     }
+    .backgroundColor(this.colorDialogText)
     .padding(16)
     .width('100%')
-    .height(240)
+    .height(250)
     .justifyContent(FlexAlign.Center)
   }
 
@@ -1227,9 +1312,9 @@ struct ClassDetailDialog {
               visible: this.showColorPicker,
               targetBuilder: () => {},
               popover: {
-                width: 280,
+                width: 200,
                 placement: Placement.Top,
-                arrowPointPosition: ArrowPointPosition.END,
+                enableArrow: false,
                 builder: () => { this.colorPicker() },
                 onStateChange: (popup) => {
                   if (!popup.isVisible) {
