@@ -202,7 +202,7 @@
     },
     {
       "name": "delete_or_not",
-      "value": "你真的要删掉这门课吗？"
+      "value": "你真的要删掉这节课吗？"
     },
     {
       "name": "class_detail_new",

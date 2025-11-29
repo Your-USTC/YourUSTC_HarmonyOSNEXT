@@ -102,7 +102,7 @@ struct Schedule {
   @State isLandscape: boolean = false;
   @State screenWidth: number = 0;
   @State screenHeight: number = 0;
-  portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  private portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
     let windowClass: window.Window | undefined = undefined;
     try {
@@ -141,26 +141,27 @@ struct Schedule {
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
   @State thisWeekSchedule: classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
-  ShowClassDetail: CustomDialogController | null = null;
 
   /*
    * 详情弹窗部分
    */
   @State showSheet: boolean = false;
-  classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+  private classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
     weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
-  oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+  private oriClassInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
     weekOfTerm: [], timeSpan: [6, 7], dayOfWeek: 0,
     color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
 
-  rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
+  private rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
+  private rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
     false, false, false, true, true, true, false, false, false, false];
   @State isWeeksLegal: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
   @State isColorLegal: boolean = true;
-  changeAllColor: boolean = true;
+  private changeAllColor: boolean = true;
+
+  private isChangeSchedule: boolean = true;
 
   private createArray = (start: number, end: number): Array<SelectOption> => {
     const arr: Array<SelectOption> = [];
@@ -179,6 +180,9 @@ struct Schedule {
     Column() {
       Text(this.colorDialogText)
         .fontColor('#000000')
+        .backgroundColor(this.colorDialogText)
+        .padding(3)
+        .
 
       Slider({
         value: this.colorARGB[0],
@@ -190,7 +194,7 @@ struct Schedule {
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
           { color: $r('app.color.transparent'), offset: 0 },
-          { color: $r('app.color.normal_text'), offset: 1 },
+          { color: `#${this.colorDialogText.slice(3, 9)}`, offset: 1 },
         ]))
         .onChange((value: number) => {
           this.colorARGB[0] = value;
@@ -268,11 +272,8 @@ struct Schedule {
             this.changeAllColor = value;
           });
         Text($r('app.string.change_all_color'))
-          .fontColor('#000000')
-          .layoutWeight(1);
       }
     }
-    .backgroundColor(this.colorDialogText)
     .padding(16)
     .width('100%')
     .height(250)
@@ -308,7 +309,6 @@ struct Schedule {
   }
 
   aboutToDisappear(): void {
-    this.ShowClassDetail = null;  // 在自定义组件即将析构销毁时将ShowClassDetail置空
     this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
   }
 
@@ -348,7 +348,7 @@ struct Schedule {
                 this.rectifyTimeSpan[1] = swapTemp;
               }
               this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-              if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+              if (!this.isChangeSchedule || !areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
                 this.getUIContext().showAlertDialog({
                   title: $r('app.string.unsaved_change'),
                   message: $r('app.string.back_to_schedule_or_not'),
@@ -394,26 +394,32 @@ struct Schedule {
           .height(20)
           .draggable(false)
           .onClick(() => {
-            this.ShowClassDetail = null;
-            this.ShowClassDetail = new CustomDialogController({
-              builder: ClassDetailDialog({
-                toChange: this.thisWeekSchedule,
-                weekDisplayed: this.weekDisplayed,
-              }),
-              autoCancel: false,
-              gridCount: 4,
-              onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
-                if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-                  dismissDialogAction.dismiss();
-                }
-                if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
-                  dismissDialogAction.dismiss();
-                }
-              }
-            })
-            if (this.ShowClassDetail != null) {
-              this.ShowClassDetail.open();
-            }
+            this.isChangeSchedule = false;
+            this.oriClassInfo = {
+              name: '计算机程序设计',
+              teacher: '李卫海',
+              location: '3A212',
+              id: 'CS1003.H2',
+              weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[],
+              timeSpan: [6, 7],
+              dayOfWeek: 0,
+              color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)]
+            };
+            this.classInfo = {
+              name: '计算机程序设计',
+              teacher: '李卫海',
+              location: '3A212',
+              id: 'CS1003.H2',
+              weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[],
+              timeSpan: [6, 7],
+              dayOfWeek: 0,
+              color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)]
+            };
+            this.classColor = this.oriClassInfo.color;
+            this.rectifyWeekOfTerm = [true, false, true, true, true, false, true, true, true, true, true,
+              false, false, false, true, true, true, false, false, false, false];
+            this.rectifyTimeSpan = [6, 7];
+            this.showSheet = true;
           })
 
         Image($r('app.media.get'))
@@ -646,6 +652,7 @@ struct Schedule {
                 .justifyContent(FlexAlign.Center)
               }
               .onClick(() => {
+                this.isChangeSchedule = true;
                 this.oriClassInfo = {
                   name: lesson.name,
                   teacher: lesson.teacher,
@@ -704,80 +711,82 @@ struct Schedule {
   @Builder
   ClassDetailDialog() {
     Column() {
-      Row({ space: 5 }) {
+      Row({ space: 8 }) {
         Text($r('app.string.class_detail'))
           .fontWeight(FontWeight.Bold)
           .fontSize(24)
           .layoutWeight(1)
           .margin({ left: 8 })
-        Blank()
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.trash_red'))
-            .height(24)
-            .width(24)
-        }
-        .width(42)
-        .height(42)
-        .onClick(() => {
-          this.getUIContext().showAlertDialog({
-            message: $r('app.string.delete_or_not'),
-            autoCancel: true,
-            alignment: DialogAlignment.Center,
-            gridCount: 4,
-            primaryButton: {
-              value: $r('app.string.cancel'),
-              action: () => {
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.trash_red'))
+              .height(24)
+              .width(24)
+          }
+          .width(42)
+          .height(42)
+          .onClick(() => {
+            this.getUIContext().showAlertDialog({
+              message: $r('app.string.delete_or_not'),
+              autoCancel: true,
+              alignment: DialogAlignment.Center,
+              gridCount: 3,
+              primaryButton: {
+                value: $r('app.string.cancel'),
+                action: () => {}
+              },
+              secondaryButton: {
+                enabled: true,
+                defaultFocus: true,
+                style: DialogButtonStyle.DEFAULT,
+                fontColor: $r('app.color.red'),
+                value: $r('app.string.ok'),
+                action: () => {
+                  scheduleManager.deleteSchedule(this.oriClassInfo);
+                  this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+                  this.showSheet = false;
+                }
+              },
+              cancel: () => {
+                console.info('Closed callbacks');
+              },
+              onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+                if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
+                  dismissDialogAction.dismiss();
+                }
+                if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
+                  dismissDialogAction.dismiss();
+                }
               }
-            },
-            secondaryButton: {
-              enabled: true,
-              defaultFocus: true,
-              style: DialogButtonStyle.HIGHLIGHT,
-              backgroundColor: $r('app.color.red'),
-              value: $r('app.string.ok'),
-              action: () => {
-                scheduleManager.deleteSchedule(this.oriClassInfo);
-                this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
-                this.showSheet = false;
-              }
-            },
-            cancel: () => {
-              console.info('Closed callbacks');
-            },
-            onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
-              if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
-                dismissDialogAction.dismiss();
-              }
-              if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
-                dismissDialogAction.dismiss();
+            });
+          })
+
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.copy'))
+              .height(24)
+              .width(24)
+          }
+          .enabled(this.isWeeksLegal && this.isColorLegal)
+          .width(42)
+          .height(42)
+          .onClick(() => {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+              if (this.rectifyWeekOfTerm[weekRepeat]) {
+                this.classInfo.weekOfTerm.push(weekRepeat);
               }
             }
-          });
-        })
-
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.copy'))
-            .height(24)
-            .width(24)
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+            scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
+            this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+            this.showSheet = false;
+          })
         }
-        .enabled(this.isWeeksLegal && this.isColorLegal)
-        .width(42)
-        .height(42)
-        .onClick(() => {
-          this.classInfo.weekOfTerm = [];
-          for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-            if (this.rectifyWeekOfTerm[weekRepeat])
-              this.classInfo.weekOfTerm.push(weekRepeat);
-          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-            let swapTemp = this.rectifyTimeSpan[0];
-            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-            this.rectifyTimeSpan[1] = swapTemp;
-          }
-          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-          scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
-          this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
-          this.showSheet = false;
-        })
 
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
@@ -787,17 +796,56 @@ struct Schedule {
         .width(42)
         .height(42)
         .onClick(() => {
-          this.classInfo.weekOfTerm = [];
-          for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-            if (this.rectifyWeekOfTerm[weekRepeat])
-              this.classInfo.weekOfTerm.push(weekRepeat);
-          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-            let swapTemp = this.rectifyTimeSpan[0];
-            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-            this.rectifyTimeSpan[1] = swapTemp;
-          }
-          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-          if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+          if (this.isChangeSchedule) {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+              if (this.rectifyWeekOfTerm[weekRepeat]) {
+                this.classInfo.weekOfTerm.push(weekRepeat);
+              }
+            }
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+            if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+              this.getUIContext().showAlertDialog({
+                title: $r('app.string.unsaved_change'),
+                message: $r('app.string.back_to_schedule_or_not'),
+                autoCancel: true,
+                alignment: DialogAlignment.Center,
+                gridCount: 4,
+                primaryButton: {
+                  value: $r('app.string.cancel'),
+                  action: () => {
+                  }
+                },
+                secondaryButton: {
+                  enabled: true,
+                  defaultFocus: true,
+                  style: DialogButtonStyle.HIGHLIGHT,
+                  value: $r('app.string.ok'),
+                  action: () => {
+                    this.showSheet = false;
+                  }
+                },
+                cancel: () => {
+                  console.info('Closed callbacks');
+                },
+                onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+                  if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
+                    dismissDialogAction.dismiss();
+                  }
+                  if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
+                    dismissDialogAction.dismiss();
+                  }
+                }
+              });
+            } else {
+              this.showSheet = false;
+            }
+          } else {
             this.getUIContext().showAlertDialog({
               title: $r('app.string.unsaved_change'),
               message: $r('app.string.back_to_schedule_or_not'),
@@ -830,39 +878,68 @@ struct Schedule {
                 }
               }
             });
-          } else {
-            this.showSheet = false;
           }
-        });
+        })
 
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.save'))
-            .height(24)
-            .width(24)
-        }
-        .width(42)
-        .height(42)
-        .enabled(this.isWeeksLegal && this.isColorLegal)
-        .onClick(() => {
-          this.classInfo.weekOfTerm = [];
-          for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-            if (this.rectifyWeekOfTerm[weekRepeat])
-              this.classInfo.weekOfTerm.push(weekRepeat);
-          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-            let swapTemp = this.rectifyTimeSpan[0];
-            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-            this.rectifyTimeSpan[1] = swapTemp;
+        if (this.isChangeSchedule) {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.save'))
+              .height(24)
+              .width(24)
           }
-          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-          if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
-            scheduleManager.deleteSchedule(this.oriClassInfo);
+          .width(42)
+          .height(42)
+          .enabled(this.isWeeksLegal && this.isColorLegal)
+          .onClick(() => {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+              if (this.rectifyWeekOfTerm[weekRepeat]) {
+                this.classInfo.weekOfTerm.push(weekRepeat);
+              }
+            }
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+            if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+              scheduleManager.deleteSchedule(this.oriClassInfo);
+              scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
+              this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+            }
+            this.showSheet = false;
+          });
+        } else {
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.checkmark'))
+              .height(24)
+              .width(24)
+          }
+          .width(42)
+          .height(42)
+          .enabled(this.isWeeksLegal && this.isColorLegal)
+          .onClick(() => {
+            this.classInfo.weekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+              if (this.rectifyWeekOfTerm[weekRepeat]) {
+                this.classInfo.weekOfTerm.push(weekRepeat);
+              }
+            }
+            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+              let swapTemp = this.rectifyTimeSpan[0];
+              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+              this.rectifyTimeSpan[1] = swapTemp;
+            }
+            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
             scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
             this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
-          }
-          this.showSheet = false;
-        });
+            this.showSheet = false;
+          });
+        }
       }
       .margin({ bottom: 10 })
+
       Scroll() {
         Column() {
           Row() {
@@ -976,6 +1053,8 @@ struct Schedule {
                     this.colorDialogText = this.classColor;
                   }
                   this.colorARGB = tools.stringToRgba(this.colorDialogText);
+                  if (this.colorDialogText.length === 7)
+                    this.colorDialogText = `#FF${this.colorDialogText.slice(1,7)}`;
                   this.showColorPicker = true;
                 });
             }
@@ -984,7 +1063,7 @@ struct Schedule {
               visible: this.showColorPicker,
               targetBuilder: () => {},
               popover: {
-                width: 200,
+                width: 280,
                 placement: Placement.Top,
                 enableArrow: false,
                 builder: () => { this.colorPicker() },
@@ -1063,384 +1142,5 @@ struct Schedule {
     .padding({ top: 16, right: 16, left: 16})
     .width('100%')
     .height('100%')
-  }
-}
-
-@CustomDialog
-@Component
-struct ClassDetailDialog {
-  @Link toChange: classAttribute[][];
-  classInfo: classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
-    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
-
-  controller?: CustomDialogController;
-  scroller: Scroller = new Scroller();
-
-  weekDisplayed: number = 1;
-  rectifyTimeSpan: number[] = [this.classInfo.timeSpan[0], this.classInfo.timeSpan[this.classInfo.timeSpan.length - 1]];
-  rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
-    false, false, false, true, true, true, false, false, false, false];
-  @State isWeeksLegal: boolean = true;
-  @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
-  @State isColorLegal: boolean = true;
-  changeAllColor: boolean = true;
-
-  private createArray = (start: number, end: number): Array<SelectOption> => {
-    const arr: Array<SelectOption> = [];
-    for (let i = start; i <= end; i++) {
-      arr.push({ value: i.toString() });
-    }
-    return arr;
-  };
-
-  aboutToAppear(): void {
-    this.classColor = this.classInfo.color;
-  }
-
-  private colorARGB: number[] = [255, 255, 199, 205];
-  @State classColor: string = '#FFC7CD';
-  @State showColorPicker: boolean = false;
-  @State colorDialogText: string = '#FFC7CD';
-  @Builder
-  colorPicker() {
-    Column() {
-      Text(this.colorDialogText)
-        .fontColor('#000000')
-
-      Slider({ value: this.colorARGB[0], min: 0, max: 255, style: SliderStyle.InSet })
-        .blockColor($r('app.color.normal_background'))
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: $r('app.color.normal_text'), offset: 1 },
-        ]))
-        .onChange((value: number) => {
-          this.colorARGB[0] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
-
-      Slider({ value: this.colorARGB[1], min: 0, max: 255, style: SliderStyle.InSet })
-        .blockColor('#FFFFFF')
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#FF0000', offset: 1 },
-        ]))
-        .onChange((value: number) => {
-          this.colorARGB[1] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
-
-      Slider({ value: this.colorARGB[2], min: 0, max: 255, style: SliderStyle.InSet })
-        .blockColor('#FFFFFF')
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#00FF00', offset: 1 },
-        ]))
-        .onChange((value: number) => {
-          this.colorARGB[2] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
-
-      Slider({ value: this.colorARGB[3], min: 0, max: 255, style: SliderStyle.InSet })
-        .blockColor('#FFFFFF')
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#0000FF', offset: 1 },
-        ]))
-        .onChange((value: number) => {
-          this.colorARGB[3] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
-
-      Row() {
-        Checkbox()
-          .select(this.changeAllColor)
-          .shape(CheckBoxShape.CIRCLE)
-          .onChange((value: boolean) => {
-            this.changeAllColor = value;
-          });
-        Text($r('app.string.change_all_color'))
-          .fontColor('#000000')
-          .layoutWeight(1);
-      }
-    }
-    .backgroundColor(this.colorDialogText)
-    .padding(16)
-    .width('100%')
-    .height(250)
-    .justifyContent(FlexAlign.Center)
-  }
-
-  build() {
-    Column() {
-      // 标题区
-      Row() {
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.close'))
-            .width(24)
-            .height(24)
-            .draggable(false)
-        }
-        .onClick(() => {
-          if (this.controller != undefined)
-            this.controller.close();
-        })
-        .height(42)
-        .width(42);
-        Blank();
-
-        Text($r('app.string.class_detail_new'))
-          .fontSize(24)
-          .fontWeight("bold")
-          .textAlign(TextAlign.Center)
-          .height(42);
-
-        Blank();
-        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-          Image($r('app.media.checkmark'))
-            .width(24)
-            .height(24)
-            .draggable(false)
-        }
-        .onClick(() => {
-          this.classInfo.weekOfTerm = [];
-          for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-            if (this.rectifyWeekOfTerm[weekRepeat])
-              this.classInfo.weekOfTerm.push(weekRepeat);
-          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-            let swapTemp = this.rectifyTimeSpan[0];
-            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-            this.rectifyTimeSpan[1] = swapTemp;
-          }
-          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-          scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
-          this.toChange = scheduleManager.formattedSchedule[this.weekDisplayed];
-          if (this.controller != undefined)
-            this.controller.close();
-        })
-        .height(42)
-        .width(42)
-        .enabled(this.isWeeksLegal && this.isColorLegal);
-      }
-      .width('100%');
-
-      // 详情区
-      Scroll(this.scroller) {
-        Column() {
-          Row() {
-            Text($r('app.string.class_detail_name'));
-            TextInput({ text: this.classInfo.name })
-              .layoutWeight(1)
-              .textOverflow(TextOverflow.Ellipsis)
-              .onChange((input: string) => this.classInfo.name = input)
-              .selectAll(true);
-          }
-          .margin({ bottom: 5 });
-
-          Row() {
-            Text($r('app.string.class_detail_teacher'));
-            TextInput({ text: this.classInfo.teacher })
-              .layoutWeight(1)
-              .textOverflow(TextOverflow.Ellipsis)
-              .onChange((input: string) => this.classInfo.teacher = input)
-              .selectAll(true);
-          }
-          .margin({ bottom: 5 });
-
-          Row() {
-            Text($r('app.string.class_detail_location'));
-            TextInput({ text: this.classInfo.location })
-              .layoutWeight(1)
-              .textOverflow(TextOverflow.Ellipsis)
-              .onChange((input: string) => this.classInfo.location = input)
-              .selectAll(true);
-          }
-          .margin({ bottom: 5 });
-
-          Row() {
-            Text($r('app.string.class_detail_id'));
-            TextInput({ text: this.classInfo.id })
-              .layoutWeight(1)
-              .textOverflow(TextOverflow.Ellipsis)
-              .onChange((input: string) => this.classInfo.id = input)
-              .selectAll(true);
-          }
-          .margin({ bottom: 5 });
-
-          Row() {
-            Text($r('app.string.class_detail_time'))
-              .textAlign(TextAlign.Start);
-            Select(this.createArray(1, 13))
-              .value(this.rectifyTimeSpan[0].toString())
-              .onSelect((index: number) => {
-                this.rectifyTimeSpan[0] = index + 1;
-              });
-            Text(' ~ ');
-            Select(this.createArray(1, 13))
-              .value(this.rectifyTimeSpan[1].toString())
-              .onSelect((index: number) => {
-                this.rectifyTimeSpan[1] = index + 1;
-              });
-          }
-          .margin({ bottom: 5 })
-
-          Row() {
-            Text($r('app.string.class_detail_day_of_week'))
-              .textAlign(TextAlign.Start);
-            Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') },
-              { value: $r('app.string.wednesday') },
-              { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
-              { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
-              .value(tools.weekTranslate[this.classInfo.dayOfWeek])
-              .onSelect((index: number) => {
-                this.classInfo.dayOfWeek = index;
-              });
-          }
-          .margin({ bottom: 5 })
-
-          Row() {
-            Text($r('app.string.class_detail_color'))
-              .textAlign(TextAlign.Start);
-            Stack({ alignContent: Alignment.End }) {
-              TextInput({ text: this.classColor })
-                .textOverflow(TextOverflow.Ellipsis)
-                .onChange((input: string) => {
-                  console.log('abcdefg'); // 此处证明了this.classColor = input;不会导致死循环
-                  if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
-                    this.isColorLegal = true;
-                    this.classInfo.color = input;
-                    this.colorARGB = tools.stringToRgba(input);
-                  } else {
-                    this.isColorLegal = false;
-                  }
-                  this.classColor = input;
-                })
-                .width('100%')
-                .selectAll(true);
-              Circle()
-                .fill(this.isColorLegal ? this.classColor : '#00d00721')
-                .width(32)
-                .height(32)
-                .offset({ x: -4 })
-                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
-              Image($r('app.media.paintpalette'))
-                .height(25)
-                .offset({ x: -7 })
-                .onClick(() => {
-                  if (this.classColor.length === 4) {
-                    this.colorDialogText = this.classColor[0] + this.classColor[1] + this.classColor[1]
-                      + this.classColor[2] + this.classColor[2] + this.classColor[3] + this.classColor[3];
-                  } else if (this.classColor.length === 5) {
-                    this.colorDialogText = this.classColor[0] + this.classColor[1] + this.classColor[1]
-                      + this.classColor[2] + this.classColor[2] + this.classColor[3] + this.classColor[3]
-                      + this.classColor[4] + this.classColor[4];
-                  } else {
-                    this.colorDialogText = this.classColor;
-                  }
-                  this.colorARGB = tools.stringToRgba(this.colorDialogText);
-                  this.showColorPicker = true;
-                });
-            }
-            .layoutWeight(1);
-            PopoverDialog({
-              visible: this.showColorPicker,
-              targetBuilder: () => {},
-              popover: {
-                width: 200,
-                placement: Placement.Top,
-                enableArrow: false,
-                builder: () => { this.colorPicker() },
-                onStateChange: (popup) => {
-                  if (!popup.isVisible) {
-                    // 关闭弹窗后记录颜色值
-                    this.showColorPicker = false;
-                    if (this.colorARGB[0] === 255) {
-                      this.classColor = '#' + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-                        + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-                        + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-                    } else {
-                      this.classColor = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-                        + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-                        + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-                        + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-                    }
-                    this.classInfo.color = this.classColor;
-                  }
-                }
-              },
-            })
-          }
-          .margin({ bottom: 5 })
-
-          Row() {
-            Text($r('app.string.class_detail_weeks', tools.shrinkContArrayToString(this.weekOfTerm)))
-              .textAlign(TextAlign.Start)
-              .layoutWeight(1)
-              .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis });
-            CheckboxGroup({ group: 'checkboxGroup' })
-              .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
-              .onChange((itemName: CheckboxGroupResult) => {
-                for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++) {
-                  this.rectifyWeekOfTerm[checkboxRepeat] = false;
-                }
-                let selectAny: boolean = false;
-                for (let checkboxRepeat of itemName.name) {
-                  this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
-                  selectAny = true;
-                }
-                this.isWeeksLegal = selectAny;
-                this.weekOfTerm = [];
-                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-                  if (this.rectifyWeekOfTerm[weekRepeat]) {
-                    this.weekOfTerm.push(weekRepeat);
-                  }
-                }
-                if (!this.scroller.isAtEnd())
-                  this.scroller.scrollEdge(Edge.End);
-              });
-            Text($r('app.string.select_all'));
-          }
-          .width('100%');
-
-          ForEach(tools.getContArray([[0, 3]]), (checkboxId: number) => {
-            Row() {
-              ForEach(tools.getContArray([[1, 5]]), (checkboxId2: number) => {
-                Checkbox({ name: (checkboxId * 5 + checkboxId2).toString(), group: 'checkboxGroup' })
-                  .shape(CheckBoxShape.ROUNDED_SQUARE)
-                  .select(this.rectifyWeekOfTerm[checkboxId * 5 + checkboxId2]);
-                Text((checkboxId * 5 + checkboxId2).toString()).width('8%');
-              })
-            }
-          });
-        }
-        .alignItems(HorizontalAlign.Start)
-        .width('80%');
-      }
-      .width('100%')
-      .layoutWeight(1)
-      .constraintSize({ maxHeight: 480 })
-      .scrollBar(BarState.Auto)
-      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
-    }
-    .width('100%')
-    .padding(16)
-    .backgroundColor($r('app.color.grid_background'));
   }
 }
