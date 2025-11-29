@@ -28,48 +28,32 @@ struct About {
   build() {
 
     Stack({ alignContent: Alignment.Top}) {
-      Column() {
 
-        Image($r('app.media.ciallo'))
-          .width('90%')
-          .draggable(false)
-          .constraintSize({ maxWidth: 300 })
-          .onClick(() => {
-            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
-            this.iconClickTime++;
-            if (this.iconClickTime >= 7) {
-              this.isShowEggImage = true
-            }
-          })
-          .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
+      Scroll() {
+        Column() {
 
-        Text($r('app.string.welcome_to_your_ustc'))
-          .fontSize(24)
-          .fontColor($r('app.color.normal_text'))
-          .fontWeight(FontWeight.Bold)
-          .margin({ top: 20 })
-
-        Text($r('app.string.github'))
-          .margin({ top: 20 })
-          .fontColor($r('app.color.active_text'))
-          .decoration({
-            type: TextDecorationType.Underline,
-            color: $r('app.color.active_text')
-          })
-          .onClick(() => {
-            this.context.getRouter().pushUrl({
-              url: 'pages/Webview',
-              params: {
-                title: $r('app.string.github'),
-                url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+          Image($r('app.media.ciallo'))
+            .width('90%')
+            .margin({ top: 40 })
+            .draggable(false)
+            .constraintSize({ maxWidth: 300 })
+            .onClick(() => {
+              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
+              this.iconClickTime++;
+              if (this.iconClickTime >= 7) {
+                this.isShowEggImage = true
               }
-            }).catch((err: Error) => {
-              console.error(`Router ERROR: [${err.name}] ${err.message}`)
             })
-          })
+            .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
 
-        Row() {
-          Text($r('app.string.terms_of_use_and_privacy_policy'))
+          Text($r('app.string.welcome_to_your_ustc'))
+            .fontSize(24)
+            .fontColor($r('app.color.normal_text'))
+            .fontWeight(FontWeight.Bold)
+            .margin({ top: 20 })
+
+          Text($r('app.string.github'))
+            .margin({ top: 20 })
             .fontColor($r('app.color.active_text'))
             .decoration({
               type: TextDecorationType.Underline,
@@ -79,44 +63,66 @@ struct About {
               this.context.getRouter().pushUrl({
                 url: 'pages/Webview',
                 params: {
-                  title: $r('app.string.terms_of_use_and_privacy_policy'),
-                  url: $rawfile('TermsOfUse.html')
+                  title: $r('app.string.github'),
+                  url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
                 }
               }).catch((err: Error) => {
                 console.error(`Router ERROR: [${err.name}] ${err.message}`)
               })
             })
 
-          Text('  |  ')
-
-          Text($r('app.string.open_source_license'))
-            .fontColor($r('app.color.active_text'))
-            .decoration({
-              type: TextDecorationType.Underline,
-              color: $r('app.color.active_text')
-            })
-            .onClick(() => {
-              this.context.getRouter().pushUrl({
-                url: 'pages/Webview',
-                params: {
-                  title: $r('app.string.open_source_license'),
-                  url: $rawfile('OpenSourceLicense.html')
-                }
-              }).catch((err: Error) => {
-                console.error(`Router ERROR: [${err.name}] ${err.message}`)
+          Row() {
+            Text($r('app.string.terms_of_use_and_privacy_policy'))
+              .fontColor($r('app.color.active_text'))
+              .decoration({
+                type: TextDecorationType.Underline,
+                color: $r('app.color.active_text')
               })
-            })
+              .onClick(() => {
+                this.context.getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: {
+                    title: $r('app.string.terms_of_use_and_privacy_policy'),
+                    url: $rawfile('TermsOfUse.html')
+                  }
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                })
+              })
+
+            Text('  |  ')
+
+            Text($r('app.string.open_source_license'))
+              .fontColor($r('app.color.active_text'))
+              .decoration({
+                type: TextDecorationType.Underline,
+                color: $r('app.color.active_text')
+              })
+              .onClick(() => {
+                this.context.getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: {
+                    title: $r('app.string.open_source_license'),
+                    url: $rawfile('OpenSourceLicense.html')
+                  }
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                })
+              })
+          }
+          .margin({ top: 5 })
+
+          Text($r('app.string.credits'))
+            .textAlign(TextAlign.Center)
+            .lineSpacing({ value: 5, unit: LengthUnit.FP })
+            .margin({ top: 20 })
         }
-        .margin({ top: 5 })
-
-        Text($r('app.string.credits'))
-          .textAlign(TextAlign.Center)
-          .lineSpacing({ value: 5, unit: LengthUnit.FP })
-          .margin({ top: 20 })
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
       }
       .width('100%')
       .height('100%')
-      .justifyContent(FlexAlign.Center)
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
       .backgroundColor($r('app.color.normal_background'))
       .padding({ bottom: 40 })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])

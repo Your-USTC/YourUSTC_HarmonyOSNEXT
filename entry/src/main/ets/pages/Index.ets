@@ -51,7 +51,7 @@ struct Index {
    */
   @State tabWidth: string = '100%';
   @State tabHeight: string = '52vp';
-  @State tabVertical: boolean = false;
+  @State tabHorizontal: boolean = false;
   portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
     let windowClass: window.Window | undefined = undefined;
@@ -67,11 +67,11 @@ struct Index {
           if (rect.width > rect.height) { // 横屏
             this.tabWidth = '52vp';
             this.tabHeight = '100%';
-            this.tabVertical = true;
+            this.tabHorizontal = true;
           } else { // 竖屏
             this.tabWidth = '100%';
             this.tabHeight = '52vp';
-            this.tabVertical = false;
+            this.tabHorizontal = false;
           }
           //rect.width: Window Width, rect.height: Window height
         } catch (exception) {
@@ -814,6 +814,7 @@ struct Index {
     .height('100%')
     .scrollBar(BarState.Auto)
     .padding({ top: 12, left: 12, right: 12 })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -891,11 +892,14 @@ struct Index {
             return { offsetRemain: offset };
           }
         })
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
       .width('100%')
       .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .backgroundColor($r('app.color.normal_background'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -1295,6 +1299,7 @@ struct Index {
     .padding({ top: 20, left: 12, right: 12 })
     .scrollBar(BarState.Auto)
     .overlay(this.settingExitButton(), { align: Alignment.Bottom })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   @Builder
@@ -1343,6 +1348,7 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 功能
@@ -1351,6 +1357,7 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 设置
@@ -1359,14 +1366,15 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
-
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
-    .backgroundColor(this.tabVertical ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
+    .backgroundColor(this.tabHorizontal ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
     .barBackgroundColor($r('app.color.shaded_background'))
     .barHeight(this.tabHeight)
     .barWidth(this.tabWidth)
-    .vertical(this.tabVertical)
-    .barPosition(this.tabVertical ? BarPosition.Start : BarPosition.End)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .vertical(this.tabHorizontal)
+    .barPosition(this.tabHorizontal ? BarPosition.Start : BarPosition.End)
     .barMode(BarMode.Fixed)
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;

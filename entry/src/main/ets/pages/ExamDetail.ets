@@ -288,6 +288,7 @@ struct ExamDetail {
         .height('100%')
         .alignListItem(ListItemAlign.Center)
         .scrollBar(BarState.Auto)
+        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .padding({ left: 12, right: 12 })
         .backgroundColor($r('app.color.normal_background'))
       }

@@ -2,7 +2,8 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
-import { PopoverDialog } from '@kit.ArkUI';
+import { mediaquery, PopoverDialog, window } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 
 // 课程信息类型
@@ -91,11 +92,55 @@ export const commonClassStamp: number[][]= [
 @Entry
 @Component
 struct Schedule {
+
+  private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+
+  /*
+   * 以下是监听屏幕旋转
+   */
+  @State isLandscape: boolean = false;
+  @State screenWidth: number = 0;
+  @State screenHeight: number = 0;
+  portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
+    let windowClass: window.Window | undefined = undefined;
+    try {
+      let promise = window.getLastWindow(this.context);
+      promise.then((data)=> {
+        //Get window object
+        windowClass = data;
+        try {
+          //Get window properties
+          let properties = windowClass.getWindowProperties();
+          let rect = properties.windowRect;
+          this.screenWidth = rect.width;
+          this.screenHeight = rect.height;
+          if (rect.width > rect.height) { // 横屏
+            this.isLandscape = true;
+          } else { // 竖屏
+            this.isLandscape = false;
+          }
+          //rect.width: Window Width, rect.height: Window height
+        } catch (exception) {
+          console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
+        }
+        console.info('Succeeded in obtaining the top window. Data: ' + JSON.stringify(data));
+      }).catch((err: Error)=>{
+        console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+      });} catch (exception) {
+      console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(exception));
+    }
+  }
+  /*
+   * 以上是监听屏幕旋转
+   */
+
   @State weekDisplayed: number = 0;
   @State termStart: number = 0;
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
   @State thisWeekSchedule: classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
+  ShowClassDetail: CustomDialogController | null = null;
 
   onPageShow(): void {
     const currentTime: Date = new Date();
@@ -116,9 +161,15 @@ struct Schedule {
     console.info(`课表 weekEnd: ${tools.timestampToDateTime(this.weekEnd)}`)
   }
 
-  ShowClassDetail: CustomDialogController | null = null;
+  aboutToAppear(): void {
+    this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
+      this.onPortrait(mediaQueryResult)
+    }); // 开启监听屏幕旋转
+  }
+
   aboutToDisappear(): void {
     this.ShowClassDetail = null;  // 在自定义组件即将析构销毁时将ShowClassDetail置空
+    this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
   }
 
   build() {
@@ -324,17 +375,20 @@ struct Schedule {
             Column() {
               Text(commonClassTime[item][0])
                 .fontSize('8fp')
+                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
 
               Blank()
 
               Text(item.toString())
                 .fontWeight(FontWeight.Bold)
                 .fontSize(14)
+                .align(Alignment.Center)
 
               Blank()
 
               Text(commonClassTime[item][1])
                 .fontSize('8fp')
+                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
             }
             .width('100%')
             .height('100%')
@@ -379,8 +433,8 @@ struct Schedule {
                     .fontColor('#000000')
                     .fontWeight(FontWeight.Bold)
                     .fontSize(13)
-                    .maxLines(4)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .maxLines(this.screenHeight < 2000 ? 1 : 4)
+                    .textOverflow({ overflow: (this.screenHeight < 2000 ? TextOverflow.MARQUEE : TextOverflow.Ellipsis) })
 
                   Text(lesson.location)
                     .fontColor('#000000')
@@ -465,7 +519,9 @@ struct Schedule {
       }
       .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
-      .rowsTemplate('1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
+      .rowsTemplate(this.screenHeight < 2000 ?
+        '2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr' :
+        '1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
       .margin({ bottom: 48 })
       .padding(0)
 
