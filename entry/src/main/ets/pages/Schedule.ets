@@ -98,6 +98,7 @@ struct Schedule {
   /*
    * 以下是监听屏幕旋转
    */
+  readonly criticalHeight: number = 1500;    // 紧凑模式临界值
   @State isLandscape: boolean = false;
   @State screenWidth: number = 0;
   @State screenHeight: number = 0;
@@ -375,7 +376,7 @@ struct Schedule {
             Column() {
               Text(commonClassTime[item][0])
                 .fontSize('8fp')
-                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
+                .visibility(this.screenHeight < this.criticalHeight ? Visibility.None : Visibility.Visible)
 
               Blank()
 
@@ -388,7 +389,7 @@ struct Schedule {
 
               Text(commonClassTime[item][1])
                 .fontSize('8fp')
-                .visibility(this.screenHeight < 2000 ? Visibility.None : Visibility.Visible)
+                .visibility(this.screenHeight < this.criticalHeight ? Visibility.None : Visibility.Visible)
             }
             .width('100%')
             .height('100%')
@@ -433,8 +434,8 @@ struct Schedule {
                     .fontColor('#000000')
                     .fontWeight(FontWeight.Bold)
                     .fontSize(13)
-                    .maxLines(this.screenHeight < 2000 ? 1 : 4)
-                    .textOverflow({ overflow: (this.screenHeight < 2000 ? TextOverflow.MARQUEE : TextOverflow.Ellipsis) })
+                    .maxLines(this.screenHeight < this.criticalHeight ? 1 : 4)
+                    .textOverflow({ overflow: (this.screenHeight < this.criticalHeight ? TextOverflow.MARQUEE : TextOverflow.Ellipsis) })
 
                   Text(lesson.location)
                     .fontColor('#000000')
@@ -519,7 +520,7 @@ struct Schedule {
       }
       .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
-      .rowsTemplate(this.screenHeight < 2000 ?
+      .rowsTemplate(this.screenHeight < this.criticalHeight ?
         '2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr' :
         '1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
       .margin({ bottom: 48 })
