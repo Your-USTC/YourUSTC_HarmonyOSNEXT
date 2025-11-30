@@ -161,6 +161,8 @@ struct Schedule {
   @State isColorLegal: boolean = true;
   private changeAllColor: boolean = true;
 
+  private checkBoxGroup: number = 0;
+
   private isChangeSchedule: boolean = true;
 
   private createArray = (start: number, end: number): Array<SelectOption> => {
@@ -334,10 +336,7 @@ struct Schedule {
             showClose: false,
             scrollSizeMode: ScrollSizeMode.CONTINUOUS,
             onWillDismiss: ((DismissSheetAction: DismissSheetAction) => {
-              this.classInfo.weekOfTerm = [];
-              for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
-                if (this.rectifyWeekOfTerm[weekRepeat])
-                  this.classInfo.weekOfTerm.push(weekRepeat);
+              this.classInfo.weekOfTerm = [...this.weekOfTerm];
               if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
                 let swapTemp = this.rectifyTimeSpan[0];
                 this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -390,6 +389,7 @@ struct Schedule {
           .height(20)
           .draggable(false)
           .onClick(() => {
+            this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
             this.isChangeSchedule = false;
             this.oriClassInfo = {
               name: '计算机程序设计',
@@ -648,6 +648,7 @@ struct Schedule {
                 .justifyContent(FlexAlign.Center)
               }
               .onClick(() => {
+                this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
                 this.isChangeSchedule = true;
                 this.oriClassInfo = {
                   name: lesson.name,
@@ -726,7 +727,7 @@ struct Schedule {
               message: $r('app.string.delete_or_not'),
               autoCancel: true,
               alignment: DialogAlignment.Center,
-              gridCount: 3,
+              gridCount: 4,
               primaryButton: {
                 value: $r('app.string.cancel'),
                 action: () => {}
@@ -766,12 +767,7 @@ struct Schedule {
           .width(42)
           .height(42)
           .onClick(() => {
-            this.classInfo.weekOfTerm = [];
-            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-              if (this.rectifyWeekOfTerm[weekRepeat]) {
-                this.classInfo.weekOfTerm.push(weekRepeat);
-              }
-            }
+            this.classInfo.weekOfTerm = [...this.weekOfTerm];
             if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
               let swapTemp = this.rectifyTimeSpan[0];
               this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -793,12 +789,7 @@ struct Schedule {
         .height(42)
         .onClick(() => {
           if (this.isChangeSchedule) {
-            this.classInfo.weekOfTerm = [];
-            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-              if (this.rectifyWeekOfTerm[weekRepeat]) {
-                this.classInfo.weekOfTerm.push(weekRepeat);
-              }
-            }
+            this.classInfo.weekOfTerm = [...this.weekOfTerm];
             if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
               let swapTemp = this.rectifyTimeSpan[0];
               this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -887,12 +878,7 @@ struct Schedule {
           .height(42)
           .enabled(this.isWeeksLegal && this.isColorLegal)
           .onClick(() => {
-            this.classInfo.weekOfTerm = [];
-            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-              if (this.rectifyWeekOfTerm[weekRepeat]) {
-                this.classInfo.weekOfTerm.push(weekRepeat);
-              }
-            }
+            this.classInfo.weekOfTerm = [...this.weekOfTerm];
             if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
               let swapTemp = this.rectifyTimeSpan[0];
               this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -916,12 +902,7 @@ struct Schedule {
           .height(42)
           .enabled(this.isWeeksLegal && this.isColorLegal)
           .onClick(() => {
-            this.classInfo.weekOfTerm = [];
-            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-              if (this.rectifyWeekOfTerm[weekRepeat]) {
-                this.classInfo.weekOfTerm.push(weekRepeat);
-              }
-            }
+            this.classInfo.weekOfTerm = [...this.weekOfTerm];
             if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
               let swapTemp = this.rectifyTimeSpan[0];
               this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
@@ -1091,24 +1072,18 @@ struct Schedule {
               .layoutWeight(1)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis });
-            CheckboxGroup({ group: 'checkboxGroup2' })
+            CheckboxGroup({ group: `checkboxGroup${this.checkBoxGroup}` })
               .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
               .onChange((itemName: CheckboxGroupResult) => {
-                for (let checkboxRepeat = 1; checkboxRepeat <= 20; checkboxRepeat++) {
-                  this.rectifyWeekOfTerm[checkboxRepeat] = false;
-                }
                 let selectAny: boolean = false;
-                for (let checkboxRepeat of itemName.name) {
-                  this.rectifyWeekOfTerm[Number(checkboxRepeat)] = true;
-                  selectAny = true;
-                }
-                this.isWeeksLegal = selectAny;
                 this.weekOfTerm = [];
                 for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
                   if (this.rectifyWeekOfTerm[weekRepeat]) {
                     this.weekOfTerm.push(weekRepeat);
+                    selectAny = true;
                   }
                 }
+                this.isWeeksLegal = selectAny;
               });
             Text($r('app.string.select_all'));
           }
@@ -1117,9 +1092,12 @@ struct Schedule {
           Flex({ wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceAround }) {
             ForEach(tools.getContArray([[1, 20]]), (checkboxId: number) => {
               Row() {
-                Checkbox({ name: (checkboxId).toString(), group: 'checkboxGroup2' })
+                Checkbox({ name: checkboxId.toString(), group: `checkboxGroup${this.checkBoxGroup}` })
                   .shape(CheckBoxShape.ROUNDED_SQUARE)
-                  .select(this.rectifyWeekOfTerm[checkboxId]);
+                  .select(this.rectifyWeekOfTerm[checkboxId])
+                  .onChange((value: boolean) => {
+                    this.rectifyWeekOfTerm[checkboxId] = value;
+                  });
                 Text((checkboxId).toString()).width(20);
               }
             });
