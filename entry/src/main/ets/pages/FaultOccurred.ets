@@ -23,8 +23,8 @@ struct FaultOccurred {
   build() {
     Scroll() {
       Column() {
-        Image($r('app.media.fault_occurred'))    // 仅占位
-          .height(100)
+        Image($r('app.media.fault_occurred'))
+          .height(180)
           .draggable(false)
         Text($r('app.string.runtime_error'))
           .fontColor($r('app.color.normal_text'))

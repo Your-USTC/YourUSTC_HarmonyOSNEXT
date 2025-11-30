@@ -28,10 +28,8 @@ struct About {
   build() {
 
     Stack({ alignContent: Alignment.Top}) {
-
       Scroll() {
         Column() {
-
           Image($r('app.media.ciallo'))
             .width('90%')
             .margin({ top: 40 })
@@ -41,7 +39,7 @@ struct About {
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
               this.iconClickTime++;
               if (this.iconClickTime >= 7) {
-                this.isShowEggImage = true
+                this.isShowEggImage = true;
               }
             })
             .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
