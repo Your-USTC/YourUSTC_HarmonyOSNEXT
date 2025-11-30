@@ -7,21 +7,12 @@ import UnifiedPreference, { PASSWORD_KEY, UID_KEY} from '../utils/UnifyPreferenc
 import { call } from '@kit.TelephonyKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
 import { fillInformationJS } from '../utils/TimeTable'
+import accountInfoProvider from '../utils/Encryption'
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
 
 let eachDownloadPercent = new Map<string, number>();
-
-class accountInfoProvider {
-  constructor() {}
-  getUID(): string {
-    return UnifiedPreference.getSync(UID_KEY);
-  }
-  getPassword(): string {
-    return UnifiedPreference.getSync(PASSWORD_KEY);
-  }
-}
 
 @Entry
 @Component
@@ -39,7 +30,7 @@ struct Webview {
   downloadItemTotal: number = 0;
   @State showDownloadProgress: boolean = false;
   haveJumped: boolean = true;
-  @State infoProvider: accountInfoProvider = new accountInfoProvider();
+  // @State infoProvider: accountInfoProvider = new accountInfoProvider();
   haveTriedLogin: boolean = false;
 
 
@@ -242,7 +233,7 @@ struct Webview {
       Stack({ alignContent: Alignment.TopStart}) {
         Web({ src: this.url, controller: this.webviewController })
           .javaScriptProxy({
-            object: this.infoProvider,
+            object: accountInfoProvider,
             name: "infoProvider",
             methodList: ["getUID", "getPassword"],
             controller: this.webviewController,

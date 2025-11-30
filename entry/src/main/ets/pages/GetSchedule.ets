@@ -5,22 +5,13 @@ import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQuer
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreference, { PASSWORD_KEY, UID_KEY}  from '../utils/UnifyPreference'
-
-class accountInfoProvider {
-  constructor() {}
-  getUID(): string {
-    return UnifiedPreference.getSync(UID_KEY);
-  }
-  getPassword(): string {
-    return UnifiedPreference.getSync(PASSWORD_KEY);
-  }
-}
+import accountInfoProvider from '../utils/Encryption'
 
 @Entry
 @Component
 struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
-  @State infoProvider: accountInfoProvider = new accountInfoProvider();
+  // @State infoProvider: accountInfoProvider = new accountInfoProvider();
   title: string = '';
   url: string = '';
   isTimeTablePage: boolean = false;
@@ -165,7 +156,7 @@ struct Webview {
           controller: this.webviewController
         })
           .javaScriptProxy({
-            object: this.infoProvider,
+            object: accountInfoProvider,
             name: "infoProvider",
             methodList: ["getUID", "getPassword"],
             controller: this.webviewController,
