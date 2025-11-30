@@ -20,6 +20,7 @@ import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY } from '../utils/
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
 import { fileIo } from '@kit.CoreFileKit'
+import accountInfoProvider from '../utils/Encryption'
 
 // 指定日历账户信息
 const calendarAccount: calendarManager.CalendarAccount = {
@@ -1452,10 +1453,11 @@ struct InputDialog {
             } else {
               if (this.inputUID !== this.oriInputUID || this.inputPassword !== this.oriInputPassword) {
                 this.accountChanged = true;
-                if (/^[A-Z]{2}\d{8}$/.test(this.inputUID) && /[a-z]/.test(this.inputPassword)
+                if (/^[A-Z]{2}\d{8}$/.test(this.inputUID) &&
+                  !/\s/.test(this.inputPassword) && /[a-z]/.test(this.inputPassword)
                   && /[A-Z]/.test(this.inputPassword) && /\d/.test(this.inputPassword)) {
                   UnifiedPreferences.putSync(UID_KEY, this.inputUID);
-                  UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
+                  UnifiedPreferences.putSync(PASSWORD_KEY, accountInfoProvider.encryptPassword(this.inputPassword));
                   this.controller.close();
                 } else {
                   this.getUIContext()
