@@ -650,7 +650,7 @@
     },
     {
       "name": "input_later",
-      "value": "稍后可通过设置页面登记学号和密码"
+      "value": "稍后，你可在设置页面保存学号和密码"
     },
     {
       "name": "no_reminding",
@@ -659,6 +659,18 @@
     {
       "name": "set_account_info",
       "value": "设置统一身份认证信息"
+    },
+    {
+      "name": "input_account_info",
+      "value": "你可以在此处填写统一身份认证账号和密码，以便实现访问 https://id.ustc.edu.cn 时为你自动填充并登录。（如需要二次验证，请勾选「信任此设备」）所有信息均保存在本地，我们不会收集任何个人信息。"
+    },
+    {
+      "name": "student_id",
+      "value": "学号："
+    },
+    {
+      "name": "password",
+      "value": "密码："
     }
   ]
 }

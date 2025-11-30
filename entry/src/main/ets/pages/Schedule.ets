@@ -193,8 +193,8 @@ struct Schedule {
       })
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: `#${this.colorDialogText.slice(3, 9)}`, offset: 1 },
+          { color: `#00${this.colorDialogText.slice(3, 9)}`, offset: 0 },
+          { color: `#FF${this.colorDialogText.slice(3, 9)}`, offset: 1 }
         ]))
         .onChange((value: number) => {
           this.colorARGB[0] = value;
@@ -212,9 +212,8 @@ struct Schedule {
       })
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#FF0000', offset: 1 },
-        ]))
+          { color: `#00${this.colorDialogText.slice(5, 9)}`, offset: 0 },
+          { color: `#FF${this.colorDialogText.slice(5, 9)}`, offset: 1 }]))
         .onChange((value: number) => {
           this.colorARGB[1] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -231,9 +230,8 @@ struct Schedule {
       })
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#00FF00', offset: 1 },
-        ]))
+          { color: `#${this.colorDialogText.slice(3, 5)}00${this.colorDialogText.slice(7, 9)}`, offset: 0 },
+          { color: `#${this.colorDialogText.slice(3, 5)}FF${this.colorDialogText.slice(7, 9)}`, offset: 1 }]))
         .onChange((value: number) => {
           this.colorARGB[2] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -251,9 +249,8 @@ struct Schedule {
         .blockColor('#FFFFFF')
         .selectedColor($r('app.color.transparent'))
         .trackColor(new LinearGradient([
-          { color: $r('app.color.transparent'), offset: 0 },
-          { color: '#0000FF', offset: 1 },
-        ]))
+          { color: `#${this.colorDialogText.slice(3, 7)}00`, offset: 0 },
+          { color: `#${this.colorDialogText.slice(3, 7)}FF`, offset: 1 }]))
         .onChange((value: number) => {
           this.colorARGB[3] = value;
           this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
@@ -335,6 +332,8 @@ struct Schedule {
             preferType: SheetType.CENTER,
             showClose: false,
             scrollSizeMode: ScrollSizeMode.CONTINUOUS,
+            backgroundColor: '#00d00721',
+            blurStyle: BlurStyle.Regular,
             onWillDismiss: ((DismissSheetAction: DismissSheetAction) => {
               this.classInfo.weekOfTerm = [...this.weekOfTerm];
               if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
@@ -343,7 +342,7 @@ struct Schedule {
                 this.rectifyTimeSpan[1] = swapTemp;
               }
               this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-              if (!this.isChangeSchedule || !areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+              if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
                 this.getUIContext().showAlertDialog({
                   title: $r('app.string.unsaved_change'),
                   message: $r('app.string.back_to_schedule_or_not'),
@@ -352,8 +351,7 @@ struct Schedule {
                   gridCount: 4,
                   primaryButton: {
                     value: $r('app.string.cancel'),
-                    action: () => {
-                    }
+                    action: () => {}
                   },
                   secondaryButton: {
                     enabled: true,
@@ -364,9 +362,7 @@ struct Schedule {
                       DismissSheetAction.dismiss();
                     }
                   },
-                  cancel: () => {
-                    console.info('Closed callbacks');
-                  },
+                  cancel: () => {},
                   onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
                     if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
                       dismissDialogAction.dismiss();
@@ -709,7 +705,7 @@ struct Schedule {
   ClassDetailDialog() {
     Column() {
       Row({ space: 8 }) {
-        Text($r('app.string.class_detail'))
+        Text(this.isChangeSchedule ? $r('app.string.class_detail') : $r('app.string.class_detail_new'))
           .fontWeight(FontWeight.Bold)
           .fontSize(24)
           .layoutWeight(1)
@@ -788,51 +784,14 @@ struct Schedule {
         .width(42)
         .height(42)
         .onClick(() => {
-          if (this.isChangeSchedule) {
-            this.classInfo.weekOfTerm = [...this.weekOfTerm];
-            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-              let swapTemp = this.rectifyTimeSpan[0];
-              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-              this.rectifyTimeSpan[1] = swapTemp;
-            }
-            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
-            if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
-              this.getUIContext().showAlertDialog({
-                title: $r('app.string.unsaved_change'),
-                message: $r('app.string.back_to_schedule_or_not'),
-                autoCancel: true,
-                alignment: DialogAlignment.Center,
-                gridCount: 4,
-                primaryButton: {
-                  value: $r('app.string.cancel'),
-                  action: () => {
-                  }
-                },
-                secondaryButton: {
-                  enabled: true,
-                  defaultFocus: true,
-                  style: DialogButtonStyle.HIGHLIGHT,
-                  value: $r('app.string.ok'),
-                  action: () => {
-                    this.showSheet = false;
-                  }
-                },
-                cancel: () => {
-                  console.info('Closed callbacks');
-                },
-                onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
-                  if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
-                    dismissDialogAction.dismiss();
-                  }
-                  if (dismissDialogAction.reason === DismissReason.TOUCH_OUTSIDE) {
-                    dismissDialogAction.dismiss();
-                  }
-                }
-              });
-            } else {
-              this.showSheet = false;
-            }
-          } else {
+          this.classInfo.weekOfTerm = [...this.weekOfTerm];
+          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+            let swapTemp = this.rectifyTimeSpan[0];
+            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+            this.rectifyTimeSpan[1] = swapTemp;
+          }
+          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+          if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
             this.getUIContext().showAlertDialog({
               title: $r('app.string.unsaved_change'),
               message: $r('app.string.back_to_schedule_or_not'),
@@ -841,8 +800,7 @@ struct Schedule {
               gridCount: 4,
               primaryButton: {
                 value: $r('app.string.cancel'),
-                action: () => {
-                }
+                action: () => {}
               },
               secondaryButton: {
                 enabled: true,
@@ -853,9 +811,7 @@ struct Schedule {
                   this.showSheet = false;
                 }
               },
-              cancel: () => {
-                console.info('Closed callbacks');
-              },
+              cancel: () => {},
               onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
                 if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
                   dismissDialogAction.dismiss();
@@ -865,55 +821,39 @@ struct Schedule {
                 }
               }
             });
+          } else {
+            this.showSheet = false;
           }
         })
 
-        if (this.isChangeSchedule) {
-          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.save'))
-              .height(24)
-              .width(24)
+        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+          Image(this.isChangeSchedule ? $r('app.media.save') : $r('app.media.checkmark'))
+            .height(24)
+            .width(24)
+        }
+        .width(42)
+        .height(42)
+        .enabled(this.isWeeksLegal && this.isColorLegal)
+        .onClick(() => {
+          this.classInfo.weekOfTerm = [...this.weekOfTerm];
+          if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
+            let swapTemp = this.rectifyTimeSpan[0];
+            this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
+            this.rectifyTimeSpan[1] = swapTemp;
           }
-          .width(42)
-          .height(42)
-          .enabled(this.isWeeksLegal && this.isColorLegal)
-          .onClick(() => {
-            this.classInfo.weekOfTerm = [...this.weekOfTerm];
-            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-              let swapTemp = this.rectifyTimeSpan[0];
-              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-              this.rectifyTimeSpan[1] = swapTemp;
-            }
-            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+          this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+          if (this.isChangeSchedule) {
             if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
               scheduleManager.deleteSchedule(this.oriClassInfo);
               scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
               this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
             }
-            this.showSheet = false;
-          });
-        } else {
-          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
-            Image($r('app.media.checkmark'))
-              .height(24)
-              .width(24)
-          }
-          .width(42)
-          .height(42)
-          .enabled(this.isWeeksLegal && this.isColorLegal)
-          .onClick(() => {
-            this.classInfo.weekOfTerm = [...this.weekOfTerm];
-            if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
-              let swapTemp = this.rectifyTimeSpan[0];
-              this.rectifyTimeSpan[0] = this.rectifyTimeSpan[1];
-              this.rectifyTimeSpan[1] = swapTemp;
-            }
-            this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
+          } else {
             scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
             this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
-            this.showSheet = false;
-          });
-        }
+          }
+          this.showSheet = false;
+        });
       }
       .margin({ bottom: 10 })
 
@@ -1109,7 +1049,7 @@ struct Schedule {
       .fadingEdge(true)
       .width('100%')
       .layoutWeight(1)
-      .constraintSize({ maxHeight: 480 })
+      .align(Alignment.Top)
       .scrollBar(BarState.Auto)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
     }

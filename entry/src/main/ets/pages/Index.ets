@@ -73,7 +73,6 @@ struct Index {
             this.tabHeight = '52vp';
             this.tabHorizontal = false;
           }
-          //rect.width: Window Width, rect.height: Window height
         } catch (exception) {
           console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
         }
@@ -815,7 +814,6 @@ struct Index {
     .height('100%')
     .scrollBar(BarState.Auto)
     .padding({ top: 12, left: 12, right: 12 })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -824,83 +822,78 @@ struct Index {
   @Builder
   pageFunction() {
     Column() {
-      Stack({ alignContent: Alignment.Top }) {
-        Scroll(this.scrollerForScroll) {
-          Column() {
-            // 常用区 Grid
-            GridComponent({ gridData: this.copyMostUsedFunc, gridIndex: -1 })
-            // 常用区下面的所有功能区 GridComponent
-            this.listBuilder();
-            List({ scroller: this.scrollerForList }) {
-              ForEach(otherGridDataList, (item: GridData, index: number) => {
-                GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1, gridIndex: index })
-              }, (item: GridData,index:number) => index + JSON.stringify(item))
+      Scroll(this.scrollerForScroll) {
+        Column() {
+          // 常用区 Grid
+          GridComponent({ gridData: this.copyMostUsedFunc, gridIndex: -1 })
+          // 常用区下面的所有功能区 GridComponent
+          this.listBuilder();
+          List({ scroller: this.scrollerForList }) {
+            ForEach(otherGridDataList, (item: GridData, index: number) => {
+              GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1, gridIndex: index })
+            }, (item: GridData,index:number) => index + JSON.stringify(item))
+          }
+          .padding({ bottom: '40vp' })
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.Off)
+          .onReachStart(() => {
+            this.listPosition = ScrollPosition.start;
+          })
+          .onReachEnd(() => {
+            this.listPosition = ScrollPosition.end;
+          })
+          .onScrollIndex((start: number) => {
+            this.currentListIndex = start
+            this.scrollerForTitle.scrollToIndex(this.currentListIndex);
+          })
+          .onScrollFrameBegin((offset: number) => {
+            if (this.currentListIndex === ListDataConstants.TITLE_LIST.length - 1 && offset > 0) {
+              return { offsetRemain: 0 }
             }
-            .padding({ bottom: '40vp' })
-            .edgeEffect(EdgeEffect.Spring)
-            .scrollBar(BarState.Off)
-            .onReachStart(() => {
-              this.listPosition = ScrollPosition.start;
-            })
-            .onReachEnd(() => {
-              this.listPosition = ScrollPosition.end;
-            })
-            .onScrollIndex((start: number) => {
-              this.currentListIndex = start
-              this.scrollerForTitle.scrollToIndex(this.currentListIndex);
-            })
-            .onScrollFrameBegin((offset: number) => {
-              if (this.currentListIndex === ListDataConstants.TITLE_LIST.length - 1 && offset > 0) {
-                return { offsetRemain: 0 }
-              }
-              if (!((this.listPosition === ScrollPosition.start && offset < 0) ||
-                (this.listPosition === ScrollPosition.end && offset > 0))) {
-                this.listPosition = ScrollPosition.center;
-              }
-              if (this.scrollPosition === ScrollPosition.end &&
-                (this.listPosition != ScrollPosition.start || offset > 0)) {
-                return { offsetRemain: offset };
-              } else {
-                this.scrollerForScroll.scrollBy(0, offset)
-                return { offsetRemain: offset };
-              }
-            })
-            .width('100%')
-            .height("calc(100% - 56vp)")
-          }
+            if (!((this.listPosition === ScrollPosition.start && offset < 0) ||
+              (this.listPosition === ScrollPosition.end && offset > 0))) {
+              this.listPosition = ScrollPosition.center;
+            }
+            if (this.scrollPosition === ScrollPosition.end &&
+              (this.listPosition != ScrollPosition.start || offset > 0)) {
+              return { offsetRemain: offset };
+            } else {
+              this.scrollerForScroll.scrollBy(0, offset)
+              return { offsetRemain: offset };
+            }
+          })
+          .width('100%')
+          .height("calc(100% - 56vp)")
         }
-        .scrollBar(BarState.Off)
-        .width('100%')
-        .height('100%')
-        .edgeEffect(EdgeEffect.Fade)
-        .onWillScroll((yOffset: number) => {
-          if (!((this.scrollPosition === ScrollPosition.start && yOffset < 0)
-            || (this.scrollPosition === ScrollPosition.end && yOffset > 0))) {
-            this.scrollPosition = ScrollPosition.center;
-          }
-        })
-        .onScrollEdge((side: Edge) => {
-          if (side === Edge.Top) {
-            this.scrollPosition = ScrollPosition.start;
-          } else if (side === Edge.Bottom) {
-            this.scrollPosition = ScrollPosition.end;
-          }
-        })
-        .onScrollFrameBegin(offset => {
-          if (this.scrollPosition === ScrollPosition.end) {
-            return { offsetRemain: 0 };
-          } else {
-            return { offsetRemain: offset };
-          }
-        })
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       }
+      .scrollBar(BarState.Off)
       .width('100%')
       .height('100%')
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .edgeEffect(EdgeEffect.Fade)
+      .onWillScroll((yOffset: number) => {
+        if (!((this.scrollPosition === ScrollPosition.start && yOffset < 0)
+          || (this.scrollPosition === ScrollPosition.end && yOffset > 0))) {
+          this.scrollPosition = ScrollPosition.center;
+        }
+      })
+      .onScrollEdge((side: Edge) => {
+        if (side === Edge.Top) {
+          this.scrollPosition = ScrollPosition.start;
+        } else if (side === Edge.Bottom) {
+          this.scrollPosition = ScrollPosition.end;
+        }
+      })
+      .onScrollFrameBegin(offset => {
+        if (this.scrollPosition === ScrollPosition.end) {
+          return { offsetRemain: 0 };
+        } else {
+          return { offsetRemain: offset };
+        }
+      })
     }
+    .width('100%')
+    .height('100%')
     .backgroundColor($r('app.color.normal_background'))
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -1300,7 +1293,6 @@ struct Index {
     .padding({ top: 20, left: 12, right: 12 })
     .scrollBar(BarState.Auto)
     .overlay(this.settingExitButton(), { align: Alignment.Bottom })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   @Builder
@@ -1349,7 +1341,6 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 功能
@@ -1358,7 +1349,6 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 设置
@@ -1367,13 +1357,11 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor($r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .backgroundColor(this.tabHorizontal ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
     .barBackgroundColor($r('app.color.shaded_background'))
     .barHeight(this.tabHeight)
     .barWidth(this.tabWidth)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .vertical(this.tabHorizontal)
     .barPosition(this.tabHorizontal ? BarPosition.Start : BarPosition.End)
     .barMode(BarMode.Fixed)
@@ -1405,66 +1393,85 @@ struct InputDialog {
 
   build() {
     Column() {
-      Text('请输入学号和密码')
-        .fontSize(18)
+      Text($r('app.string.input_account_info'))
         .margin({ bottom: 10 })
+        .width('90%')
 
-      TextInput({ placeholder: '学号', text: this.inputUID })
-        .type(InputType.USER_NAME)
-        .enableAutoFill(this.accountChanged)
-        .width('80%')
-        .margin({ bottom: 5 })
-        .onChange((value: string) => {
-          this.inputUID = value;
-        })
-      TextInput({ placeholder: '密码', text: this.inputPassword })
-        .type(InputType.NEW_PASSWORD)
-        .showPasswordIcon(true)
-        .enableAutoFill(this.accountChanged)
-        .width('80%')
-        .onChange((value: string) => {
-          this.inputPassword = value;
-        })
+      Column() {
+        Row() {
+          Text($r('app.string.student_id'))
+          TextInput({ text: this.oriInputUID })
+            .type(InputType.USER_NAME)
+            .enableAutoFill(this.accountChanged)
+            .layoutWeight(1)
+            .margin({ bottom: 5 })
+            .onChange((value: string) => {
+              this.inputUID = value;
+            })
+        }
+
+        Row() {
+          Text($r('app.string.password'))
+          TextInput({ text: this.oriInputPassword })
+            .type(InputType.NEW_PASSWORD)
+            .showPasswordIcon(true)
+            .enableAutoFill(this.accountChanged)
+            .layoutWeight(1)
+            .onChange((value: string) => {
+              this.inputPassword = value;
+            })
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .width('80%')
 
       Row() {
-        Button($r('app.string.ok'))
-          .onClick(() => {
-            if (this.inputUID !== this.oriInputUID || this.inputPassword !== this.oriInputPassword)
-              this.accountChanged = true;
-            else
-              this.accountChanged = false;
-            if (
-              /^[A-Z]{2}\d{8}$/.test(this.inputUID) &&
-              /[a-z]/.test(this.inputPassword) &&
-              /[A-Z]/.test(this.inputPassword) &&
-              /\d/.test(this.inputPassword)
-            ) {
-              UnifiedPreferences.putSync(UID_KEY, this.inputUID);
-              UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
-              this.controller.close();
-            } else {
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete'), duration: 1500 });
-            }
-          })
-          .margin({ right: 5 })
-        Button($r('app.string.cancel'))
-          .onClick(() => {
-            this.controller.close();
-          })
-          .margin({ right: 10 })
         if (!this.isFromSetting) {
           Button($r('app.string.no_reminding'))
+            .buttonStyle(ButtonStyleMode.NORMAL)
             .onClick(() => {
               UnifiedPreferences.putSync(REMIND_KEY, false);
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
               this.controller.close();
             })
-            .margin({ right: 10 })
+            .layoutWeight(1)
         }
+        Button($r('app.string.cancel'))
+          .buttonStyle(ButtonStyleMode.TEXTUAL)
+          .onClick(() => {
+            this.controller.close();
+          })
+          .layoutWeight(1)
+        Button($r('app.string.ok'))
+          .onClick(() => {
+            if (this.inputUID === '' || this.inputPassword === '') {
+              UnifiedPreferences.deleteSync(UID_KEY);
+              UnifiedPreferences.deleteSync(PASSWORD_KEY);
+              this.accountChanged = false;
+              this.controller.close();
+            } else {
+              if (this.inputUID !== this.oriInputUID || this.inputPassword !== this.oriInputPassword) {
+                this.accountChanged = true;
+                if (/^[A-Z]{2}\d{8}$/.test(this.inputUID) && /[a-z]/.test(this.inputPassword)
+                  && /[A-Z]/.test(this.inputPassword) && /\d/.test(this.inputPassword)) {
+                  UnifiedPreferences.putSync(UID_KEY, this.inputUID);
+                  UnifiedPreferences.putSync(PASSWORD_KEY, this.inputPassword);
+                  this.controller.close();
+                } else {
+                  this.getUIContext()
+                    .getPromptAction()
+                    .showToast({ message: $r('app.string.incomplete'), duration: 1500 });
+                }
+              } else {
+                this.accountChanged = false;
+              }
+            }
+          })
+          .layoutWeight(1)
       }
       .margin({ top: 20 })
     }
-    .padding(20)
-    .width('80%')
+    .padding(16)
+    .width('100%')
   }
 }

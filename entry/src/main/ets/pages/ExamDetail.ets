@@ -80,7 +80,7 @@ struct ExamDetail {
             };
             this.showExamDetail = null;
             this.showExamDetail = new CustomDialogController({
-              builder: ClassDetailDialog({
+              builder: ExamDetailDialog({
                 toChange: this.examInfo,
                 oriExamInfo: editExam,
                 examInfo: editExam,
@@ -91,6 +91,8 @@ struct ExamDetail {
                 endHour: this.currentTime.getHours() + 2,
                 endMinute: this.currentTime.getMinutes()
               }),
+              backgroundColor: '#00d00721',
+              backgroundBlurStyle: BlurStyle.Regular,
               autoCancel: true,
               gridCount: 4,
               onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
@@ -255,7 +257,7 @@ struct ExamDetail {
               };
               this.showExamDetail = null;
               this.showExamDetail = new CustomDialogController({
-                builder: ClassDetailDialog({
+                builder: ExamDetailDialog({
                   toChange: this.examInfo,
                   oriExamInfo: oriExam,
                   examInfo: editExam,
@@ -266,6 +268,8 @@ struct ExamDetail {
                   endHour: Number(oriExam.date.slice(17, 19)),
                   endMinute: Number(oriExam.date.slice(20, 22))
                 }),
+                backgroundColor: '#00d00721',
+                backgroundBlurStyle: BlurStyle.Regular,
                 autoCancel: true,
                 gridCount: 4,
                 onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
@@ -301,7 +305,7 @@ struct ExamDetail {
 
 @CustomDialog
 @Component
-struct ClassDetailDialog {
+struct ExamDetailDialog {
   @Link toChange: examAttribute[];
   isChangeSchedule: boolean = true;
   examInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0};
@@ -552,7 +556,6 @@ struct ClassDetailDialog {
       .margin({ top: 10 })
     }
     .width('100%')
-    .padding(16)
-    .backgroundColor($r('app.color.grid_background'));
+    .padding(16);
   }
 }
