@@ -1,10 +1,13 @@
 
-import UnifiedPreferences, { UID_KEY, PASSWORD_KEY, REMIND_KEY } from '../utils/UnifyPreference';
-import accountInfoProvider from '../utils/Encryption';
+import UnifiedPreferences, { UID_KEY, PASSWORD_KEY, REMIND_KEY } from '../utils/UnifyPreference'
+import accountInfoProvider from '../utils/Encryption'
+import { webview } from '@kit.ArkWeb'
+import { fillInformationJS } from '../utils/TimeTable';
 
 @CustomDialog
 export default struct PasswordDialog {
   controller: CustomDialogController;
+  webviewController: webview.WebviewController | null = null;
   inputUID: string = accountInfoProvider.getUID();
   inputPassword: string = accountInfoProvider.getPassword();
   isFromSetting: boolean= true;
@@ -100,6 +103,7 @@ export default struct PasswordDialog {
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.fill_next_time'), duration: 1500 });
               else
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.cannot_fill'), duration: 1500 });
+              this.webviewController?.runJavaScript(fillInformationJS, (error, result) => {});
               this.controller.close();
             }
           })
