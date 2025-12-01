@@ -9,8 +9,13 @@ export let order: Array<[string, number]> = [];
 let maxRecord: number = 8;
 let mostUsedPre: preferences.Preferences | null = null;
 const options: preferences.Options = { name: 'FunctionOrder' };
+let curContext: Context | undefined = undefined;
 
-export function setFunc(curContext: Context | undefined, toClear: boolean = false): void {
+export function initFunc(initContext: Context) {
+  curContext = initContext;
+}
+
+export function setFunc(toClear: boolean = false): void {
   // toClear: 是否清空，默认为 false
   if (toClear) {
     mostUsedFunc = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
@@ -34,7 +39,7 @@ export function setFunc(curContext: Context | undefined, toClear: boolean = fals
 }
 
 
-export function recordClick(gridIndex: number, index: number, curContext: Context | undefined): void {
+export function recordClick(gridIndex: number, index: number): void {
   if (gridIndex == -1) // 常用区 (-1) 不记录
     return;
   let preName: string = gridIndex.toString() + '.' + index.toString(); // 按钮对应首选项名称
@@ -48,7 +53,7 @@ export function recordClick(gridIndex: number, index: number, curContext: Contex
 }
 
 
-export function refreshFunc(curContext: Context | undefined): void {
+export function refreshFunc(): void {
   order = []
   mostUsedPre = preferences.getPreferencesSync(curContext, options);
   for (let gridIndex = 0; gridIndex < totalGridNum; gridIndex++) {
@@ -61,17 +66,17 @@ export function refreshFunc(curContext: Context | undefined): void {
     }
   }
   if (order.length == 0)
-    setFunc(curContext, true);
+    setFunc(true);
   else {
     order.sort((a, b) => b[1] - a[1]);
-    setFunc(curContext);
+    setFunc();
   }
 }
 
 
-export function resetFunc(curContext: Context | undefined): void { // 重置"最近使用"
-  preferences.deletePreferences(curContext, options)
-  setFunc(curContext, true);
+export function resetFunc(): void { // 重置"最近使用"
+  preferences.deletePreferences(curContext, options);
+  setFunc(true);
 }
 
 
