@@ -1,25 +1,29 @@
 
-import { abilityAccessCtrl, application, common, contextConstant } from '@kit.AbilityKit'
+import { abilityAccessCtrl, application, common, contextConstant, Want } from '@kit.AbilityKit'
 import { preferences } from '@kit.ArkData'
-import { calendarManager } from '@kit.CalendarKit'
-import { BusinessError } from '@kit.BasicServicesKit'
 import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
+import { calendarManager } from '@kit.CalendarKit'
+import { fileIo } from '@kit.CoreFileKit'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 import * as Schedule from './Schedule'
-import * as tools from '../utils/tools'
-import * as FunctionOrder from '../utils/FunctionOrder'
 import { classAttribute } from './Schedule'
-import { CheckInTools } from '../utils/CheckIn'
+
 import { calendarMgr } from '../entryability/EntryAbility'
+
 import { ListDataConstants } from '../constants/ListDataConstants'
 import { GridData, otherGridDataList } from '../constants/GridListDataSources'
+import SettingsData from '../constants/SettingsSources'
+
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
-import SettingsData from '../constants/SettingsSources'
+
+import * as tools from '../utils/tools'
+import * as FunctionOrder from '../utils/FunctionOrder'
+import { CheckInTools } from '../utils/CheckIn'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY } from '../utils/UnifyPreference'
 import scheduleManager from '../utils/TimeTable'
 import examManager, { examAttribute } from '../utils/ExamManager'
-import { fileIo } from '@kit.CoreFileKit'
 import accountInfoProvider from '../utils/Encryption'
 
 // 指定日历账户信息
@@ -172,6 +176,45 @@ struct Index {
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)
     }); // 开启监听屏幕旋转
+    
+    // 首次使用提示
+    if (UnifiedPreferences.getBoolSync('initialLaunch', true)) {
+      const uiContext: UIContext = this.getUIContext();
+      uiContext.showAlertDialog({
+        title: '使用须知',
+        message: '「你的科大」App 为中国科学技术大学学生独立开发，目的是给本校学生的学习和生活提供便利，与中国科学技术大学官方及相关单位无任何关联。',
+        autoCancel: false,
+        alignment: DialogAlignment.Center,
+        offset: { dx: 0, dy: -20 },
+        buttonDirection: DialogButtonDirection.HORIZONTAL,
+        buttons: [
+          {
+            value: '退出应用',
+            fontColor: Color.Red,
+            action: () => {
+              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+              context.terminateSelf((err) => {
+                if (!err) {
+                  context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                    console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                  })
+                }
+              })
+            }
+          },
+          {
+            value: '我知道了',
+            action: () => {
+              UnifiedPreferences.putSync('initialLaunch', false)
+            }
+          }
+        ],
+        cancel: () => {
+          console.log('Closed callbacks');
+        },
+        onWillDismiss: (dismissDialogAction: DismissDialogAction) => {}
+      })
+    }
   }
 
   aboutToDisappear(): void {
@@ -1259,14 +1302,28 @@ struct Index {
                   break;
                 case 13:
                   // 退出到恢复模式
+                  UnifiedPreferences.deleteSync('initialLaunch')
                   UnifiedPreferences.putSync('RecoveryMode', true);
-                  (this.context as common.UIAbilityContext).terminateSelf((err) => {
-                    if (!err) {
-                      this.context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                        console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-                      })
+                  let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
+                  let want: Want = {
+                    bundleName: 'com.nic.yourustc',
+                    abilityName: 'EntryAbility'
+                  };
+                  try {
+                    applicationContext.restartApp(want);
+                  } catch (error) {
+                    console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
+                    if (error.code === 16000064) {
+                      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                      context.terminateSelf((err) => {
+                        if (!err) {
+                          context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                            console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                          })
+                        }
+                      });
                     }
-                  })
+                  }
                   break;
                 default:
                  this.showMessage($r('app.string.under_construction'), 500);
