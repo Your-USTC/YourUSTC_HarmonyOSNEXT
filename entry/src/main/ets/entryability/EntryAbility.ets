@@ -9,6 +9,7 @@ import { router, window } from '@kit.ArkUI';
 import { calendarManager } from '@kit.CalendarKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
+import { initFunc } from '../utils/FunctionOrder';
 import UnifiedPreferences from '../utils/UnifyPreference';
 
 const DOMAIN = 0x0000;
@@ -25,7 +26,8 @@ export default class EntryAbility extends UIAbility {
     } catch (error) {
       console.error('onCreate ERROR: ' + JSON.stringify(error))
     }
-    UnifiedPreferences.init(this.context)
+    UnifiedPreferences.init(this.context);
+    initFunc(this.context);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     if (want?.parameters?.router) {
       this.routerPath = want.parameters.router.toString();

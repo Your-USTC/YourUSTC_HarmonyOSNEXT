@@ -202,7 +202,10 @@ struct Schedule {
       Text(this.colorDialogText)
         .fontColor('#000000')
         .backgroundColor(this.colorDialogText)
-        .padding(3)
+        .textAlign(TextAlign.Center)
+        .height(24)
+        .width(110)
+        .borderRadius(12)
 
       Row() {
         Text($r('app.string.transparent'))
@@ -305,7 +308,7 @@ struct Schedule {
     }
     .padding(16)
     .width('100%')
-    .height(250)
+    // .height(250)
     .justifyContent(FlexAlign.Center)
   }
   /*

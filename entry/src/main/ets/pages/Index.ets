@@ -126,7 +126,7 @@ struct Index {
       this.currentIndex = index
       this.tabsController.changeIndex(this.currentIndex);
       if (this.currentIndex === 1) {
-        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+        FunctionOrder.refreshFunc(); // 刷新点击次数显示
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
       }
     })
@@ -229,7 +229,7 @@ struct Index {
 
   @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
   onPageShow(): void {
-    FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+    FunctionOrder.refreshFunc(); // 刷新点击次数显示
     this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
   }
 
@@ -951,7 +951,7 @@ struct Index {
                       } catch (error) {
                         console.error(`Preference load ERROR: [${error.name}] ${error.message}`);
                       }
-                      FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+                      FunctionOrder.refreshFunc(); // 刷新点击次数显示
                       this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
                     }
                   })
@@ -959,8 +959,8 @@ struct Index {
 
                 case 4:
                   // 重置最近使用
-                  FunctionOrder.resetFunc(this.context);
-                  FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+                  FunctionOrder.resetFunc();
+                  FunctionOrder.refreshFunc(); // 刷新点击次数显示
                   this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
                   try {
                     this.showMessage($r('app.string.have_cleared'), 500);
@@ -1364,7 +1364,7 @@ struct Index {
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;
       if (this.currentIndex === 1) {
-        FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
+        FunctionOrder.refreshFunc(); // 刷新点击次数显示
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
       }
     })
