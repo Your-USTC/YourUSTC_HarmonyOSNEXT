@@ -64,7 +64,8 @@
 4. 将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
 5. （可选）修改相应 链接/图标 和 课表/考试 提取函数
 6. 在手机/平板的系统设置中，打开“xxx的xxx”（例如：user的Mate 70 Pro+），连续点击“软件版本”7次，启用“开发者选项”（需要输入密码并重启）
-7. 在 DevEco Studio 中打开项目，将手机/平板连接到电脑并信任你的电脑，然后点击标题栏中的绿色三角形，即可安装到你的手机/平板上。需要登录华为账号并在右上角<image src="resources/signature.png" style="vertical-align: top; height: 1.2em;"/>处签名
+7. 转到 设置→系统→开发者选项→打开“USB调试”
+8. 在 DevEco Studio 中打开项目，将手机/平板连接到电脑并信任你的电脑，然后点击标题栏中的绿色三角形，即可安装到你的手机/平板上。需要登录华为账号并在右上角<image src="resources/signature.png" style="vertical-align: top; height: 1.2em;"/>处签名
 
 ### 项目结构
 
