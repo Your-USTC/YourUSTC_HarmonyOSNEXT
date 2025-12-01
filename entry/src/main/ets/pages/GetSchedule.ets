@@ -1,8 +1,7 @@
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS,
-  fillInfoLaterJS,
-  fillInfoNowJS} from '../utils/TimeTable'
+  fillInfoLaterJS, fillInfoNowJS} from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
@@ -216,7 +215,7 @@ struct Webview {
             }
           })
           .onPageEnd(() => {
-            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn/cas/login')) {
               this.haveTriedLogin = true;
               if (!(UnifiedPreferences.hasSync(UID_KEY) && UnifiedPreferences.hasSync(PASSWORD_KEY))) {
                 if (UnifiedPreferences.getBoolSync(REMIND_KEY, true))

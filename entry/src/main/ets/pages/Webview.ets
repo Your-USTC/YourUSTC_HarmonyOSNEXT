@@ -268,7 +268,7 @@ struct Webview {
             }
           })
           .onPageEnd(() => {
-            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
+            if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn/cas/login')) {
               this.haveTriedLogin = true;
               if (!(UnifiedPreferences.hasSync(UID_KEY) && UnifiedPreferences.hasSync(PASSWORD_KEY))
                 && UnifiedPreferences.getBoolSync(REMIND_KEY, true)) {
