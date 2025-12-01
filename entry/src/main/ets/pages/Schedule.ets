@@ -2,7 +2,7 @@
 import { preferences } from '@kit.ArkData';
 import * as tools from '../utils/tools';
 import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
-import { mediaquery, PopoverDialog, window } from '@kit.ArkUI';
+import { mediaquery, PopoverDialog, Popup, window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 
 
@@ -142,6 +142,25 @@ struct Schedule {
   @State weekEnd: number = 0;
   @State thisWeekSchedule: classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
 
+  @State showColorHint: boolean = false;
+  @Builder
+  colorHintPopup() {
+    Row() {
+      Popup({
+        icon: { image: $r('app.media.lightbulb') },
+        message: { text: $r('app.string.more_color_option') },
+        showClose: false,
+        buttons: [{
+          text: $r('app.string.no_reminding'),
+          action: () => {
+            scheduleManager.hideColorHint();
+            this.showColorHint = false;
+          }
+        }]
+      })
+    }
+  }
+
   /*
    * 详情弹窗部分
    */
@@ -185,79 +204,94 @@ struct Schedule {
         .backgroundColor(this.colorDialogText)
         .padding(3)
 
-      Slider({
-        value: this.colorARGB[0],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: `#00${this.colorDialogText.slice(3, 9)}`, offset: 0 },
-          { color: `#FF${this.colorDialogText.slice(3, 9)}`, offset: 1 }
-        ]))
-        .onChange((value: number) => {
-          this.colorARGB[0] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
+      Row() {
+        Text($r('app.string.transparent'))
+        Slider({
+          value: this.colorARGB[0],
+          min: 0,
+          max: 255,
+          style: SliderStyle.InSet
+        })
+          .layoutWeight(1)
+          .selectedColor($r('app.color.transparent'))
+          .trackColor(new LinearGradient([
+            { color: `#00${this.colorDialogText.slice(3, 9)}`, offset: 0 },
+            { color: `#FF${this.colorDialogText.slice(3, 9)}`, offset: 1 }
+          ]))
+          .onChange((value: number) => {
+            this.colorARGB[0] = value;
+            this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+          });
+      }
 
-      Slider({
-        value: this.colorARGB[1],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: `#00${this.colorDialogText.slice(5, 9)}`, offset: 0 },
-          { color: `#FF${this.colorDialogText.slice(5, 9)}`, offset: 1 }]))
-        .onChange((value: number) => {
-          this.colorARGB[1] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
+      Row() {
+        Text($r('app.string.red'))
+        Slider({
+          value: this.colorARGB[1],
+          min: 0,
+          max: 255,
+          style: SliderStyle.InSet
+        })
+          .layoutWeight(1)
+          .selectedColor($r('app.color.transparent'))
+          .trackColor(new LinearGradient([
+            { color: `#00${this.colorDialogText.slice(5, 9)}`, offset: 0 },
+            { color: `#FF${this.colorDialogText.slice(5, 9)}`, offset: 1 }]))
+          .onChange((value: number) => {
+            this.colorARGB[1] = value;
+            this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+          });
+      }
 
-      Slider({
-        value: this.colorARGB[2],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: `#${this.colorDialogText.slice(3, 5)}00${this.colorDialogText.slice(7, 9)}`, offset: 0 },
-          { color: `#${this.colorDialogText.slice(3, 5)}FF${this.colorDialogText.slice(7, 9)}`, offset: 1 }]))
-        .onChange((value: number) => {
-          this.colorARGB[2] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
+      Row() {
+        Text($r('app.string.green'))
+        Slider({
+          value: this.colorARGB[2],
+          min: 0,
+          max: 255,
+          style: SliderStyle.InSet
+        })
+          .layoutWeight(1)
+          .selectedColor($r('app.color.transparent'))
+          .trackColor(new LinearGradient([
+            { color: `#${this.colorDialogText.slice(3, 5)}00${this.colorDialogText.slice(7, 9)}`, offset: 0 },
+            { color: `#${this.colorDialogText.slice(3, 5)}FF${this.colorDialogText.slice(7, 9)}`, offset: 1 }]))
+          .onChange((value: number) => {
+            this.colorARGB[2] = value;
+            this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+          });
+      }
 
-      Slider({
-        value: this.colorARGB[3],
-        min: 0,
-        max: 255,
-        style: SliderStyle.InSet
-      })
-        .blockColor('#FFFFFF')
-        .selectedColor($r('app.color.transparent'))
-        .trackColor(new LinearGradient([
-          { color: `#${this.colorDialogText.slice(3, 7)}00`, offset: 0 },
-          { color: `#${this.colorDialogText.slice(3, 7)}FF`, offset: 1 }]))
-        .onChange((value: number) => {
-          this.colorARGB[3] = value;
-          this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
-            + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
-        });
+      Row() {
+        Text($r('app.string.blue'))
+        Slider({
+          value: this.colorARGB[3],
+          min: 0,
+          max: 255,
+          style: SliderStyle.InSet
+        })
+          .layoutWeight(1)
+          .selectedColor($r('app.color.transparent'))
+          .trackColor(new LinearGradient([
+            { color: `#${this.colorDialogText.slice(3, 7)}00`, offset: 0 },
+            { color: `#${this.colorDialogText.slice(3, 7)}FF`, offset: 1 }]))
+          .onChange((value: number) => {
+            this.colorARGB[3] = value;
+            this.colorDialogText = '#' + this.colorARGB[0].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[1].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[2].toString(16).padStart(2, '0').toUpperCase()
+              + this.colorARGB[3].toString(16).padStart(2, '0').toUpperCase();
+          });
+      }
 
       Row() {
         Checkbox()
@@ -334,6 +368,7 @@ struct Schedule {
             scrollSizeMode: ScrollSizeMode.CONTINUOUS,
             backgroundColor: '#00d00721',
             blurStyle: BlurStyle.Regular,
+            onAppear: () => { this.showColorHint = scheduleManager.showColorHint; },
             onWillDismiss: ((DismissSheetAction: DismissSheetAction) => {
               this.classInfo.weekOfTerm = [...this.weekOfTerm];
               if (this.rectifyTimeSpan[0] > this.rectifyTimeSpan[1]) {
@@ -954,7 +989,17 @@ struct Schedule {
                 .width(32)
                 .height(32)
                 .offset({ x: -4 })
-                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'));
+                .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
+                .bindPopup(this.showColorHint, {
+                  builder: this.colorHintPopup(),
+                  placement: Placement.Top,
+                  width: 300,
+                  onStateChange: (status) => {
+                    if (!status.isVisible) {
+                      this.showColorHint = false;
+                    }
+                  }
+                });
               Image($r('app.media.paintpalette'))
                 .height(25)
                 .offset({ x: -7 })
@@ -980,9 +1025,9 @@ struct Schedule {
               visible: this.showColorPicker,
               targetBuilder: () => {},
               popover: {
-                width: 280,
+                width: 300,
                 placement: Placement.Top,
-                enableArrow: false,
+                arrowPointPosition: ArrowPointPosition.END,
                 builder: () => { this.colorPicker() },
                 onStateChange: (popup) => {
                   if (!popup.isVisible) {

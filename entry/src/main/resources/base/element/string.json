@@ -205,6 +205,10 @@
       "value": "你真的要删掉这节课吗？"
     },
     {
+      "name": "more_color_option",
+      "value": "点击此处可以查看更多颜色选项"
+    },
+    {
       "name": "class_detail_new",
       "value": "添加课程"
     },
@@ -289,6 +293,22 @@
       "value": "颜色："
     },
     {
+      "name": "transparent",
+      "value": "透"
+    },
+    {
+      "name": "red",
+      "value": "红"
+    },
+    {
+      "name": "green",
+      "value": "绿"
+    },
+    {
+      "name": "blue",
+      "value": "蓝"
+    },
+    {
       "name": "change_all_color",
       "value": "同时更改所有同名课程颜色"
     },
@@ -343,10 +363,6 @@
     {
       "name": "no_class_this_week",
       "value": "本周没有课程喵~\n你可以在右上角导入或者添加课程。"
-    },
-    {
-      "name": "get_schedule_hint",
-      "value": "登录后将自动跳转，人家是不是超级贴心 (≥▽≤)"
     },
     {
       "name": "no_class_today",
@@ -593,6 +609,14 @@
       "value": "退出到恢复模式"
     },
     {
+      "name": "no_association1",
+      "value": "在开始前，请务必认真阅读以下文字："
+    },
+    {
+      "name": "no_association2",
+      "value": "本项目为中国科学技术大学学生独立制作，旨在为正就读于中国科学技术大学的全日制本科生提供便利。本项目中涉及的任何中国科学技术大学相关网站、素材均归中国科学技术大学所有，项目内一切内容与官方无关，仅代表开发者个人想法，不代表官方立场。"
+    },
+    {
       "name": "github",
       "value": "在 GitHub 上为我们点亮\uD83C\uDF1F！"
     },
@@ -646,7 +670,7 @@
     },
     {
       "name": "incomplete",
-      "value": "请检查输入后再确认"
+      "value": "╮(๑•́ ₃•̀๑)╭学号格式不正确，或者密码没有包含数字或大小写字母"
     },
     {
       "name": "input_later",
@@ -662,7 +686,15 @@
     },
     {
       "name": "input_account_info",
-      "value": "你可以在此处填写统一身份认证账号和密码，以便实现访问 https://id.ustc.edu.cn 时为你自动填充并登录。（如需要二次验证，请勾选「信任此设备」）所有信息均保存在本地，我们不会收集任何个人信息。"
+      "value": "你可以在此处填写统一身份认证账号和密码，以便访问 https://id.ustc.edu.cn 时为你自动填充并登录。人家是不是超级贴心 (≥▽≤)\n如需二次验证，请勾选「信任此设备」。所有信息均加密保存在本地，我们不会收集任何个人信息。"
+    },
+    {
+      "name": "fill_next_time",
+      "value": "设置成功！将在下次需要登录时自动填充"
+    },
+    {
+      "name": "cannot_fill",
+      "value": "(,,•́ . •̀,,)某些字段是空的，人家下次不能帮你自动登录了"
     },
     {
       "name": "student_id",

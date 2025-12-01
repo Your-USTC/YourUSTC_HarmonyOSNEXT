@@ -50,6 +50,17 @@ struct About {
             .fontWeight(FontWeight.Bold)
             .margin({ top: 20 })
 
+          Text($r('app.string.no_association1'))
+            .fontColor($r('app.color.red'))
+            .fontWeight(FontWeight.Bold)
+            .margin({ top: 20 })
+            .textAlign(TextAlign.Center)
+
+          Text($r('app.string.no_association2'))
+            .fontColor($r('app.color.red'))
+            .fontWeight(FontWeight.Bold)
+            .width('90%')
+
           Text($r('app.string.github'))
             .margin({ top: 20 })
             .fontColor($r('app.color.active_text'))

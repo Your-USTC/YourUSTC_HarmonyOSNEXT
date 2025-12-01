@@ -3,11 +3,12 @@ import { webview } from '@kit.ArkWeb'
 import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { common } from '@kit.AbilityKit'
-import UnifiedPreference, { PASSWORD_KEY, UID_KEY} from '../utils/UnifyPreference'
+import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
 import { fillInformationJS } from '../utils/TimeTable'
 import accountInfoProvider from '../utils/Encryption'
+import PasswordDialog from '../view/PasswordDialog'
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
@@ -22,8 +23,8 @@ struct Webview {
   @State uaMode: number = MOBILE_MODE;
   title: string = '';
   url: string = '';
-  webAutoDarkMode: boolean = UnifiedPreference.getBoolSync('webAutoDarkMode', true);
-  webBackPress: boolean = UnifiedPreference.getBoolSync('webBackPress', true);
+  webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
+  webBackPress: boolean = UnifiedPreferences.getBoolSync('webBackPress', true);
   @State loadingProgress: number = 0;
   @State downloadPercent: number = 100;
   @State downloadItemNum: number = 0;
@@ -32,7 +33,12 @@ struct Webview {
   haveJumped: boolean = true;
   // @State infoProvider: accountInfoProvider = new accountInfoProvider();
   haveTriedLogin: boolean = false;
-
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: PasswordDialog({
+      isFromSetting: false
+    }),
+    autoCancel: true
+  })
 
   showMessage(message: string | ResourceStr, duration: number) {
     try {
@@ -255,18 +261,18 @@ struct Webview {
                 this.webviewController.backOrForward(i + 1);
                 this.webviewController.loadUrl(this.url);
                 this.haveJumped = true;
-              } else {
-                if (this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
-                  this.showMessage($r('app.string.get_schedule_hint'), 5000);
-                }
               }
             }
           })
           .onPageEnd(() => {
             if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn')) {
               this.haveTriedLogin = true;
+              if (!(UnifiedPreferences.hasSync(UID_KEY) && UnifiedPreferences.hasSync(PASSWORD_KEY))
+                && UnifiedPreferences.getBoolSync(REMIND_KEY, true)) {
+                this.dialogController.open();
+              }
               this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
-                console.info(`自动填写uid：${UnifiedPreference.getSync(UID_KEY)}`);
+                console.info(`自动填写uid：${UnifiedPreferences.getSync(UID_KEY)}`);
               });
             }
           })

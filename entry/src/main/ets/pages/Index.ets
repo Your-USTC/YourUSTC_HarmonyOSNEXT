@@ -1,26 +1,26 @@
 
-import { abilityAccessCtrl, application, common, contextConstant } from '@kit.AbilityKit'
+import { fileIo } from '@kit.CoreFileKit'
 import { preferences } from '@kit.ArkData'
 import { calendarManager } from '@kit.CalendarKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
+import { abilityAccessCtrl, application, common, contextConstant } from '@kit.AbilityKit'
 
 import * as Schedule from './Schedule'
 import * as tools from '../utils/tools'
-import * as FunctionOrder from '../utils/FunctionOrder'
 import { classAttribute } from './Schedule'
 import { CheckInTools } from '../utils/CheckIn'
-import { calendarMgr } from '../entryability/EntryAbility'
-import { ListDataConstants } from '../constants/ListDataConstants'
-import { GridData, otherGridDataList } from '../constants/GridListDataSources'
+import scheduleManager from '../utils/TimeTable'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
+import PasswordDialog from '../view/PasswordDialog'
+import * as FunctionOrder from '../utils/FunctionOrder'
 import SettingsData from '../constants/SettingsSources'
-import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY } from '../utils/UnifyPreference'
-import scheduleManager from '../utils/TimeTable'
+import UnifiedPreferences from '../utils/UnifyPreference'
+import { calendarMgr } from '../entryability/EntryAbility'
 import examManager, { examAttribute } from '../utils/ExamManager'
-import { fileIo } from '@kit.CoreFileKit'
-import accountInfoProvider from '../utils/Encryption'
+import { ListDataConstants } from '../constants/ListDataConstants'
+import { GridData, otherGridDataList } from '../constants/GridListDataSources'
 
 // 指定日历账户信息
 const calendarAccount: calendarManager.CalendarAccount = {
@@ -91,16 +91,9 @@ struct Index {
   @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
   private tabsController: TabsController = new TabsController();
 
-  dialogController1: CustomDialogController = new CustomDialogController({
-    builder: InputDialog({
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: PasswordDialog({
       isFromSetting: true
-    }),
-    autoCancel: true
-  })
-
-  dialogController2: CustomDialogController = new CustomDialogController({
-    builder: InputDialog({
-      isFromSetting: false
     }),
     autoCancel: true
   })
@@ -172,6 +165,11 @@ struct Index {
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)
     }); // 开启监听屏幕旋转
+    if (UnifiedPreferences.getBoolSync('FirstlyHint', true)) {
+      UnifiedPreferences.putSync('FirstlyHint', false);
+      this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
+        .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+    }
   }
 
   aboutToDisappear(): void {
@@ -233,9 +231,6 @@ struct Index {
   onPageShow(): void {
     FunctionOrder.refreshFunc(this.context); // 刷新点击次数显示
     this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-    if (UnifiedPreferences.getBoolSync(REMIND_KEY, true) && !UnifiedPreferences.getSync(UID_KEY,'')) {
-      this.dialogController2.open();
-    }
   }
 
   /**
@@ -913,7 +908,7 @@ struct Index {
             .onClick(() => {
               switch (cell.id) { // 根据 cell.id 区分设置项
                 case -1:
-                  this.dialogController1.open();
+                  this.dialogController.open();
                   break;
                 case 0:
                   // 显示签到
@@ -1373,107 +1368,5 @@ struct Index {
         this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
       }
     })
-  }
-}
-
-@CustomDialog
-struct InputDialog {
-  controller: CustomDialogController;
-  inputUID: string = UnifiedPreferences.getSync(UID_KEY, '');
-  inputPassword: string = UnifiedPreferences.getSync(PASSWORD_KEY, '');
-  isFromSetting: boolean= true;
-
-  oriInputUID: string = '';
-  oriInputPassword: string = '';
-  @State accountChanged: boolean = false;
-
-  aboutToAppear(): void {
-    this.oriInputUID = this.inputUID;
-    this.oriInputPassword = this.inputPassword;
-  }
-
-  build() {
-    Column() {
-      Text($r('app.string.input_account_info'))
-        .margin({ bottom: 10 })
-        .width('90%')
-
-      Column() {
-        Row() {
-          Text($r('app.string.student_id'))
-          TextInput({ text: this.oriInputUID })
-            .type(InputType.USER_NAME)
-            .enableAutoFill(this.accountChanged)
-            .layoutWeight(1)
-            .margin({ bottom: 5 })
-            .onChange((value: string) => {
-              this.inputUID = value;
-            })
-        }
-
-        Row() {
-          Text($r('app.string.password'))
-          TextInput({ text: this.oriInputPassword })
-            .type(InputType.NEW_PASSWORD)
-            .showPasswordIcon(true)
-            .enableAutoFill(this.accountChanged)
-            .layoutWeight(1)
-            .onChange((value: string) => {
-              this.inputPassword = value;
-            })
-        }
-      }
-      .alignItems(HorizontalAlign.Start)
-      .width('80%')
-
-      Row() {
-        if (!this.isFromSetting) {
-          Button($r('app.string.no_reminding'))
-            .buttonStyle(ButtonStyleMode.NORMAL)
-            .onClick(() => {
-              UnifiedPreferences.putSync(REMIND_KEY, false);
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
-              this.controller.close();
-            })
-            .layoutWeight(1)
-        }
-        Button($r('app.string.cancel'))
-          .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .onClick(() => {
-            this.controller.close();
-          })
-          .layoutWeight(1)
-        Button($r('app.string.ok'))
-          .onClick(() => {
-            if (this.inputUID === '' || this.inputPassword === '') {
-              UnifiedPreferences.deleteSync(UID_KEY);
-              UnifiedPreferences.deleteSync(PASSWORD_KEY);
-              this.accountChanged = false;
-              this.controller.close();
-            } else {
-              if (this.inputUID !== this.oriInputUID || this.inputPassword !== this.oriInputPassword) {
-                this.accountChanged = true;
-                if (/^[A-Z]{2}\d{8}$/.test(this.inputUID) &&
-                  !/\s/.test(this.inputPassword) && /[a-z]/.test(this.inputPassword)
-                  && /[A-Z]/.test(this.inputPassword) && /\d/.test(this.inputPassword)) {
-                  UnifiedPreferences.putSync(UID_KEY, this.inputUID);
-                  UnifiedPreferences.putSync(PASSWORD_KEY, accountInfoProvider.encryptPassword(this.inputPassword));
-                  this.controller.close();
-                } else {
-                  this.getUIContext()
-                    .getPromptAction()
-                    .showToast({ message: $r('app.string.incomplete'), duration: 1500 });
-                }
-              } else {
-                this.accountChanged = false;
-              }
-            }
-          })
-          .layoutWeight(1)
-      }
-      .margin({ top: 20 })
-    }
-    .padding(16)
-    .width('100%')
   }
 }
