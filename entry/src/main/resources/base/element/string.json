@@ -606,7 +606,7 @@
     },
     {
       "name": "manual_fault",
-      "value": "退出到恢复模式"
+      "value": "进入恢复模式"
     },
     {
       "name": "no_association1",
