@@ -81,7 +81,7 @@ export default struct PasswordDialog {
                 UnifiedPreferences.putSync(UID_KEY, this.inputUID);
               } else {
                 correctInput = false;
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete'), duration: 1500 });
+                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete') });
               }
             }
 
@@ -92,7 +92,7 @@ export default struct PasswordDialog {
                 UnifiedPreferences.putSync(PASSWORD_KEY, accountInfoProvider.encryptPassword(this.inputPassword));
               else {
                 if (correctInput) {
-                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete'), duration: 1500 });
+                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete') });
                   correctInput = false;
                 }
               }
@@ -100,7 +100,7 @@ export default struct PasswordDialog {
             
             if (correctInput) {
               if (this.inputUID !== '' && this.inputPassword !== '')
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.fill_next_time'), duration: 1500 });
+                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.fill_next_time') });
               else
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.cannot_fill'), duration: 1500 });
               this.webviewController?.runJavaScript(fillInformationJS, (error, result) => {});

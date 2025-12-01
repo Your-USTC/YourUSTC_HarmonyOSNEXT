@@ -4,6 +4,7 @@ import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 import { common, Want } from '@kit.AbilityKit';
 import { examAttribute } from '../utils/ExamManager';
 import { classAttribute } from '../pages/Schedule';
+import { resetFunc } from '../utils/FunctionOrder';
 
 interface exportClassInfo {
   data: string,
@@ -56,6 +57,7 @@ struct FaultOccurred {
               this.button2ClickTimes++;
               if (this.button2ClickTimes == 2) {
                 UnifiedPreferences.clear();
+                resetFunc();
                 this.button2Text = $r('app.string.clear_success');
               } else if (this.button2ClickTimes == 1) {
                 this.button2Text = $r('app.string.click_again_to_delete');
