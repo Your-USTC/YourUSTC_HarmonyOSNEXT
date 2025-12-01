@@ -1,7 +1,8 @@
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, timeTableQueryJSShort, examInfoQueryJS,
-  fillInformationJS } from '../utils/TimeTable'
+  fillInfoLaterJS,
+  fillInfoNowJS} from '../utils/TimeTable'
 import { obtainedData } from '../pages/Schedule'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
@@ -27,7 +28,10 @@ struct Webview {
     builder: PasswordDialog({
       isFromSetting: false
     }),
-    autoCancel: true
+    autoCancel: true,
+    onDidDisappear: () => {
+      this.webviewController.runJavaScript(fillInfoNowJS);
+    }
   })
 
   showMessage(message: string | ResourceStr, duration: number) {
@@ -218,7 +222,7 @@ struct Webview {
                 if (UnifiedPreferences.getBoolSync(REMIND_KEY, true))
                  this.dialogController.open();
               } else {
-                this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
+                this.webviewController.runJavaScript(fillInfoLaterJS, (error, result) => {
                   console.info(`自动填写uid：${UnifiedPreferences.getSync(UID_KEY)}`);
                 });
               }

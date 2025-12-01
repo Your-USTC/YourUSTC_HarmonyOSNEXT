@@ -6,7 +6,7 @@ import { common } from '@kit.AbilityKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
-import { fillInformationJS } from '../utils/TimeTable'
+import { fillInfoNowJS, fillInfoLaterJS } from '../utils/TimeTable'
 import accountInfoProvider from '../utils/Encryption'
 import PasswordDialog from '../view/PasswordDialog'
 
@@ -37,7 +37,10 @@ struct Webview {
     builder: PasswordDialog({
       isFromSetting: false
     }),
-    autoCancel: true
+    autoCancel: true,
+    onDidDisappear: () => {
+      this.webviewController.runJavaScript(fillInfoNowJS);
+    }
   })
 
   showMessage(message: string | ResourceStr, duration: number) {
@@ -271,7 +274,7 @@ struct Webview {
                 && UnifiedPreferences.getBoolSync(REMIND_KEY, true)) {
                 this.dialogController.open();
               }
-              this.webviewController.runJavaScript(fillInformationJS, (error, result) => {
+              this.webviewController.runJavaScript(fillInfoLaterJS, (error, result) => {
                 console.info(`自动填写uid：${UnifiedPreferences.getSync(UID_KEY)}`);
               });
             }

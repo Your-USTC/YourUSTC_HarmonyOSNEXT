@@ -5,8 +5,8 @@ import accountInfoProvider from '../utils/Encryption';
 @CustomDialog
 export default struct PasswordDialog {
   controller: CustomDialogController;
-  inputUID: string = UnifiedPreferences.getSync(UID_KEY, '');
-  inputPassword: string = UnifiedPreferences.getSync(PASSWORD_KEY, '');
+  inputUID: string = accountInfoProvider.getUID();
+  inputPassword: string = accountInfoProvider.getPassword();
   isFromSetting: boolean= true;
 
   oriInputUID: string = '';

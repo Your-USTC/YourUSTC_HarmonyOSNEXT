@@ -690,7 +690,7 @@
     },
     {
       "name": "fill_next_time",
-      "value": "设置成功！将在下次需要登录时自动填充"
+      "value": "设置成功！将在需要登录时自动填充"
     },
     {
       "name": "cannot_fill",
