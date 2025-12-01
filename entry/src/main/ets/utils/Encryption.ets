@@ -1,8 +1,5 @@
 import { JSEncrypt } from '../utils/jsencrypt/lib/index'
 import UnifiedPreference, { PASSWORD_KEY, UID_KEY } from '../utils/UnifyPreference'
-// en.getKey();
-// console.log(`加密公钥为${ en.getPublicKey() }`);
-
 
 class accountInfoProvider {
   private en = new JSEncrypt();

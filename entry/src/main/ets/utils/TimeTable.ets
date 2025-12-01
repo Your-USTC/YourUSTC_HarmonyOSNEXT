@@ -85,7 +85,31 @@ const getExamInfo = () => {
 }
 getExamInfo()
 `
-export const fillInformationJS = `
+
+export const fillInfoNowJS = `
+const nodeUID = document.getElementById('nameInput');
+const nodePassword = document.querySelector('input[type="password"][maxlength="200"]');
+const inputUID = infoProvider.getUID();
+const inputPwd = infoProvider.getPassword();
+const complete = true;
+if (nodeUID && inputUID) {
+    nodeUID.focus();
+    nodeUID.value = infoProvider.getUID();
+    nodeUID.dispatchEvent(new Event('input', { bubbles: true }));
+} else { complete = false; }
+if (nodePassword && inputPwd) {
+    nodePassword.focus();
+    nodePassword.value = infoProvider.getPassword();
+    nodePassword.dispatchEvent(new Event('input', { bubbles: true }));
+} else { complete = false; }
+if (complete) {
+    document.getElementById('submitBtn').dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
+}
+`
+
+export const fillInfoLaterJS = `
 const observer = new MutationObserver(() => {
   const nodeUID = document.getElementById('nameInput');
   const nodePassword = document.querySelector('input[type="password"][maxlength="200"]');
