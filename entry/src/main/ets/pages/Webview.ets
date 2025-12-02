@@ -28,8 +28,7 @@ struct Webview {
   @State loadingProgress: number = 0;
   @State downloadPercent: number = 100;
   @State downloadItemNum: number = 0;
-  downloadItemTotal: number = 0;
-  @State showDownloadProgress: boolean = false;
+  @State downloadItemTotal: number = 0;
   haveJumped: boolean = true;
   // @State infoProvider: accountInfoProvider = new accountInfoProvider();
   haveTriedLogin: boolean = false;
@@ -335,7 +334,6 @@ struct Webview {
               this.downloadDelegate.onBeforeDownload((webDownloadItem: webview.WebDownloadItem) => {
                 this.downloadItemNum++;
                 this.downloadItemTotal++;
-                this.showDownloadProgress = true;
                 getDownloadPathFromPicker().then((downloadPath) => {
                   webDownloadItem.start(downloadPath + '/' + webDownloadItem.getSuggestedFileName());
                 });
@@ -343,8 +341,9 @@ struct Webview {
               this.downloadDelegate.onDownloadUpdated((webDownloadItem: webview.WebDownloadItem) => {
                 eachDownloadPercent.set(webDownloadItem.getGuid(), webDownloadItem.getPercentComplete());
                 this.downloadPercent = 0;
-                for (const value of eachDownloadPercent.values())
-                  this.downloadPercent += value / this.downloadItemTotal;
+                if (this.downloadItemTotal !== 0)
+                  for (const value of eachDownloadPercent.values())
+                    this.downloadPercent += value / this.downloadItemTotal;
                 // 下载速度：console.info("download update speed: " + webDownloadItem.getCurrentSpeed())
               })
               this.downloadDelegate.onDownloadFailed((webDownloadItem: webview.WebDownloadItem) => {
@@ -364,7 +363,6 @@ struct Webview {
                         value: $r('app.string.cancel'),
                         action: () => {
                           eachDownloadPercent.clear();
-                          this.showDownloadProgress = false;
                           this.downloadItemTotal = 0;
                         }
                       },
@@ -375,7 +373,6 @@ struct Webview {
                         value: $r('app.string.ok'),
                         action: () => {
                           eachDownloadPercent.clear();
-                          this.showDownloadProgress = false;
                           this.downloadItemTotal = 0;
                           try {
                             (this.getUIContext().getHostContext() as common.UIAbilityContext).openLink('filemanager://openDirectory', { parameters: { 'fileUri': '' } });
@@ -386,12 +383,10 @@ struct Webview {
                       },
                       cancel: () => {
                         eachDownloadPercent.clear();
-                        this.showDownloadProgress = false;
                         this.downloadItemTotal = 0;
                       },
                       onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
                         eachDownloadPercent.clear();
-                        this.showDownloadProgress = false;
                         this.downloadItemTotal = 0;
                         if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
                           dismissDialogAction.dismiss();
@@ -486,7 +481,7 @@ struct Webview {
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
           .padding({ left: 13, top: 5, right: 5, bottom: 5})
-          .visibility(this.showDownloadProgress ? Visibility.Visible : Visibility.None);
+          .visibility(this.downloadItemTotal === 0 ? Visibility.None : Visibility.Visible);
         }
         .alignItems(VerticalAlign.Top)
         .width('100%')

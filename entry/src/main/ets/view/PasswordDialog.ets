@@ -5,14 +5,18 @@ import accountInfoProvider from '../utils/Encryption';
 @CustomDialog
 export default struct PasswordDialog {
   controller: CustomDialogController;
-  inputUID: string = accountInfoProvider.getUID();
-  inputPassword: string = accountInfoProvider.getPassword();
+  private inputUID: string = accountInfoProvider.getUID();
+  private inputPassword: string = accountInfoProvider.getPassword();
   isFromSetting: boolean= true;
 
-  oriInputUID: string = '';
-  oriInputPassword: string = '';
+  private oriInputUID: string = '';
+  private oriInputPassword: string = '';
 
   aboutToAppear(): void {
+    if (this.inputUID === null)
+      this.inputUID = '';
+    if (this.inputPassword === null)
+      this.inputPassword = '';
     this.oriInputUID = this.inputUID;
     this.oriInputPassword = this.inputPassword;
   }

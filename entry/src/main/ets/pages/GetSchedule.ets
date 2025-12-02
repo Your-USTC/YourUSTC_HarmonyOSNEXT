@@ -21,6 +21,7 @@ struct Webview {
   webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
   haveTriedLogin: boolean = false;
+  autoGetFailed: boolean = false;
   dialogController: CustomDialogController = new CustomDialogController({
     builder: PasswordDialog({
       isFromSetting: false
@@ -110,46 +111,50 @@ struct Webview {
           .height(20)
           .draggable(false)
           .onClick(() => {
-            if (this.isTimeTablePage && !this.gotTimeTable) {
-              this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                if (error) { /* 理论上这里不会出什么错误 */ return;}
-                this.obtainedData.startTime = result;
-              });
-              this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
-                if (error) {
-                  this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
-                  return;
-                }
-                if (result === 'null') {
-                  this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
-                  return;
-                }
-                this.gotTimeTable = true;
-                this.obtainedData.timeTable = result;
-                this.getUIContext().getRouter().back({
-                  params: this.obtainedData,
-                  url: 'pages/Schedule'
+            if (this.autoGetFailed) {
+              if (this.isTimeTablePage && !this.gotTimeTable) {
+                this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
+                  if (error) { /* 理论上这里不会出什么错误 */ return; }
+                  this.obtainedData.startTime = result;
                 });
-              });
-            }
-            if (this.isExamInfoPage && !this.gotExamInfo) {
-              this.webviewController.runJavaScript(examInfoQueryJS, (error, result) => {
-                if (error) {
-                  this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
-                  return;
-                }
-                if (result === 'null') {
-                  this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
-                  return;
-                }
-                this.gotExamInfo = true;
-                this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
-                this.obtainedData.timeTable = result;
-                this.getUIContext().getRouter().back({
-                  params: this.obtainedData,
-                  url: 'pages/ExamDetail'
+                this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
+                  if (error) {
+                    this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
+                    return;
+                  }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                    return;
+                  }
+                  this.gotTimeTable = true;
+                  this.obtainedData.timeTable = result;
+                  this.getUIContext().getRouter().back({
+                    params: this.obtainedData,
+                    url: 'pages/Schedule'
+                  });
                 });
-              })
+              }
+              if (this.isExamInfoPage && !this.gotExamInfo) {
+                this.webviewController.runJavaScript(examInfoQueryJS, (error, result) => {
+                  if (error) {
+                    this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
+                    return;
+                  }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
+                    return;
+                  }
+                  this.gotExamInfo = true;
+                  this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
+                  this.obtainedData.timeTable = result;
+                  this.getUIContext().getRouter().back({
+                    params: this.obtainedData,
+                    url: 'pages/ExamDetail'
+                  });
+                })
+              }
+            } else {
+              this.showMessage($r('app.string.auto_get_info'), 2000);
             }
           })
       }
@@ -235,10 +240,12 @@ struct Webview {
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
                   if (error) {
                     this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
+                    this.autoGetFailed = true;
                     return;
                   }
                   if (result === 'null') {
                     this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                    this.autoGetFailed = true;
                     return;
                   }
                   this.gotTimeTable = true;
