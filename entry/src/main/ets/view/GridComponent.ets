@@ -42,6 +42,7 @@ export default struct GridComponent {
             .height('100%')
             .justifyContent(FlexAlign.Center)
           }
+          .focusable(false)
           .height('64vp')
           .onClick(() => {
             if (this.gridIndex == -1) {
