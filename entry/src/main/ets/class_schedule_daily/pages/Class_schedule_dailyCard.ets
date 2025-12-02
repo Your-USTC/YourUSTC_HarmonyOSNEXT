@@ -1,7 +1,7 @@
 
 import * as tools from '../../utils/tools';
 import * as Schedule from '../../pages/Schedule'
-import { classAttribute } from '../../pages/Schedule';
+import { classAttribute } from '../../constants/ScheduleSources';
 import scheduleManager from '../../utils/TimeTable';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';

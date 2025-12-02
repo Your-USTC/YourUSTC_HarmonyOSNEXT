@@ -1,7 +1,7 @@
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable'
-import { obtainedData } from '../pages/Schedule'
+import { obtainedData } from '../constants/ScheduleSources'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
 import accountInfoProvider from '../utils/Encryption'

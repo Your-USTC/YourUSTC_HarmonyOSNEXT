@@ -1,7 +1,7 @@
 
 import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI'
 import * as tools from '../utils/tools'
-import { obtainedData } from '../pages/Schedule'
+import { obtainedData } from '../constants/ScheduleSources'
 import examManager, { examAttribute } from '../utils/ExamManager';
 
 @Entry

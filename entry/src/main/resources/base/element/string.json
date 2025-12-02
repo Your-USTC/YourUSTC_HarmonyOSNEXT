@@ -161,10 +161,6 @@
       "value": "清除所有提醒日程"
     },
     {
-      "name": "calendar_null",
-      "value": "日历中不存在「你的科大」创建的日程"
-    },
-    {
       "name": "clear_success",
       "value": "清除成功"
     },
@@ -323,6 +319,14 @@
     {
       "name": "need_calendar_permission",
       "value": "你需要同意「你的科大」的日历读写权限。在此之后，你或许需要重启应用。"
+    },
+    {
+      "name": "allowed_calendar_permission",
+      "value": "你正在成功！请坐和放宽并再次点击对应设置项"
+    },
+    {
+      "name": "denied_calendar_permission",
+      "value": "呜呜(T⌓T)被拒绝了"
     },
     {
       "name": "cancel",

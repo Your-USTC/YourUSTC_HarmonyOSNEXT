@@ -3,7 +3,7 @@ import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/Unify
 import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
 import { common, Want } from '@kit.AbilityKit';
 import { examAttribute } from '../utils/ExamManager';
-import { classAttribute } from '../pages/Schedule';
+import { classAttribute } from '../constants/ScheduleSources';
 import { resetFunc } from '../utils/FunctionOrder';
 
 interface exportClassInfo {

@@ -1,4 +1,4 @@
-import { classAttribute, obtainedData } from '../pages/Schedule';
+import { classAttribute, obtainedData } from '../constants/ScheduleSources';
 import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from './UnifyPreference';
 import UnifiedPreferences from './UnifyPreference';
 import * as tools from './tools';

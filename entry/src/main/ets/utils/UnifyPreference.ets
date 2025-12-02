@@ -57,7 +57,17 @@ class UnifiedPreferences {
     } catch (error) {
       console.error(`getSync ERROR: [${error.name}] ${error.message}`);
       return defaultValue;
-    }}
+    }
+  }
+
+  getNumberSync(key: string, defaultValue: number): number {
+    try {
+      return this.preferences?.getSync(key, defaultValue) as number;
+    } catch (error) {
+      console.error(`getSync ERROR: [${error.name}] ${error.message}`);
+      return defaultValue;
+    }
+  }
 
   hasSync(key: string): boolean {
     try {
