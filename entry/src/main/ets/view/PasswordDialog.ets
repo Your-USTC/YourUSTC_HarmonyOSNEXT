@@ -9,6 +9,8 @@ export default struct PasswordDialog {
   private inputPassword: string = accountInfoProvider.getPassword();
   isFromSetting: boolean= true;
 
+  onConfirm: () => void = () => {};
+
   private oriInputUID: string = '';
   private oriInputPassword: string = '';
 
@@ -100,8 +102,10 @@ export default struct PasswordDialog {
             }
             
             if (correctInput) {
-              if (this.inputUID !== '' && this.inputPassword !== '')
+              if (this.inputUID !== '' && this.inputPassword !== '') {
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.fill_next_time') });
+                this.onConfirm();
+              }
               else
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.cannot_fill') });
               this.controller.close();

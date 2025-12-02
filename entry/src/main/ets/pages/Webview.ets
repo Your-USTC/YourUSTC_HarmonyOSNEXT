@@ -34,12 +34,10 @@ struct Webview {
   haveTriedLogin: boolean = false;
   dialogController: CustomDialogController = new CustomDialogController({
     builder: PasswordDialog({
-      isFromSetting: false
+      isFromSetting: false,
+      onConfirm: () => { this.webviewController.runJavaScript(fillInformationJS, (error, result) => {}); }
     }),
-    autoCancel: true,
-    onDidDisappear: () => {
-      this.webviewController.runJavaScript(fillInformationJS, (error, result) => {});
-    }
+    autoCancel: true
   })
 
   showMessage(message: string | ResourceStr, duration: number) {
