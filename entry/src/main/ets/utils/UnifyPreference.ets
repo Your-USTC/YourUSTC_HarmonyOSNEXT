@@ -19,12 +19,10 @@ export const REMIND_KEY = 'remindSetUID';
 
 class UnifiedPreferences {
   private preferences: preferences.Preferences | null = null;
-  private initContext: Context | undefined = undefined;
 
   init(context: Context) {
     if (!this.preferences) {
       const options: preferences.Options = { name: PREF_NAME };
-      this.initContext = context;
       try {
         this.preferences = preferences.getPreferencesSync(context, options);
       } catch (error) {
