@@ -91,7 +91,10 @@ export default struct PasswordDialog {
             if (this.inputPassword === '')
               UnifiedPreferences.deleteSync(PASSWORD_KEY);
             else {
-              if (!/\s/.test(this.inputPassword) && /[a-z]/.test(this.inputPassword) && /[A-Z]/.test(this.inputPassword) && /\d/.test(this.inputPassword))
+              if (
+                !/\s/.test(this.inputPassword) && /[a-z]/.test(this.inputPassword) &&
+                /[A-Z]/.test(this.inputPassword) && /\d/.test(this.inputPassword) && this.inputPassword.length <= 32
+              )
                 UnifiedPreferences.putSync(PASSWORD_KEY, accountInfoProvider.encryptPassword(this.inputPassword));
               else {
                 if (correctInput) {
