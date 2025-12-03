@@ -1,20 +1,12 @@
 
-import { preferences } from '@kit.ArkData';
 import { GridData, eachGridNum, totalGridNum } from '../constants/GridListDataSources';
 import { index_to_pic } from '../constants/GridListIcons';
 import { LINK } from '../constants/Links'
+import UnifiedPreferences from './UnifyPreference';
 
 export let mostUsedFunc: GridData = new GridData($r('app.string.ZuiJinShiYong'), [ $r('app.string.empty') ]);
 export let order: Array<[string, number]> = [];
-export let maxRecord: number = 8;
-let mostUsedPre: preferences.Preferences | null = null;
-let curContext: Context | undefined = undefined;
-
-export function initFunc(initContext: Context) {
-  curContext = initContext;
-  mostUsedPre = preferences.getPreferencesSync(curContext, { name: 'FunctionOrder' });
-  maxRecord = mostUsedPre.getSync('maxRecord', 8) as number;
-}
+export let maxRecord: number = UnifiedPreferences.getNumberSync('maxRecord', 8) as number;
 
 export function setFunc(toClear: boolean = false): void {
   // toClear: 是否清空，默认为 false
@@ -24,7 +16,7 @@ export function setFunc(toClear: boolean = false): void {
     return;
   }
   mostUsedFunc.gridItemList = [];
-  maxRecord = mostUsedPre?.getSync('maxRecord', 8) as number;
+  maxRecord = UnifiedPreferences.getNumberSync('maxRecord', 8) as number;
   let maxCount: number = 0;
   for (let singleFunc of order) {
     let index_to_name = LINK.get(singleFunc[0])?.title;
@@ -40,19 +32,18 @@ export function setFunc(toClear: boolean = false): void {
 
 export function setMaxRecord(value: number) {
   maxRecord = value;
-  mostUsedPre?.putSync('maxRecord', value);
+  UnifiedPreferences.putSync('maxRecord', value);
 }
 
 export function recordClick(gridIndex: number, index: number): void {
   if (gridIndex == -1) // 常用区 (-1) 不记录
     return;
   let preName: string = gridIndex.toString() + '.' + index.toString(); // 按钮对应首选项名称
-  let latestTime: number = mostUsedPre?.getSync(preName, 0) as number; // 读取点击次数
+  let latestTime: number = UnifiedPreferences.getNumberSync(preName, 0) as number; // 读取点击次数
 
   if (latestTime < 2147483647)
     latestTime++; // 点击次数+1
-  mostUsedPre?.putSync(preName, latestTime); // 保存新的点击次数
-  mostUsedPre?.flush(); // 写入最新设置
+  UnifiedPreferences.putSync(preName, latestTime); // 保存新的点击次数
 }
 
 
@@ -61,8 +52,8 @@ export function refreshFunc(): void {
   for (let gridIndex = 0; gridIndex < totalGridNum; gridIndex++) {
     for (let index = 0; index < eachGridNum[gridIndex]; index++) {
       let preName: string = gridIndex.toString() + '.' + index;
-      if (mostUsedPre?.hasSync(preName)) {
-        let preTimes: number = mostUsedPre.getSync(preName, 0) as number;
+      if (UnifiedPreferences.hasSync(preName)) {
+        let preTimes: number = UnifiedPreferences.getNumberSync(preName, 0) as number;
         order.push([preName, preTimes]);
       }
     }
@@ -77,7 +68,14 @@ export function refreshFunc(): void {
 
 
 export function resetFunc(): void { // 重置"最近使用"
-  preferences.deletePreferences(curContext, { name: "FunctionOrder" });
+  for (let gridIndex = 0; gridIndex < totalGridNum; gridIndex++) {
+    for (let index = 0; index < eachGridNum[gridIndex]; index++) {
+      let preName: string = gridIndex.toString() + '.' + index;
+      if (UnifiedPreferences.hasSync(preName)) {
+        UnifiedPreferences.deleteSync(preName);
+      }
+    }
+  }
   setFunc(true);
 }
 
