@@ -1,6 +1,7 @@
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable'
+import { obtainedData } from '../constants/ScheduleSources'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
 import accountInfoProvider from '../utils/Encryption'
@@ -16,6 +17,7 @@ struct Webview {
   gotTimeTable: boolean = false;
   isExamInfoPage: boolean = false;
   gotExamInfo: boolean = false;
+  obtainedData: obtainedData = {timeTable: '', startTime: '0'};
   webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
   haveTriedLogin: boolean = false;
@@ -56,7 +58,7 @@ struct Webview {
           .draggable(false)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
-            if (accountInfoProvider.storage.timeTable !== '0') {
+            if (this.obtainedData.startTime !== '0') {
               this.getUIContext().getRouter().back();
               return;
             }
@@ -111,15 +113,21 @@ struct Webview {
               if (this.isTimeTablePage && !this.gotTimeTable) {
                 this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                   if (error) { /* 理论上这里不会出什么错误 */ return; }
+                  this.obtainedData.startTime = result;
                 });
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
                   if (error) {
                     this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
                     return;
                   }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                    return;
+                  }
                   this.gotTimeTable = true;
+                  this.obtainedData.timeTable = result;
                   this.getUIContext().getRouter().back({
-                    params: accountInfoProvider.storage,
+                    params: this.obtainedData,
                     url: 'pages/Schedule'
                   });
                 });
@@ -130,10 +138,15 @@ struct Webview {
                     this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
                     return;
                   }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
+                    return;
+                  }
                   this.gotExamInfo = true;
                   this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
+                  this.obtainedData.timeTable = result;
                   this.getUIContext().getRouter().back({
-                    params: accountInfoProvider.storage.timeTable,
+                    params: this.obtainedData,
                     url: 'pages/ExamDetail'
                   });
                 })
@@ -156,7 +169,7 @@ struct Webview {
           .javaScriptProxy({
             object: accountInfoProvider,
             name: "infoProvider",
-            methodList: ["getUID", "getPassword", "storeTimeTable", "storeStartTime"],
+            methodList: ["getUID", "getPassword"],
             controller: this.webviewController,
             asyncMethodList: []
           })
@@ -216,7 +229,10 @@ struct Webview {
             }
             if (this.isTimeTablePage && !this.gotTimeTable) {
               this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
-                if (error) { return; }
+                if (error) { /* 理论上这里不会出什么错误 */ return;}
+                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
+                this.obtainedData.startTime = result;
+                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
               });
               setTimeout(() => {
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
@@ -225,10 +241,18 @@ struct Webview {
                     this.autoGetFailed = true;
                     return;
                   }
+                  if (result === 'null') {
+                    this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
+                    this.autoGetFailed = true;
+                    return;
+                  }
                   this.gotTimeTable = true;
                   this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
+                  console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
+                  this.obtainedData.timeTable = result;
+                  //if (this.getUIContext().getRouter().getLength() === '3') { }
                   this.getUIContext().getRouter().back({
-                    params: accountInfoProvider.storage,
+                    params: this.obtainedData,
                     url: 'pages/Schedule'
                   });
                 });
@@ -240,10 +264,15 @@ struct Webview {
                   this.showMessage($r('app.string.get_exam_info_err_msg'), 2000);
                   return;
                 }
+                if (result === 'null') {
+                  this.showMessage($r('app.string.auto_get_exam_info_fail_msg'), 2000);
+                  return;
+                }
                 this.gotExamInfo = true;
                 this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
+                this.obtainedData.timeTable = result;
                 this.getUIContext().getRouter().back({
-                  params: accountInfoProvider.storage,
+                  params: this.obtainedData,
                   url: 'pages/ExamDetail'
                 });
               })
