@@ -55,22 +55,22 @@ function getTimeTable() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-infoProvider.storeTimeTable(JSON.stringify(getTimeTable()));
+getTimeTable();
 `
-export const timeTableQueryJSShort = `JSON.stringify(getTimeTable());`
+export const timeTableQueryJSShort = `getTimeTable();`
 
 export const startTimeQueryJS = `
 (() => {
-  const startTime = new Date(document.getElementById('startDate').innerText).setHours(0, 0, 0, 0);
-  infoProvider.storeStartTime(startTime.toString());
-})()
+  const startTime = new Date(document.getElementById('startDate').innerText);
+  return startTime.setHours(0, 0, 0, 0);
+})();
 `
 
 export const examInfoQueryJS = `
 (() => {
     const examInfoTable = document.querySelector('#table-content');
     if (examInfoTable == null) {return null;}
-    const ret = Array.from(document.querySelectorAll('#exams tbody tr')).map(
+    return Array.from(document.querySelectorAll('#exams tbody tr')).map(
         tr => {
             const trCells = tr.cells;
             return ({
@@ -84,8 +84,7 @@ export const examInfoQueryJS = `
                 info: trCells[7].innerText
             })
         }
-    );
-    infoProvider.storeTimeTable(JSON.stringify(ret));
+    )
 })()
 `
 
@@ -180,9 +179,8 @@ class scheduleManager {
 
   refreshParsedSchedule(routerParams: obtainedData): void {
     try {
-      const timeTable = routerParams.timeTable;
-      this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
-      console.info(`186 ${this.termStart}`)
+      const timeTable = routerParams.timeTable/*.slice(1, -1).replace(/\\/g, '')*/;
+      this.termStart = Number(routerParams.startTime/*.replace(/[^0-9]/g, '')*/);
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
 
       let courseToColor = new Map<string, string>();
@@ -222,7 +220,7 @@ class scheduleManager {
         : this.currentTime.getTime();
       this.weekEnd = this.weekStart + 518400000;
     } catch (err) {
-      console.error(`parsed ${err.message}`)
+      console.error('parsed')
       this.getParsedSchedule();
     }
   }
