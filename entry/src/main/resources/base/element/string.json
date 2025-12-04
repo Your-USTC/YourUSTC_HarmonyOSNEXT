@@ -197,8 +197,16 @@
       "value": "是否返回课表页面？"
     },
     {
-      "name": "delete_or_not",
+      "name": "back_to_examinfo_or_not",
+      "value": "是否返回课表页面？"
+    },
+    {
+      "name": "delete_class_or_not",
       "value": "你真的要删掉这节课吗？"
+    },
+    {
+      "name": "delete_exam_or_not",
+      "value": "你真的要删掉这次考试吗？"
     },
     {
       "name": "more_color_option",
@@ -239,6 +247,10 @@
     {
       "name": "exam_detail_other",
       "value": "其他："
+    },
+    {
+      "name": "importance",
+      "value": "重要："
     },
     {
       "name": "exam_detail_date",
@@ -309,7 +321,7 @@
       "value": "同时更改所有同名课程颜色"
     },
     {
-      "name": "color_format_error",
+      "name": "format_error",
       "value": "格式错误"
     },
     {
@@ -318,11 +330,7 @@
     },
     {
       "name": "need_calendar_permission",
-      "value": "你需要同意「你的科大」的日历读写权限。在此之后，你或许需要重启应用。"
-    },
-    {
-      "name": "allowed_calendar_permission",
-      "value": "你正在成功！请坐和放宽并再次点击对应设置项"
+      "value": "你需要同意「你的科大」的日历读写权限。"
     },
     {
       "name": "denied_calendar_permission",
@@ -678,7 +686,7 @@
     },
     {
       "name": "incomplete",
-      "value": "╮(๑•́ ₃•̀๑)╭学号格式不正确，或者密码没有包含数字或大小写字母"
+      "value": "╮(๑•́ ₃•̀๑)╭学号格式不正确，或者密码没有包含数字或大小写字母/不是8~32位"
     },
     {
       "name": "input_later",

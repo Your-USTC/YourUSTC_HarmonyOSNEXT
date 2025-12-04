@@ -1,6 +1,5 @@
 
 import { fileIo } from '@kit.CoreFileKit'
-import { preferences } from '@kit.ArkData'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
 import { application, common, contextConstant } from '@kit.AbilityKit'
@@ -13,6 +12,7 @@ import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
 import WriteCalendar from '../utils/WriteCalendar'
 import PasswordDialog from '../view/PasswordDialog'
+import BackgroundImage from '../view/BgImageManager'
 import * as FunctionOrder from '../utils/FunctionOrder'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
@@ -149,6 +149,8 @@ struct Index {
     this.refreshInfo();
     // 初始化日历
     WriteCalendar.initializeCalendar(this.getUIContext());
+    //初始化背景
+    BackgroundImage.init(this.context);
     // 开启监听屏幕旋转
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)

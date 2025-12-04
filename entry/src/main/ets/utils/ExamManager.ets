@@ -11,10 +11,11 @@ export interface examAttribute {
   campus: string,
   info: string,
   beginTimeStamp: number,
-  endTimeStamp: number
+  endTimeStamp: number,
+  importance: number
 }
 
-function areExamAttributesEqual(a: examAttribute, b: examAttribute): boolean {
+export function areExamAttributesEqual(a: examAttribute, b: examAttribute): boolean {
   // 基本类型直接比较
   if (a.id !== b.id) return false;
   if (a.type !== b.type) return false;
@@ -24,6 +25,7 @@ function areExamAttributesEqual(a: examAttribute, b: examAttribute): boolean {
   if (a.building !== b.building) return false;
   if (a.campus !== b.campus) return false;
   if (a.info !== b.info) return false;
+  if (a.importance !== b.importance) return false;
   // 所有字段都相同
   return true;
 }
@@ -43,17 +45,28 @@ class examManager {
     for (let i = 0; i < data.length; i++) {
       data[i].beginTimeStamp = new Date(data[i].date.slice(0, 16)).getTime();
       data[i].endTimeStamp = new Date(data[i].date.slice(0, 11) + data[i].date.slice(17, 22)).getTime();
+      if (data[i].importance == undefined)
+        data[i].importance = 5;
     }
-    data.sort((a, b) => a.beginTimeStamp - b.beginTimeStamp);
+    data.sort((a, b) => {
+      if (a.importance !== b.importance) {
+        return b.importance - a.importance;
+      }
+      return a.beginTimeStamp - b.beginTimeStamp;
+    });
     UnifiedPreferences.putSync('examInfo', JSON.stringify(data));
   }
 
   addExam(newExam: examAttribute) {
     newExam.beginTimeStamp = new Date(newExam.date.slice(0, 16)).getTime();
     newExam.endTimeStamp = new Date(newExam.date.slice(0, 11) + newExam.date.slice(17, 22)).getTime();
-    console.log('aaa',newExam.date.slice(0, 11) + newExam.date.slice(17, 22));
     this.allExamInfo.push(newExam);
-    this.allExamInfo.sort((a, b) => a.beginTimeStamp - b.beginTimeStamp);
+    this.allExamInfo.sort((a, b) => {
+      if (a.importance !== b.importance) {
+        return b.importance - a.importance;
+      }
+      return a.beginTimeStamp - b.beginTimeStamp;
+    });
     UnifiedPreferences.putSync('examInfo', JSON.stringify(this.allExamInfo));
   }
 
