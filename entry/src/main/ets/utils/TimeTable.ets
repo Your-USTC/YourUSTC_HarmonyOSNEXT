@@ -67,7 +67,7 @@ export const examInfoQueryJS = `
 const getExamInfo = () => {
     const examInfoTable = document.querySelector('#table-content');
     if (examInfoTable == null) {return null;}
-    return Array.from(document.querySelectorAll('#exams tbody tr')).map(
+    const ret = Array.from(document.querySelectorAll('#exams tbody tr')).map(
         tr => {
             const trCells = tr.cells;
             return ({
@@ -81,7 +81,9 @@ const getExamInfo = () => {
                 info: trCells[7].innerText
             })
         }
-    )
+    );
+    infoProvider.storeTimeTable(JSON.stringify(ret));
+    return ret;
 }
 getExamInfo()
 `

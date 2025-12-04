@@ -17,7 +17,7 @@ struct Webview {
   gotTimeTable: boolean = false;
   isExamInfoPage: boolean = false;
   gotExamInfo: boolean = false;
-  obtainedData: obtainedData = {timeTable: '', startTime: '0'};
+  obtainedData: obtainedData = {timeTable: '', startTime: '0'}
   webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
   haveTriedLogin: boolean = false;
@@ -169,7 +169,7 @@ struct Webview {
           .javaScriptProxy({
             object: accountInfoProvider,
             name: "infoProvider",
-            methodList: ["getUID", "getPassword"],
+            methodList: ["getUID", "getPassword", "storeTimeTable", "storeStartTime"],
             controller: this.webviewController,
             asyncMethodList: []
           })
@@ -271,6 +271,8 @@ struct Webview {
                 this.gotExamInfo = true;
                 this.showMessage($r('app.string.get_exam_info_succ_msg'), 2000);
                 this.obtainedData.timeTable = result;
+                console.info(`考试信息1：${result}`);
+                console.info(`考试信息2：${accountInfoProvider.storage.timeTable}`);
                 this.getUIContext().getRouter().back({
                   params: this.obtainedData,
                   url: 'pages/ExamDetail'
