@@ -214,9 +214,7 @@ struct Schedule {
       }
 
       Row() {
-        Checkbox()
-          .select(this.changeAllColor)
-          .shape(CheckBoxShape.CIRCLE)
+        Toggle( { isOn: this.changeAllColor, type: ToggleType.Checkbox })
           .onChange((value: boolean) => {
             this.changeAllColor = value;
           });
@@ -665,6 +663,7 @@ struct Schedule {
           .fontSize(24)
           .layoutWeight(1)
           .margin({ left: 8 })
+
         if (this.isChangeSchedule) {
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
             Image($r('app.media.trash_red'))
@@ -675,7 +674,7 @@ struct Schedule {
           .height(42)
           .onClick(() => {
             this.getUIContext().showAlertDialog({
-              message: $r('app.string.delete_or_not'),
+              message: $r('app.string.delete_class_or_not'),
               autoCancel: true,
               alignment: DialogAlignment.Center,
               gridCount: 4,
