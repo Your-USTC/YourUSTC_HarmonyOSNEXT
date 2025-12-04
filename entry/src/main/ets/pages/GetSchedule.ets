@@ -1,7 +1,6 @@
 
 import { webview } from '@kit.ArkWeb'
 import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable'
-import { obtainedData } from '../constants/ScheduleSources'
 import { BusinessError } from '@kit.BasicServicesKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
 import accountInfoProvider from '../utils/Encryption'
@@ -17,7 +16,6 @@ struct Webview {
   gotTimeTable: boolean = false;
   isExamInfoPage: boolean = false;
   gotExamInfo: boolean = false;
-  obtainedData: obtainedData = {timeTable: '', startTime: '0'}
   webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
   @State loadingProgress: number = 0;
   haveTriedLogin: boolean = false;
@@ -58,7 +56,7 @@ struct Webview {
           .draggable(false)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
-            if (this.obtainedData.startTime !== '0') {
+            if (accountInfoProvider.storage.timeTable !== '0') {
               this.getUIContext().getRouter().back();
               return;
             }
@@ -113,7 +111,6 @@ struct Webview {
               if (this.isTimeTablePage && !this.gotTimeTable) {
                 this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                   if (error) { /* 理论上这里不会出什么错误 */ return; }
-                  this.obtainedData.startTime = result;
                 });
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
                   if (error) {
@@ -220,9 +217,6 @@ struct Webview {
             if (this.isTimeTablePage && !this.gotTimeTable) {
               this.webviewController.runJavaScript(startTimeQueryJS, (error, result) => {
                 if (error) { return; }
-                console.info(`学期开始的UNIX时间戳是${result}mm`); /* TODO: 保存开学时间到本地（需JSON.parse） */
-                this.obtainedData.startTime = result;
-                console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
               });
               setTimeout(() => {
                 this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
