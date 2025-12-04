@@ -3,6 +3,7 @@ import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI'
 import * as tools from '../utils/tools'
 import { obtainedData } from '../constants/ScheduleSources'
 import examManager, { examAttribute, areExamAttributesEqual } from '../utils/ExamManager';
+import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
@@ -655,6 +656,7 @@ struct ExamDetail {
         .backgroundColor($r('app.color.normal_background'))
       }
     }
+    .backgroundImage(BackgroundImage.pic)
     .height('100%')
     .width('100%')
   }

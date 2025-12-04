@@ -4,6 +4,7 @@ import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
 import { mediaquery, PopoverDialog, Popup, window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import * as ScheduleSources from '../constants/ScheduleSources';
+import BackgroundImage from '../view/BgImageManager';
 
 
 @Entry
@@ -641,6 +642,7 @@ struct Schedule {
             });
           });
       }
+      .backgroundImage(BackgroundImage.pic)
       .id('schedule_grid')
       .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
       .rowsTemplate(this.screenHeight < this.criticalHeight ?
