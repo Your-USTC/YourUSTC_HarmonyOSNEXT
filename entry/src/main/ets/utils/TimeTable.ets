@@ -55,19 +55,22 @@ function getTimeTable() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-JSON.stringify(getTimeTable());
+infoProvider.storeTimeTable(JSON.stringify(getTimeTable()));
 `
 export const timeTableQueryJSShort = `JSON.stringify(getTimeTable());`
 
 export const startTimeQueryJS = `
-{const startTime = new Date(document.getElementById('startDate').innerText); startTime.setHours(0, 0, 0, 0); startTime.getTime().toString();};
+(() => {
+  const startTime = new Date(document.getElementById('startDate').innerText).setHours(0, 0, 0, 0);
+  infoProvider.storeStartTime(startTime.toString());
+})()
 `
 
 export const examInfoQueryJS = `
-const getExamInfo = () => {
+(() => {
     const examInfoTable = document.querySelector('#table-content');
     if (examInfoTable == null) {return null;}
-    return Array.from(document.querySelectorAll('#exams tbody tr')).map(
+    const ret = Array.from(document.querySelectorAll('#exams tbody tr')).map(
         tr => {
             const trCells = tr.cells;
             return ({
@@ -81,9 +84,9 @@ const getExamInfo = () => {
                 info: trCells[7].innerText
             })
         }
-    )
-}
-getExamInfo()
+    );
+    infoProvider.storeTimeTable(JSON.stringify(ret));
+})()
 `
 
 export const fillInformationJS = `
@@ -177,8 +180,9 @@ class scheduleManager {
 
   refreshParsedSchedule(routerParams: obtainedData): void {
     try {
-      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
+      const timeTable = routerParams.timeTable;
       this.termStart = Number(routerParams.startTime.replace(/[^0-9]/g, ''));
+      console.info(`186 ${this.termStart}`)
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
 
       let courseToColor = new Map<string, string>();
@@ -218,7 +222,7 @@ class scheduleManager {
         : this.currentTime.getTime();
       this.weekEnd = this.weekStart + 518400000;
     } catch (err) {
-      console.error('parsed')
+      console.error(`parsed ${err.message}`)
       this.getParsedSchedule();
     }
   }

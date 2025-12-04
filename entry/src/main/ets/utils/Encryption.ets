@@ -1,7 +1,16 @@
+import { obtainedData } from '../constants/ScheduleSources';
 import { JSEncrypt } from '../utils/jsencrypt/lib/index'
 import UnifiedPreference, { PASSWORD_KEY, UID_KEY } from '../utils/UnifyPreference'
 
 class accountInfoProvider {
+  storage: obtainedData = {timeTable: '', startTime: ''};
+  storeTimeTable(timeTable: string) {
+    this.storage.timeTable = timeTable;
+  }
+  storeStartTime(startTime: string) {
+    this.storage.startTime = startTime;
+  }
+
   private en = new JSEncrypt();
   private key = [`
 -----BEGIN RSA PUBLIC KEY-----
