@@ -55,9 +55,9 @@ function getTimeTable() {
     return ([0, 1, 2, 3, 4, 5, 6].map(i => getClassesOfDay(i)));
 }
 
-getTimeTable();
+JSON.stringify(getTimeTable());
 `
-export const timeTableQueryJSShort = `getTimeTable();`
+export const timeTableQueryJSShort = `JSON.stringify(getTimeTable());`
 
 export const startTimeQueryJS = `
 (() => {
@@ -179,7 +179,7 @@ class scheduleManager {
 
   refreshParsedSchedule(routerParams: obtainedData): void {
     try {
-      const timeTable = routerParams.timeTable/*.slice(1, -1).replace(/\\/g, '')*/;
+      const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
       this.termStart = Number(routerParams.startTime/*.replace(/[^0-9]/g, '')*/);
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
 
