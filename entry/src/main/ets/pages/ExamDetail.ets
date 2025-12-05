@@ -606,13 +606,8 @@ struct ExamDetail {
               .borderRadius(20);
             }
             .width('100%')
-            .padding({
-              top: 10,
-              bottom: 10,
-              left: 16,
-              right: 16
-            })
-            .margin({ top: 7, bottom: 7 })
+            .padding({ top: 10, bottom: 10, left: 16, right: 16 })
+            .margin({ top: 8, bottom: 6 })
             .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .borderRadius(20)

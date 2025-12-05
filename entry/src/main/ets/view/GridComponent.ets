@@ -10,19 +10,20 @@ export default struct GridComponent {
   @Prop gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
   @State gridIndex: number = 0;
-  private haveBgImage: boolean = BackgroundImage.showImage;
 
   build() {
     Column() {
       Row() {
         Text(this.gridData.groupName) // 功能界面各组的标题
           .fontSize('20fp')
-          .fontColor($r('app.color.normal_text'))
           .height('30vp')
           .fontWeight(FontWeight.Bold)
           .margin({ top: '16vp' })
+          .padding({ left: 8, right: 8})
+          .borderRadius(12)
+          .backgroundBlurStyle(BackgroundImage.blurLevel)
       }
-      .padding({ left: '24vp' })
+      .padding({ left: '16vp' })
       .width('100%')
       .justifyContent(FlexAlign.Start)
 

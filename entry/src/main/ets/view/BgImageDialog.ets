@@ -12,7 +12,9 @@ export default struct BgImageDialog {
   controller: CustomDialogController;
   private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel);
   private isShown: boolean = BackgroundImage.showImage;
+  @State imgPreview: ResourceStr = (BackgroundImage.pic == undefined) ? $r('app.media.theHerta') : BackgroundImage.pic;
   @State blurNum: BlurStyle = (BackgroundImage.blurLevel == undefined) ? BlurStyle.COMPONENT_REGULAR : BackgroundImage.blurLevel;
+  private selectResult: string | undefined = undefined;
 
   build() {
     Column() {
@@ -24,10 +26,15 @@ export default struct BgImageDialog {
         Toggle({ isOn: BackgroundImage.showImage, type: ToggleType.Switch })
           .onChange((status: boolean) => {
             this.isShown = status;
+            if (status && BackgroundImage.imgPath !== '') {
+              this.imgPreview = fileUri.getUriFromPath(BackgroundImage.imgPath);
+            } else {
+              this.imgPreview = $r('app.media.theHerta');
+            }
           })
       }
       
-      Image(BackgroundImage.pic)
+      Image(this.imgPreview)
         .width('100%')
         .constraintSize({ maxHeight: 200 })
         .borderRadius(16)
@@ -40,7 +47,7 @@ export default struct BgImageDialog {
         Slider({
           value: this.sliderNum,
           min: 0,
-          max: 4,
+          max: 5,
           step: 1,
           style: SliderStyle.InSet
         })
@@ -63,6 +70,9 @@ export default struct BgImageDialog {
                 break;
               case 4:
                 this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
+                break;
+              case 5:
+                this.blurNum = BlurStyle.NONE;
                 break;
             }
           })
@@ -88,6 +98,16 @@ export default struct BgImageDialog {
         Button($r('app.string.ok_and_restart'))
           .layoutWeight(1)
           .onClick(() => {
+            if (this.selectResult !== undefined) {
+              const oriImgPath: string = new fileUri.FileUri(this.selectResult).path;
+              const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
+                + copyFileExtension(this.selectResult);
+
+              fileIo.copyFile(oriImgPath, newImgPath)
+                .catch((error: BusinessError) => console.error('Copy image failed:', JSON.stringify(error)));
+              UnifiedPreferences.putSync('ImagePath', newImgPath);
+            }
+
             UnifiedPreferences.putSync('ShowImage', this.isShown);
             UnifiedPreferences.putSync('BlurLevel', this.blurNum);
             UnifiedPreferences.putSync('FaultOccurred', false);
@@ -133,6 +153,8 @@ export default struct BgImageDialog {
         return 3;
       case BlurStyle.COMPONENT_ULTRA_THICK:
         return 4;
+      case BlurStyle.NONE:
+        return 5;
       default:
         return 2;
     }
@@ -151,13 +173,8 @@ export default struct BgImageDialog {
             photoSelectOptions.maxSelectNumber = 1;
             const photoPicker = new photoAccessHelper.PhotoViewPicker();
             photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-              const oriImgPath: string = new fileUri.FileUri(photoSelectResult.photoUris[0]).path;
-              const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
-                + copyFileExtension(photoSelectResult.photoUris[0]);
-
-              fileIo.copyFile(oriImgPath, newImgPath)
-                .catch((error: BusinessError) => console.error('Copy image failed:',JSON.stringify(error)));
-              UnifiedPreferences.putSync('ImagePath', newImgPath);
+              this.imgPreview = photoSelectResult.photoUris[0];
+              this.selectResult = photoSelectResult.photoUris[0];
             }).catch((err: BusinessError) => {
               console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
             })

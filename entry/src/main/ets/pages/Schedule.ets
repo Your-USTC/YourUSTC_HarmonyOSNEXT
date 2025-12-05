@@ -460,8 +460,7 @@ struct Schedule {
           .columnStart(item)
           .columnEnd(item)
           .padding(1)
-          .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-          .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
           .border({
             width: { bottom: 1, left: 1 },
             color: $r('app.color.grid_border')
@@ -478,8 +477,7 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')
@@ -495,8 +493,7 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')
@@ -512,8 +509,7 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')
@@ -549,8 +545,7 @@ struct Schedule {
           .columnStart(1)
           .columnEnd(1)
           .padding(1)
-          .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-          .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
           .border({
             width: { top: 1, right: 1 },
             color: $r('app.color.grid_border')
@@ -569,7 +564,7 @@ struct Schedule {
                 .interpolation(ImageInterpolation.Medium)
                 .draggable(false)
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center)
-                .backgroundBlurStyle(BackgroundImage.blurLevel)
+                .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
                 .padding(5)
                 .borderRadius(3);
             }

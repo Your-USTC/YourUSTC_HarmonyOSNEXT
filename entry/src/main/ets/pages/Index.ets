@@ -224,8 +224,10 @@ struct Index {
       .listDirection(Axis.Horizontal)
       .scrollBar(BarState.Off)
     }
-    .margin({ top: '16vp' })
-    .padding({ left: '28vp', right: '28vp' })
+    .margin({ top: '16vp', left: '12vp', right: '12vp' })
+    .padding({ left: '16vp', right: '16vp' })
+    .backgroundBlurStyle(BackgroundImage.blurLevel)
+    .borderRadius(12)
   }
 
   @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
@@ -387,11 +389,6 @@ struct Index {
   @Builder
   pageStart() {
     List({ space: 10 }) {
-
-      ListItem()
-        .visibility(Visibility.Hidden)
-        .height(15)
-
       // 每日签到
       if (this.showCheckIn) {
         ListItem() {
@@ -785,6 +782,7 @@ struct Index {
     .height('100%')
     .scrollBar(BarState.Auto)
     .padding({ left: 12, right: 12 })
+    .margin({ top: 8 })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
@@ -874,11 +872,6 @@ struct Index {
   @Builder
   pageSettings() {
     List({ space: 12 }) {
-
-      ListItem()
-        .visibility(Visibility.Hidden)
-        .height(5)
-
       ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
         ListItemGroup() {
           ForEach(item, (cell: ItemData, cellIndex) => {
@@ -1012,16 +1005,14 @@ struct Index {
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height(this.tabHorizontal ? 60 : 80)
+        .height(50)
     }
     .height('100%')
     .width('100%')
     .padding({ left: 12, right: 12 })
+    .margin({ top: 8 })
     .scrollBar(BarState.Auto)
-    .overlay(this.settingExitButton(), {
-      align: Alignment.Bottom,
-      offset: { x: 0, y: (this.tabHorizontal ? 20 : 40) }
-    })
+    .overlay(this.settingExitButton(), { align: Alignment.Bottom })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 

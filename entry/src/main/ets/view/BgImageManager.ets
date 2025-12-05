@@ -18,13 +18,13 @@ class BackgroundImage {
     this.hostContext = context;
     if (this.imgPath === '')
       this.showImage = false;
-    if (!this.showImage) {
-      this.pic = undefined;
-      this.blurLevel = undefined;
-    }
-    else {
+    if (this.showImage) {
       this.pic = fileUri.getUriFromPath(this.imgPath);
       this.blurLevel = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.COMPONENT_REGULAR);
+    }
+    else {
+      this.pic = undefined;
+      this.blurLevel = undefined;
     }
     this.basicDir = context.filesDir;
   }
