@@ -510,7 +510,7 @@ struct ExamDetail {
             .interpolation(ImageInterpolation.Medium)
             .draggable(false)
           Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center)
-            .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
             .padding(5)
             .borderRadius(3);
         }
@@ -614,7 +614,7 @@ struct ExamDetail {
             })
             .margin({ top: 7, bottom: 7 })
             .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-            .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
             .borderRadius(20)
             .onClick(() => {
               this.oriExamInfo = {

@@ -145,12 +145,16 @@
       "value": "自定义背景图片"
     },
     {
+      "name": "custom_background_hint",
+      "value": "如果你需要调整亮度，请前往系统相册。如果图片占用空间或尺寸过大，可能会导致不稳定甚至崩溃。"
+    },
+    {
       "name": "pick_image",
       "value": "选择图片…"
     },
     {
-      "name": "transparency",
-      "value": "透明度"
+      "name": "grid_background_transparency",
+      "value": "组件背景透明度"
     },
     {
       "name": "ok_and_restart",

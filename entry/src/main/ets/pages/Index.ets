@@ -445,7 +445,7 @@ struct Index {
         .width('100%')
         .borderRadius(20)
         .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-        .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
+        .backgroundBlurStyle(BackgroundImage.blurLevel);
       }
 
       // 你的课表
@@ -638,7 +638,7 @@ struct Index {
       .borderRadius(20)
       .margin({ top: 5 })
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
+      .backgroundBlurStyle(BackgroundImage.blurLevel);
 
       // 考试信息
       ListItem() {
@@ -772,7 +772,7 @@ struct Index {
       .borderRadius(20)
       .margin({ top: 5, bottom: 12 })
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
+      .backgroundBlurStyle(BackgroundImage.blurLevel);
     }
     .width('100%')
     .height('100%')
@@ -991,7 +991,7 @@ struct Index {
           endMargin: '12vp'
         })
         .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
-        .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
         .borderRadius(20)
 
       }, (item: ItemData) => JSON.stringify(item))
@@ -1072,7 +1072,7 @@ struct Index {
     }
     .backgroundColor(this.tabHorizontal ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
     .barBackgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.shaded_background'))
-    .barBackgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+    .barBackgroundBlurStyle(BackgroundImage.blurLevel)
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)
