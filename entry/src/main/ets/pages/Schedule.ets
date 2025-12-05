@@ -890,7 +890,7 @@ struct Schedule {
               TextInput({ text: this.classColor })
                 .textOverflow(TextOverflow.Ellipsis)
                 .onChange((input: string) => {
-                  console.log('abcdefg'); // 此处证明了this.classColor = input;不会导致死循环
+                  // console.log('abcdefg'); 此处证明了this.classColor = input;不会导致死循环
                   if (/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(input)) {
                     this.isColorLegal = true;
                     this.classInfo.color = input;

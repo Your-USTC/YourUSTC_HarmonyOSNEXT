@@ -269,7 +269,7 @@ class WriteCalendar {
                               for (let i = 1; i < layer3.weekOfTerm.length; i++) {
                                 for (let j = layer3.weekOfTerm[i - 1] + 1; j < layer3.weekOfTerm[i]; j++) {
                                   excludeDates.push(tools.getClassTimestamp(scheduleManager.termStart, j,
-                                    layer3.dayOfWeek, ScheduleSources.commonClassStamp[layer3.timeSpan[0]][0]));
+                                    (layer3.dayOfWeek + 1) % 7, ScheduleSources.commonClassStamp[layer3.timeSpan[0]][0]));
                                 }
                               }
                               console.log('abcdefg', excludeDates);
@@ -290,7 +290,7 @@ class WriteCalendar {
                                 recurrenceRule: {
                                   // 日程重复规则
                                   recurrenceFrequency: calendarManager.RecurrenceFrequency.WEEKLY, // 日程重复规则类型
-                                  count: layer3.weekOfTerm.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
+                                  count: layer3.weekOfTerm.length + excludeDates.length, // 日程重复次数，该字段和expire属性只需要填写一个，如果两个都填写按照count属性计算。
                                   interval: 1, // 重复日程间隔时间，以recurrenceFrequency为单位
                                   // expire: date.getTime() + 60 * 60 * 1000 * 3, 日程过期时间，该字段和count属性只需要填写一个，如果两个都填写按照count属性计算。
                                   excludedDates: excludeDates // 日程排除日期，将该日期从重复日程中排除掉
