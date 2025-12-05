@@ -37,7 +37,7 @@ struct Index {
    * 以下是监听屏幕旋转
    */
   @State tabWidth: string = '100%';
-  @State tabHeight: string = '52vp';
+  @State tabHeight: string = 'auto';
   @State tabHorizontal: boolean = false;
   portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
@@ -57,7 +57,8 @@ struct Index {
             this.tabHorizontal = true;
           } else { // 竖屏
             this.tabWidth = '100%';
-            this.tabHeight = '52vp';            this.tabHorizontal = false;
+            this.tabHeight = 'auto';
+            this.tabHorizontal = false;
           }
         } catch (exception) {
           console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
@@ -112,8 +113,9 @@ struct Index {
         .fontColor(this.currentIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
     }
     .justifyContent(FlexAlign.Center)
-    .height(52)
+    .height('52vp')
     .width('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .onClick(() => {
       this.currentIndex = index
       this.tabsController.changeIndex(this.currentIndex);
@@ -385,6 +387,11 @@ struct Index {
   @Builder
   pageStart() {
     List({ space: 10 }) {
+
+      ListItem()
+        .visibility(Visibility.Hidden)
+        .height(15)
+
       // 每日签到
       if (this.showCheckIn) {
         ListItem() {
@@ -777,7 +784,8 @@ struct Index {
     .width('100%')
     .height('100%')
     .scrollBar(BarState.Auto)
-    .padding({ top: 12, left: 12, right: 12 })
+    .padding({ left: 12, right: 12 })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -857,6 +865,7 @@ struct Index {
     }
     .width('100%')
     .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -865,6 +874,11 @@ struct Index {
   @Builder
   pageSettings() {
     List({ space: 12 }) {
+
+      ListItem()
+        .visibility(Visibility.Hidden)
+        .height(5)
+
       ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
         ListItemGroup() {
           ForEach(item, (cell: ItemData, cellIndex) => {
@@ -998,13 +1012,17 @@ struct Index {
 
       ListItem()
         .visibility(Visibility.Hidden)
-        .height('50vp')
+        .height(this.tabHorizontal ? 60 : 80)
     }
     .height('100%')
     .width('100%')
-    .padding({ top: 20, left: 12, right: 12 })
+    .padding({ left: 12, right: 12 })
     .scrollBar(BarState.Auto)
-    .overlay(this.settingExitButton(), { align: Alignment.Bottom })
+    .overlay(this.settingExitButton(), {
+      align: Alignment.Bottom,
+      offset: { x: 0, y: (this.tabHorizontal ? 20 : 40) }
+    })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
@@ -1053,6 +1071,7 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 功能
@@ -1061,6 +1080,7 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
       /**
        * Tab: 设置
@@ -1069,8 +1089,10 @@ struct Index {
       .padding({ left: 7, right: 7 })
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
     }
-    .backgroundColor(this.tabHorizontal ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
+    .backgroundColor($r('app.color.shaded_background'))
     .barBackgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.shaded_background'))
     .barBackgroundBlurStyle(BackgroundImage.blurLevel)
     .backgroundImage(BackgroundImage.pic)
@@ -1081,7 +1103,7 @@ struct Index {
     .vertical(this.tabHorizontal)
     .barPosition(BarPosition.End)
     .barMode(BarMode.Fixed)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;
       if (this.currentIndex === 1) {
