@@ -93,7 +93,7 @@ export default struct GridComponent {
       .scrollBar(BarState.Off)
       .columnsTemplate('repeat(auto-fit, 70)')
       .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.grid_background'))
-      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+      .backgroundBlurStyle(BackgroundImage.blurLevel)
 
       if (this.isLastItem) {
         Blank()

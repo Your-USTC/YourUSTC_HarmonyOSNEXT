@@ -10,56 +10,74 @@ import { copyFileExtension } from '../utils/tools';
 @CustomDialog
 export default struct BgImageDialog {
   controller: CustomDialogController;
-  private transparency: number = 50;
+  private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel);
   private isShown: boolean = BackgroundImage.showImage;
+  @State blurNum: BlurStyle = (BackgroundImage.blurLevel == undefined) ? BlurStyle.COMPONENT_REGULAR : BackgroundImage.blurLevel;
 
   build() {
-    Column({ space: 5 }) {
+    Column() {
       Row() {
         Text($r('app.string.custom_background'))
-          .layoutWeight(1)
+          .fontSize(24)
+          .fontWeight("bold")
+          .layoutWeight(1);
         Toggle({ isOn: BackgroundImage.showImage, type: ToggleType.Switch })
           .onChange((status: boolean) => {
             this.isShown = status;
           })
-        Button($r('app.string.pick_image'))
-          .buttonStyle(ButtonStyleMode.NORMAL)
-          .onClick(() => {
-            try {
-              const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-              photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-              photoSelectOptions.maxSelectNumber = 1;
-              const photoPicker = new photoAccessHelper.PhotoViewPicker();
-              photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-                const oriImgPath: string = new fileUri.FileUri(photoSelectResult.photoUris[0]).path;
-                const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
-                  + copyFileExtension(photoSelectResult.photoUris[0]);
+      }
+      
+      Image(BackgroundImage.pic)
+        .width('100%')
+        .constraintSize({ maxHeight: 200 })
+        .borderRadius(16)
+        .objectFit(ImageFit.Contain)
+        .overlay(this.picOverlay())
+        .margin({ top: 5, bottom: 5 });
 
-                fileIo.copyFile(oriImgPath, newImgPath)
-                  .catch((error: BusinessError) => console.error('Copy image failed:',JSON.stringify(error)));
-                UnifiedPreferences.putSync('ImagePath', newImgPath);
-              }).catch((err: BusinessError) => {
-                console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
-              })
-            } catch (error) {
-              console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
+      Row() {
+        Text($r('app.string.grid_background_transparency'))
+        Slider({
+          value: this.sliderNum,
+          min: 0,
+          max: 4,
+          step: 1,
+          style: SliderStyle.InSet
+        })
+          .showSteps(true)
+          .layoutWeight(1)
+          .onChange((value: number) => {
+            this.sliderNum = value;
+            switch (value) {
+              case 0:
+                this.blurNum = BlurStyle.COMPONENT_ULTRA_THIN;
+                break;
+              case 1:
+                this.blurNum = BlurStyle.COMPONENT_THIN;
+                break;
+              case 2:
+                this.blurNum = BlurStyle.COMPONENT_REGULAR;
+                break;
+              case 3:
+                this.blurNum = BlurStyle.COMPONENT_THICK;
+                break;
+              case 4:
+                this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
+                break;
             }
           })
       }
+      .width('90%');
+
       Row() {
-        Text($r('app.string.transparency'))
-        Slider({
-          value: this.transparency,
-          min: 0,
-          max: 100,
-          step: 1,
-          style: SliderStyle.OutSet
-        })
-          .layoutWeight(1)
-          .onChange((value: number) => {
-            this.transparency = value;
-          })
+        Image($r('app.media.lightbulb'))
+          .height(18)
+        Text($r('app.string.custom_background_hint'))
+          .fontSize(12)
+          .margin({ left: 3, right: 16 })
       }
+      .width('90%')
+
       Row() {
         Button($r('app.string.cancel'))
           .buttonStyle(ButtonStyleMode.TEXTUAL)
@@ -70,9 +88,11 @@ export default struct BgImageDialog {
         Button($r('app.string.ok_and_restart'))
           .layoutWeight(1)
           .onClick(() => {
-            BackgroundImage.changeShowStatus(this.isShown);
-            // 此处需要应用更改
+            UnifiedPreferences.putSync('ShowImage', this.isShown);
+            UnifiedPreferences.putSync('BlurLevel', this.blurNum);
             UnifiedPreferences.putSync('FaultOccurred', false);
+
+            // 重启
             let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
             let want: Want = {
               bundleName: 'com.nic.yourustc',
@@ -96,7 +116,57 @@ export default struct BgImageDialog {
             this.controller.close();
           })
       }
+      .margin({ top: 5 })
     }
     .padding(16)
+  }
+
+  BlurStyleToNum(ori: BlurStyle | undefined): number {
+    switch (ori) {
+      case BlurStyle.COMPONENT_ULTRA_THIN:
+        return 0;
+      case BlurStyle.COMPONENT_THIN:
+        return 1;
+      case BlurStyle.COMPONENT_REGULAR:
+        return 2;
+      case BlurStyle.COMPONENT_THICK:
+        return 3;
+      case BlurStyle.COMPONENT_ULTRA_THICK:
+        return 4;
+      default:
+        return 2;
+    }
+  }
+  
+  @Builder
+  picOverlay() {
+    Column() {
+      Button($r('app.string.pick_image'))
+        .buttonStyle(ButtonStyleMode.NORMAL)
+        .backgroundBlurStyle(this.blurNum)
+        .onClick(() => {
+          try {
+            const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+            photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+            photoSelectOptions.maxSelectNumber = 1;
+            const photoPicker = new photoAccessHelper.PhotoViewPicker();
+            photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+              const oriImgPath: string = new fileUri.FileUri(photoSelectResult.photoUris[0]).path;
+              const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
+                + copyFileExtension(photoSelectResult.photoUris[0]);
+
+              fileIo.copyFile(oriImgPath, newImgPath)
+                .catch((error: BusinessError) => console.error('Copy image failed:',JSON.stringify(error)));
+              UnifiedPreferences.putSync('ImagePath', newImgPath);
+            }).catch((err: BusinessError) => {
+              console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
+            })
+          } catch (error) {
+            console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
+          }
+        })
+    }
+    .justifyContent(FlexAlign.Center)
+    .height(200)
   }
 }
