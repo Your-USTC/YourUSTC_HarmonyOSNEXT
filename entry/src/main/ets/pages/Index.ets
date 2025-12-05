@@ -57,7 +57,8 @@ struct Index {
             this.tabHorizontal = true;
           } else { // 竖屏
             this.tabWidth = '100%';
-            this.tabHeight = 'auto';            this.tabHorizontal = false;
+            this.tabHeight = 'auto';
+            this.tabHorizontal = false;
           }
         } catch (exception) {
           console.error('Failed to obtain the window properties. Cause: ' + JSON.stringify(exception));
