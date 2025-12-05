@@ -11,8 +11,8 @@ import { copyFileExtension } from '../utils/tools';
 export default struct BgImageDialog {
   controller: CustomDialogController;
   private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel);
-  private isShown: boolean = BackgroundImage.showImage;
-  @State imgPreview: ResourceStr = (BackgroundImage.pic == undefined) ? $r('app.media.theHerta') : BackgroundImage.pic;
+  @State isShown: boolean = BackgroundImage.showImage;
+  @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.theHerta') : fileUri.getUriFromPath(BackgroundImage.imgPath);
   @State blurNum: BlurStyle = (BackgroundImage.blurLevel == undefined) ? BlurStyle.COMPONENT_REGULAR : BackgroundImage.blurLevel;
   private selectResult: string | undefined = undefined;
 
@@ -23,24 +23,44 @@ export default struct BgImageDialog {
           .fontSize(24)
           .fontWeight("bold")
           .layoutWeight(1);
-        Toggle({ isOn: BackgroundImage.showImage, type: ToggleType.Switch })
-          .onChange((status: boolean) => {
-            this.isShown = status;
-            if (status && BackgroundImage.imgPath !== '') {
-              this.imgPreview = fileUri.getUriFromPath(BackgroundImage.imgPath);
-            } else {
-              this.imgPreview = $r('app.media.theHerta');
+        Toggle({ isOn: $$this.isShown, type: ToggleType.Switch })
+          .onClick(() => {
+            this.isShown = !this.isShown;
+          })
+      }
+
+      Stack() {
+        Image(this.isShown ? this.imgPreview : $r('app.media.theHerta'))
+          .width('100%')
+          .alt($r('app.media.theHerta'))
+          .constraintSize({ minHeight: 80, maxHeight: 200 })
+          .borderRadius(16)
+          .objectFit(ImageFit.Contain)
+          .margin({ top: 5, bottom: 5 });
+
+        Button($r('app.string.pick_image'))
+          .buttonStyle(ButtonStyleMode.NORMAL)
+          .backgroundBlurStyle(this.blurNum)
+          .onClick(() => {
+            try {
+              const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+              photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+              photoSelectOptions.maxSelectNumber = 1;
+              const photoPicker = new photoAccessHelper.PhotoViewPicker();
+              photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+                if (photoSelectResult.photoUris[0] !== undefined) {
+                  this.imgPreview = photoSelectResult.photoUris[0];
+                  this.selectResult = photoSelectResult.photoUris[0];
+                  this.isShown = true;
+                }
+              }).catch((err: BusinessError) => {
+                console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
+              })
+            } catch (error) {
+              console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
             }
           })
       }
-      
-      Image(this.imgPreview)
-        .width('100%')
-        .constraintSize({ maxHeight: 200 })
-        .borderRadius(16)
-        .objectFit(ImageFit.Contain)
-        .overlay(this.picOverlay())
-        .margin({ top: 5, bottom: 5 });
 
       Row() {
         Text($r('app.string.grid_background_transparency'))
@@ -57,22 +77,22 @@ export default struct BgImageDialog {
             this.sliderNum = value;
             switch (value) {
               case 0:
-                this.blurNum = BlurStyle.COMPONENT_ULTRA_THIN;
+                this.blurNum = BlurStyle.NONE;
                 break;
               case 1:
-                this.blurNum = BlurStyle.COMPONENT_THIN;
+                this.blurNum = BlurStyle.COMPONENT_ULTRA_THIN;
                 break;
               case 2:
-                this.blurNum = BlurStyle.COMPONENT_REGULAR;
+                this.blurNum = BlurStyle.COMPONENT_THIN;
                 break;
               case 3:
-                this.blurNum = BlurStyle.COMPONENT_THICK;
+                this.blurNum = BlurStyle.COMPONENT_REGULAR;
                 break;
               case 4:
-                this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
+                this.blurNum = BlurStyle.COMPONENT_THICK;
                 break;
               case 5:
-                this.blurNum = BlurStyle.NONE;
+                this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
                 break;
             }
           })
@@ -143,47 +163,20 @@ export default struct BgImageDialog {
 
   BlurStyleToNum(ori: BlurStyle | undefined): number {
     switch (ori) {
-      case BlurStyle.COMPONENT_ULTRA_THIN:
-        return 0;
-      case BlurStyle.COMPONENT_THIN:
-        return 1;
-      case BlurStyle.COMPONENT_REGULAR:
-        return 2;
-      case BlurStyle.COMPONENT_THICK:
-        return 3;
-      case BlurStyle.COMPONENT_ULTRA_THICK:
-        return 4;
       case BlurStyle.NONE:
+        return 0;
+      case BlurStyle.COMPONENT_ULTRA_THIN:
+        return 1;
+      case BlurStyle.COMPONENT_THIN:
+        return 2;
+      case BlurStyle.COMPONENT_REGULAR:
+        return 3;
+      case BlurStyle.COMPONENT_THICK:
+        return 4;
+      case BlurStyle.COMPONENT_ULTRA_THICK:
         return 5;
       default:
-        return 2;
+        return 3;
     }
-  }
-  
-  @Builder
-  picOverlay() {
-    Column() {
-      Button($r('app.string.pick_image'))
-        .buttonStyle(ButtonStyleMode.NORMAL)
-        .backgroundBlurStyle(this.blurNum)
-        .onClick(() => {
-          try {
-            const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-            photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-            photoSelectOptions.maxSelectNumber = 1;
-            const photoPicker = new photoAccessHelper.PhotoViewPicker();
-            photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-              this.imgPreview = photoSelectResult.photoUris[0];
-              this.selectResult = photoSelectResult.photoUris[0];
-            }).catch((err: BusinessError) => {
-              console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
-            })
-          } catch (error) {
-            console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
-          }
-        })
-    }
-    .justifyContent(FlexAlign.Center)
-    .height(200)
   }
 }
