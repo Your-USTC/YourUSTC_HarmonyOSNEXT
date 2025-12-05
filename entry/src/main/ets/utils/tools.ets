@@ -1,4 +1,52 @@
 
+/**
+ * 提取文件路径的扩展名（不含分隔符`.`）
+ * @param filePath 字符串格式的文件路径
+ * @returns 扩展名（无扩展名返回空字符串）
+ */
+function getFileExtension(filePath: string): string {
+  // 处理空字符串、纯空格等无效路径
+  if (!filePath || filePath.trim() === '') {
+    return '';
+  }
+
+  // 统一处理路径分隔符（兼容 Windows\ 和 Unix/），转为小写便于统一判断
+  const normalizedPath = filePath.trim().toLowerCase();
+
+  // 定位最后一个`.`的位置（扩展名的分隔符）
+  const lastDotIndex = normalizedPath.lastIndexOf('.');
+  // 定位最后一个路径分隔符的位置（区分文件名和路径）
+  const lastSeparatorIndex = Math.max(
+    normalizedPath.lastIndexOf('/'),
+    normalizedPath.lastIndexOf('\\')
+  );
+
+  // 核心判断逻辑：
+  // 1. 最后一个`.`必须在路径分隔符之后（排除路径中的`.`，如 /dir.name/file.txt）
+  // 2. 不能是文件名的第一个字符（排除 `.gitignore` 这类无扩展名的隐藏文件）
+  // 3. 不能是最后一个字符（排除 `file.` 这类无效格式）
+  if (
+    lastDotIndex > lastSeparatorIndex &&
+      lastDotIndex !== normalizedPath.length - 1 &&
+      lastDotIndex !== 0
+  ) {
+    // 提取扩展名（从`.`的下一位到末尾）
+    return normalizedPath.slice(lastDotIndex + 1);
+  }
+
+  // 无有效扩展名返回空字符串
+  return '';
+}
+
+/**
+ * 复制（提取）文件扩展名（包含分隔符`.`）
+ * @param filePath 字符串格式的文件路径
+ * @returns 带`.`的扩展名（无扩展名返回空字符串）
+ */
+export function copyFileExtension(filePath: string): string {
+  const ext = getFileExtension(filePath);
+  return ext ? `.${ext}` : '';
+}
 
 export const colorSet: string[] = ["#FFF5C4", "#FFC1AC", "#FFC7CD", "#CCBBFF", "#ACC5FF", "#AEDEFF", "#B7FFFA", "#A4FFD6",
   "#D7FF9C", "#DDFFE690", "#FFAF9C", "#FF959C", "#FF7FB6", "#7D6FFF", "#4377FF", "#7DACFF", "#78CEFF", "#66E5FF",

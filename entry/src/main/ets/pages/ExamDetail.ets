@@ -509,7 +509,10 @@ struct ExamDetail {
             .width(100)
             .interpolation(ImageInterpolation.Medium)
             .draggable(false)
-          Text($r('app.string.no_exam_info2')).fontSize(18);
+          Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center)
+            .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+            .padding(5)
+            .borderRadius(3);
         }
         .height('80%')
         .justifyContent(FlexAlign.Center);
@@ -600,7 +603,6 @@ struct ExamDetail {
                 .alignItems(HorizontalAlign.Start)
                 .padding({ left: 10 })
               }
-              .backgroundColor($r('app.color.grid_background'))
               .borderRadius(20);
             }
             .width('100%')
@@ -611,7 +613,8 @@ struct ExamDetail {
               right: 16
             })
             .margin({ top: 7, bottom: 7 })
-            .backgroundColor($r('app.color.grid_background'))
+            .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+            .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
             .borderRadius(20)
             .onClick(() => {
               this.oriExamInfo = {
@@ -656,10 +659,13 @@ struct ExamDetail {
         .scrollBar(BarState.Auto)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .padding({ left: 12, right: 12 })
-        .backgroundColor($r('app.color.normal_background'))
       }
     }
+    .backgroundColor($r('app.color.normal_background'))
     .backgroundImage(BackgroundImage.pic)
+    .backgroundImageSize(ImageSize.Cover)
+    .backgroundImagePosition(Alignment.Center)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .height('100%')
     .width('100%')
   }

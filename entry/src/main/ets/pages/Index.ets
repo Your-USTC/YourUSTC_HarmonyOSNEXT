@@ -444,7 +444,8 @@ struct Index {
         }
         .width('100%')
         .borderRadius(20)
-        .backgroundColor($r('app.color.grid_background'))
+        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+        .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
       }
 
       // 你的课表
@@ -636,7 +637,8 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5 })
-      .backgroundColor($r('app.color.grid_background'))
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
 
       // 考试信息
       ListItem() {
@@ -769,7 +771,8 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5, bottom: 12 })
-      .backgroundColor($r('app.color.grid_background'));
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined);
     }
     .width('100%')
     .height('100%')
@@ -854,7 +857,6 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.normal_background'))
   }
 
   /**
@@ -988,7 +990,8 @@ struct Index {
           startMargin: '12vp',
           endMargin: '12vp'
         })
-        .backgroundColor($r('app.color.grid_background'))
+        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+        .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
         .borderRadius(20)
 
       }, (item: ItemData) => JSON.stringify(item))
@@ -1048,7 +1051,7 @@ struct Index {
        */
       TabContent() { this.pageStart() }
       .padding({ left: 7, right: 7 })
-      .backgroundColor($r('app.color.normal_background'))
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
 
       /**
@@ -1056,7 +1059,7 @@ struct Index {
        */
       TabContent() { this.pageFunction() }
       .padding({ left: 7, right: 7 })
-      .backgroundColor($r('app.color.normal_background'))
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
 
       /**
@@ -1064,16 +1067,21 @@ struct Index {
        */
       TabContent() { this.pageSettings() }
       .padding({ left: 7, right: 7 })
-      .backgroundColor($r('app.color.normal_background'))
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
       .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
     }
     .backgroundColor(this.tabHorizontal ? $r('app.color.normal_background') : $r('app.color.shaded_background'))
-    .barBackgroundColor($r('app.color.shaded_background'))
+    .barBackgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.shaded_background'))
+    .barBackgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
+    .backgroundImage(BackgroundImage.pic)
+    .backgroundImageSize(ImageSize.Cover)
+    .backgroundImagePosition(Alignment.Center)
     .barHeight(this.tabHeight)
     .barWidth(this.tabWidth)
     .vertical(this.tabHorizontal)
-    .barPosition(this.tabHorizontal ? BarPosition.Start : BarPosition.End)
+    .barPosition(BarPosition.End)
     .barMode(BarMode.Fixed)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .onAnimationStart((index: number, targetIndex: number) => {
       this.currentIndex = targetIndex;
       if (this.currentIndex === 1) {

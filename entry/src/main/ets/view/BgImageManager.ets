@@ -1,11 +1,13 @@
 import { image } from "@kit.ImageKit";
 import UnifiedPreferences from '../utils/UnifyPreference';
+import { fileIo, fileUri } from "@kit.CoreFileKit";
 
 class BackgroundImage {
-  pic: image.PixelMap | undefined = undefined;
+  pic: ResourceStr | undefined = undefined;
   hostContext: Context | undefined = undefined;
-  showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false);
-  readonly imgPath: string = '';
+  showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false); // 是否展示
+  readonly imgPath: string = UnifiedPreferences.getSync('ImagePath', ''); // 图片路径
+  basicDir: string = '/data/storage/el2/base/files';
 
   /**
    * 初始化
@@ -13,28 +15,13 @@ class BackgroundImage {
    */
   async init(context: Context) {
     this.hostContext = context;
-    if (this.showImage === false)
+    if (this.imgPath === '')
+      this.showImage = false;
+    if (!this.showImage)
       this.pic = undefined;
     else
-      this.pic = await this.getPixmapFromMedia($r('app.media.nic'));
-  }
-
-
-  private async getPixmapFromMedia(resource: Resource) {
-    let createPixelMap: image.PixelMap;
-    try {
-      const unit8Array = await this.hostContext!.resourceManager?.getMediaContent(resource.id);
-      const imageSource = image.createImageSource(unit8Array.buffer.slice(0, unit8Array.buffer.byteLength));
-      createPixelMap = await imageSource.createPixelMap({
-        desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
-      });
-      await imageSource.release();
-      this.pic?.release();
-    } catch (error) {
-      console.error(`getPixmapFromMedia ERROR: [${error.code}] ${error.message}`);
-      return;
-    }
-    return createPixelMap;
+      this.pic = fileUri.getUriFromPath(this.imgPath);
+    this.basicDir = context.filesDir;
   }
 
   /**
@@ -44,15 +31,6 @@ class BackgroundImage {
   changeShowStatus(isShown: boolean) {
     this.showImage = isShown;
     UnifiedPreferences.putSync('ShowImage', isShown);
-  }
-
-  // getPic(): image.PixelMap { return; }
-
-  /**
-   * 从图片选择器获取到的图片地址，复制到应用目录 this.imgPath 所储存的目录下，并调用 this.getPic 转换为PixelMap
-   * @param imgDir 传入的图片地址
-   */
-  pickFile(imgDir: string) {
   }
 }
 

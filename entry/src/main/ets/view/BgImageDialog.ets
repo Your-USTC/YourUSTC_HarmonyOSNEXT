@@ -2,6 +2,10 @@
 import BackgroundImage from './BgImageManager';
 import { common, Want } from '@kit.AbilityKit';
 import UnifiedPreferences from '../utils/UnifyPreference';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo, fileUri } from '@kit.CoreFileKit';
+import { copyFileExtension } from '../utils/tools';
 
 @CustomDialog
 export default struct BgImageDialog {
@@ -20,6 +24,27 @@ export default struct BgImageDialog {
           })
         Button($r('app.string.pick_image'))
           .buttonStyle(ButtonStyleMode.NORMAL)
+          .onClick(() => {
+            try {
+              const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+              photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+              photoSelectOptions.maxSelectNumber = 1;
+              const photoPicker = new photoAccessHelper.PhotoViewPicker();
+              photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+                const oriImgPath: string = new fileUri.FileUri(photoSelectResult.photoUris[0]).path;
+                const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
+                  + copyFileExtension(photoSelectResult.photoUris[0]);
+
+                fileIo.copyFile(oriImgPath, newImgPath)
+                  .catch((error: BusinessError) => console.error('Copy image failed:',JSON.stringify(error)));
+                UnifiedPreferences.putSync('ImagePath', newImgPath);
+              }).catch((err: BusinessError) => {
+                console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
+              })
+            } catch (error) {
+              console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
+            }
+          })
       }
       Row() {
         Text($r('app.string.transparency'))

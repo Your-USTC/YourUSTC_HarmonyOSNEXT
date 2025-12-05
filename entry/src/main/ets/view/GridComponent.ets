@@ -3,12 +3,14 @@ import { GridData } from '../constants/GridListDataSources';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
 import * as tools from '../utils/tools';
+import BackgroundImage from '../view/BgImageManager';
 
 @Component
 export default struct GridComponent {
   @Prop gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
   @State gridIndex: number = 0;
+  private haveBgImage: boolean = BackgroundImage.showImage;
 
   build() {
     Column() {
@@ -90,7 +92,8 @@ export default struct GridComponent {
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
       .columnsTemplate('repeat(auto-fit, 70)')
-      .backgroundColor($r('app.color.grid_background'))
+      .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.grid_background'))
+      .backgroundBlurStyle(BackgroundImage.showImage ? BlurStyle.Regular : undefined)
 
       if (this.isLastItem) {
         Blank()
