@@ -477,7 +477,6 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor($r('app.color.grid_background'))
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')
@@ -493,7 +492,6 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor($r('app.color.grid_background'))
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')
@@ -509,7 +507,6 @@ struct Schedule {
         .columnStart(0)
         .columnEnd(0)
         .padding(1)
-        .backgroundColor($r('app.color.grid_background'))
         .border({
           width: { top: 1, right: 1 },
           color: $r('app.color.grid_border')

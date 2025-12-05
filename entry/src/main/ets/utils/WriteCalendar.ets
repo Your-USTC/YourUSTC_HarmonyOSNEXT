@@ -272,6 +272,7 @@ class WriteCalendar {
                                     layer3.dayOfWeek, ScheduleSources.commonClassStamp[layer3.timeSpan[0]][0]));
                                 }
                               }
+                              console.log('abcdefg', excludeDates);
                               // 设置日程
                               const event: calendarManager.Event = {
                                 title: layer3.name, // 日程标题

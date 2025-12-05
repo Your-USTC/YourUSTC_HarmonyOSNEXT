@@ -1,5 +1,5 @@
 
-import { preferences } from '@kit.ArkData';
+import UnifiedPreferences from '../utils/UnifyPreference';
 
 export interface classAttribute {
   name: string,
@@ -17,22 +17,16 @@ export interface obtainedData {
   startTime: string;
 }
 
-let schedulePre: preferences.Preferences | null = null;
 export let remindBefore: number[] = [];
 export let examRemindBefore: number[] = [];
 
-export function initSchedulePre(curContext: Context | undefined) {
-  try {
-    schedulePre = preferences.getPreferencesSync(curContext, { name: 'ScheduleInfo' });
-    remindBefore[0] = schedulePre.getSync('remindBefore', 0) as number;
-    if (remindBefore[0] == -1)
-      remindBefore = [];
-    examRemindBefore[0] = schedulePre.getSync('examRemindBefore', 0) as number;
-    if (examRemindBefore[0] == -1)
-      examRemindBefore = [];
-  } catch (error) {
-    console.error(`Get preferences sync ERROR: [${error.name}] ${error.message}`)
-  }
+export function initSchedulePre() {
+  remindBefore[0] = UnifiedPreferences.getNumberSync('remindBefore', 0) as number;
+  if (remindBefore[0] == -1)
+    remindBefore = [];
+  examRemindBefore[0] = UnifiedPreferences.getNumberSync('examRemindBefore', 0) as number;
+  if (examRemindBefore[0] == -1)
+    examRemindBefore = [];
 }
 
 export function setRemindBefore(minute: number) {
@@ -40,15 +34,7 @@ export function setRemindBefore(minute: number) {
     remindBefore = [];
   else
     remindBefore[0] = minute;
-  try {
-    schedulePre?.putSync('remindBefore', minute);
-  } catch (error) {
-    console.error(`put sync ERROR: [${error.name}] ${error.message}`)
-  }
-  schedulePre?.flush()
-    .catch((error: Error) => {
-      console.error(`flush ERROR: [${error.name}] ${error.message}`)
-    })
+  UnifiedPreferences.putSync('remindBefore', minute);
 }
 
 export function setExamRemindBefore(minute: number) {
@@ -56,15 +42,7 @@ export function setExamRemindBefore(minute: number) {
     examRemindBefore = [];
   else
     examRemindBefore[0] = minute;
-  try {
-    schedulePre?.putSync('examRemindBefore', minute);
-  } catch (error) {
-    console.error(`put sync ERROR: [${error.name}] ${error.message}`)
-  }
-  schedulePre?.flush()
-    .catch((error: Error) => {
-      console.error(`flush ERROR: [${error.name}] ${error.message}`)
-    })
+  UnifiedPreferences.putSync('examRemindBefore', minute);
 }
 
 // 第几节课 -> 上课时间

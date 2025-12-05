@@ -114,7 +114,7 @@
     },
     {
       "name": "wipe_cookie",
-      "value": "清理 Cookies"
+      "value": "清除 Cookies"
     },
     {
       "name": "wipe_cache_success",
@@ -139,6 +139,22 @@
     {
       "name": "show_exam_info_on_start_page",
       "value": "在首页显示考试信息"
+    },
+    {
+      "name": "custom_background",
+      "value": "自定义背景图片"
+    },
+    {
+      "name": "pick_image",
+      "value": "选择图片…"
+    },
+    {
+      "name": "transparency",
+      "value": "透明度"
+    },
+    {
+      "name": "ok_and_restart",
+      "value": "重启并应用更改"
     },
     {
       "name": "ClearFunctionHistory",
@@ -198,7 +214,7 @@
     },
     {
       "name": "back_to_examinfo_or_not",
-      "value": "是否返回课表页面？"
+      "value": "是否返回考试信息页面？"
     },
     {
       "name": "delete_class_or_not",

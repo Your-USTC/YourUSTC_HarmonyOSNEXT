@@ -174,10 +174,13 @@ struct ExamDetail {
             this.endMinute = temp;
           }
           this.newExamInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
-          if (!areExamAttributesEqual(this.newExamInfo, this.oriExamInfo)) {
-            if (this.isChangeSchedule) {
+          if (this.isChangeSchedule) {
+            if (!areExamAttributesEqual(this.newExamInfo, this.oriExamInfo)) {
               examManager.deleteExam(this.oriExamInfo);
+              examManager.addExam(this.newExamInfo);
+              this.examInfo = examManager.allExamInfo;
             }
+          } else {
             examManager.addExam(this.newExamInfo);
             this.examInfo = examManager.allExamInfo;
           }

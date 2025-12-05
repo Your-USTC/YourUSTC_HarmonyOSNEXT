@@ -5,17 +5,18 @@ import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
 import { application, common, contextConstant } from '@kit.AbilityKit'
 
 import * as tools from '../utils/tools'
-import * as ScheduleSources from '../constants/ScheduleSources'
 import { CheckInTools } from '../utils/CheckIn'
 import scheduleManager from '../utils/TimeTable'
 import ItemData from '../view/SettingsComponent'
 import GridComponent from '../view/GridComponent'
+import BgImageDialog from '../view/BgImageDialog'
 import WriteCalendar from '../utils/WriteCalendar'
 import PasswordDialog from '../view/PasswordDialog'
 import BackgroundImage from '../view/BgImageManager'
 import * as FunctionOrder from '../utils/FunctionOrder'
 import SettingsData from '../constants/SettingsSources'
 import UnifiedPreferences from '../utils/UnifyPreference'
+import * as ScheduleSources from '../constants/ScheduleSources'
 import examManager, { examAttribute } from '../utils/ExamManager'
 import { ListDataConstants } from '../constants/ListDataConstants'
 import { GridData, otherGridDataList } from '../constants/GridListDataSources'
@@ -79,7 +80,14 @@ struct Index {
     builder: PasswordDialog({
       isFromSetting: true
     }),
-    autoCancel: true
+    autoCancel: true,
+    gridCount: 4
+  })
+
+  dialogController2: CustomDialogController = new CustomDialogController({
+    builder: BgImageDialog(),
+    autoCancel: true,
+    gridCount: 4
   })
 
   /**
@@ -140,7 +148,7 @@ struct Index {
 
   aboutToAppear(): void {
     // 获取课表
-    ScheduleSources.initSchedulePre(this.context);
+    ScheduleSources.initSchedulePre();
     const GeneratedDestructArray_1 = CheckInTools.loadCheckInOnStartup();
     this.checkInTotal = GeneratedDestructArray_1[0];
     this.checkInConsecutive = GeneratedDestructArray_1[1];
@@ -864,28 +872,33 @@ struct Index {
             .height('48vp')
             .onClick(() => {
               switch (cell.id) { // 根据 cell.id 区分设置项
-                case -1:
+                case 0:
                   this.dialogController.open();
                   break;
-                case 0:
+                case 1:
                   // 显示签到
                   this.showCheckIn = !this.showCheckIn;
                   UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
                   break;
 
-                case 1:
+                case 2:
                   // 显示课表
                   this.showRecentCourse = !this.showRecentCourse;
                   UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
                   break;
 
-                case 2:
+                case 3:
                   // 显示考试
                   this.showExamDetail = !this.showExamDetail;
                   UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
                   break;
 
-                case 3:
+                case 4:
+                  // 自定义背景!
+                  this.dialogController2.open();
+                  break;
+
+                case 5:
                   // 选择最近使用
                   this.getUIContext().showTextPickerDialog({
                     selected: FunctionOrder.maxRecord - 1,
@@ -901,7 +914,7 @@ struct Index {
                   })
                   break;
 
-                case 4:
+                case 6:
                   // 重置最近使用
                   FunctionOrder.resetFunc();
                   FunctionOrder.refreshFunc(); // 刷新点击次数显示
@@ -909,50 +922,50 @@ struct Index {
                   this.showMessage($r('app.string.have_cleared'));
                   break;
 
-                case 5:
+                case 7:
                   this.webAutoDarkMode = !this.webAutoDarkMode;
                   UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
                   break;
 
-                case 6:
+                case 8:
                   this.webBackPress = !this.webBackPress;
                   UnifiedPreferences.putSync('webBackPress', this.webBackPress);
                   break;
 
-                case 7:
+                case 9:
                   if (WriteCalendar.askForCalendar(1)) {
                     WriteCalendar.deleteCalendar();
                   }
                   break;
 
-                case 8:
+                case 10:
                   if (WriteCalendar.askForCalendar(2)) {
                     WriteCalendar.setClassCalendar();
                   }
                   break;
 
-                case 9:
+                case 11:
                   if (WriteCalendar.askForCalendar(3)) {
                     WriteCalendar.setExamCalendar();
                   }
                   break;
 
-                case 10:
+                case 12:
                   this.clearCache();
                   this.showMessage($r('app.string.wipe_cache_success'));
                   break;
 
-                case 11:
+                case 13:
                   // 帮助
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 12:
+                case 14:
                   // 关于
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 13:
+                case 15:
                   // 退出到恢复模式
                   UnifiedPreferences.putSync('RecoveryMode', true);
                   (this.context as common.UIAbilityContext).terminateSelf((err) => {
