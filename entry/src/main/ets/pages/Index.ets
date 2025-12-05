@@ -297,31 +297,31 @@ struct Index {
           .width('12vp')
           .height('12vp')
           .draggable(false)
-      } else if (item.id == 0) {
+      } else if (item.id == 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
           .onClick(() => {
             this.showCheckIn = !this.showCheckIn;
             UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
           });
-      } else if (item.id == 1) {
+      } else if (item.id == 2) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
           .onClick(() => {
             this.showRecentCourse = !this.showRecentCourse;
             UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
           });
-      } else if (item.id == 2){
+      } else if (item.id == 3){
         Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
           .onClick(() => {
             this.showExamDetail = !this.showExamDetail;
             UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
           });
-      } else if (item.id == 5) {
+      } else if (item.id == 7) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
           .onClick(() => {
             this.webAutoDarkMode = !this.webAutoDarkMode;
             UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
           });
-      } else { // item.id == 6
+      } else { // item.id == 8
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
           .onClick(() => {
             this.webBackPress = !this.webBackPress;
