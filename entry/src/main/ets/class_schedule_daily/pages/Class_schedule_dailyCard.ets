@@ -1,22 +1,39 @@
 
 import * as tools from '../../utils/tools';
 import * as Schedule from '../../pages/Schedule'
-import { classAttribute } from '../../constants/ScheduleSources';
 import scheduleManager from '../../utils/TimeTable';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
+import * as ScheduleSources from '../../constants/ScheduleSources'
 import UnifiedPreference from '../../utils/UnifyPreference';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Entry
 @Component
 struct Class_schedule_dailyCard {
 
   private currentTime: Date = new Date();
-  @State todayCourse: classAttribute[] = [{ name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2', weekOfTerm: tools.getContArray([[2, 10], [13, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0, color: "#0D000721" }];
+  @State todayCourse: ScheduleSources.classAttribute[] = [];
   @State isTodayCourseEnd: boolean = true;
-  @State tomorrowCourse: classAttribute[] = [];
+  @State tomorrowCourse: ScheduleSources.classAttribute[] = [];
 
   aboutToAppear(): void {
+    console.info(`abouttoappear小组件`)
+    /*scheduleManager.getFormattedSchedule(); // 初始化首页课表
+    if (scheduleManager.isTermEnd) {
+      this.todayCourse = [];
+      this.tomorrowCourse = [];
+    } else {
+      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
+    }
+    this.isTodayCourseEnd = true;
+    for (let todaySingleCourse of this.todayCourse)
+      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+        + ScheduleSources.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
+        this.isTodayCourseEnd = false;
+        break;
+      }*/
     // TODO: 获取课程数据 (与应用中不一样)
   }
 
@@ -39,47 +56,159 @@ struct Class_schedule_dailyCard {
 
   @Builder
   cardListBuilder() {
-
-    // TODO: 删除示例课程 👇👇
-    ListItem() {
-      Row() {
+    Button('按钮能用吗').onClick(() => {
+      console.info('卡片按钮');
+    })
+    if (this.todayCourse.length == 0) {
+      ListItem() {
         Column() {
-          Text($r('app.string.under_construction'))
-            .fontSize(18)
-            .fontWeight(FontWeight.Bold)
-            .textAlign(TextAlign.Start)
-            .maxLines(2)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-          Text($r('app.string.class_in_session'))
-            .fontColor($r('app.color.bright_blue'))
+          Image($r('app.media.no_course_today'))
+            .height(50)
+          Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'))
         }
-        .width('50%')
-        .alignItems(HorizontalAlign.Start)
-        .padding({ right: 10 });
+        .justifyContent(FlexAlign.Center)
+      }
+      .width('100%')
+      .height(scheduleManager.isTermEnd ? '100%' : undefined)
+      .padding({ top: 12, bottom: 12 })
+    } else {
+      ForEach(this.todayCourse, (course: ScheduleSources.classAttribute, index: number) => {
+        if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+          + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
+          Row() {
+            Column() {
+              Text(course.name)
+                .textAlign(TextAlign.Start)
+                .fontSize(18)
+                .fontWeight(FontWeight.Bold)
+                .maxLines(2)
+                .textOverflow({ overflow: TextOverflow.Ellipsis });
 
-        Column() {
-          Text(`\udb81\uddf3 ？？？`)
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
+              if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
+                this.currentTime.getTime() > scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                  + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] - 1800000) {
+                Text($r('app.string.class_soon'))
+                  .fontColor($r('app.color.green'));
+              } else if (this.currentTime.getTime() >
+                scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                  + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
+                this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                  + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
+                Text($r('app.string.class_in_session'))
+                  .fontColor($r('app.color.bright_blue'));
+              } else if (this.currentTime.getTime() >
+                scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+                  + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
+                Text($r('app.string.class_end'))
+                  .fontColor($r('app.color.red'));
+              } else {
+                Text($r('app.string.class_not_start'))
+                  .fontColor($r('app.color.green'));
+              }
+            }
+            .width('50%')
+            .alignItems(HorizontalAlign.Start)
+            .padding({ right: 10 });
 
-          Text(`\udb80\uddb8 ？？？`)
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            Column() {
+              Text(`\udb81\uddf3 ${course.teacher}`)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
 
-          Text(`\udb80\udfdc 07:21~11:45`)
-            .maxLines(1)
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(`\udb80\uddb8 ${course.location}`)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
+
+              Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .width('50%')
+            .alignItems(HorizontalAlign.Start);
+          }
+          .width('90%')
+          .margin({ top: 7, bottom: 7 });
+
+          if (index < this.todayCourse.length - 1) {
+            Divider()
+              .width('90%');
+          }
         }
-        .width('50%')
-        .alignItems(HorizontalAlign.Start)
+      });
+
+      if (this.isTodayCourseEnd) {
+        ListItem() {
+          Column() {
+            Image($r('app.media.course_finish_today'))
+              .height(50)
+
+            Text($r('app.string.class_finish_today'))
+          }
+          .justifyContent(FlexAlign.Center)
+        }
+        .width('100%')
+        .margin({ top: 12, bottom: 12 })
       }
     }
-    .width('90%')
-    .margin({ top: 7, bottom: 7 })
 
-    Divider()
-      .width('95%')
+    if (this.tomorrowCourse.length > 0) {
+
+      ListItem() {
+        Row() {
+          Text($r('app.string.tomorrow_class'))
+            .fontSize(15)
+            .margin({ right: 10 })
+            .fontColor($r('app.color.pink'))
+
+          Divider()
+        }
+      }
+      .width('100%')
+      .margin({ left: 5 })
+
+      ForEach(this.tomorrowCourse, (course: ScheduleSources.classAttribute, index) => {
+        if (index > 0) {
+          Divider()
+            .width('90%');
+        }
+        Row() {
+          Column() {
+            Text(course.name)
+              .textAlign(TextAlign.Start)
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis });
+          }
+          .width('50%')
+          .alignItems(HorizontalAlign.Start)
+          .padding({ right: 10 });
+
+          Column() {
+            Text(`\udb81\uddf3 ${course.teacher}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
+
+            Text(`\udb80\uddb8 ${course.location}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
+
+            Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
+          .width('50%')
+          .alignItems(HorizontalAlign.Start);
+        }
+        .width('90%')
+        .margin({ top: 7, bottom: 7 })
+      });
+    }
   }
 
   build() {
@@ -94,7 +223,7 @@ struct Class_schedule_dailyCard {
       postCardAction(this, {
         action: 'router',
         abilityName: 'EntryAbility',
-        params: { message: 'add detail' }
+        params: { message: 'add detail', router: 'pages/Schedule'}
       });
     })
   }
