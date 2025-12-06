@@ -29,6 +29,11 @@ enum ScrollPosition {
   end = 2
 }
 
+interface Rect {
+  width: number,
+  height: number
+}
+
 // 主界面UI
 @Entry
 @Component
@@ -39,6 +44,7 @@ struct Index {
   @State tabWidth: string = '100%';
   @State tabHeight: string = 'auto';
   @State tabHorizontal: boolean = false;
+  private windowRect: Rect = { width: 1840, height: 2800 };
   portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
     let windowClass: window.Window | undefined = undefined;
@@ -50,8 +56,9 @@ struct Index {
         try {
           //Get window properties
           let properties = windowClass.getWindowProperties();
-          let rect = properties.windowRect;
-          if (rect.width > rect.height) { // 横屏
+          this.windowRect.width = properties.windowRect.width;
+          this.windowRect.height = properties.windowRect.height;
+          if (this.windowRect.width > this.windowRect.height) { // 横屏
             this.tabWidth = '52vp';
             this.tabHeight = '100%';
             this.tabHorizontal = true;
@@ -86,7 +93,10 @@ struct Index {
   })
 
   dialogController2: CustomDialogController = new CustomDialogController({
-    builder: BgImageDialog(),
+    builder: BgImageDialog({
+      windowWidth: Math.min(this.windowRect.width, this.windowRect.height),
+      windowHeight: Math.max(this.windowRect.width, this.windowRect.height)
+    }),
     autoCancel: true,
     gridCount: 4
   })

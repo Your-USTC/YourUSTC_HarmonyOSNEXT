@@ -12,9 +12,15 @@ export default struct BgImageDialog {
   controller: CustomDialogController;
   private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel);
   @State isShown: boolean = BackgroundImage.showImage;
-  @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.theHerta') : fileUri.getUriFromPath(BackgroundImage.imgPath);
+  @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.confused') : fileUri.getUriFromPath(BackgroundImage.imgPath);
   @State blurNum: BlurStyle = (BackgroundImage.blurLevel == undefined) ? BlurStyle.COMPONENT_REGULAR : BackgroundImage.blurLevel;
   private selectResult: string | undefined = undefined;
+  private oriImgPath: string = '';
+  private imageSize: number = 0;
+
+  windowWidth: number = 1840;
+  windowHeight: number = 2800;
+  @State showWarning: boolean = false;
 
   build() {
     Column() {
@@ -33,12 +39,30 @@ export default struct BgImageDialog {
       }
 
       Stack() {
-        Image(this.isShown ? this.imgPreview : $r('app.media.theHerta'))
+        Image(this.isShown ? this.imgPreview : $r('app.media.confused'))
           .width('100%')
-          .alt($r('app.media.theHerta'))
+          .alt($r('app.media.confused'))
           .constraintSize({ minHeight: 80, maxHeight: 200 })
           .borderRadius(16)
           .objectFit(ImageFit.Contain)
+          .onComplete((value) => {
+            console.log('!!', this.imageSize);
+            if (value !== undefined) {
+              let swapTemp: number;
+              if (value.width > value.height){
+                swapTemp = value.width;
+                value.width = value.height;
+                value.height = swapTemp;
+              }
+              if (value.width > this.windowWidth * 3 || value.height > this.windowHeight * 3 || this.imageSize > 50000000) {
+                this.showWarning = true;
+              } else {
+                this.showWarning = false;
+              }
+            } else {
+              this.showWarning = false;
+            }
+          })
 
         Button($r('app.string.pick_image'))
           .buttonStyle(ButtonStyleMode.NORMAL)
@@ -51,8 +75,10 @@ export default struct BgImageDialog {
               const photoPicker = new photoAccessHelper.PhotoViewPicker();
               photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
                 if (photoSelectResult.photoUris[0] !== undefined) {
-                  this.imgPreview = photoSelectResult.photoUris[0];
                   this.selectResult = photoSelectResult.photoUris[0];
+                  this.oriImgPath = new fileUri.FileUri(this.selectResult).path;
+                  this.imageSize = fileIo.statSync(this.oriImgPath).size;
+                  this.imgPreview = photoSelectResult.photoUris[0];
                   this.isShown = true;
                 }
               }).catch((err: BusinessError) => {
@@ -102,6 +128,13 @@ export default struct BgImageDialog {
       }
       .width('90%');
 
+      Text($r('app.string.too_large_bg_image'))
+        .width('95%')
+        .fontColor($r('app.color.red'))
+        .fontSize(15)
+        .maxLines(1)
+        .visibility(this.showWarning ? Visibility.Visible : Visibility.None);
+
       Row() {
         Image($r('app.media.lightbulb'))
           .height(18)
@@ -122,11 +155,10 @@ export default struct BgImageDialog {
           .layoutWeight(1)
           .onClick(() => {
             if (this.selectResult !== undefined) {
-              const oriImgPath: string = new fileUri.FileUri(this.selectResult).path;
               const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
                 + copyFileExtension(this.selectResult);
 
-              fileIo.copyFile(oriImgPath, newImgPath)
+              fileIo.copyFile(this.oriImgPath, newImgPath)
                 .catch((error: BusinessError) => console.error('Copy image failed:', JSON.stringify(error)));
               UnifiedPreferences.putSync('ImagePath', newImgPath);
             }

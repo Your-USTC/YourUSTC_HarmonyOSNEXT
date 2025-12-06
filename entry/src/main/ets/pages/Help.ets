@@ -37,7 +37,7 @@ struct Index {
       .width('100%')
       .id('header')
       .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.shaded_background'))
-      .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
+      .backgroundBlurStyle(BackgroundImage.blurLevel)
 
       List({ initialIndex: 0 }) {
         ForEach(getContArray([[0, 7]]), (index: number) => {

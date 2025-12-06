@@ -14,9 +14,9 @@ class BackgroundImage {
    * @param context 传入上下文
    */
   async init(context: Context) {
-    if (this.imgPath === '')
+    if (this.imgPath === '' || !fileIo.accessSync(this.imgPath))
       this.showImage = false;
-    if (this.showImage && fileIo.accessSync(this.imgPath)) {
+    if (this.showImage) {
       this.pic = fileUri.getUriFromPath(this.imgPath);
       this.blurLevel = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.COMPONENT_REGULAR);
     } else {

@@ -448,7 +448,7 @@ struct Schedule {
       }
       .width('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
-      .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
+      .backgroundBlurStyle(BackgroundImage.blurLevel)
 
       /**
        * 课表
@@ -478,7 +478,7 @@ struct Schedule {
         .rowEnd(0)
         .columnStart(2)
         .columnEnd(8)
-        .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
 
         GridItem({ style: GridItemStyle.NONE }) {
           Row() {
@@ -553,7 +553,7 @@ struct Schedule {
         .rowEnd(13)
         .columnStart(0)
         .columnEnd(1)
-        .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
 
         /**
          * 课程内容
@@ -567,10 +567,10 @@ struct Schedule {
                 .interpolation(ImageInterpolation.Medium)
                 .draggable(false)
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center)
-                .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
-                .padding(5)
-                .borderRadius(12);
             }
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
+            .padding({ top: 5, left: 10, right: 10, bottom: 10})
+            .borderRadius(12);
           }
           .rowStart(1)
           .rowEnd(11)

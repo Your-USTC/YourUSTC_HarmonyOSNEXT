@@ -506,14 +506,16 @@ struct ExamDetail {
 
       if (this.examInfo.length === 0) {
         Column() {
-          Image($r('app.media.no_exam2'))
-            .width(100)
-            .interpolation(ImageInterpolation.Medium)
-            .draggable(false)
-          Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center)
-            .backgroundBlurStyle(BackgroundImage.blurLevel)
-            .padding(5)
-            .borderRadius(12);
+          Column() {
+            Image($r('app.media.no_exam2'))
+              .width(100)
+              .interpolation(ImageInterpolation.Medium)
+              .draggable(false)
+            Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center);
+          }
+          .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .padding({ top: 5, left: 10, right: 10, bottom: 10})
+          .borderRadius(12);
         }
         .height('80%')
         .justifyContent(FlexAlign.Center);
