@@ -220,8 +220,7 @@ class scheduleManager {
         : this.currentTime.getTime();
       this.weekEnd = this.weekStart + 518400000;
     } catch (err) {
-      console.error('parsed')
-      this.getParsedSchedule();
+      console.error('parsed');
     }
   }
 

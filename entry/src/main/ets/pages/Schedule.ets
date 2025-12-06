@@ -234,7 +234,8 @@ struct Schedule {
   onPageShow(): void {
     const currentTime: Date = new Date();
     const routerParams = this.getUIContext().getRouter().getParams() as ScheduleSources.obtainedData;
-    scheduleManager.refreshParsedSchedule(routerParams);
+    if (routerParams != undefined)
+      scheduleManager.refreshParsedSchedule(routerParams);
     scheduleManager.getFormattedSchedule();
     this.termStart = scheduleManager.termStart;
     this.weekDisplayed = scheduleManager.weekDisplayed;
