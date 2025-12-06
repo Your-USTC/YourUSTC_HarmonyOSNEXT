@@ -9,6 +9,10 @@
       "value": "#FF000000"
     },
     {
+      "name": "help_context",
+      "value": "#456"
+    },
+    {
       "name": "normal_background",
       "value": "#101015"
     },

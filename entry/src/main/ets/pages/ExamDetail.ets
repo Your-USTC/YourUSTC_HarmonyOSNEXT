@@ -500,7 +500,8 @@ struct ExamDetail {
           })
       }
       .width('100%')
-      .backgroundColor($r('app.color.shaded_background'))
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.shaded_background'))
+      .backgroundBlurStyle(BackgroundImage.blurLevel)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       if (this.examInfo.length === 0) {
@@ -512,7 +513,7 @@ struct ExamDetail {
           Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center)
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .padding(5)
-            .borderRadius(3);
+            .borderRadius(12);
         }
         .height('80%')
         .justifyContent(FlexAlign.Center);
@@ -660,7 +661,7 @@ struct ExamDetail {
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .height('100%')
     .width('100%')
   }

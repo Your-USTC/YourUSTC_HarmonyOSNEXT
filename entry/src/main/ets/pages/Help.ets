@@ -1,6 +1,7 @@
 
 import { LengthUnit } from '@kit.ArkUI';
 import { getContArray } from '../utils/tools';
+import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
@@ -35,8 +36,8 @@ struct Index {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .width('100%')
       .id('header')
-      .backgroundColor($r('app.color.shaded_background'))
-
+      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.shaded_background'))
+      .backgroundBlurStyle(BackgroundImage.showImage ? BackgroundImage.blurLevel : undefined)
 
       List({ initialIndex: 0 }) {
         ForEach(getContArray([[0, 7]]), (index: number) => {
@@ -78,8 +79,11 @@ struct Index {
               });
 
               if (this.isContentShow[index]) { // 判断当前按钮为“收起”显示内容区域
+                Divider()
+                  .color($r('app.color.grid_border'));
+
                 Text($r(`app.string.help${index}_content`))
-                  .backgroundColor($r('app.color.grid_border'))
+                  .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.help_context'))
                   .borderRadius({ bottomLeft: 20, bottomRight: 20 })
                   .textAlign(TextAlign.Start)
                   .lineSpacing({ value: 5, unit: LengthUnit.FP })
@@ -87,7 +91,8 @@ struct Index {
                   .padding({ top: 10, bottom: 10, left: 20, right: 20 })
               }
             }
-            .backgroundColor($r('app.color.grid_background'))
+            .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
             .width('100%')
             .margin({ top: 10 })
             .borderRadius(20);
@@ -104,7 +109,10 @@ struct Index {
       .height('100%')
       .width('100%');
     }
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+    .backgroundImage(BackgroundImage.pic)
+    .backgroundImageSize(ImageSize.Cover)
+    .backgroundImagePosition(Alignment.Center)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundColor($r('app.color.normal_background'));
   }
 }

@@ -19,8 +19,11 @@ export default struct BgImageDialog {
   build() {
     Column() {
       Row() {
+        Image($r('app.media.shutter_photo'))
+          .height(30)
+          .margin({ right: 5 });
         Text($r('app.string.custom_background'))
-          .fontSize(24)
+          .fontSize(20)
           .fontWeight("bold")
           .layoutWeight(1);
         Toggle({ isOn: $$this.isShown, type: ToggleType.Switch })
@@ -36,7 +39,6 @@ export default struct BgImageDialog {
           .constraintSize({ minHeight: 80, maxHeight: 200 })
           .borderRadius(16)
           .objectFit(ImageFit.Contain)
-          .margin({ top: 5, bottom: 5 });
 
         Button($r('app.string.pick_image'))
           .buttonStyle(ButtonStyleMode.NORMAL)
@@ -61,6 +63,7 @@ export default struct BgImageDialog {
             }
           })
       }
+      .margin({ top: 10, bottom: 5 })
 
       Row() {
         Text($r('app.string.grid_background_transparency'))
@@ -106,7 +109,7 @@ export default struct BgImageDialog {
           .fontSize(12)
           .margin({ left: 3, right: 16 })
       }
-      .width('90%')
+      .width('95%')
 
       Row() {
         Button($r('app.string.cancel'))
