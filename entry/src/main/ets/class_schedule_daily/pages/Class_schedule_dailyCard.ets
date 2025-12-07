@@ -11,8 +11,6 @@ struct Class_schedule_dailyCard {
   @LocalStorageProp('todayCourse') todayCourse: ScheduleSources.classAttribute[] = [];
   @LocalStorageProp('tomorrowCourse') tomorrowCourse: ScheduleSources.classAttribute[] = [];
 
-  @LocalStorageProp('detail') detail: ResourceStr = 'default';
-
   @LocalStorageProp('cardListParameter') cardListParameter: CardListParameter = new CardListParameter(
     /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
     /* title                    */ $r('app.string.schedule_card_title'),
