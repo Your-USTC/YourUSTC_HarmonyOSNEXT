@@ -5,6 +5,7 @@ import { CardListParameter } from '../viewmodel/CardListParameter';
 export struct CardListComponent {
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @Link cardListParameter: CardListParameter | undefined;
+  @LocalStorageProp('lastRefresh') lastRefresh: string = '点击右上角按钮刷新';
 
   @Builder
   customBuilder() {
@@ -58,6 +59,16 @@ export struct CardListComponent {
           .width('100%')
           .alignItems(VerticalAlign.Top)
           .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 4 })
+          Row() {
+            Text(this.lastRefresh)
+              .opacity(0.6)
+              .fontSize(16)
+              .margin({ left: 2 })
+          }
+          .width('100%')
+          .alignItems(VerticalAlign.Top)
+          .justifyContent(FlexAlign.Start)
           .padding({ bottom: 4 })
 
           List() {
