@@ -1,10 +1,11 @@
 
 import { LengthUnit } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
+import { fileIo } from '@kit.CoreFileKit'
 import { image } from '@kit.ImageKit'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
-import { fileIo } from '@kit.CoreFileKit'
-import { getRandomInt } from '../utils/tools';
+import { getRandomInt } from '../utils/tools'
+import BackgroundImage from '../view/BgImageManager'
 
 @Entry
 @Component
@@ -49,82 +50,97 @@ struct About {
             .fontColor($r('app.color.normal_text'))
             .fontWeight(FontWeight.Bold)
             .margin({ top: 20 })
+            .padding({ top: 5, bottom: 5, left: 8, right: 8 })
+            .borderRadius(12)
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
 
-          Text($r('app.string.no_association1'))
-            .fontColor($r('app.color.red'))
-            .fontWeight(FontWeight.Bold)
-            .margin({ top: 20 })
-            .textAlign(TextAlign.Center)
+          Column() {
+            Text($r('app.string.no_association1'))
+              .fontColor($r('app.color.red'))
+              .fontWeight(FontWeight.Bold)
+              .textAlign(TextAlign.Center)
 
-          Text($r('app.string.no_association2'))
-            .fontColor($r('app.color.red'))
-            .fontWeight(FontWeight.Bold)
-            .width('90%')
-
-          Text($r('app.string.github'))
-            .margin({ top: 20 })
-            .fontColor($r('app.color.active_text'))
-            .decoration({
-              type: TextDecorationType.Underline,
-              color: $r('app.color.active_text')
-            })
-            .onClick(() => {
-              this.context.getRouter().pushUrl({
-                url: 'pages/Webview',
-                params: {
-                  title: $r('app.string.github'),
-                  url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
-                }
-              }).catch((err: Error) => {
-                console.error(`Router ERROR: [${err.name}] ${err.message}`)
-              })
-            })
-
-          Row() {
-            Text($r('app.string.terms_of_use_and_privacy_policy'))
-              .fontColor($r('app.color.active_text'))
-              .decoration({
-                type: TextDecorationType.Underline,
-                color: $r('app.color.active_text')
-              })
-              .onClick(() => {
-                this.context.getRouter().pushUrl({
-                  url: 'pages/Webview',
-                  params: {
-                    title: $r('app.string.terms_of_use_and_privacy_policy'),
-                    url: $rawfile('TermsOfUse.html')
-                  }
-                }).catch((err: Error) => {
-                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                })
-              })
-
-            Text('  |  ')
-
-            Text($r('app.string.open_source_license'))
-              .fontColor($r('app.color.active_text'))
-              .decoration({
-                type: TextDecorationType.Underline,
-                color: $r('app.color.active_text')
-              })
-              .onClick(() => {
-                this.context.getRouter().pushUrl({
-                  url: 'pages/Webview',
-                  params: {
-                    title: $r('app.string.open_source_license'),
-                    url: $rawfile('OpenSourceLicense.html')
-                  }
-                }).catch((err: Error) => {
-                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                })
-              })
+            Text($r('app.string.no_association2'))
+              .fontColor($r('app.color.red'))
+              .fontWeight(FontWeight.Bold)
+              .width('100%')
+              .margin({ top: 5 })
           }
-          .margin({ top: 5 })
+          .width('90%')
+          .margin({ top: 20 })
+          .padding({ top: 5, bottom: 5, left: 8, right: 8 })
+          .borderRadius(12)
+          .backgroundBlurStyle(BackgroundImage.blurLevel)
 
-          Text($r('app.string.credits'))
-            .textAlign(TextAlign.Center)
-            .lineSpacing({ value: 5, unit: LengthUnit.FP })
-            .margin({ top: 20 })
+          Column() {
+            Text($r('app.string.github'))
+              .fontColor($r('app.color.active_text'))
+              .decoration({
+                type: TextDecorationType.Underline,
+                color: $r('app.color.active_text')
+              })
+              .onClick(() => {
+                this.context.getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: {
+                    title: $r('app.string.github'),
+                    url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+                  }
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                })
+              })
+
+            Row() {
+              Text($r('app.string.terms_of_use_and_privacy_policy'))
+                .fontColor($r('app.color.active_text'))
+                .decoration({
+                  type: TextDecorationType.Underline,
+                  color: $r('app.color.active_text')
+                })
+                .onClick(() => {
+                  this.context.getRouter().pushUrl({
+                    url: 'pages/Webview',
+                    params: {
+                      title: $r('app.string.terms_of_use_and_privacy_policy'),
+                      url: $rawfile('TermsOfUse.html')
+                    }
+                  }).catch((err: Error) => {
+                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                  })
+                })
+
+              Text('  |  ')
+
+              Text($r('app.string.open_source_license'))
+                .fontColor($r('app.color.active_text'))
+                .decoration({
+                  type: TextDecorationType.Underline,
+                  color: $r('app.color.active_text')
+                })
+                .onClick(() => {
+                  this.context.getRouter().pushUrl({
+                    url: 'pages/Webview',
+                    params: {
+                      title: $r('app.string.open_source_license'),
+                      url: $rawfile('OpenSourceLicense.html')
+                    }
+                  }).catch((err: Error) => {
+                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                  })
+                })
+            }
+            .margin({ top: 5 })
+
+            Text($r('app.string.credits'))
+              .textAlign(TextAlign.Center)
+              .lineSpacing({ value: 5, unit: LengthUnit.FP })
+              .margin({ top: 20 })
+          }
+          .margin({ top: 20 })
+          .padding({ top: 5, bottom: 5, left: 8, right: 8 })
+          .borderRadius(12)
+          .backgroundBlurStyle(BackgroundImage.blurLevel)
         }
         .width('100%')
         .justifyContent(FlexAlign.Center)
@@ -132,8 +148,7 @@ struct About {
       .width('100%')
       .height('100%')
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
-      .backgroundColor($r('app.color.normal_background'))
-      .padding({ bottom: 40 })
+      .padding({ bottom: 20 })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
       Row() {
@@ -146,10 +161,13 @@ struct About {
         .height(42)
         .width(42)
         .margin({ left: 10 })
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
           this.getUIContext().getRouter().back();
         });
+
         Blank();
+
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
             .height(24)
@@ -159,6 +177,7 @@ struct About {
         .height(42)
         .width(42)
         .margin({ right: 10 })
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
           const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在华为应用市场搜索，或者去https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT找到它！');
           const systemPasteboard = pasteboard.getSystemPasteboard();
@@ -175,6 +194,11 @@ struct About {
       .width('100%')
       .padding({ top: 10 })
     }
+    .backgroundImage(BackgroundImage.pic)
+    .backgroundImageSize(ImageSize.Cover)
+    .backgroundImagePosition(Alignment.Center)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .backgroundColor($r('app.color.normal_background'))
   }
 
   @Builder

@@ -81,7 +81,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
       console.info('FormAbility updateForm success')
-    }).catch((error: BusinessError) => {
+    }).catch((error: Error) => {
       hilog.error(DOMAIN_NUMBER, TAG, `Operation updateForm failed. Cause: ${JSON.stringify(error)}`);
     });
   }

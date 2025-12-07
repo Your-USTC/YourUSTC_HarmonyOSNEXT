@@ -43,6 +43,7 @@ export struct CardListComponent {
             Image($r('app.media.refresh'))
               .width(24)
               .height(24)
+              .margin({ right: 10 })
               .onClick(() => {
                 postCardAction(this, {
                   action: 'message',
