@@ -1,45 +1,19 @@
-
-import * as tools from '../../utils/tools';
-import * as Schedule from '../../pages/Schedule'
 import scheduleManager from '../../utils/TimeTable';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
 import * as ScheduleSources from '../../constants/ScheduleSources'
-import UnifiedPreference from '../../utils/UnifyPreference';
-import { describe } from '@ohos/hypium';
 
 let localStorage = new LocalStorage();
 
 @Entry(localStorage)
 @Component
 struct Class_schedule_dailyCard {
-
-  private currentTime: Date = new Date();
   @LocalStorageProp('todayCourse') todayCourse: ScheduleSources.classAttribute[] = [];
   @LocalStorageProp('tomorrowCourse') tomorrowCourse: ScheduleSources.classAttribute[] = [];
 
   @LocalStorageProp('detail') detail: ResourceStr = 'default';
 
-  /*aboutToAppear(): void {
-    scheduleManager.getFormattedSchedule(); // 初始化首页课表
-    if (scheduleManager.isTermEnd) {
-      this.todayCourse = [];
-      this.tomorrowCourse = [];
-    } else {
-      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
-    }
-    this.isTodayCourseEnd = true;
-    for (let todaySingleCourse of this.todayCourse)
-      if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-        + ScheduleSources.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
-        this.isTodayCourseEnd = false;
-        break;
-      }
-    // TODO: 获取课程数据 (与应用中不一样)
-  }*/
-
-  @State cardListParameter: CardListParameter = new CardListParameter(
+  @LocalStorageProp('cardListParameter') cardListParameter: CardListParameter = new CardListParameter(
     /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
     /* title                    */ $r('app.string.schedule_card_title'),
     /* backgroundImage          */ undefined,
