@@ -40,6 +40,16 @@ export struct CardListComponent {
               }
             }.layoutWeight(1)
 
+            Image($r('app.media.refresh'))
+              .width(24)
+              .height(24)
+              .onClick(() => {
+                postCardAction(this, {
+                  action: 'message',
+                  params: { msgTest: 'messageEvent' }
+                });
+              })
+
             Image(this.cardListParameter.logo)
               .width(24)
               .height(24)
