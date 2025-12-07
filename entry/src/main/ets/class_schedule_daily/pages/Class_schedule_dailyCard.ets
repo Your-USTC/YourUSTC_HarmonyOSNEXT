@@ -6,20 +6,22 @@ import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
 import * as ScheduleSources from '../../constants/ScheduleSources'
 import UnifiedPreference from '../../utils/UnifyPreference';
-import { hilog } from '@kit.PerformanceAnalysisKit';
+import { describe } from '@ohos/hypium';
 
-@Entry
+let localStorage = new LocalStorage();
+
+@Entry(localStorage)
 @Component
 struct Class_schedule_dailyCard {
 
   private currentTime: Date = new Date();
-  @State todayCourse: ScheduleSources.classAttribute[] = [];
-  @State isTodayCourseEnd: boolean = true;
-  @State tomorrowCourse: ScheduleSources.classAttribute[] = [];
+  @LocalStorageProp('todayCourse') todayCourse: ScheduleSources.classAttribute[] = [];
+  @LocalStorageProp('tomorrowCourse') tomorrowCourse: ScheduleSources.classAttribute[] = [];
 
-  aboutToAppear(): void {
-    console.info(`abouttoappear小组件`)
-    /*scheduleManager.getFormattedSchedule(); // 初始化首页课表
+  @LocalStorageProp('detail') detail: ResourceStr = 'default';
+
+  /*aboutToAppear(): void {
+    scheduleManager.getFormattedSchedule(); // 初始化首页课表
     if (scheduleManager.isTermEnd) {
       this.todayCourse = [];
       this.tomorrowCourse = [];
@@ -33,9 +35,9 @@ struct Class_schedule_dailyCard {
         + ScheduleSources.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
         this.isTodayCourseEnd = false;
         break;
-      }*/
+      }
     // TODO: 获取课程数据 (与应用中不一样)
-  }
+  }*/
 
   @State cardListParameter: CardListParameter = new CardListParameter(
     /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
@@ -56,9 +58,6 @@ struct Class_schedule_dailyCard {
 
   @Builder
   cardListBuilder() {
-    Button('按钮能用吗').onClick(() => {
-      console.info('卡片按钮');
-    })
     if (this.todayCourse.length == 0) {
       ListItem() {
         Column() {
@@ -72,9 +71,20 @@ struct Class_schedule_dailyCard {
       .height(scheduleManager.isTermEnd ? '100%' : undefined)
       .padding({ top: 12, bottom: 12 })
     } else {
+      ListItem() {
+        Row() {
+          Text($r('app.string.schedule_card_title'))
+            .fontSize(15)
+            .margin({ right: 10 })
+            .fontColor($r('app.color.green'))
+          Divider()
+        }
+      }
+      .width('100%')
+      .margin({ left: 5 })
       ForEach(this.todayCourse, (course: ScheduleSources.classAttribute, index: number) => {
-        if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-          + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
+        if (/*this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
+          + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000*/1) {
           Row() {
             Column() {
               Text(course.name)
@@ -83,29 +93,6 @@ struct Class_schedule_dailyCard {
                 .fontWeight(FontWeight.Bold)
                 .maxLines(2)
                 .textOverflow({ overflow: TextOverflow.Ellipsis });
-
-              if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
-                this.currentTime.getTime() > scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                  + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] - 1800000) {
-                Text($r('app.string.class_soon'))
-                  .fontColor($r('app.color.green'));
-              } else if (this.currentTime.getTime() >
-                scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                  + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
-                this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                  + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
-                Text($r('app.string.class_in_session'))
-                  .fontColor($r('app.color.bright_blue'));
-              } else if (this.currentTime.getTime() >
-                scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                  + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1]) {
-                Text($r('app.string.class_end'))
-                  .fontColor($r('app.color.red'));
-              } else {
-                Text($r('app.string.class_not_start'))
-                  .fontColor($r('app.color.green'));
-              }
             }
             .width('50%')
             .alignItems(HorizontalAlign.Start)
@@ -138,20 +125,6 @@ struct Class_schedule_dailyCard {
           }
         }
       });
-
-      if (this.isTodayCourseEnd) {
-        ListItem() {
-          Column() {
-            Image($r('app.media.course_finish_today'))
-              .height(50)
-
-            Text($r('app.string.class_finish_today'))
-          }
-          .justifyContent(FlexAlign.Center)
-        }
-        .width('100%')
-        .margin({ top: 12, bottom: 12 })
-      }
     }
 
     if (this.tomorrowCourse.length > 0) {

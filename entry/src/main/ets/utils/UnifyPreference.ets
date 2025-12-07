@@ -92,6 +92,10 @@ class UnifiedPreferences {
     this.preferences?.deleteSync(key);
     this.flush();
   }
+
+  preferenceInstance(): preferences.Preferences | null {
+    return this.preferences;
+  }
 }
 
 export default new UnifiedPreferences();
