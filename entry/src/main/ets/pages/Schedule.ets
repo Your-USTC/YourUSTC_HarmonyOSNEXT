@@ -79,7 +79,7 @@ struct Schedule {
     }
   }
 
-  /*
+  /**
    * 详情弹窗部分
    */
   @State showSheet: boolean = false;
@@ -230,6 +230,60 @@ struct Schedule {
   /*
    * 详情弹窗部分
    */
+  @State showConflictClass: boolean = false;
+
+  @Builder
+  ConflictClass() {
+    Column() {
+      Row() {
+        Text($r('app.string.conflict_class_detail'))
+          .fontWeight(FontWeight.Bold)
+          .fontSize(24)
+          .layoutWeight(1)
+          .margin({ left: 8 });
+        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+          Image($r('app.media.close'))
+            .height(24)
+            .width(24)
+        }
+        .width(42)
+        .height(42)
+        .onClick(() => {
+          this.showConflictClass = false;
+        })
+      }
+      .margin({ bottom: 10 })
+
+      Text($r('app.string.conflict_class_intro'))
+        .fontSize(12)
+        .margin({ bottom: 5 })
+
+      List({ space: 14 }) {
+        ForEach([1, 2, 3, 4, 5, 6, 7], () => {
+          ListItem() {
+            Button('test')
+              .onClick(() => {
+                this.showSheet = true;
+              })
+          }
+          .width('100%')
+          .padding({ top: 10, bottom: 10, left: 16, right: 16 })
+          .backgroundColor($r('app.color.grid_background'))
+          .borderRadius(20)
+        })
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
+    }
+    .padding({ top: 16, left: 16, right: 16 })
+  }
+  /*
+   * 叠课弹窗部分
+   */
+  /*
+   * 叠课弹窗部分
+   */
 
   onPageShow(): void {
     const currentTime: Date = new Date();
@@ -269,11 +323,29 @@ struct Schedule {
       Column() {
         Row() {
           Image($r('app.media.close'))
-            .padding({ left: 12, right: 32 })
+            .padding({ left: 12 })
             .height(20)
             .draggable(false)
             .onClick(() => {
-              this.getUIContext().getRouter().back()
+              this.getUIContext().getRouter().back();
+            })
+
+          Image($r('app.media.pile'))
+            .padding({ left: 12 })
+            .height(20)
+            .draggable(false)
+            .onClick(() => {
+              this.showConflictClass = true;
+            })
+            .bindSheet($$this.showConflictClass, this.ConflictClass(), {
+              detents: [SheetSize.LARGE, SheetSize.MEDIUM],
+              preferType: SheetType.POPUP,
+              backgroundColor: '#00d00721',
+              blurStyle: BlurStyle.Regular,
+              showClose: false,
+              enableOutsideInteractive: false,
+              enableFloatingDragBar: true,
+              mode: SheetMode.OVERLAY
             })
 
           Blank()

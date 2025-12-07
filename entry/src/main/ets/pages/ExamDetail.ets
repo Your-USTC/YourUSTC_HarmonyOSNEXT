@@ -606,7 +606,6 @@ struct ExamDetail {
                 .alignItems(HorizontalAlign.Start)
                 .padding({ left: 10 })
               }
-              .borderRadius(20);
             }
             .width('100%')
             .padding({ top: 10, bottom: 10, left: 16, right: 16 })
