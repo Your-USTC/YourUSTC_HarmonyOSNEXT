@@ -31,7 +31,6 @@ export default class EntryFormAbility extends FormExtensionAbility {
     hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${JSON.stringify(message)}`);
     UnifiedPreferences.init(this.context)
     class FormDataClass {
-      detail: string = '';
       todayCourse: ScheduleSources.classAttribute[] = [];
       tomorrowCourse: ScheduleSources.classAttribute[] = [];
       cardListParameter: CardListParameter = new CardListParameter(
@@ -50,8 +49,8 @@ export default class EntryFormAbility extends FormExtensionAbility {
         /* isBottomIcon             */ false,
         /* bottomIcon               */ undefined
       )
+      lastRefresh: string = '';
       constructor() {
-        this.detail = `${formId}`;
         scheduleManager.getFormattedSchedule();
         if (!scheduleManager.isTermEnd) {
           this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
@@ -59,6 +58,8 @@ export default class EntryFormAbility extends FormExtensionAbility {
             (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
         }
         this.cardListParameter.itemCount = this.todayCourse.length;
+        const now = scheduleManager.currentTime;
+        this.lastRefresh = `上次刷新: ${now.getFullYear()}年${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes()}`
       }
     }
 
