@@ -1,26 +1,27 @@
 
-import { fileIo } from '@kit.CoreFileKit'
-import { BusinessError } from '@kit.BasicServicesKit'
+import { application, common, contextConstant, Want } from '@kit.AbilityKit'
 import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
-import { application, common, contextConstant } from '@kit.AbilityKit'
+import { BusinessError } from '@kit.BasicServicesKit'
+import { fileIo } from '@kit.CoreFileKit'
 
-import * as tools from '../utils/tools'
-import { CheckInTools } from '../utils/CheckIn'
-import scheduleManager from '../utils/TimeTable'
-import ItemData from '../view/SettingsComponent'
-import GridComponent from '../view/GridComponent'
-import BgImageDialog from '../view/BgImageDialog'
-import WriteCalendar from '../utils/WriteCalendar'
-import PasswordDialog from '../view/PasswordDialog'
-import BackgroundImage from '../view/BgImageManager'
-import * as FunctionOrder from '../utils/FunctionOrder'
-import SettingsData from '../constants/SettingsSources'
-import UnifiedPreferences from '../utils/UnifyPreference'
-import * as ScheduleSources from '../constants/ScheduleSources'
-import examManager, { examAttribute } from '../utils/ExamManager'
-import { ListDataConstants } from '../constants/ListDataConstants'
 import { GridData, otherGridDataList } from '../constants/GridListDataSources'
+import { ListDataConstants } from '../constants/ListDataConstants'
+import * as ScheduleSources from '../constants/ScheduleSources'
+import SettingsData from '../constants/SettingsSources'
 
+import { CheckInTools } from '../utils/CheckIn'
+import examManager, { examAttribute } from '../utils/ExamManager'
+import * as FunctionOrder from '../utils/FunctionOrder'
+import scheduleManager from '../utils/TimeTable'
+import * as tools from '../utils/tools'
+import UnifiedPreferences from '../utils/UnifyPreference'
+import WriteCalendar from '../utils/WriteCalendar'
+
+import BgImageDialog from '../view/BgImageDialog'
+import BackgroundImage from '../view/BgImageManager'
+import GridComponent from '../view/GridComponent'
+import PasswordDialog from '../view/PasswordDialog'
+import ItemData from '../view/SettingsComponent'
 
 // 滚动条参数
 enum ScrollPosition {
@@ -985,15 +986,29 @@ struct Index {
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
                 case 15:
-                  // 退出到恢复模式
+                  // 进入恢复模式
+                  UnifiedPreferences.deleteSync('initialLaunch')
                   UnifiedPreferences.putSync('RecoveryMode', true);
-                  (this.context as common.UIAbilityContext).terminateSelf((err) => {
-                    if (!err) {
-                      this.context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                        console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-                      })
+                  let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
+                  let want: Want = {
+                    bundleName: 'com.nic.yourustc',
+                    abilityName: 'EntryAbility'
+                  };
+                  try {
+                    applicationContext.restartApp(want);
+                  } catch (error) {
+                    console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
+                    if (error.code === 16000064) {
+                      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                      context.terminateSelf((err) => {
+                        if (!err) {
+                          context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                            console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                          })
+                        }
+                      });
                     }
-                  })
+                  }
                   break;
                 default:
                  this.showMessage($r('app.string.under_construction'));
