@@ -100,6 +100,7 @@ entry/src/main/
     │   └── FaultOccurred.ets               // 恢复模式页面
     │
     ├── constants/
+    │   ├── ScheduleSources.ets             // 课表数据结构
     │   ├── GridListDataSources.ets         // 功能页按钮表
     │   ├── GridListIcons.ets               // 功能页图标表
     │   ├── Links.ets                       // 功能页链接表
@@ -113,11 +114,18 @@ entry/src/main/
     │   ├── FunctionOrder.ets               // 最近使用功能
     │   ├── TimeTable.ets                   // 课表管理类、在线课表获取脚本
     │   ├── tools.ets                       // 公共工具区
-    │   └── UnifyPreference.ets             // 全局共享首选项读写功能
+    │   ├── UnifyPreference.ets             // 全局共享首选项读写功能
+    │   ├── WriteCalendar.ets               // 系统日历读写功能
+    │   │
+    │   ├── jsencrypt/                      // 加密功能
+    │   └── Encryption.ets                  // 加密功能接口
     │
     ├── view/
+    │   ├── BgImageManager.ets              // 背景图片控制
+    │   ├── BgImageDialog.ets               // 背景图片弹窗
     │   ├── GridComponent.ets               // 功能组件
-    │   └── SettingsComponent.ets           // 设置项组件
+    │   ├── SettingsComponent.ets           // 设置项组件
+    │   └── PasswordDialog.ets              // 账号密码弹窗
     │
     │   // 服务卡片
     │
