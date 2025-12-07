@@ -5,6 +5,7 @@ import * as ScheduleSources from '../constants/ScheduleSources';
 import scheduleManager from '../utils/TimeTable';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import UnifiedPreferences, { SCHEDULE_KEY, UID_KEY } from '../utils/UnifyPreference'
+import { CardListParameter } from '../class_schedule_daily/viewmodel/CardListParameter';
 
 const TAG: string = 'EntryFormAbility';
 const DOMAIN_NUMBER: number = 0xFF00;
@@ -26,35 +27,6 @@ export default class EntryFormAbility extends FormExtensionAbility {
     // Called to notify the form provider to update a specified form.
   }
 
-  /*onFormEvent(formId: string, message: string) {
-    // Called when a specified message event defined by the form provider is triggered.
-    const currentTime = new Date();
-    class FormDataClass {
-      todayCourse: ScheduleSources.classAttribute[] = [];
-      isTodayCourseEnd: boolean = true;
-      tomorrowCourse: ScheduleSources.classAttribute[] = [];
-    }
-    let formData = new FormDataClass();
-    scheduleManager.getFormattedSchedule(); // 初始化首页课表
-    if (scheduleManager.isTermEnd) {
-      formData.todayCourse = [];
-      formData.tomorrowCourse = [];
-    } else {
-      formData.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-      formData.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
-    }
-    formData.isTodayCourseEnd = true;
-    for (let todaySingleCourse of formData.todayCourse)
-      if (currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-        + ScheduleSources.commonClassStamp[todaySingleCourse.timeSpan[todaySingleCourse.timeSpan.length - 1]][1]) {
-        formData.isTodayCourseEnd = false;
-        break;
-      }
-    console.log(`卡片：${JSON.stringify(formData.todayCourse)}`)
-    let formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
-    formProvider.updateForm(formId, formInfo).then(() => {}).catch((error: BusinessError) => {});
-  }*/
-
   onFormEvent(formId: string, message: string): void {
     hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${JSON.stringify(message)}`);
     UnifiedPreferences.init(this.context)
@@ -62,16 +34,31 @@ export default class EntryFormAbility extends FormExtensionAbility {
       detail: string = '';
       todayCourse: ScheduleSources.classAttribute[] = [];
       tomorrowCourse: ScheduleSources.classAttribute[] = [];
+      cardListParameter: CardListParameter = new CardListParameter(
+        /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
+        /* title                    */ $r('app.string.schedule_card_title'),
+        /* backgroundImage          */ undefined,
+        /* backgroundImageSize      */ ImageSize.Auto,
+        /* logo                     */ $r('app.media.icon_round'),
+        /* isMask                   */ true,
+        /* maskColor                */ $r('app.color.fade'),
+        /* isItemCount              */ true,
+        /* itemCount                */ 0,
+        /* itemCountColor           */ $r('sys.color.ohos_id_color_emphasize'),
+        /* itemCountBackgroundColor */ $r('app.color.list_item_count_background'),
+        /* titleColor               */ undefined,
+        /* isBottomIcon             */ false,
+        /* bottomIcon               */ undefined
+      )
       constructor() {
-        /*if (scheduleManager.isTermEnd) {
-          formData.todayCourse = [];
-        } else {
-          formData.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-        }*/
-        scheduleManager.getFormattedSchedule();
-        this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-        this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed + (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
         this.detail = `${formId}`;
+        scheduleManager.getFormattedSchedule();
+        if (!scheduleManager.isTermEnd) {
+          this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+          this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+            (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
+        }
+        this.cardListParameter.itemCount = this.todayCourse.length;
       }
     }
 
