@@ -10,12 +10,43 @@ import { CardListParameter } from '../class_schedule_daily/viewmodel/CardListPar
 const TAG: string = 'EntryFormAbility';
 const DOMAIN_NUMBER: number = 0xFF00;
 
+class FormDataClass {
+  todayCourse: ScheduleSources.classAttribute[] = [];
+  tomorrowCourse: ScheduleSources.classAttribute[] = [];
+  cardListParameter: CardListParameter = new CardListParameter(
+    /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
+    /* title                    */ $r('app.string.schedule_card_title'),
+    /* backgroundImage          */ undefined,
+    /* backgroundImageSize      */ ImageSize.Auto,
+    /* isMask                   */ true,
+    /* maskColor                */ $r('app.color.fade'),
+    /* isItemCount              */ true,
+    /* itemCount                */ 0,
+    /* itemCountColor           */ $r('sys.color.ohos_id_color_emphasize'),
+    /* itemCountBackgroundColor */ $r('app.color.list_item_count_background'),
+    /* titleColor               */ undefined,
+    /* isBottomIcon             */ false,
+    /* bottomIcon               */ undefined
+  )
+  lastRefresh: string = '';
+  constructor() {
+    scheduleManager.getFormattedSchedule();
+    if (!scheduleManager.isTermEnd) {
+      this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
+      this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
+        (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
+    }
+    this.cardListParameter.itemCount = this.todayCourse.length;
+    const now = scheduleManager.currentTime;
+    this.lastRefresh = `上次刷新: ${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
+  }
+}
+
 export default class EntryFormAbility extends FormExtensionAbility {
   onAddForm(want: Want) {
     // Called to return a FormBindingData object.
-
-    const formData = '';
-    return formBindingData.createFormBindingData(formData);
+    UnifiedPreferences.init(this.context)
+    return formBindingData.createFormBindingData(new FormDataClass());
   }
 
   onCastToNormalForm(formId: string) {
@@ -29,42 +60,11 @@ export default class EntryFormAbility extends FormExtensionAbility {
 
   onFormEvent(formId: string, message: string): void {
     hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${JSON.stringify(message)}`);
-    UnifiedPreferences.init(this.context)
-    class FormDataClass {
-      todayCourse: ScheduleSources.classAttribute[] = [];
-      tomorrowCourse: ScheduleSources.classAttribute[] = [];
-      cardListParameter: CardListParameter = new CardListParameter(
-        /* backgroundColor          */ $r('sys.color.ohos_id_color_background'),
-        /* title                    */ $r('app.string.schedule_card_title'),
-        /* backgroundImage          */ undefined,
-        /* backgroundImageSize      */ ImageSize.Auto,
-        /* isMask                   */ true,
-        /* maskColor                */ $r('app.color.fade'),
-        /* isItemCount              */ true,
-        /* itemCount                */ 0,
-        /* itemCountColor           */ $r('sys.color.ohos_id_color_emphasize'),
-        /* itemCountBackgroundColor */ $r('app.color.list_item_count_background'),
-        /* titleColor               */ undefined,
-        /* isBottomIcon             */ false,
-        /* bottomIcon               */ undefined
-      )
-      lastRefresh: string = '';
-      constructor() {
-        scheduleManager.getFormattedSchedule();
-        if (!scheduleManager.isTermEnd) {
-          this.todayCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed][scheduleManager.today];
-          this.tomorrowCourse = scheduleManager.formattedSchedule[scheduleManager.weekDisplayed +
-            (scheduleManager.today == 5 ? 1 : 0)][(scheduleManager.today + 1) % 7];
-        }
-        this.cardListParameter.itemCount = this.todayCourse.length;
-        const now = scheduleManager.currentTime;
-        this.lastRefresh = `上次刷新: ${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
-      }
-    }
 
+    UnifiedPreferences.init(this.context)
     let formData = new FormDataClass();
 
-    let formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
+    const formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
       console.info('FormAbility updateForm success')
