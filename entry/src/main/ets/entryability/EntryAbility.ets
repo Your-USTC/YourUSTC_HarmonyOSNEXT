@@ -62,9 +62,12 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want) {
     if (want.parameters?.router) {
-      this.context.windowStage.getMainWindowSync().getUIContext().getRouter().pushUrl({
-        url: want.parameters?.router.toString()
-      }, router.RouterMode.Standard);
+      const windowRouter = this.context.windowStage.getMainWindowSync().getUIContext().getRouter();
+      if (!want.parameters?.router.toString().endsWith(windowRouter.getState().name)) {
+        windowRouter.pushUrl({
+          url: want.parameters?.router.toString()
+        }, router.RouterMode.Standard);
+      }
     }
   }
 
