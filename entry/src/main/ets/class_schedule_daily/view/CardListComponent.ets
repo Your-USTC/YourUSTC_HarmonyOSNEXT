@@ -5,7 +5,7 @@ import { CardListParameter } from '../viewmodel/CardListParameter';
 export struct CardListComponent {
   @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @Link cardListParameter: CardListParameter | undefined;
-  @LocalStorageProp('lastRefresh') lastRefresh: string = '点击右上角按钮刷新';
+  @LocalStorageProp('lastRefresh') lastRefresh: string = '点击右侧按钮刷新';
 
   @Builder
   customBuilder() {
@@ -39,36 +39,26 @@ export struct CardListComponent {
                   .height(16)
                   .borderRadius(8)
               }
-            }.layoutWeight(1)
+            }
+            .layoutWeight(1)
+            Text(this.lastRefresh)
+              .opacity(0.8)
+              .fontSize(14)
+              .margin({ right: 4 })
 
             Image($r('app.media.refresh'))
               .width(24)
               .height(24)
-              .margin({ right: 10 })
               .onClick(() => {
                 postCardAction(this, {
                   action: 'message',
                   params: { msgTest: 'messageEvent' }
                 });
               })
-
-            Image(this.cardListParameter.logo)
-              .width(24)
-              .height(24)
           }
           .width('100%')
-          .alignItems(VerticalAlign.Top)
+          .alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: 4 })
-          Row() {
-            Text(this.lastRefresh)
-              .opacity(0.6)
-              .fontSize(16)
-              .margin({ left: 2 })
-          }
-          .width('100%')
-          .alignItems(VerticalAlign.Top)
-          .justifyContent(FlexAlign.Start)
           .padding({ bottom: 4 })
 
           List() {

@@ -16,7 +16,6 @@ struct Class_schedule_dailyCard {
     /* title                    */ $r('app.string.schedule_card_title'),
     /* backgroundImage          */ undefined,
     /* backgroundImageSize      */ ImageSize.Auto,
-    /* logo                     */ $r('app.media.icon_round'),
     /* isMask                   */ true,
     /* maskColor                */ $r('app.color.fade'),
     /* isItemCount              */ true,
@@ -43,58 +42,44 @@ struct Class_schedule_dailyCard {
       .height(scheduleManager.isTermEnd ? '100%' : undefined)
       .padding({ top: 12, bottom: 12 })
     } else {
-      ListItem() {
-        Row() {
-          Text($r('app.string.schedule_card_title'))
-            .fontSize(15)
-            .margin({ right: 10 })
-            .fontColor($r('app.color.green'))
-          Divider()
-        }
-      }
-      .width('100%')
-      .margin({ left: 5 })
       ForEach(this.todayCourse, (course: ScheduleSources.classAttribute, index: number) => {
-        if (/*this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-          + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000*/1) {
-          Row() {
-            Column() {
-              Text(course.name)
-                .textAlign(TextAlign.Start)
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-                .maxLines(2)
-                .textOverflow({ overflow: TextOverflow.Ellipsis });
-            }
-            .width('50%')
-            .alignItems(HorizontalAlign.Start)
-            .padding({ right: 10 });
-
-            Column() {
-              Text(`\udb81\uddf3 ${course.teacher}`)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
-
-              Text(`\udb80\uddb8 ${course.location}`)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
-
-              Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-            }
-            .width('50%')
-            .alignItems(HorizontalAlign.Start);
+        Row() {
+          Column() {
+            Text(course.name)
+              .textAlign(TextAlign.Start)
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis });
           }
-          .width('90%')
-          .margin({ top: 7, bottom: 7 });
+          .width('50%')
+          .alignItems(HorizontalAlign.Start)
+          .padding({ right: 10 });
 
-          if (index < this.todayCourse.length - 1) {
-            Divider()
-              .width('90%');
+          Column() {
+            Text(`\udb81\uddf3 ${course.teacher}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
+
+            Text(`\udb80\uddb8 ${course.location}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
+
+            Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
+          .width('50%')
+          .alignItems(HorizontalAlign.Start);
+        }
+        .width('90%')
+        .margin({ top: 7, bottom: 7 });
+
+        if (index < this.todayCourse.length - 1) {
+          Divider()
+            .width('90%');
         }
       });
     }
