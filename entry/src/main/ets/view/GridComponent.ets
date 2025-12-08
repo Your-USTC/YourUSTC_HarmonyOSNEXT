@@ -22,6 +22,8 @@ export default struct GridComponent {
           .padding({ left: 8, right: 8})
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+          .opacity(BackgroundImage.opacityLevel)
       }
       .padding({ left: '16vp' })
       .width('100%')
@@ -93,8 +95,9 @@ export default struct GridComponent {
       .rowsGap('8vp')
       .scrollBar(BarState.Off)
       .columnsTemplate('repeat(auto-fit, 70)')
-      .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.grid_background'))
       .backgroundBlurStyle(BackgroundImage.blurLevel)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
 
       if (this.isLastItem) {
         Blank()

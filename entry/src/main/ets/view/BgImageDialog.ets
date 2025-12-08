@@ -9,14 +9,17 @@ import { copyFileExtension } from '../utils/tools';
 
 @CustomDialog
 export default struct BgImageDialog {
-  controller: CustomDialogController;
-  private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel);
-  @State isShown: boolean = BackgroundImage.showImage;
-  @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.confused') : fileUri.getUriFromPath(BackgroundImage.imgPath);
-  @State blurNum: BlurStyle = (BackgroundImage.blurLevel == undefined) ? BlurStyle.COMPONENT_REGULAR : BackgroundImage.blurLevel;
-  private selectResult: string | undefined = undefined;
-  private oriImgPath: string = '';
-  private imageSize: number = 0;
+  controller: CustomDialogController; // 弹窗控制器
+  private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel); // 模糊程度滑动条参数
+  @State opacityNum: number = UnifiedPreferences.getNumberSync('OpacityLevel', 100); // 不透明度
+  @State isShown: boolean = BackgroundImage.showImage; // 显示预览图片
+  @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.confused') : fileUri.getUriFromPath(BackgroundImage.imgPath); //预览图片
+  @State blurNum: BlurStyle = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.Regular); // 模糊程度常数
+  private selectResult: string | undefined = undefined; // 选择图片的结果
+  private oriImgPath: string = ''; // 原始图片路径
+  private imageSize: number = 0; // 图片文件大小
+
+  @State showBlurSlider: boolean = BackgroundImage.backgroundBlur;
 
   windowWidth: number = 1840;
   windowHeight: number = 2800;
@@ -46,7 +49,6 @@ export default struct BgImageDialog {
           .borderRadius(16)
           .objectFit(ImageFit.Contain)
           .onComplete((value) => {
-            console.log('!!', this.imageSize);
             if (value !== undefined) {
               let swapTemp: number;
               if (value.width > value.height){
@@ -66,7 +68,8 @@ export default struct BgImageDialog {
 
         Button($r('app.string.pick_image'))
           .buttonStyle(ButtonStyleMode.NORMAL)
-          .backgroundBlurStyle(this.blurNum)
+          .backgroundBlurStyle(this.showBlurSlider ? this.blurNum : undefined)
+          .opacity(this.showBlurSlider ? 1 : this.opacityNum / 100)
           .onClick(() => {
             try {
               const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
@@ -89,42 +92,61 @@ export default struct BgImageDialog {
             }
           })
       }
-      .margin({ top: 10, bottom: 5 })
+      .margin({ top: 10 })
 
       Row() {
-        Text($r('app.string.grid_background_transparency'))
-        Slider({
-          value: this.sliderNum,
-          min: 0,
-          max: 5,
-          step: 1,
-          style: SliderStyle.InSet
-        })
-          .showSteps(true)
+        Text($r('app.string.background_opaque'))
           .layoutWeight(1)
-          .onChange((value: number) => {
-            this.sliderNum = value;
-            switch (value) {
-              case 0:
-                this.blurNum = BlurStyle.NONE;
-                break;
-              case 1:
-                this.blurNum = BlurStyle.COMPONENT_ULTRA_THIN;
-                break;
-              case 2:
-                this.blurNum = BlurStyle.COMPONENT_THIN;
-                break;
-              case 3:
-                this.blurNum = BlurStyle.COMPONENT_REGULAR;
-                break;
-              case 4:
-                this.blurNum = BlurStyle.COMPONENT_THICK;
-                break;
-              case 5:
-                this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
-                break;
-            }
+          // .textAlign(TextAlign.Start)
+        Toggle({ isOn: BackgroundImage.backgroundBlur, type: ToggleType.Switch })
+          .switchStyle({ unselectedColor: $r('sys.color.ohos_id_color_component_activated') })
+          .onClick(() => {
+            this.showBlurSlider = !this.showBlurSlider;
           })
+        Text($r('app.string.background_blur'))
+          .layoutWeight(1)
+          .textAlign(TextAlign.End)
+      }
+
+      Row() {
+        if (this.showBlurSlider) {
+          Text($r('app.string.grid_background_blur'))
+          Slider({ value: this.sliderNum, min: 0, max: 5, step: 1, style: SliderStyle.InSet })
+            .showSteps(true)
+            .layoutWeight(1)
+            .onChange((value: number) => {
+              this.sliderNum = value;
+              switch (value) {
+                case 0:
+                  this.blurNum = BlurStyle.NONE;
+                  break;
+                case 1:
+                  this.blurNum = BlurStyle.COMPONENT_ULTRA_THIN;
+                  break;
+                case 2:
+                  this.blurNum = BlurStyle.COMPONENT_THIN;
+                  break;
+                case 3:
+                  this.blurNum = BlurStyle.COMPONENT_REGULAR;
+                  break;
+                case 4:
+                  this.blurNum = BlurStyle.COMPONENT_THICK;
+                  break;
+                case 5:
+                  this.blurNum = BlurStyle.COMPONENT_ULTRA_THICK;
+                  break;
+              }
+            })
+        } else {
+          Text($r('app.string.grid_background_opacity'))
+          Slider({ value: this.opacityNum, min: 0, max: 100, step: 1, style: SliderStyle.InSet })
+            .showTips(true)
+            .layoutWeight(1)
+            .onChange((value: number) => {
+              console.log('!!');
+              this.opacityNum = value;
+            });
+        }
       }
       .width('90%');
 
@@ -164,7 +186,9 @@ export default struct BgImageDialog {
             }
 
             UnifiedPreferences.putSync('ShowImage', this.isShown);
+            UnifiedPreferences.putSync('BackgroundBlur', this.showBlurSlider);
             UnifiedPreferences.putSync('BlurLevel', this.blurNum);
+            UnifiedPreferences.putSync('OpacityLevel', this.opacityNum);
             UnifiedPreferences.putSync('FaultOccurred', false);
 
             // 重启

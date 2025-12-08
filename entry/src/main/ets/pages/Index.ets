@@ -206,8 +206,7 @@ struct Index {
           ListItem() {
             Column() {
               Text(item)
-                .fontColor(this.currentListIndex === index ? $r('app.color.active_text') :
-                  $r('app.color.normal_text'))
+                .fontColor(this.currentListIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
                 .fontSize('16fp')
                 .fontWeight(this.currentListIndex === index ? FontWeight.Bold : FontWeight.Normal)
                 .margin({ top: '16vp' })
@@ -237,6 +236,8 @@ struct Index {
     }
     .margin({ top: '16vp', left: '12vp', right: '12vp' })
     .padding({ left: '16vp', right: '16vp' })
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+    .opacity(BackgroundImage.opacityLevel)
     .backgroundBlurStyle(BackgroundImage.blurLevel)
     .borderRadius(12)
   }
@@ -459,7 +460,8 @@ struct Index {
         }
         .width('100%')
         .borderRadius(20)
-        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .opacity(BackgroundImage.opacityLevel)
         .backgroundBlurStyle(BackgroundImage.blurLevel);
       }
 
@@ -652,7 +654,8 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5 })
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
 
       // 考试信息
@@ -786,7 +789,8 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5, bottom: 12 })
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
     }
     .width('100%')
@@ -1022,7 +1026,8 @@ struct Index {
           startMargin: '12vp',
           endMargin: '12vp'
         })
-        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .opacity(BackgroundImage.opacityLevel)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .borderRadius(20)
 
@@ -1109,8 +1114,9 @@ struct Index {
 
     }
     .backgroundColor($r('app.color.shaded_background'))
-    .barBackgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.shaded_background'))
+    .barBackgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
     .barBackgroundBlurStyle(BackgroundImage.blurLevel)
+    .opacity(BackgroundImage.opacityLevel)
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)

@@ -518,10 +518,50 @@ struct Schedule {
           width: { bottom: 1 },
           color: $r('app.color.grid_border')
         })
+
+        // 星期几
+        Row() {
+          Text($r('app.string.class_span'))
+            .fontWeight(FontWeight.Bold)
+            .fontSize(12)
+            .height('100%')
+            .textAlign(TextAlign.Center)
+            .layoutWeight(1)
+            .border({
+              width: { right: 1 },
+              color: $r('app.color.grid_border')
+            })
+          Text(tools.weekTranslate[6])
+            .fontWeight(FontWeight.Bold)
+            .fontSize(12)
+            .textAlign(TextAlign.Center)
+            .height('100%')
+            .layoutWeight(1)
+          ForEach(tools.getContArray([[3, 8]]), (item: number) => {
+            Text(tools.weekTranslate[(item + 4) % 7])
+              .fontWeight(FontWeight.Bold)
+              .fontSize(12)
+              .textAlign(TextAlign.Center)
+              .height('100%')
+              .layoutWeight(1)
+              .border({
+                width: { left: 1 },
+                color: $r('app.color.grid_border')
+              })
+          })
+        }
+        .width('100%')
+        .height(25)
+        .border({
+          width: { bottom: 1 },
+          color: $r('app.color.grid_border')
+        })
       }
       .width('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .backgroundBlurStyle(BackgroundImage.blurLevel)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
 
       /**
        * 课表
@@ -530,29 +570,6 @@ struct Schedule {
         /**
          * 表头
          */
-        // 星期
-        GridItem({ style: GridItemStyle.NONE }) {
-          Row() {
-            ForEach(tools.getContArray([[2, 8]]), (item: number) => {
-              Text(tools.weekTranslate[(item + 4) % 7])
-                .fontWeight(FontWeight.Bold)
-                .fontSize(12)
-                .textAlign(TextAlign.Center)
-                .layoutWeight(1)
-                .border({
-                  width: { bottom: 1, left: 1 },
-                  color: $r('app.color.grid_border')
-                })
-                .height('100%')
-            })
-          }
-        }
-        .rowStart(0)
-        .rowEnd(0)
-        .columnStart(2)
-        .columnEnd(8)
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
-
         GridItem({ style: GridItemStyle.NONE }) {
           Row() {
             // 上午、下午、晚上
@@ -564,7 +581,7 @@ struct Schedule {
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .border({
-                  width: { top: 1, right: 1 },
+                  width: { right: 1 },
                   color: $r('app.color.grid_border')
                 })
 
@@ -594,7 +611,30 @@ struct Schedule {
 
             // 13节课
             Column() {
-              ForEach(tools.getContArray([[1, 13]]), (item: number) => {
+              Column() {
+                Text(ScheduleSources.commonClassTime[1][0])
+                  .fontSize('8fp')
+                  .visibility(this.screenHeight < this.criticalHeight ? Visibility.None : Visibility.Visible)
+
+                Text('1')
+                  .fontWeight(FontWeight.Bold)
+                  .fontSize(14)
+                  .align(Alignment.Center)
+
+                Text(ScheduleSources.commonClassTime[1][1])
+                  .fontSize('8fp')
+                  .visibility(this.screenHeight < this.criticalHeight ? Visibility.None : Visibility.Visible)
+              }
+              .width('100%')
+              .layoutWeight(1)
+              .justifyContent(FlexAlign.SpaceBetween)
+              .padding({ top: 2, bottom: 2 })
+              .border({
+                width: { right: 1 },
+                color: $r('app.color.grid_border')
+              });
+
+              ForEach(tools.getContArray([[2, 13]]), (item: number) => {
                 Column() {
                   Text(ScheduleSources.commonClassTime[item][0])
                     .fontSize('8fp')
@@ -622,17 +662,19 @@ struct Schedule {
             .layoutWeight(1)
           }
         }
-        .rowStart(1)
-        .rowEnd(13)
+        .rowStart(0)
+        .rowEnd(12)
         .columnStart(0)
-        .columnEnd(1)
+        .columnEnd(0)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+        .opacity(BackgroundImage.opacityLevel)
 
         /**
          * 课程内容
          */
-        if (this.thisWeekSchedule.length === 0 || this.thisWeekSchedule.every(subArr => subArr.length === 0))
-          GridItem({style:GridItemStyle.NONE}){
+        if (this.thisWeekSchedule.length === 0 || this.thisWeekSchedule.every(subArr => subArr.length === 0)) {
+          GridItem({ style: GridItemStyle.NONE }) {
             Column() {
               Image($r('app.media.no_course_this_week'))
                 .height(100)
@@ -642,14 +684,21 @@ struct Schedule {
               Text($r('app.string.no_class_this_week')).fontSize(18).textAlign(TextAlign.Center)
             }
             .backgroundBlurStyle(BackgroundImage.blurLevel)
-            .padding({ top: 5, left: 10, right: 10, bottom: 10})
+            .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+            .opacity(BackgroundImage.opacityLevel)
+            .padding({
+              top: 5,
+              left: 10,
+              right: 10,
+              bottom: 10
+            })
             .borderRadius(12);
           }
-          .rowStart(1)
-          .rowEnd(11)
-          .columnStart(2)
-          .columnEnd(8);
-        else
+          .rowStart(0)
+          .rowEnd(10)
+          .columnStart(1)
+          .columnEnd(7);
+        } else {
           ForEach(this.thisWeekSchedule, (course: ScheduleSources.classAttribute[], indexDay) => {
             ForEach(course, (lesson: ScheduleSources.classAttribute) => {
               GridItem({ style: GridItemStyle.PLAIN }) {
@@ -659,7 +708,9 @@ struct Schedule {
                     .fontWeight(FontWeight.Bold)
                     .fontSize(13)
                     .maxLines(this.screenHeight < this.criticalHeight ? 1 : 4)
-                    .textOverflow({ overflow: (this.screenHeight < this.criticalHeight ? TextOverflow.MARQUEE : TextOverflow.Ellipsis) })
+                    .textOverflow({
+                      overflow: (this.screenHeight < this.criticalHeight ? TextOverflow.MARQUEE : TextOverflow.Ellipsis)
+                    })
 
                   Text(lesson.location)
                     .fontColor('#000000')
@@ -683,8 +734,8 @@ struct Schedule {
                 this.oriClassInfo = {
                   name: lesson.name,
                   teacher: lesson.teacher,
-                  weekOfTerm: [...lesson.weekOfTerm],    // 以枚举形式写出哪几周
-                  timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
+                  weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+                  timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
                   dayOfWeek: lesson.dayOfWeek,
                   location: lesson.location,
                   id: lesson.id,
@@ -693,8 +744,8 @@ struct Schedule {
                 this.classInfo = {
                   name: lesson.name,
                   teacher: lesson.teacher,
-                  weekOfTerm: [...lesson.weekOfTerm],    // 以枚举形式写出哪几周
-                  timeSpan: [...lesson.timeSpan],      // 应当仅包含开始和结束是第几节课
+                  weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+                  timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
                   dayOfWeek: lesson.dayOfWeek,
                   location: lesson.location,
                   id: lesson.id,
@@ -702,17 +753,19 @@ struct Schedule {
                 };
                 this.classColor = this.oriClassInfo.color;
                 this.rectifyWeekOfTerm = [];
-                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++)
+                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
                   this.rectifyWeekOfTerm[weekRepeat] = false;
-                for (let weekRepeat of lesson.weekOfTerm)
+                }
+                for (let weekRepeat of lesson.weekOfTerm) {
                   this.rectifyWeekOfTerm[weekRepeat] = true;
+                }
                 this.rectifyTimeSpan = [lesson.timeSpan[0], lesson.timeSpan[lesson.timeSpan.length - 1]];
                 this.showSheet = true;
               })
-              .rowStart(lesson.timeSpan[0])
-              .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1])
-              .columnStart((indexDay + 1) % 7 + 2)
-              .columnEnd((indexDay + 1) % 7 + 2)
+              .rowStart(lesson.timeSpan[0] - 1)
+              .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1] - 1)
+              .columnStart((indexDay + 1) % 7 + 1)
+              .columnEnd((indexDay + 1) % 7 + 1)
               .padding(2)
               .backgroundColor(lesson.color)
               .border({
@@ -721,18 +774,17 @@ struct Schedule {
               });
             });
           });
+        }
       }
-      .id('schedule_grid')
-      .columnsTemplate('1fr 1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 8 列
-      .rowsTemplate(this.screenHeight < this.criticalHeight ?
-        '2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr' :
-        '1fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr 2fr')    // 14 行
-      .margin({ bottom: 48 })
+      // .id('schedule_grid')
+      .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')    // 8 列
+      .rowsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')    // 13 行
+      .margin({ bottom: 75 })
       .padding(0)
-
     }
     .height('100%')
     .width('100%')
+    .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)

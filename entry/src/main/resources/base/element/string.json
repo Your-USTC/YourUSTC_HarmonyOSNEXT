@@ -65,6 +65,10 @@
       "value": "第 %d 周"
     },
     {
+      "name": "class_span",
+      "value": "节数"
+    },
+    {
       "name": "morning",
       "value": "上午"
     },
@@ -157,8 +161,20 @@
       "value": "选择图片…"
     },
     {
-      "name": "grid_background_transparency",
-      "value": "组件背景透明度"
+      "name": "grid_background_blur",
+      "value": "组件背景模糊程度"
+    },
+    {
+      "name": "grid_background_opacity",
+      "value": "组件背景不透明度"
+    },
+    {
+      "name": "background_opaque",
+      "value": "组件透明"
+    },
+    {
+      "name": "background_blur",
+      "value": "组件模糊"
     },
     {
       "name": "ok_and_restart",

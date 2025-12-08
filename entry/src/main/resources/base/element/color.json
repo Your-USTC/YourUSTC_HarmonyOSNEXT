@@ -5,8 +5,8 @@
       "value": "#00FFFFFF"
     },
     {
-      "name": "fade",
-      "value": "#FFFFFFFF"
+      "name": "pure_white_or_black",
+      "value": "#FFFFFF"
     },
     {
       "name": "help_context",

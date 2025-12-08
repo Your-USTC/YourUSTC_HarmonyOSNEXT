@@ -17,7 +17,7 @@ struct Class_schedule_dailyCard {
     /* backgroundImage          */ undefined,
     /* backgroundImageSize      */ ImageSize.Auto,
     /* isMask                   */ true,
-    /* maskColor                */ $r('app.color.fade'),
+    /* maskColor                */ $r('app.color.pure_white_or_black'),
     /* isItemCount              */ true,
     /* itemCount                */ this.todayCourse.length,
     /* itemCountColor           */ $r('sys.color.ohos_id_color_emphasize'),

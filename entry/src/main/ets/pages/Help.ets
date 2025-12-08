@@ -36,7 +36,8 @@ struct Index {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .width('100%')
       .id('header')
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.shaded_background'))
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel)
 
       List({ initialIndex: 0 }) {
@@ -91,7 +92,8 @@ struct Index {
                   .padding({ top: 10, bottom: 10, left: 20, right: 20 })
               }
             }
-            .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+            .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+            .opacity(BackgroundImage.opacityLevel)
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .width('100%')
             .margin({ top: 10 })

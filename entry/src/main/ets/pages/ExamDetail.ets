@@ -500,7 +500,8 @@ struct ExamDetail {
           })
       }
       .width('100%')
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.shaded_background'))
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
@@ -610,7 +611,8 @@ struct ExamDetail {
             .width('100%')
             .padding({ top: 10, bottom: 10, left: 16, right: 16 })
             .margin({ top: 8, bottom: 6 })
-            .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.grid_background'))
+            .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+            .opacity(BackgroundImage.opacityLevel)
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .borderRadius(20)
             .onClick(() => {
