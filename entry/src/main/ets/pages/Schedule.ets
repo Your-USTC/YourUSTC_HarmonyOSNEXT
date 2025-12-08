@@ -784,7 +784,7 @@ struct Schedule {
     }
     .height('100%')
     .width('100%')
-    .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
+    .backgroundColor($r('app.color.normal_background'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)

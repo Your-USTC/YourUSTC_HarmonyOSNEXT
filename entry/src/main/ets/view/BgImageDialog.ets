@@ -139,7 +139,7 @@ export default struct BgImageDialog {
             })
         } else {
           Text($r('app.string.grid_background_opacity'))
-          Slider({ value: this.opacityNum, min: 0, max: 100, step: 1, style: SliderStyle.InSet })
+          Slider({ value: this.opacityNum, min: 25, max: 100, step: 1, style: SliderStyle.InSet })
             .showTips(true)
             .layoutWeight(1)
             .onChange((value: number) => {

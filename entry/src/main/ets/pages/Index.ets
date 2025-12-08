@@ -237,7 +237,6 @@ struct Index {
     .margin({ top: '16vp', left: '12vp', right: '12vp' })
     .padding({ left: '16vp', right: '16vp' })
     .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-    .opacity(BackgroundImage.opacityLevel)
     .backgroundBlurStyle(BackgroundImage.blurLevel)
     .borderRadius(12)
   }
@@ -461,7 +460,6 @@ struct Index {
         .width('100%')
         .borderRadius(20)
         .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-        .opacity(BackgroundImage.opacityLevel)
         .backgroundBlurStyle(BackgroundImage.blurLevel);
       }
 
@@ -655,7 +653,6 @@ struct Index {
       .borderRadius(20)
       .margin({ top: 5 })
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
 
       // 考试信息
@@ -790,7 +787,6 @@ struct Index {
       .borderRadius(20)
       .margin({ top: 5, bottom: 12 })
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-      .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
     }
     .width('100%')
@@ -1027,7 +1023,6 @@ struct Index {
           endMargin: '12vp'
         })
         .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-        .opacity(BackgroundImage.opacityLevel)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .borderRadius(20)
 
@@ -1080,58 +1075,72 @@ struct Index {
    * Tabs 主控程序
    */
   build() {
-    Tabs({
-      barPosition: BarPosition.End,
-      controller: this.tabsController
-    }) {
+    Column() {
+      Tabs({
+        barPosition: BarPosition.End,
+        controller: this.tabsController
+      }) {
 
-      /**
-       * Tab: 首页
-       */
-      TabContent() { this.pageStart() }
-      .padding({ left: 7, right: 7 })
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'), $r('app.media.tab0_unselected')))
+        /**
+         * Tab: 首页
+         */
+        TabContent() {
+          this.pageStart()
+        }
+        .padding({ left: 7, right: 7 })
+        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
+        .tabBar(this.tabBuilder($r('app.string.page_start'), 0, $r('app.media.tab0_selected'),
+          $r('app.media.tab0_unselected')))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
+        /**
+         * Tab: 功能
+         */
+        TabContent() {
+          this.pageFunction()
+        }
+        .padding({ left: 7, right: 7 })
+        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
+        .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'),
+          $r('app.media.tab1_unselected')))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
+        /**
+         * Tab: 设置
+         */
+        TabContent() {
+          this.pageSettings()
+        }
+        .padding({ left: 7, right: 7 })
+        .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
+        .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'),
+          $r('app.media.tab2_unselected')))
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
+      }
+      .barBackgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
+      .barBackgroundBlurStyle(BackgroundImage.blurLevel)
+      .opacity(BackgroundImage.opacityLevel)
+      .barHeight(this.tabHeight)
+      .barWidth(this.tabWidth)
+      .vertical(this.tabHorizontal)
+      .barPosition(BarPosition.End)
+      .barMode(BarMode.Fixed)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
-      /**
-       * Tab: 功能
-       */
-      TabContent() { this.pageFunction() }
-      .padding({ left: 7, right: 7 })
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_function'), 1, $r('app.media.tab1_selected'), $r('app.media.tab1_unselected')))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
-      /**
-       * Tab: 设置
-       */
-      TabContent() { this.pageSettings() }
-      .padding({ left: 7, right: 7 })
-      .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.normal_background'))
-      .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'), $r('app.media.tab2_unselected')))
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
+      .onAnimationStart((index: number, targetIndex: number) => {
+        this.currentIndex = targetIndex;
+        if (this.currentIndex === 1) {
+          FunctionOrder.refreshFunc(); // 刷新点击次数显示
+          this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+        }
+      })
     }
+    .height('100%')
+    .width('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundColor($r('app.color.shaded_background'))
-    .barBackgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
-    .barBackgroundBlurStyle(BackgroundImage.blurLevel)
-    .opacity(BackgroundImage.opacityLevel)
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)
-    .barHeight(this.tabHeight)
-    .barWidth(this.tabWidth)
-    .vertical(this.tabHorizontal)
-    .barPosition(BarPosition.End)
-    .barMode(BarMode.Fixed)
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-    .onAnimationStart((index: number, targetIndex: number) => {
-      this.currentIndex = targetIndex;
-      if (this.currentIndex === 1) {
-        FunctionOrder.refreshFunc(); // 刷新点击次数显示
-        this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-      }
-    })
   }
 }
