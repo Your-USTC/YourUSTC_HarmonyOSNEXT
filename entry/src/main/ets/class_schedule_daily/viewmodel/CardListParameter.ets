@@ -16,8 +16,6 @@ export class CardListParameter {
   title: ResourceStr = '';
   titleColor?: ResourceColor;
 
-  logo?: ResourceStr;
-
   isBottomIcon?: boolean;
   bottomIcon?: ResourceStr;
 
@@ -26,7 +24,6 @@ export class CardListParameter {
     title: ResourceStr,
     backgroundImage?: ResourceStr,
     backgroundImageSize?: ImageSize,
-    logo?: ResourceStr,
     isMask?: boolean,
     maskColor?: ResourceColor,
     isItemCount?: boolean,
@@ -41,7 +38,6 @@ export class CardListParameter {
     this.title = title;
     this.backgroundImage = backgroundImage;
     this.backgroundImageSize = backgroundImageSize;
-    this.logo = logo;
     this.isMask = isMask;
     this.maskColor = maskColor;
     this.isItemCount = isItemCount;

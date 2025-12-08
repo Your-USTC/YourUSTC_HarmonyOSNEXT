@@ -38,7 +38,6 @@ export default class EntryFormAbility extends FormExtensionAbility {
         /* title                    */ $r('app.string.schedule_card_title'),
         /* backgroundImage          */ undefined,
         /* backgroundImageSize      */ ImageSize.Auto,
-        /* logo                     */ $r('app.media.icon_round'),
         /* isMask                   */ true,
         /* maskColor                */ $r('app.color.fade'),
         /* isItemCount              */ true,
@@ -59,7 +58,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
         }
         this.cardListParameter.itemCount = this.todayCourse.length;
         const now = scheduleManager.currentTime;
-        this.lastRefresh = `上次刷新: ${now.getFullYear()}年${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes()}`
+        this.lastRefresh = `上次刷新: ${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
       }
     }
 
