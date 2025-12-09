@@ -107,6 +107,10 @@
           "when": "always"
         },
         "reason": "$string:read_calendar_permission_reason"
+      },
+      {
+        "name": "ohos.permission.ACCESS_BIOMETRIC",
+        "reason": "$string:access_biometric_permission_reason"
       }
     ]
   }

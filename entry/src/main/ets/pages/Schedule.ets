@@ -58,7 +58,8 @@ struct Schedule {
   @State termStart: number = 0;
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
-  @State thisWeekSchedule: ScheduleSources.classAttribute[][] = []; // 第一层：星期几(0-6)；第三层：每天的所有课，不一定按顺序
+  @State thisWeekSchedule: ScheduleSources.classAttribute[][] = []; // 第一层：星期几(0-6)；第二层：每天的所有课，不一定按顺序
+  @State conflictSchedule: ScheduleSources.classAttribute[] = [];
 
   @State showColorHint: boolean = false;
   @Builder
@@ -296,6 +297,13 @@ struct Schedule {
     this.weekStart = scheduleManager.weekStart;
     this.weekEnd = scheduleManager.weekEnd;
     this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+    let tong: boolean[][] = [];
+    for (let i = 0; i < 7; i++) {
+      tong[i] = [];
+      for(let j = 0; j < 14; j++) {
+        tong[i].push(false);
+      }
+    }
 
     // TODO: 将 weekStart 和 weekEnd 存入首选项
     console.info(`课表 weekDisplayed: ${this.weekDisplayed}`)
@@ -1044,12 +1052,13 @@ struct Schedule {
                 .fill(this.isColorLegal ? this.classColor : '#00d00721')
                 .width(32)
                 .height(32)
-                .offset({ x: -4 })
+                .margin(4)
                 .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
                 .bindPopup(this.showColorHint, {
                   builder: this.colorHintPopup(),
                   placement: Placement.Top,
                   width: 300,
+                  arrowPointPosition: ArrowPointPosition.START,
                   onStateChange: (status) => {
                     if (!status.isVisible) {
                       this.showColorHint = false;

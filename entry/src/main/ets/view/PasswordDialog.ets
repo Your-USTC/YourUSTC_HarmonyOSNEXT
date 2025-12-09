@@ -1,6 +1,17 @@
 
 import UnifiedPreferences, { UID_KEY, PASSWORD_KEY, REMIND_KEY } from '../utils/UnifyPreference';
 import accountInfoProvider from '../utils/Encryption';
+import { userAuth } from '@kit.UserAuthenticationKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+/**
+ * authResult 认证结果
+ * 0: 未认证
+ * 1: 认证成功
+ * 2: 认证失败
+ */
+let authResult: number = 0;
 
 @CustomDialog
 export default struct PasswordDialog {
@@ -13,6 +24,7 @@ export default struct PasswordDialog {
 
   private oriInputUID: string = '';
   private oriInputPassword: string = '';
+  @State passwordState: boolean = false;
 
   aboutToAppear(): void {
     if (this.inputUID === null)
@@ -21,6 +33,7 @@ export default struct PasswordDialog {
       this.inputPassword = '';
     this.oriInputUID = this.inputUID;
     this.oriInputPassword = this.inputPassword;
+    authResult = 0;
   }
 
   build() {
@@ -44,14 +57,89 @@ export default struct PasswordDialog {
 
         Row() {
           Text($r('app.string.password'))
+
           TextInput({ text: this.oriInputPassword })
             .type(InputType.Password)
-            .showPasswordIcon(true)
+            .showPasswordIcon(false)
+            .showPassword(this.passwordState)
             .enableAutoFill(false)
             .layoutWeight(1)
             .onChange((value: string) => {
               this.inputPassword = value;
             })
+
+          Button({ buttonStyle: ButtonStyleMode.NORMAL, type: ButtonType.Circle }) {
+            Image(this.passwordState ? $r('app.media.eye') : $r('app.media.eye_slash'))
+              .height(27)
+          }
+          .height(40)
+          .width(40)
+          .margin({ left: 3 })
+          .onClick(() => {
+            if (this.passwordState) {
+              this.passwordState = false;
+              console.log('!!1');
+            } else if (authResult === 1) {
+              this.passwordState = true;
+              console.log('!!2');
+            } else {
+              console.log('!!3');
+              try {
+                authResult = 0;
+                const rand = cryptoFramework.createRandom();
+                let randData: Uint8Array | null = null;
+                let retryCount = 0;
+                while(retryCount < 3){
+                  randData = rand?.generateRandomSync(16)?.data;
+                  if(randData){
+                    break;
+                  }
+                  retryCount++;
+                }
+                if(!randData){
+                  return;
+                }
+                // 设置认证参数。
+                const authParam: userAuth.AuthParam = {
+                  challenge: randData,
+                  authType: [userAuth.UserAuthType.PIN, userAuth.UserAuthType.FACE],
+                  authTrustLevel: userAuth.AuthTrustLevel.ATL3,
+                };
+                // 配置认证界面。
+                const widgetParam: userAuth.WidgetParam = {
+                  title: "输入锁屏密码以查看统一身份认证密码"
+                };
+                // 获取认证对象。
+                const userAuthInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
+                console.info('get userAuth instance success');
+                // 订阅认证结果。
+                userAuthInstance.on('result', {
+                  onResult(result) {
+                    if (result.result === 12500003) { // 失败
+                      authResult = 2;
+                    } else { // 成功
+                      authResult = 1;
+                    }
+                    // 可在认证结束或其他业务需要场景，取消订阅认证结果。
+                    userAuthInstance.off('result');
+                  }
+                });
+                console.info('auth on success');
+                userAuthInstance.start();
+                console.info('auth start success');
+                const intervalId = setInterval(() => {
+                  if (authResult !== 0) {
+                    if (authResult === 1)
+                      this.passwordState = true;
+                    clearInterval(intervalId); // 清除定时器
+                  }
+                }, 500);
+              } catch (error) {
+                const err: BusinessError = error as BusinessError;
+                console.error(`auth catch error. Code is ${err?.code}, message is ${err?.message}`);
+              }
+            }
+          })
         }
       }
       .alignItems(HorizontalAlign.Start)

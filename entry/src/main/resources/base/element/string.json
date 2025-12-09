@@ -577,6 +577,10 @@
       "value": "用于检测是否已写入和考试上课提醒"
     },
     {
+      "name": "access_biometric_permission_reason",
+      "value": "用于确认用户身份，以免向非机主用户显示应用内密码"
+    },
+    {
       "name": "EntryFormAbility_desc",
       "value": "form_description"
     },
