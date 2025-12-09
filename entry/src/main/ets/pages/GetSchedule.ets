@@ -54,7 +54,7 @@ struct Webview {
       Row() {
         Image($r('app.media.close'))
           .padding({ left: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             console.info(`课表页面路由path：${this.getUIContext().getRouter().getLength()}`);
@@ -101,12 +101,12 @@ struct Webview {
         Blank()
         Image($r('app.media.refresh'))
           .padding({ right: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => this.webviewController.refresh())
         Image($r('app.media.get'))
           .padding({ right: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             if (this.autoGetFailed) {

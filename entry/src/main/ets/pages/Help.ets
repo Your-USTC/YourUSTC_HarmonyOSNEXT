@@ -16,7 +16,7 @@ struct Index {
       Row() {
         Image($r('app.media.close'))
           .padding({ left: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             this.getUIContext().getRouter().back();

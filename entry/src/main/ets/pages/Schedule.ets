@@ -5,6 +5,7 @@ import { mediaquery, PopoverDialog, Popup, window } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import * as ScheduleSources from '../constants/ScheduleSources';
 import BackgroundImage from '../view/BgImageManager';
+import { classAttribute } from '../constants/ScheduleSources';
 
 
 @Entry
@@ -58,7 +59,7 @@ struct Schedule {
   @State termStart: number = 0;
   @State weekStart: number = 0;
   @State weekEnd: number = 0;
-  @State thisWeekSchedule: ScheduleSources.classAttribute[][] = []; // 第一层：星期几(0-6)；第二层：每天的所有课，不一定按顺序
+  @State thisWeekSchedule: ScheduleSources.classAttribute[] = [];
   @State conflictSchedule: ScheduleSources.classAttribute[] = [];
 
   @State showColorHint: boolean = false;
@@ -85,11 +86,11 @@ struct Schedule {
    */
   @State showSheet: boolean = false;
   private classInfo: ScheduleSources.classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[], timeSpan: [6, 7], dayOfWeek: 0,
-    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
+    weekOfTerm: [2, 3, 4, 6, 7, 8, 9, 10, 14, 15, 16], timeSpan: [6, 7], dayOfWeek: 0,
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5 };
   private oriClassInfo: ScheduleSources.classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
-    weekOfTerm: [], timeSpan: [6, 7], dayOfWeek: 0,
-    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)] };
+    weekOfTerm: [2, 3, 4, 6, 7, 8, 9, 10, 14, 15, 16], timeSpan: [6, 7], dayOfWeek: 0,
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5 };
 
   private rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
   private rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
@@ -233,6 +234,9 @@ struct Schedule {
    */
   @State showConflictClass: boolean = false;
 
+  /**
+   * 叠课弹窗部分
+   */
   @Builder
   ConflictClass() {
     Column() {
@@ -260,17 +264,88 @@ struct Schedule {
         .margin({ bottom: 5 })
 
       List({ space: 14 }) {
-        ForEach([1, 2, 3, 4, 5, 6, 7], () => {
+        if (this.conflictSchedule.length === 0) {
           ListItem() {
-            Button('test')
-              .onClick(() => {
-                this.showSheet = true;
-              })
+            Column() {
+              Image($r('app.media.no_conflict_class'))
+                .height(120)
+              Text($r('app.string.no_conflict_class'))
+                .fontSize(18)
+            }
+          }
+          .width('100%')
+          .margin({ top: 10 })
+        }
+        ForEach(this.conflictSchedule, (lesson: classAttribute) => {
+          ListItem() {
+            Row() {
+              Text(lesson.name)
+                .textAlign(TextAlign.Start)
+                .fontSize(18)
+                .fontWeight(FontWeight.Bold)
+                .maxLines(2)
+                .width('50%')
+                .textOverflow({ overflow: TextOverflow.Ellipsis });
+
+              Column() {
+                Text(`\udb81\uddf3 ${lesson.teacher}`)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .visibility(lesson.teacher == '' ? Visibility.None : Visibility.Visible);
+
+                Text(`\udb80\uddb8 ${lesson.location}`)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .visibility(lesson.location == '' ? Visibility.None : Visibility.Visible);
+
+                Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[lesson.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[lesson.timeSpan[lesson.timeSpan.length - 1]][1]}`)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              }
+              .width('50%')
+              .alignItems(HorizontalAlign.Start);
+            }
           }
           .width('100%')
           .padding({ top: 10, bottom: 10, left: 16, right: 16 })
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
+          .onClick(() => {
+            this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
+            this.isChangeSchedule = true;
+            this.oriClassInfo = {
+              name: lesson.name,
+              teacher: lesson.teacher,
+              weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+              timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
+              dayOfWeek: lesson.dayOfWeek,
+              location: lesson.location,
+              id: lesson.id,
+              color: lesson.color,
+              priority: lesson.priority
+            };
+            this.classInfo = {
+              name: lesson.name,
+              teacher: lesson.teacher,
+              weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+              timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
+              dayOfWeek: lesson.dayOfWeek,
+              location: lesson.location,
+              id: lesson.id,
+              color: lesson.color,
+              priority: lesson.priority
+            };
+            this.classColor = this.oriClassInfo.color;
+            this.rectifyWeekOfTerm = [];
+            for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+              this.rectifyWeekOfTerm[weekRepeat] = false;
+            }
+            for (let weekRepeat of lesson.weekOfTerm) {
+              this.rectifyWeekOfTerm[weekRepeat] = true;
+            }
+            this.rectifyTimeSpan = [lesson.timeSpan[0], lesson.timeSpan[lesson.timeSpan.length - 1]];
+            this.showSheet = true;
+          })
         })
       }
       .width('100%')
@@ -282,9 +357,41 @@ struct Schedule {
   /*
    * 叠课弹窗部分
    */
-  /*
-   * 叠课弹窗部分
-   */
+
+  sepConflictClass() {
+    this.thisWeekSchedule = [];
+    this.conflictSchedule = [];
+    for (let i = 0; i < 7; i++) {
+      if (scheduleManager.formattedSchedule[this.weekDisplayed][i] != undefined) {
+        let flag: boolean[] = [];
+        let nonConflict: boolean = true;
+        for (let j = 0; j <= 14; j++)
+          flag.push(false);
+        scheduleManager.formattedSchedule[this.weekDisplayed][i].sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return b.priority - a.priority;
+          }
+          return a.timeSpan[0] - b.timeSpan[0];
+        });
+        for (let j of scheduleManager.formattedSchedule[this.weekDisplayed][i]) {
+          nonConflict = true;
+          haveOccupied:
+            for (let k of j.timeSpan) {
+              if (flag[k]) {
+                nonConflict = false;
+                break haveOccupied;
+              }
+              console.log(`!!${j.name} ${k}`)
+              flag[k] = true;
+            }
+          if (nonConflict)
+            this.thisWeekSchedule.push(j);
+          else
+            this.conflictSchedule.push(j);
+        }
+      }
+    }
+  }
 
   onPageShow(): void {
     const currentTime: Date = new Date();
@@ -296,7 +403,7 @@ struct Schedule {
     this.weekDisplayed = scheduleManager.weekDisplayed;
     this.weekStart = scheduleManager.weekStart;
     this.weekEnd = scheduleManager.weekEnd;
-    this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+    this.sepConflictClass();
     let tong: boolean[][] = [];
     for (let i = 0; i < 7; i++) {
       tong[i] = [];
@@ -332,29 +439,34 @@ struct Schedule {
         Row() {
           Image($r('app.media.close'))
             .padding({ left: 12 })
-            .height(20)
+            .height(22)
             .draggable(false)
             .onClick(() => {
               this.getUIContext().getRouter().back();
             })
 
-          Image($r('app.media.pile'))
-            .padding({ left: 12 })
-            .height(20)
-            .draggable(false)
-            .onClick(() => {
-              this.showConflictClass = true;
-            })
-            .bindSheet($$this.showConflictClass, this.ConflictClass(), {
-              detents: [SheetSize.LARGE, SheetSize.MEDIUM],
-              preferType: SheetType.POPUP,
-              backgroundColor: '#00d00721',
-              blurStyle: BlurStyle.Regular,
-              showClose: false,
-              enableOutsideInteractive: false,
-              enableFloatingDragBar: true,
-              mode: SheetMode.OVERLAY
-            })
+          Badge({ count: this.conflictSchedule.length, style: { badgeSize: 14, badgeColor: '#FA2A2D' } }) {
+            Image($r('app.media.pile'))
+              .height(22)
+              .width(22)
+              .draggable(false)
+              .onClick(() => {
+                this.showConflictClass = true;
+              })
+              .bindSheet($$this.showConflictClass, this.ConflictClass(), {
+                detents: [SheetSize.LARGE, SheetSize.MEDIUM],
+                preferType: SheetType.POPUP,
+                backgroundColor: '#00d00721',
+                blurStyle: BlurStyle.Regular,
+                showClose: false,
+                enableOutsideInteractive: false,
+                enableFloatingDragBar: true,
+                mode: SheetMode.OVERLAY
+              })
+          }
+          .height(22)
+          .width(22)
+          .margin({ left: 12 })
 
           Blank()
 
@@ -423,7 +535,7 @@ struct Schedule {
 
           Image($r('app.media.plus_square'))
             .padding({ right: 12 })
-            .height(20)
+            .height(22)
             .draggable(false)
             .onClick(() => {
               this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
@@ -436,7 +548,8 @@ struct Schedule {
                 weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[],
                 timeSpan: [6, 7],
                 dayOfWeek: 0,
-                color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)]
+                color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)],
+                priority: 5
               };
               this.classInfo = {
                 name: '计算机程序设计',
@@ -446,7 +559,8 @@ struct Schedule {
                 weekOfTerm: tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[],
                 timeSpan: [6, 7],
                 dayOfWeek: 0,
-                color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)]
+                color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)],
+                priority: 5
               };
               this.classColor = this.oriClassInfo.color;
               this.rectifyWeekOfTerm = [true, false, true, true, true, false, true, true, true, true, true,
@@ -457,7 +571,7 @@ struct Schedule {
 
           Image($r('app.media.get'))
             .padding({ right: 12 })
-            .height(20)
+            .height(22)
             .draggable(false)
             .onClick(() => {
               this.getUIContext().getRouter().pushUrl({
@@ -494,7 +608,7 @@ struct Schedule {
                 this.weekDisplayed--;
                 this.weekStart -= 604800000;
                 this.weekEnd -= 604800000;
-                this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+                this.sepConflictClass();
               }
             })
 
@@ -514,7 +628,7 @@ struct Schedule {
                 this.weekDisplayed++;
                 this.weekStart += 604800000;
                 this.weekEnd += 604800000;
-                this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+                this.sepConflictClass();
               }
             })
         }
@@ -681,7 +795,7 @@ struct Schedule {
         /**
          * 课程内容
          */
-        if (this.thisWeekSchedule.length === 0 || this.thisWeekSchedule.every(subArr => subArr.length === 0)) {
+        if (this.thisWeekSchedule.length === 0) {
           GridItem({ style: GridItemStyle.NONE }) {
             Column() {
               Image($r('app.media.no_course_this_week'))
@@ -707,79 +821,79 @@ struct Schedule {
           .columnStart(1)
           .columnEnd(7);
         } else {
-          ForEach(this.thisWeekSchedule, (course: ScheduleSources.classAttribute[], indexDay) => {
-            ForEach(course, (lesson: ScheduleSources.classAttribute) => {
-              GridItem({ style: GridItemStyle.PLAIN }) {
-                Column() {
-                  Text(lesson.name)
-                    .fontColor('#000000')
-                    .fontWeight(FontWeight.Bold)
-                    .fontSize(13)
-                    .maxLines(this.screenHeight < this.criticalHeight ? 1 : 4)
-                    .textOverflow({
-                      overflow: (this.screenHeight < this.criticalHeight ? TextOverflow.MARQUEE : TextOverflow.Ellipsis)
-                    })
+          ForEach(this.thisWeekSchedule, (lesson: ScheduleSources.classAttribute) => {
+            GridItem({ style: GridItemStyle.PLAIN }) {
+              Column() {
+                Text(lesson.name)
+                  .fontColor('#000000')
+                  .fontWeight(FontWeight.Bold)
+                  .fontSize(13)
+                  .maxLines(this.screenHeight < this.criticalHeight ? 1 : 4)
+                  .textOverflow({
+                    overflow: (this.screenHeight < this.criticalHeight ? TextOverflow.MARQUEE : TextOverflow.Ellipsis)
+                  })
 
-                  Text(lesson.location)
-                    .fontColor('#000000')
-                    .fontSize(9)
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.MARQUEE })
+                Text(lesson.location)
+                  .fontColor('#000000')
+                  .fontSize(9)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.MARQUEE })
 
-                  Text(lesson.teacher)
-                    .fontColor('#000000')
-                    .fontSize(9)
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.MARQUEE })
-                }
-                .width('100%')
-                .height('100%')
-                .justifyContent(FlexAlign.Center)
+                Text(lesson.teacher)
+                  .fontColor('#000000')
+                  .fontSize(9)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.MARQUEE })
               }
-              .onClick(() => {
-                this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
-                this.isChangeSchedule = true;
-                this.oriClassInfo = {
-                  name: lesson.name,
-                  teacher: lesson.teacher,
-                  weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
-                  timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
-                  dayOfWeek: lesson.dayOfWeek,
-                  location: lesson.location,
-                  id: lesson.id,
-                  color: lesson.color
-                };
-                this.classInfo = {
-                  name: lesson.name,
-                  teacher: lesson.teacher,
-                  weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
-                  timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
-                  dayOfWeek: lesson.dayOfWeek,
-                  location: lesson.location,
-                  id: lesson.id,
-                  color: lesson.color
-                };
-                this.classColor = this.oriClassInfo.color;
-                this.rectifyWeekOfTerm = [];
-                for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
-                  this.rectifyWeekOfTerm[weekRepeat] = false;
-                }
-                for (let weekRepeat of lesson.weekOfTerm) {
-                  this.rectifyWeekOfTerm[weekRepeat] = true;
-                }
-                this.rectifyTimeSpan = [lesson.timeSpan[0], lesson.timeSpan[lesson.timeSpan.length - 1]];
-                this.showSheet = true;
-              })
-              .rowStart(lesson.timeSpan[0] - 1)
-              .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1] - 1)
-              .columnStart((indexDay + 1) % 7 + 1)
-              .columnEnd((indexDay + 1) % 7 + 1)
-              .padding(2)
-              .backgroundColor(lesson.color)
-              .border({
-                width: 1,
-                color: $r('app.color.grid_border')
-              });
+              .width('100%')
+              .height('100%')
+              .justifyContent(FlexAlign.Center)
+            }
+            .onClick(() => {
+              this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
+              this.isChangeSchedule = true;
+              this.oriClassInfo = {
+                name: lesson.name,
+                teacher: lesson.teacher,
+                weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+                timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
+                dayOfWeek: lesson.dayOfWeek,
+                location: lesson.location,
+                id: lesson.id,
+                color: lesson.color,
+                priority: lesson.priority
+              };
+              this.classInfo = {
+                name: lesson.name,
+                teacher: lesson.teacher,
+                weekOfTerm: [...lesson.weekOfTerm], // 以枚举形式写出哪几周
+                timeSpan: [...lesson.timeSpan], // 应当仅包含开始和结束是第几节课
+                dayOfWeek: lesson.dayOfWeek,
+                location: lesson.location,
+                id: lesson.id,
+                color: lesson.color,
+                priority: lesson.priority
+              };
+              this.classColor = this.oriClassInfo.color;
+              this.rectifyWeekOfTerm = [];
+              for (let weekRepeat = 1; weekRepeat <= 20; weekRepeat++) {
+                this.rectifyWeekOfTerm[weekRepeat] = false;
+              }
+              for (let weekRepeat of lesson.weekOfTerm) {
+                this.rectifyWeekOfTerm[weekRepeat] = true;
+              }
+              this.rectifyTimeSpan = [lesson.timeSpan[0], lesson.timeSpan[lesson.timeSpan.length - 1]];
+              this.showSheet = true;
+            })
+            .rowStart(lesson.timeSpan[0] - 1)
+            .rowEnd(lesson.timeSpan[lesson.timeSpan.length - 1] - 1)
+            .columnStart((lesson.dayOfWeek + 1) % 7 + 1)
+            .columnEnd((lesson.dayOfWeek + 1) % 7 + 1)
+            .padding(2)
+            .backgroundColor(lesson.color)
+            .border({
+              width: 1,
+              color: $r('app.color.grid_border')
             });
           });
         }
@@ -835,7 +949,7 @@ struct Schedule {
                 value: $r('app.string.ok'),
                 action: () => {
                   scheduleManager.deleteSchedule(this.oriClassInfo);
-                  this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+                  this.sepConflictClass();
                   this.showSheet = false;
                 }
               },
@@ -870,7 +984,7 @@ struct Schedule {
             }
             this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
             scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
-            this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+            this.sepConflictClass();
             this.showSheet = false;
           })
         }
@@ -945,11 +1059,11 @@ struct Schedule {
             if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
               scheduleManager.deleteSchedule(this.oriClassInfo);
               scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
-              this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+              this.sepConflictClass();
             }
           } else {
             scheduleManager.addSchedule(this.classInfo, this.changeAllColor);
-            this.thisWeekSchedule = scheduleManager.formattedSchedule[this.weekDisplayed];
+            this.sepConflictClass();
           }
           this.showSheet = false;
         });
@@ -1052,13 +1166,12 @@ struct Schedule {
                 .fill(this.isColorLegal ? this.classColor : '#00d00721')
                 .width(32)
                 .height(32)
-                .margin(4)
+                .offset({ x: -4 })
                 .stroke(this.isColorLegal ? $r('app.color.grid_border') : $r('app.color.red'))
                 .bindPopup(this.showColorHint, {
                   builder: this.colorHintPopup(),
                   placement: Placement.Top,
                   width: 300,
-                  arrowPointPosition: ArrowPointPosition.START,
                   onStateChange: (status) => {
                     if (!status.isVisible) {
                       this.showColorHint = false;
@@ -1151,6 +1264,16 @@ struct Schedule {
                 Text((checkboxId).toString()).width(20);
               }
             });
+          }
+
+          Row() {
+            Text($r('app.string.class_detail_priority'))
+            Slider({ min: 1, max: 10, value: this.oriClassInfo.priority, step: 1, style: SliderStyle.InSet })
+              .showSteps(true)
+              .layoutWeight(1)
+              .onChange((value: number) => {
+                this.classInfo.priority = value;
+              })
           }
         }
         .alignItems(HorizontalAlign.Start)

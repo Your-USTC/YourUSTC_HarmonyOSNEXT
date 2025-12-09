@@ -386,14 +386,14 @@ struct ExamDetail {
       Row() {
         Image($r('app.media.close'))
           .padding({ left: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             this.context.getRouter().back();
           })
         Image($r('app.media.refresh'))
           .padding({ left: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             examManager.readStoredExam();
@@ -463,7 +463,7 @@ struct ExamDetail {
         Blank()
         Image($r('app.media.plus_square'))
           .padding({right: 12})
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             this.oriExamInfo = {
@@ -488,7 +488,7 @@ struct ExamDetail {
           })
         Image($r('app.media.get'))
           .padding({ right: 12 })
-          .height(20)
+          .height(22)
           .draggable(false)
           .onClick(() => {
             this.context.getRouter().pushUrl({

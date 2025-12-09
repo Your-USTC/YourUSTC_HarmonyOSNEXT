@@ -337,6 +337,14 @@
       "value": "周数：%s"
     },
     {
+      "name": "class_detail_priority",
+      "value": "优先级："
+    },
+    {
+      "name": "no_conflict_class",
+      "value": "当前没有冲突课程"
+    },
+    {
       "name": "select_all",
       "value": "全选"
     },

@@ -9,7 +9,8 @@ export interface classAttribute {
   dayOfWeek: number,
   location: string,
   id: string,
-  color: string
+  color: string,
+  priority: number
 }
 
 export interface obtainedData {

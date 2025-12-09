@@ -130,6 +130,7 @@ export function areClassAttributesEqual(a: classAttribute, b: classAttribute): b
   if (a.location !== b.location) return false;
   if (a.id !== b.id) return false;
   if (a.color !== b.color) return false;
+  if (a.priority !== b.priority) return false;
 
   // 数组类型通过辅助函数比较
   if (!tools.areNumberArraysEqual(a.weekOfTerm, b.weekOfTerm)) return false;
@@ -147,7 +148,7 @@ class scheduleManager {
   weekStart: number = 0;
   weekEnd: number = 0;
   parsedSchedule: classAttribute[][][] = [[[]]];
-  formattedSchedule: classAttribute[][][] = [[[]]];
+  formattedSchedule: classAttribute[][][] = [[[]]]; // 第一层：周数；第二层：星期几；第三层：这一天的所有课，在Schedule.ets中会按优先级排序
   currentTime: Date = new Date();
   today: number = 0; // 星期几-1
   isTermEnd: boolean = false;
@@ -188,15 +189,18 @@ class scheduleManager {
         if (i != null)
           for (let j of i)
             if (j != null)
-              for (let k of j)
+              for (let k of j) {
                 if (k.color == undefined) {
-                  if (courseToColor.has(k.name))
+                  if (courseToColor.has(k.name)) {
                     k.color = courseToColor.get(k.name) as string;
-                  else {
+                  } else {
                     k.color = tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)];
                     courseToColor.set(k.name, k.color);
                   }
                 }
+                if (k.priority == undefined)
+                  k.priority = 5;
+              }
 
       UnifiedPreferences.putSync(SCHEDULE_KEY, JSON.stringify(this.parsedSchedule));
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);

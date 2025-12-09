@@ -92,12 +92,12 @@ export default struct BgImageDialog {
             }
           })
       }
-      .margin({ top: 10 })
+      .margin({ bottom: 5 })
 
       Row() {
         Text($r('app.string.background_opaque'))
           .layoutWeight(1)
-          // .textAlign(TextAlign.Start)
+          .textAlign(TextAlign.Center)
         Toggle({ isOn: BackgroundImage.backgroundBlur, type: ToggleType.Switch })
           .switchStyle({ unselectedColor: $r('sys.color.ohos_id_color_component_activated') })
           .onClick(() => {
@@ -105,7 +105,7 @@ export default struct BgImageDialog {
           })
         Text($r('app.string.background_blur'))
           .layoutWeight(1)
-          .textAlign(TextAlign.End)
+          .textAlign(TextAlign.Center)
       }
 
       Row() {

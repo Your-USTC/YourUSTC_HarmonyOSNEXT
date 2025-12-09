@@ -48,7 +48,7 @@ export function copyFileExtension(filePath: string): string {
   return ext ? `.${ext}` : '';
 }
 
-export const colorSet: string[] = ["#FFF5C4", "#FFC1AC", "#FFC7CD", "#CCBBFF", "#ACC5FF", "#AEDEFF", "#B7FFFA", "#A4FFD6",
+export const colorSet: string[] = ["#DDFFF5C4", "#DDFFC1AC", "#DDFFC7CD", "#CCBBFF", "#ACC5FF", "#AEDEFF", "#B7FFFA", "#A4FFD6",
   "#D7FF9C", "#DDFFE690", "#FFAF9C", "#FF959C", "#FF7FB6", "#7D6FFF", "#4377FF", "#7DACFF", "#78CEFF", "#66E5FF",
   "#DD5BFF91", "#A375FF", "#2196F3", "#1DE9B6", "#FA6278", "#FF9100", "#2979FF"];
 export const colorSetLen = colorSet.length;
