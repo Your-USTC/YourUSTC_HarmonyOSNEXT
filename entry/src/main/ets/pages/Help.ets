@@ -41,11 +41,13 @@ struct Index {
       .backgroundBlurStyle(BackgroundImage.blurLevel)
 
       List({ initialIndex: 0 }) {
-        ForEach(getContArray([[0, 7]]), (index: number) => {
+        ForEach(getContArray([[0, 8]]), (index: number) => {
           ListItem() {
             Column() {
               Row() {
-                Text($r(`app.string.help${index}_title`));
+                Text($r(`app.string.help${index}_title`))
+                  .margin({ right: 15 })
+                  .fontWeight(FontWeight.Bold);
                 Image($r('app.media.chevron_right'))
                   .height(20)
                   .rotate({ angle: this.rotateAngle[index] })

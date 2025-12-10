@@ -248,6 +248,19 @@ struct Schedule {
           .layoutWeight(1)
           .margin({ left: 8 });
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+          Image($r('app.media.questionmark_circle'))
+            .height(24)
+            .width(24)
+        }
+        .width(42)
+        .height(42)
+        .margin({ right: 8 })
+        .onClick(() => {
+          this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
+            .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+        })
+
+        Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
             .height(24)
             .width(24)
@@ -258,11 +271,7 @@ struct Schedule {
           this.showConflictClass = false;
         })
       }
-      .margin({ bottom: 10 })
-
-      Text($r('app.string.conflict_class_intro'))
-        .fontSize(12)
-        .margin({ bottom: 5 })
+      .margin({ bottom: 5 })
 
       List({ space: 14 }) {
         if (this.conflictSchedule.length === 0) {
