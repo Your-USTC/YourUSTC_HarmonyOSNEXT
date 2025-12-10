@@ -49,9 +49,17 @@ struct About {
               .fontSize(24)
               .fontColor($r('app.color.normal_text'))
               .fontWeight(FontWeight.Bold)
-              .margin({ top: 5, bottom: 10, left: 8, right: 8 })
+              .margin({ top: 5, bottom: 5, left: 8, right: 8 })
               .borderRadius(12)
+          }
+          .margin({ top: 50 })
+          .padding(8)
+          .borderRadius(12)
+          .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+          .opacity(BackgroundImage.opacityLevel)
 
+          Column() {
             Text($r('app.string.no_association1'))
               .fontColor($r('app.color.red'))
               .fontWeight(FontWeight.Bold)
@@ -63,7 +71,7 @@ struct About {
               .width('100%')
               .margin({ top: 5 })
           }
-          .margin({ top: 50 })
+          .margin({ top: 20 })
           .width('90%')
           .padding(8)
           .borderRadius(12)
@@ -137,7 +145,7 @@ struct About {
               .margin({ top: 15 })
           }
           .margin({ top: 20 })
-          .padding({ top: 5, bottom: 5, left: 8, right: 8 })
+          .padding(8)
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)

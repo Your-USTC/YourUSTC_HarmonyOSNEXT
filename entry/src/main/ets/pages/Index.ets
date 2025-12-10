@@ -177,10 +177,42 @@ struct Index {
       this.onPortrait(mediaQueryResult)
     });
     // 首次使用声明
-    if (UnifiedPreferences.getBoolSync('FirstlyHint', true)) {
-      UnifiedPreferences.putSync('FirstlyHint', false);
-      this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
-        .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+    if (UnifiedPreferences.getBoolSync('initialLaunch', true)) {
+      const uiContext: UIContext = this.getUIContext();
+      uiContext.showAlertDialog({
+        title: '使用须知',
+        message: $r('app.string.no_association2'),
+        autoCancel: false,
+        alignment: DialogAlignment.Center,
+        offset: { dx: 0, dy: -20 },
+        buttonDirection: DialogButtonDirection.HORIZONTAL,
+        buttons: [
+          {
+            value: '退出应用',
+            fontColor: Color.Red,
+            action: () => {
+              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+              context.terminateSelf((err) => {
+                if (!err) {
+                  context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                    console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                  })
+                }
+              })
+            }
+          },
+          {
+            value: '我知道了',
+            action: () => {
+              UnifiedPreferences.putSync('initialLaunch', false)
+            }
+          }
+        ],
+        cancel: () => {
+          console.log('Closed callbacks');
+        },
+        onWillDismiss: (dismissDialogAction: DismissDialogAction) => {}
+      })
     }
   }
 
