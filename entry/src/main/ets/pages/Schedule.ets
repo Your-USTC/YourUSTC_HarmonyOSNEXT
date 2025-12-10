@@ -6,6 +6,7 @@ import { common } from '@kit.AbilityKit';
 import * as ScheduleSources from '../constants/ScheduleSources';
 import BackgroundImage from '../view/BgImageManager';
 import { classAttribute } from '../constants/ScheduleSources';
+import { weekTranslate } from '../utils/tools';
 
 
 @Entry
@@ -241,7 +242,7 @@ struct Schedule {
   ConflictClass() {
     Column() {
       Row() {
-        Text($r('app.string.conflict_class_detail'))
+        Text($r('app.string.conflict_class_detail_d', this.weekDisplayed))
           .fontWeight(FontWeight.Bold)
           .fontSize(24)
           .layoutWeight(1)
@@ -284,7 +285,7 @@ struct Schedule {
                 .fontSize(18)
                 .fontWeight(FontWeight.Bold)
                 .maxLines(2)
-                .width('50%')
+                .layoutWeight(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis });
 
               Column() {
@@ -298,11 +299,14 @@ struct Schedule {
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .visibility(lesson.location == '' ? Visibility.None : Visibility.Visible);
 
-                Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[lesson.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[lesson.timeSpan[lesson.timeSpan.length - 1]][1]}`)
+                Text() {
+                  Span('\udb80\udfdc ');
+                  Span(weekTranslate[lesson.dayOfWeek]);
+                  Span(` ${ScheduleSources.commonClassTime[lesson.timeSpan[0]][0]}-${ScheduleSources.commonClassTime[lesson.timeSpan[lesson.timeSpan.length - 1]][1]}`);
+                }
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
-              .width('50%')
               .alignItems(HorizontalAlign.Start);
             }
           }
@@ -450,23 +454,24 @@ struct Schedule {
               .height(22)
               .width(22)
               .draggable(false)
-              .onClick(() => {
-                this.showConflictClass = true;
-              })
-              .bindSheet($$this.showConflictClass, this.ConflictClass(), {
-                detents: [SheetSize.LARGE, SheetSize.MEDIUM],
-                preferType: SheetType.POPUP,
-                backgroundColor: '#00d00721',
-                blurStyle: BlurStyle.Regular,
-                showClose: false,
-                enableOutsideInteractive: false,
-                enableFloatingDragBar: true,
-                mode: SheetMode.OVERLAY
-              })
+              .margin({ left: 12 })
           }
           .height(22)
-          .width(22)
-          .margin({ left: 12 })
+          .width(34)
+          .padding({ left: 12 })
+          .onClick(() => {
+            this.showConflictClass = true;
+          })
+          .bindSheet($$this.showConflictClass, this.ConflictClass(), {
+            detents: [SheetSize.LARGE, SheetSize.MEDIUM],
+            preferType: SheetType.POPUP,
+            backgroundColor: '#00d00721',
+            blurStyle: BlurStyle.Regular,
+            showClose: false,
+            enableOutsideInteractive: false,
+            enableFloatingDragBar: true,
+            mode: SheetMode.OVERLAY
+          })
 
           Blank()
 
@@ -1112,36 +1117,38 @@ struct Schedule {
           }
           .margin({ bottom: 5 });
 
-          Row() {
-            Text($r('app.string.class_detail_time'))
-              .textAlign(TextAlign.Start);
-            Select(this.createArray(1, 13))
-              .value(this.rectifyTimeSpan[0].toString())
-              .onSelect((index: number) => {
-                this.rectifyTimeSpan[0] = index + 1;
-              });
-            Text(' ~ ');
-            Select(this.createArray(1, 13))
-              .value(this.rectifyTimeSpan[1].toString())
-              .onSelect((index: number) => {
-                this.rectifyTimeSpan[1] = index + 1;
-              });
-          }
-          .margin({ bottom: 5 })
+          Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
+            Row() {
+              Text($r('app.string.class_detail_time'))
+                .textAlign(TextAlign.Start);
+              Select(this.createArray(1, 13))
+                .value(this.rectifyTimeSpan[0].toString())
+                .onSelect((index: number) => {
+                  this.rectifyTimeSpan[0] = index + 1;
+                });
+              Text(' ~ ');
+              Select(this.createArray(1, 13))
+                .value(this.rectifyTimeSpan[1].toString())
+                .onSelect((index: number) => {
+                  this.rectifyTimeSpan[1] = index + 1;
+                });
+            }
+            .margin({ bottom: 5, right: 10 })
 
-          Row() {
-            Text($r('app.string.class_detail_day_of_week'))
-              .textAlign(TextAlign.Start);
-            Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') },
-              { value: $r('app.string.wednesday') },
-              { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
-              { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
-              .value(tools.weekTranslate[this.classInfo.dayOfWeek])
-              .onSelect((index: number) => {
-                this.classInfo.dayOfWeek = index;
-              });
+            Row() {
+              Text($r('app.string.class_detail_day_of_week'))
+                .textAlign(TextAlign.Start);
+              Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') },
+                { value: $r('app.string.wednesday') },
+                { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
+                { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
+                .value(tools.weekTranslate[this.classInfo.dayOfWeek])
+                .onSelect((index: number) => {
+                  this.classInfo.dayOfWeek = index;
+                });
+            }
+            .margin({ bottom: 5 })
           }
-          .margin({ bottom: 5 })
 
           Row() {
             Text($r('app.string.class_detail_color'))
@@ -1268,7 +1275,7 @@ struct Schedule {
 
           Row() {
             Text($r('app.string.class_detail_priority'))
-            Slider({ min: 1, max: 10, value: this.oriClassInfo.priority, step: 1, style: SliderStyle.InSet })
+            Slider({ min: 0, max: 10, value: this.oriClassInfo.priority, step: 1, style: SliderStyle.InSet })
               .showSteps(true)
               .layoutWeight(1)
               .onChange((value: number) => {

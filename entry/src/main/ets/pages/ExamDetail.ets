@@ -335,24 +335,14 @@ struct ExamDetail {
         }
 
         Row() {
-          Text($r('app.string.importance'));
-          CounterComponent({
-            options: {
-              type: CounterType.INLINE,
-              inlineOptions: {
-                value: this.oriExamInfo.importance,
-                min: 1,
-                max: 10,
-                step: 1,
-                textWidth: 25,
-                onChange: (value: number) => {
-                  this.newExamInfo.importance = value;
-                }
-              }
-            }
-          })
+          Text($r('app.string.class_detail_priority'));
+          Slider({ min: 0, max: 10, value: this.oriExamInfo.importance, step: 1, style: SliderStyle.InSet })
+            .showSteps(true)
+            .layoutWeight(1)
+            .onChange((value: number) => {
+              this.newExamInfo.importance = value;
+            })
         }
-        .margin({ top: 5 })
       }
       .alignItems(HorizontalAlign.Start)
       .width('90%');

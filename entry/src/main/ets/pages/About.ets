@@ -31,30 +31,27 @@ struct About {
     Stack({ alignContent: Alignment.Top}) {
       Scroll() {
         Column() {
-          Image($r('app.media.ciallo'))
-            .width('90%')
-            .margin({ top: 40 })
-            .draggable(false)
-            .constraintSize({ maxWidth: 300 })
-            .onClick(() => {
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
-              this.iconClickTime++;
-              if (this.iconClickTime >= 7) {
-                this.isShowEggImage = true;
-              }
-            })
-            .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
-
-          Text($r('app.string.welcome_to_your_ustc'))
-            .fontSize(24)
-            .fontColor($r('app.color.normal_text'))
-            .fontWeight(FontWeight.Bold)
-            .margin({ top: 20 })
-            .padding({ top: 5, bottom: 5, left: 8, right: 8 })
-            .borderRadius(12)
-            .backgroundBlurStyle(BackgroundImage.blurLevel)
-
           Column() {
+            Image($r('app.media.ciallo'))
+              .width('90%')
+              .draggable(false)
+              .constraintSize({ maxWidth: 300 })
+              .onClick(() => {
+                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
+                this.iconClickTime++;
+                if (this.iconClickTime >= 7) {
+                  this.isShowEggImage = true;
+                }
+              })
+              .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
+
+            Text($r('app.string.welcome_to_your_ustc'))
+              .fontSize(24)
+              .fontColor($r('app.color.normal_text'))
+              .fontWeight(FontWeight.Bold)
+              .margin({ top: 5, bottom: 10, left: 8, right: 8 })
+              .borderRadius(12)
+
             Text($r('app.string.no_association1'))
               .fontColor($r('app.color.red'))
               .fontWeight(FontWeight.Bold)
@@ -66,11 +63,13 @@ struct About {
               .width('100%')
               .margin({ top: 5 })
           }
+          .margin({ top: 50 })
           .width('90%')
-          .margin({ top: 20 })
-          .padding({ top: 5, bottom: 5, left: 8, right: 8 })
+          .padding(8)
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+          .opacity(BackgroundImage.opacityLevel)
 
           Column() {
             Text($r('app.string.github'))
@@ -91,8 +90,8 @@ struct About {
                 })
               })
 
-            Row() {
-              Text($r('app.string.terms_of_use_and_privacy_policy'))
+            Text() {
+              Span($r('app.string.terms_of_use_and_privacy_policy'))
                 .fontColor($r('app.color.active_text'))
                 .decoration({
                   type: TextDecorationType.Underline,
@@ -110,9 +109,9 @@ struct About {
                   })
                 })
 
-              Text('  |  ')
+              Span('  |  ')
 
-              Text($r('app.string.open_source_license'))
+              Span($r('app.string.open_source_license'))
                 .fontColor($r('app.color.active_text'))
                 .decoration({
                   type: TextDecorationType.Underline,
@@ -135,12 +134,14 @@ struct About {
             Text($r('app.string.credits'))
               .textAlign(TextAlign.Center)
               .lineSpacing({ value: 5, unit: LengthUnit.FP })
-              .margin({ top: 20 })
+              .margin({ top: 15 })
           }
           .margin({ top: 20 })
           .padding({ top: 5, bottom: 5, left: 8, right: 8 })
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+          .opacity(BackgroundImage.opacityLevel)
         }
         .width('100%')
         .justifyContent(FlexAlign.Center)
@@ -160,8 +161,8 @@ struct About {
         }
         .height(42)
         .width(42)
-        .margin({ left: 10 })
         .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundColor((BackgroundImage.showImage && BackgroundImage.blurLevel === undefined) ? $r('app.color.normal_background') : undefined)
         .onClick(() => {
           this.getUIContext().getRouter().back();
         });
@@ -176,8 +177,8 @@ struct About {
         }
         .height(42)
         .width(42)
-        .margin({ right: 10 })
         .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .backgroundColor((BackgroundImage.showImage && BackgroundImage.blurLevel === undefined) ? $r('app.color.normal_background') : undefined)
         .onClick(() => {
           const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在华为应用市场搜索，或者去https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT找到它！');
           const systemPasteboard = pasteboard.getSystemPasteboard();
@@ -191,8 +192,9 @@ struct About {
           });
         });
       }
+      .opacity(BackgroundImage.opacityLevel)
       .width('100%')
-      .padding({ top: 10 })
+      .padding({ top: 10, left: 10, right: 10 })
     }
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)

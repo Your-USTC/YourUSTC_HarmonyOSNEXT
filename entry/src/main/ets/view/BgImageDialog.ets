@@ -148,7 +148,7 @@ export default struct BgImageDialog {
             });
         }
       }
-      .width('90%');
+      .width('95%');
 
       Text($r('app.string.too_large_bg_image'))
         .width('95%')
@@ -157,10 +157,11 @@ export default struct BgImageDialog {
         .maxLines(1)
         .visibility(this.showWarning ? Visibility.Visible : Visibility.None);
 
-      Row() {
-        Image($r('app.media.lightbulb'))
+      Text() {
+        ImageSpan($r('app.media.lightbulb'))
           .height(18)
-        Text($r('app.string.custom_background_hint'))
+          .verticalAlign(ImageSpanAlignment.CENTER)
+        Span($r('app.string.custom_background_hint'))
           .fontSize(12)
           .margin({ left: 3, right: 16 })
       }
@@ -175,6 +176,7 @@ export default struct BgImageDialog {
           .layoutWeight(1)
         Button($r('app.string.ok_and_restart'))
           .layoutWeight(1)
+          .enabled(!this.showWarning)
           .onClick(() => {
             if (this.selectResult !== undefined) {
               const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
