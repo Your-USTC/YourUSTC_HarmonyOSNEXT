@@ -1,7 +1,7 @@
 
 <div align="center">
 
-# <image src="AppScope/resources/base/media/icon_round.png" height="28" width="28"/> 你的科大 <br> <font size="4">for HarmonyOS NEXT</font>
+# <image src="AppScope/resources/base/media/icon_round.png" height="28" width="28"/> 妮可之记 <br> <font size="4">for HarmonyOS NEXT</font>
 
 [![Stars](https://img.shields.io/github/stars/Your-USTC/YourUSTC_HarmonyOSNEXT)](https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT)
 &nbsp;

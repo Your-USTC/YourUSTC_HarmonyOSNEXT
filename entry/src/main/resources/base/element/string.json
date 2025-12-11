@@ -10,7 +10,7 @@
     },
     {
       "name": "EntryAbility_label",
-      "value": "你的科大"
+      "value": "妮可之记"
     },
     {
       "name": "page_start",
@@ -126,11 +126,11 @@
     },
     {
       "name": "about",
-      "value": "关于「你的科大」App"
+      "value": "关于「妮可之记」App"
     },
     {
       "name": "exit_app",
-      "value": "\uDB80\uDC36  退出「你的科大」App"
+      "value": "\uDB80\uDC36  退出「妮可之记」App"
     },
     {
       "name": "show_check_in",
@@ -378,7 +378,7 @@
     },
     {
       "name": "need_calendar_permission",
-      "value": "你需要同意「你的科大」的日历读写权限。"
+      "value": "你需要同意「妮可之记」的日历读写权限。"
     },
     {
       "name": "denied_calendar_permission",
@@ -586,7 +586,7 @@
     },
     {
       "name": "welcome_to_your_ustc",
-      "value": "欢迎来到「你的科大」!"
+      "value": "👋欢迎来到「妮可之记」!👋"
     },
     {
       "name": "EntryFormAbility_label",

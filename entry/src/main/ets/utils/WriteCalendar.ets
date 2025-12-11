@@ -21,13 +21,13 @@ class WriteCalendar {
     name: 'YourUSTC.class_notification',
     type: calendarManager.CalendarType.LOCAL,
     // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
-    displayName: "你的科大上课提醒"
+    displayName: "妮可之记上课提醒"
   };
   readonly calendarAccount_exam: calendarManager.CalendarAccount = {
     name: 'YourUSTC.exam_notification',
     type: calendarManager.CalendarType.LOCAL,
     // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
-    displayName: "你的科大考试提醒"
+    displayName: "妮可之记考试提醒"
   };
 
   initializeCalendar(newContext: UIContext) {
@@ -163,7 +163,7 @@ class WriteCalendar {
       // console.log('requestPermissionsFrom success',JSON.stringify(data))
       let calendar: calendarManager.Calendar | undefined = data;
       if (calendar !== undefined) {
-        // == undefined 时无你的科大创建的日程
+        // == undefined 时无妮可之记创建的日程
         this.calendarMgr?.deleteCalendar(calendar).catch((error: BusinessError) => {
           this.showMessage($r('app.string.denied_calendar_permission'));
         });
