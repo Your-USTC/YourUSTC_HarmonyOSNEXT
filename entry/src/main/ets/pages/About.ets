@@ -46,33 +46,13 @@ struct About {
               .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
 
             Text($r('app.string.welcome_to_your_ustc'))
-              .fontSize(24)
+              .fontSize(22)
               .fontColor($r('app.color.normal_text'))
               .fontWeight(FontWeight.Bold)
               .margin({ top: 5, bottom: 5, left: 8, right: 8 })
               .borderRadius(12)
           }
           .margin({ top: 50 })
-          .padding(8)
-          .borderRadius(12)
-          .backgroundBlurStyle(BackgroundImage.blurLevel)
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-          .opacity(BackgroundImage.opacityLevel)
-
-          Column() {
-            Text($r('app.string.no_association1'))
-              .fontColor($r('app.color.red'))
-              .fontWeight(FontWeight.Bold)
-              .textAlign(TextAlign.Center)
-
-            Text($r('app.string.no_association2'))
-              .fontColor($r('app.color.red'))
-              .fontWeight(FontWeight.Bold)
-              .width('100%')
-              .margin({ top: 5 })
-          }
-          .margin({ top: 20 })
-          .width('90%')
           .padding(8)
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
@@ -184,7 +164,6 @@ struct About {
         .height(42)
         .width(42)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
-        .backgroundColor((BackgroundImage.showImage && BackgroundImage.blurLevel === undefined) ? $r('app.color.normal_background') : undefined)
         .onClick(() => {
           const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「妮可之记」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT~你可以直接在华为应用市场搜索，或者去github找到它！');
           const systemPasteboard = pasteboard.getSystemPasteboard();

@@ -176,44 +176,6 @@ struct Index {
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)
     });
-    // 首次使用声明
-    if (UnifiedPreferences.getBoolSync('initialLaunch', true)) {
-      const uiContext: UIContext = this.getUIContext();
-      uiContext.showAlertDialog({
-        title: '使用须知',
-        message: $r('app.string.no_association2'),
-        autoCancel: false,
-        alignment: DialogAlignment.Center,
-        offset: { dx: 0, dy: -20 },
-        buttonDirection: DialogButtonDirection.HORIZONTAL,
-        buttons: [
-          {
-            value: '退出应用',
-            fontColor: Color.Red,
-            action: () => {
-              const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-              context.terminateSelf((err) => {
-                if (!err) {
-                  context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                    console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-                  })
-                }
-              })
-            }
-          },
-          {
-            value: '我知道了',
-            action: () => {
-              UnifiedPreferences.putSync('initialLaunch', false)
-            }
-          }
-        ],
-        cancel: () => {
-          console.log('Closed callbacks');
-        },
-        onWillDismiss: (dismissDialogAction: DismissDialogAction) => {}
-      })
-    }
   }
 
   aboutToDisappear(): void {
@@ -362,13 +324,13 @@ struct Index {
             this.showExamDetail = !this.showExamDetail;
             UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
           });
-      } else if (item.id == 7) {
+      } else if (item.id == 8) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
           .onClick(() => {
             this.webAutoDarkMode = !this.webAutoDarkMode;
             UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
           });
-      } else { // item.id == 8
+      } else { // item.id == 9
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
           .onClick(() => {
             this.webBackPress = !this.webBackPress;
@@ -951,6 +913,10 @@ struct Index {
                   break;
 
                 case 5:
+                  this.showMessage($r('app.string.under_construction'));
+                  break;
+
+                case 6:
                   // 选择最近使用
                   this.getUIContext().showTextPickerDialog({
                     selected: FunctionOrder.maxRecord - 1,
@@ -966,7 +932,7 @@ struct Index {
                   })
                   break;
 
-                case 6:
+                case 7:
                   // 重置最近使用
                   FunctionOrder.resetFunc();
                   FunctionOrder.refreshFunc(); // 刷新点击次数显示
@@ -974,56 +940,58 @@ struct Index {
                   this.showMessage($r('app.string.have_cleared'));
                   break;
 
-                case 7:
+                case 8:
                   this.webAutoDarkMode = !this.webAutoDarkMode;
                   UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
                   break;
 
-                case 8:
+                case 9:
                   this.webBackPress = !this.webBackPress;
                   UnifiedPreferences.putSync('webBackPress', this.webBackPress);
                   break;
 
-                case 9:
+                case 10:
                   if (WriteCalendar.askForCalendar(1)) {
                     WriteCalendar.deleteCalendar();
                   }
                   break;
 
-                case 10:
+                case 11:
                   if (WriteCalendar.askForCalendar(2)) {
                     WriteCalendar.setClassCalendar();
                   }
                   break;
 
-                case 11:
+                case 12:
                   if (WriteCalendar.askForCalendar(3)) {
                     WriteCalendar.setExamCalendar();
                   }
                   break;
 
-                case 12:
+                case 13:
                   this.clearCache();
                   this.showMessage($r('app.string.wipe_cache_success'));
                   break;
 
-                case 13:
+                case 14:
                   // 帮助
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 14:
+
+                case 15:
                   // 关于
                   this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
                     .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
                   break;
-                case 15:
+
+                case 16:
                   // 进入恢复模式
                   UnifiedPreferences.deleteSync('initialLaunch')
                   UnifiedPreferences.putSync('RecoveryMode', true);
                   let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
                   let want: Want = {
-                    bundleName: 'com.nic.yourustc',
+                    bundleName: 'com.nic.dailynic',
                     abilityName: 'EntryAbility'
                   };
                   try {

@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.nic.yourustc",
+    "bundleName": "com.nic.dailynic",
     "vendor": "$string:developer",
     "versionCode": 1000000,
     "versionName": "1.0.0",
