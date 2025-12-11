@@ -1302,7 +1302,7 @@ struct Schedule {
       .scrollBar(BarState.Auto)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
     }
-    .padding({ top: 16, bottom: 30, left: 16, right: 16})
+    .padding({ top: 16, left: 16, right: 16})
     .width('100%')
     .height('100%')
   }

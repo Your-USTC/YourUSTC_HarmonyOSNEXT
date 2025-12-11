@@ -187,7 +187,7 @@ struct ExamDetail {
           this.showSheet = false;
         });
       }
-      .margin({ bottom: 5 })
+      .margin({ bottom: 10 })
       .width('100%');
 
       Column() {
