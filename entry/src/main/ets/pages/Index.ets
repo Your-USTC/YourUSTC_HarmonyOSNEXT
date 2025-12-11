@@ -176,12 +176,6 @@ struct Index {
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)
     });
-    // 首次使用声明
-    if (UnifiedPreferences.getBoolSync('FirstlyHint', true)) {
-      UnifiedPreferences.putSync('FirstlyHint', false);
-      this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
-        .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
-    }
   }
 
   aboutToDisappear(): void {

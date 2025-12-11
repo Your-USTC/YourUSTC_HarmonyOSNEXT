@@ -464,22 +464,22 @@ struct Schedule {
               .width(22)
               .draggable(false)
               .margin({ left: 12 })
+              .bindSheet($$this.showConflictClass, this.ConflictClass(), {
+                detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+                preferType: SheetType.POPUP,
+                backgroundColor: '#00d00721',
+                blurStyle: BlurStyle.Regular,
+                showClose: false,
+                enableOutsideInteractive: false,
+                enableFloatingDragBar: true,
+                mode: SheetMode.OVERLAY
+              })
           }
           .height(22)
           .width(34)
           .padding({ left: 12 })
           .onClick(() => {
             this.showConflictClass = true;
-          })
-          .bindSheet($$this.showConflictClass, this.ConflictClass(), {
-            detents: [SheetSize.LARGE, SheetSize.MEDIUM],
-            preferType: SheetType.POPUP,
-            backgroundColor: '#00d00721',
-            blurStyle: BlurStyle.Regular,
-            showClose: false,
-            enableOutsideInteractive: false,
-            enableFloatingDragBar: true,
-            mode: SheetMode.OVERLAY
           })
 
           Blank()
@@ -490,7 +490,7 @@ struct Schedule {
             .height(48)
             .bindSheet($$this.showSheet, this.ClassDetailDialog(), {
               // 如果与 gridItem 绑定，会弹出很多个！
-              detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+              detents: [SheetSize.LARGE, SheetSize.MEDIUM],
               preferType: SheetType.CENTER,
               showClose: false,
               scrollSizeMode: ScrollSizeMode.CONTINUOUS,

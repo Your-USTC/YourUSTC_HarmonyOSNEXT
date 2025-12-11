@@ -96,6 +96,9 @@ export const fillInformationJS = `
         const nodeUID = document.getElementById('nameInput');
         const nodePassword = document.querySelector('input[type="password"][maxlength="200"]');
         if (nodeUID && nodePassword) {
+            if (inputPwd) {
+              document.querySelector('div.eyes-icon.ng-star-inserted').style.pointerEvents = 'none';
+            }
             nodeUID.focus();
             nodeUID.value = infoProvider.getUID();
             nodeUID.dispatchEvent(new Event('input', { bubbles: true }));
