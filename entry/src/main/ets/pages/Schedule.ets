@@ -464,22 +464,22 @@ struct Schedule {
               .width(22)
               .draggable(false)
               .margin({ left: 12 })
+              .bindSheet($$this.showConflictClass, this.ConflictClass(), {
+                detents: [SheetSize.LARGE, SheetSize.MEDIUM],
+                preferType: SheetType.POPUP,
+                backgroundColor: '#00d00721',
+                blurStyle: BlurStyle.Regular,
+                showClose: false,
+                enableOutsideInteractive: false,
+                enableFloatingDragBar: true,
+                mode: SheetMode.OVERLAY
+              })
           }
           .height(22)
           .width(34)
           .padding({ left: 12 })
           .onClick(() => {
             this.showConflictClass = true;
-          })
-          .bindSheet($$this.showConflictClass, this.ConflictClass(), {
-            detents: [SheetSize.LARGE, SheetSize.MEDIUM],
-            preferType: SheetType.POPUP,
-            backgroundColor: '#00d00721',
-            blurStyle: BlurStyle.Regular,
-            showClose: false,
-            enableOutsideInteractive: false,
-            enableFloatingDragBar: true,
-            mode: SheetMode.OVERLAY
           })
 
           Blank()
@@ -1302,7 +1302,7 @@ struct Schedule {
       .scrollBar(BarState.Auto)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
     }
-    .padding({ top: 16, bottom: 30, left: 16, right: 16})
+    .padding({ top: 16, left: 16, right: 16})
     .width('100%')
     .height('100%')
   }

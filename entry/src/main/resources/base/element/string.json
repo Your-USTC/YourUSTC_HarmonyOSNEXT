@@ -397,6 +397,10 @@
       "value": "删除"
     },
     {
+      "name": "online_help",
+      "value": "在线帮助"
+    },
+    {
       "name": "help",
       "value": "帮助"
     },

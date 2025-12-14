@@ -782,6 +782,13 @@ struct Index {
       .margin({ top: 5, bottom: 12 })
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
+
+      ListItem() {
+        Button('访问一个不存在的变量！')
+          .onClick(() => {
+            scheduleManager.parsedSchedule[30][0];
+          })
+      }
     }
     .width('100%')
     .height('100%')
@@ -1128,6 +1135,9 @@ struct Index {
       .barMode(BarMode.Fixed)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .onAnimationStart((index: number, targetIndex: number) => {
+        if (index === targetIndex) {
+          return;
+        }
         this.currentIndex = targetIndex;
         if (this.currentIndex === 1) {
           FunctionOrder.refreshFunc(); // 刷新点击次数显示

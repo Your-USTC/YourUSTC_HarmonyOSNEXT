@@ -148,12 +148,9 @@ struct About {
         }
         .height(42)
         .width(42)
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
           this.getUIContext().getRouter().back();
         });
-
-        Blank();
 
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
@@ -163,7 +160,6 @@ struct About {
         }
         .height(42)
         .width(42)
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
           const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「妮可之记」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT~你可以直接在华为应用市场搜索，或者去github找到它！');
           const systemPasteboard = pasteboard.getSystemPasteboard();
@@ -177,6 +173,7 @@ struct About {
           });
         });
       }
+      .justifyContent(FlexAlign.SpaceBetween)
       .opacity(BackgroundImage.opacityLevel)
       .width('100%')
       .padding({ top: 10, left: 10, right: 10 })
