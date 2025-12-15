@@ -72,16 +72,35 @@ struct Schedule {
         message: { text: $r('app.string.more_color_option') },
         showClose: false,
         buttons: [{
-          text: $r('app.string.no_reminding'),
+          text: $r('app.string.next_hint'),
           action: () => {
-            scheduleManager.hideColorHint();
             this.showColorHint = false;
+            this.showScrollHint = true;
           }
         }]
       })
     }
   }
 
+
+  @State showScrollHint: boolean = false;
+  @Builder
+  scrollHintPopup() {
+    Row() {
+      Popup({
+        icon: { image: $r('app.media.lightbulb') },
+        message: { text: $r('app.string.change_detail_size') },
+        showClose: false,
+        buttons: [{
+          text: $r('app.string.no_reminding'),
+          action: () => {
+            scheduleManager.hideColorHint();
+            this.showScrollHint = false;
+          }
+        }]
+      })
+    }
+  }
   /**
    * 详情弹窗部分
    */
@@ -1083,6 +1102,16 @@ struct Schedule {
         });
       }
       .margin({ bottom: 10 })
+      .bindPopup(this.showScrollHint, {
+        builder: this.scrollHintPopup(),
+        placement: Placement.Bottom,
+        width: 300,
+        onStateChange: (status) => {
+          if (!status.isVisible) {
+            this.showScrollHint = false;
+          }
+        }
+      });
 
       Scroll() {
         Column() {

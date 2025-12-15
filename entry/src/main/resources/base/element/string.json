@@ -261,6 +261,10 @@
       "value": "点击此处可以查看更多颜色选项"
     },
     {
+      "name": "change_detail_size",
+      "value": "在手机端或者平板小窗模式下，按住标题栏向上滑动可切换至全屏弹窗"
+    },
+    {
       "name": "class_detail_new",
       "value": "添加课程"
     },
@@ -743,6 +747,10 @@
     {
       "name": "input_later",
       "value": "稍后，你可在设置页面保存学号和密码"
+    },
+    {
+      "name": "next_hint",
+      "value": "下一条 Tip"
     },
     {
       "name": "no_reminding",
