@@ -22,6 +22,7 @@ import BackgroundImage from '../view/BgImageManager'
 import GridComponent from '../view/GridComponent'
 import PasswordDialog from '../view/PasswordDialog'
 import ItemData from '../view/SettingsComponent'
+import customFuncDialog from '../view/customFuncDialog'
 
 // 滚动条参数
 enum ScrollPosition {
@@ -102,6 +103,11 @@ struct Index {
     gridCount: 4
   })
 
+  dialogController3: CustomDialogController = new CustomDialogController({
+    builder: customFuncDialog(),
+    autoCancel: true,
+    gridCount: 4
+  })
   /**
    * 函数: 构建 Tab 按钮
    * @param title 按钮文字
@@ -807,12 +813,13 @@ struct Index {
       Scroll(this.scrollerForScroll) {
         Column() {
           // 常用区 Grid
-          GridComponent({ gridData: this.copyMostUsedFunc, gridIndex: -1 })
+          GridComponent({ gridData: this.copyMostUsedFunc, gridIndex: -1, funcHintController: this.dialogController3 })
           // 常用区下面的所有功能区 GridComponent
           this.listBuilder();
           List({ scroller: this.scrollerForList }) {
             ForEach(otherGridDataList, (item: GridData, index: number) => {
-              GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1, gridIndex: index })
+              GridComponent({ gridData: item, isLastItem: index === otherGridDataList.length - 1,
+                gridIndex: index, funcHintController: this.dialogController3 })
             }, (item: GridData,index:number) => index + JSON.stringify(item))
           }
           .padding({ bottom: '40vp' })
@@ -896,6 +903,7 @@ struct Index {
                 case 0:
                   this.dialogController.open();
                   break;
+
                 case 1:
                   // 显示签到
                   this.showCheckIn = !this.showCheckIn;
@@ -920,7 +928,7 @@ struct Index {
                   break;
 
                 case 5:
-                  this.showMessage($r('app.string.under_construction'));
+                  this.dialogController3.open();
                   break;
 
                 case 6:

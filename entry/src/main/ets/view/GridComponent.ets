@@ -7,6 +7,7 @@ import BackgroundImage from '../view/BgImageManager';
 
 @Component
 export default struct GridComponent {
+  funcHintController?: CustomDialogController;
   @Prop gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
   @State gridIndex: number = 0;
@@ -52,9 +53,8 @@ export default struct GridComponent {
             if (this.gridIndex == -1) {
               if (FunctionOrder.order.length <= index) {
                 this.getUIContext().getPromptAction().showToast({
-                  message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 5).toString()),
-                  // 在 string.ets 里添加时别忘了改 tools.getRandomInt(1, 7)！！
-                  duration: 500
+                  message: $r('app.string.click_empty_gridData' + tools.getRandomInt(1, 5).toString())
+                  // 在 string.ets 里添加时别忘了改 tools.getRandomInt(1, 5)！！
                 });
               }
               else {
@@ -72,10 +72,11 @@ export default struct GridComponent {
             }
             // 跳转 Webview
             else if (LINK.get(this.gridIndex.toString() + '.' + index.toString())?.url.toString() === undefined) { // 未设置对应网址
-              this.getUIContext().getPromptAction().showToast({
-                message: $r('app.string.under_construction'),
-                duration: 500
-              });
+              if (this.funcHintController == undefined) {
+                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.under_construction') });
+              } else {
+                this.funcHintController.open();
+              }
             } else { // 已设置对应网址
               FunctionOrder.recordClick(this.gridIndex, index); // 点击次数+1
               this.getUIContext().getRouter().pushUrl({

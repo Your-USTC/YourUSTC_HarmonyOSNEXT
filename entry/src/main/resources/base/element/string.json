@@ -779,6 +779,26 @@
     {
       "name": "password",
       "value": "密码："
+    },
+    {
+      "name": "custom_function",
+      "value": "你尚未设置功能页常用链接"
+    },
+    {
+      "name": "show_how_to_custom",
+      "value": "点击此处查看如何自定义功能页链接"
+    },
+    {
+      "name": "insiders",
+      "value": "恭喜你完成了所有步骤！"
+    },
+    {
+      "name": "insiders_from_clipboard_failed",
+      "value": "导入失败 \u2022\u1dc4\u0847\u2022\u1dc5  请查看帮助以检查格式是否正确"
+    },
+    {
+      "name": "insiders_from_clipboard",
+      "value": "从剪贴板导入"
     }
   ]
 }
