@@ -72,16 +72,35 @@ struct Schedule {
         message: { text: $r('app.string.more_color_option') },
         showClose: false,
         buttons: [{
-          text: $r('app.string.no_reminding'),
+          text: $r('app.string.next_hint'),
           action: () => {
-            scheduleManager.hideColorHint();
             this.showColorHint = false;
+            this.showScrollHint = true;
           }
         }]
       })
     }
   }
 
+
+  @State showScrollHint: boolean = false;
+  @Builder
+  scrollHintPopup() {
+    Row() {
+      Popup({
+        icon: { image: $r('app.media.lightbulb') },
+        message: { text: $r('app.string.change_detail_size') },
+        showClose: false,
+        buttons: [{
+          text: $r('app.string.no_reminding'),
+          action: () => {
+            scheduleManager.hideColorHint();
+            this.showScrollHint = false;
+          }
+        }]
+      })
+    }
+  }
   /**
    * 详情弹窗部分
    */
@@ -465,7 +484,7 @@ struct Schedule {
               .draggable(false)
               .margin({ left: 12 })
               .bindSheet($$this.showConflictClass, this.ConflictClass(), {
-                detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+                detents: [SheetSize.LARGE, SheetSize.MEDIUM],
                 preferType: SheetType.POPUP,
                 backgroundColor: '#00d00721',
                 blurStyle: BlurStyle.Regular,
@@ -490,7 +509,7 @@ struct Schedule {
             .height(48)
             .bindSheet($$this.showSheet, this.ClassDetailDialog(), {
               // 如果与 gridItem 绑定，会弹出很多个！
-              detents: [SheetSize.LARGE, SheetSize.MEDIUM],
+              detents: [SheetSize.MEDIUM, SheetSize.LARGE],
               preferType: SheetType.CENTER,
               showClose: false,
               scrollSizeMode: ScrollSizeMode.CONTINUOUS,
@@ -1083,6 +1102,16 @@ struct Schedule {
         });
       }
       .margin({ bottom: 10 })
+      .bindPopup(this.showScrollHint, {
+        builder: this.scrollHintPopup(),
+        placement: Placement.Bottom,
+        width: 300,
+        onStateChange: (status) => {
+          if (!status.isVisible) {
+            this.showScrollHint = false;
+          }
+        }
+      });
 
       Scroll() {
         Column() {
