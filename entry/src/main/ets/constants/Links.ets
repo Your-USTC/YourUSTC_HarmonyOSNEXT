@@ -44,7 +44,7 @@ export function setInsiderLink() {
     // 服务与工具
     .set("1.0", { title: $r('app.string.ZhiHuiMenHu'), url: 'http://i.ustc.edu.cn' })
     .set("1.1", { title: $r('app.string.QingChunKeDa'), url: 'https://id.ustc.edu.cn/cas/login?service=https:%2F%2Fyoung.ustc.edu.cn%2Flogin%2Fustc-h5-product%2Fpages%2Flogtransit%2Flogtransit' })
-    .set("1.2", { title: $r('app.string.QingChunKeDaPC'), url: 'https://young.ustc.edu.cn/login' })
+    .set("1.2", { title: $r('app.string.QingChunKeDa'), url: 'https://young.ustc.edu.cn/login' })
     .set("1.3", { title: $r('app.string.KeDaYouXiang'), url: 'http://mail.ustc.edu.cn' })
     .set("1.4", { title: $r('app.string.KeDaYunPan'), url: 'https://pan.ustc.edu.cn/login?redirect=/home/index' })
     .set("1.5", { title: $r('app.string.WangLuoTong'), url: 'https://zczx.ustc.edu.cn/' })

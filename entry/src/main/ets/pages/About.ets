@@ -51,7 +51,7 @@ struct About {
               .fontSize(22)
               .fontColor($r('app.color.normal_text'))
               .fontWeight(FontWeight.Bold)
-              .margin({ bottom: 20 })
+              .margin({ bottom: 10 })
 
           if (this.insiderUser) {
             Text($r('app.string.github'))
