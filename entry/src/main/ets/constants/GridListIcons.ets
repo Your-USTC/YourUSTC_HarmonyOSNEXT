@@ -32,17 +32,18 @@ export let index_to_pic = new Map<string, ResourceStr>()
   // 服务与工具
   .set('1.0', $r('app.media.ZhiHuiMenHu'))              // 智慧门户
   .set('1.1', $r('app.media.QingChunKeDa'))             // 青春科大
-  .set('1.2', $r('app.media.KeDaYouXiang'))             // 科大邮箱
-  .set('1.3', $r('app.media.KeDaYunPan'))               // 科大云盘
-  .set('1.4', $r('app.media.WangLuoTong'))              // 网络通
-  .set('1.5', $r('app.media.YiKaTong'))                 // 一卡通
-  .set('1.6', $r('app.media.ZiZhuDaYin'))               // 自助打印
-  .set('1.7', $r('app.media.BaoXiuDaTing'))             // 报修大厅
-  .set('1.8', $r('app.media.XiaoYiYuan'))               // 校医院
-  .set('1.9', $r('app.media.XueShengYiBao'))            // 学生医保
-  .set('1.10', $r('app.media.Nan7JiShi'))               // 南七集市 (有深浅图标)
-  .set('1.11', $r('app.media.Nan7LunTan'))              // 南七茶馆
-  .set('1.12', $r('app.media.YingXinWang'))             // 迎新网
+  .set('1.2', $r('app.media.QingChunKeDa'))             // 青春科大PC
+  .set('1.3', $r('app.media.KeDaYouXiang'))             // 科大邮箱
+  .set('1.4', $r('app.media.KeDaYunPan'))               // 科大云盘
+  .set('1.5', $r('app.media.WangLuoTong'))              // 网络通
+  .set('1.6', $r('app.media.YiKaTong'))                 // 一卡通
+  .set('1.7', $r('app.media.ZiZhuDaYin'))               // 自助打印
+  .set('1.8', $r('app.media.BaoXiuDaTing'))             // 报修大厅
+  .set('1.9', $r('app.media.XiaoYiYuan'))               // 校医院
+  .set('1.10', $r('app.media.XueShengYiBao'))            // 学生医保
+  .set('1.11', $r('app.media.Nan7JiShi'))               // 南七集市 (有深浅图标)
+  .set('1.12', $r('app.media.Nan7LunTan'))              // 南七茶馆
+  .set('1.13', $r('app.media.YingXinWang'))             // 迎新网
 
   // 信息技术
   .set('2.0', $r('app.media.KeDaVPN'))                  // Web VPN

@@ -49,8 +49,7 @@ struct About {
               .fontSize(22)
               .fontColor($r('app.color.normal_text'))
               .fontWeight(FontWeight.Bold)
-              .margin({ top: 5, bottom: 10, left: 8, right: 8 })
-              .borderRadius(12)
+              .margin({ bottom: 10 })
 
             Text($r('app.string.github'))
               .fontColor($r('app.color.active_text'))

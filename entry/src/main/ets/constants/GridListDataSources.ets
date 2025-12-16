@@ -21,7 +21,7 @@ export class GridData {
 
 // 每个grid所含元素个数&grid总数，添加元素时需要更改
 // 不使用.length因为节省时间
-export const eachGridNum: number[] = [17, 13, 9, 11];
+export const eachGridNum: number[] = [17, 14, 9, 11];
 export const totalGridNum: number = 4;
 
 
@@ -50,6 +50,7 @@ export const otherGridDataList: GridData[] = [
     [
       $r('app.string.ZhiHuiMenHu'),
       $r('app.string.QingChunKeDa'),
+      $r('app.string.QingChunKeDaPC'),
       $r('app.string.KeDaYouXiang'),
       $r('app.string.KeDaYunPan'),
       $r('app.string.WangLuoTong'),
@@ -60,7 +61,7 @@ export const otherGridDataList: GridData[] = [
       $r('app.string.XueShengYiBao'),
       $r('app.string.Nan7JiShi'),
       $r('app.string.Nan7LunTan'),
-      $r('app.string.YingXinWang'),
+      $r('app.string.YingXinWang')
     ]),
   new GridData($r('app.string.XinXiJiShu'),
     [
@@ -72,7 +73,7 @@ export const otherGridDataList: GridData[] = [
       $r('app.string.LUGGitlab'),
       $r('app.string.KeDaOJ'),
       $r('app.string.VlabShiYanZhongXin'),
-      $r('app.string.JiYuanKeYanPingTai'),
+      $r('app.string.JiYuanKeYanPingTai')
     ]
   ),
   new GridData($r('app.string.XueXiao'),
@@ -87,6 +88,6 @@ export const otherGridDataList: GridData[] = [
       $r('app.string.XiaoYuanDiTu'),
       $r('app.string.QuanJingDiTu'),
       $r('app.string.XiaoYuanBanChe'),
-      $r('app.string.YingJuGouPiao'),
+      $r('app.string.YingJuGouPiao')
     ])
 ];
