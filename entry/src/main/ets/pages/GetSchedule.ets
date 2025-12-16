@@ -31,6 +31,7 @@ struct Webview {
     }),
     autoCancel: true
   })
+  private insiderUser: boolean = UnifiedPreferences.getBoolSync('insider', false);
 
   showMessage(message: string | ResourceStr, duration?: number) {
     try {
@@ -70,6 +71,7 @@ struct Webview {
           .padding(({ left: 12, right: 4 }))
           .height(16)
           .draggable(false)
+          .enabled(this.insiderUser)
           .parallelGesture(
             GestureGroup(
               GestureMode.Exclusive,
@@ -110,6 +112,7 @@ struct Webview {
           .padding({ right: 12 })
           .height(22)
           .draggable(false)
+          .enabled(this.insiderUser)
           .onClick(() => {
             if (this.autoGetFailed) {
               if (this.isTimeTablePage && !this.gotTimeTable) {
@@ -210,7 +213,7 @@ struct Webview {
             this.loadingProgress = event.newProgress;
           })
           .onPageBegin(() => {
-            if (!this.shownCustomHint && !UnifiedPreferences.getBoolSync('insider', false)) {
+            if (!this.shownCustomHint && !this.insiderUser) {
               this.shownCustomHint = true;
               this.webviewController.loadUrl('https://ustc.edu.cn');
               this.showMessage($r('app.string.insiders_from_schedule'));
