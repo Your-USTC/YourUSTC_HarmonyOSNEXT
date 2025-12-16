@@ -40,7 +40,7 @@ struct Webview {
     autoCancel: true
   })
 
-  showMessage(message: string | ResourceStr, duration: number) {
+  showMessage(message: string | ResourceStr, duration?: number) {
     try {
       this.getUIContext().getPromptAction().showToast({
         message: message,
@@ -74,7 +74,7 @@ struct Webview {
                 if (this.webviewController.accessForward()) {
                   this.webviewController.forward();
                 } else {
-                  this.showMessage($r('app.string.already_last_page'), 500);
+                  this.showMessage($r('app.string.already_last_page'));
                 }
               }),
             LongPressGesture()
@@ -85,7 +85,7 @@ struct Webview {
                     i++;
                   this.webviewController.backOrForward(i - 1);
                 } else {
-                  this.showMessage($r('app.string.already_last_page'), 500);
+                  this.showMessage($r('app.string.already_last_page'));
                 }
               })
           )
@@ -98,7 +98,7 @@ struct Webview {
             // fileIo.rmdirSync('/data/storage/el2/base/cache/web/Cookies');
             webview.WebCookieManager.clearAllCookiesSync();
             // webview.WebCookieManager.clearSessionCookieSync();
-            this.showMessage($r('app.string.wipe_cache_success'), 500);
+            this.showMessage($r('app.string.wipe_cache_success'));
           } catch (error) {
             console.error(`rmdirSync ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
           }
@@ -109,7 +109,7 @@ struct Webview {
           try {
             // 设置当前内存压力等级为适中，释放少量内存
             webview.WebviewController.trimMemoryByPressureLevel(webview.PressureLevel.MEMORY_PRESSURE_LEVEL_MODERATE);
-            this.showMessage($r('app.string.wipe_cache_success'), 500);
+            this.showMessage($r('app.string.wipe_cache_success'));
           } catch (error) {
             console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
           }
@@ -208,7 +208,7 @@ struct Webview {
                       i--;
                     this.webviewController.backOrForward(i + 1);
                   } else {
-                    this.showMessage($r('app.string.already_first_page'), 500);
+                    this.showMessage($r('app.string.already_first_page'));
                   }
                 })
             )

@@ -1,11 +1,12 @@
 
-import { webview } from '@kit.ArkWeb'
-import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable'
-import { obtainedData } from '../constants/ScheduleSources'
-import { BusinessError } from '@kit.BasicServicesKit'
-import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
-import accountInfoProvider from '../utils/Encryption'
-import PasswordDialog from '../view/PasswordDialog'
+import { webview } from '@kit.ArkWeb';
+import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable';
+import { obtainedData } from '../constants/ScheduleSources';
+import { BusinessError } from '@kit.BasicServicesKit';
+import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference';
+import accountInfoProvider from '../utils/Encryption';
+import PasswordDialog from '../view/PasswordDialog';
+import customFuncDialog from '../view/customFuncDialog';
 
 @Entry
 @Component
@@ -15,6 +16,7 @@ struct Webview {
   url: string = '';
   isTimeTablePage: boolean = false;
   gotTimeTable: boolean = false;
+  shownCustomHint: boolean = false;
   isExamInfoPage: boolean = false;
   gotExamInfo: boolean = false;
   obtainedData: obtainedData = {timeTable: '', startTime: '0'};
@@ -30,7 +32,7 @@ struct Webview {
     autoCancel: true
   })
 
-  showMessage(message: string | ResourceStr, duration: number) {
+  showMessage(message: string | ResourceStr, duration?: number) {
     try {
       this.getUIContext().getPromptAction().showToast({
         message: message,
@@ -208,6 +210,11 @@ struct Webview {
             this.loadingProgress = event.newProgress;
           })
           .onPageBegin(() => {
+            if (!this.shownCustomHint && !UnifiedPreferences.getBoolSync('insider', false)) {
+              this.shownCustomHint = true;
+              this.webviewController.loadUrl('https://ustc.edu.cn');
+              this.showMessage($r('app.string.insiders_from_schedule'));
+            }
             this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-table');
             this.isExamInfoPage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/exam-arrange');
             if (/*!this.isTimeTablePage &&*/ this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {

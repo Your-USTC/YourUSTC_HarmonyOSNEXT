@@ -119,7 +119,7 @@ struct Index {
     List({ initialIndex: 0 }) {
       ListItem().height(52)
 
-      ForEach(getContArray([[0, 8]]), (index: number) => {
+      ForEach(getContArray([[0, 6]]), (index: number) => {
         ListItem() {
           Column() {
             Row() {
