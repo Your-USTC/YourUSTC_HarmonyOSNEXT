@@ -2,7 +2,7 @@ import { BusinessError, pasteboard } from "@kit.BasicServicesKit";
 import UnifiedPreferences from '../utils/UnifyPreference';
 import { setInsiderLink, LINK } from '../constants/Links';
 
-const CERTAIN_KEY: string = "The world will not open itself before those with ignoble hearts."
+const CERTAIN_KEY: string = "The world will not open itself before those with ignoble hearts"
 interface num_to_key {
   num: string,
   title: string,
@@ -57,7 +57,7 @@ export default struct customFuncDialog {
                 }
                 const pasteText: string = pasteData.getPrimaryText();
                 try {
-                  if (pasteText.includes(CERTAIN_KEY.slice(0, 10) + CERTAIN_KEY.slice(19, 49) + CERTAIN_KEY.slice(51, 64))) {
+                  if (pasteText.includes(CERTAIN_KEY.slice(0, 10) + CERTAIN_KEY.slice(19, 49) + CERTAIN_KEY.slice(51, 63))) {
                     UnifiedPreferences.putSync('insider', true);
                     setInsiderLink();
                     this.insiderUser = true;

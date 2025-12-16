@@ -6,15 +6,17 @@ import { image } from '@kit.ImageKit'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { getRandomInt } from '../utils/tools'
 import BackgroundImage from '../view/BgImageManager'
+import UnifiedPreference from '../utils/UnifyPreference'
 
 @Entry
 @Component
 struct About {
 
-  private context = this.getUIContext()
-  private iconClickTime: number = 0
-  @State isShowEggImage: boolean = false
-  @State imagePixelMap?: image.PixelMap = undefined
+  private context = this.getUIContext();
+  private iconClickTime: number = 0;
+  @State isShowEggImage: boolean = false;
+  @State imagePixelMap?: image.PixelMap = undefined;
+  insiderUser: boolean = UnifiedPreference.getBoolSync('insider', false);
 
   async aboutToAppear() {
     console.log('aboutToAppear!!')
@@ -49,17 +51,9 @@ struct About {
               .fontSize(22)
               .fontColor($r('app.color.normal_text'))
               .fontWeight(FontWeight.Bold)
-              .margin({ top: 5, bottom: 5, left: 8, right: 8 })
-              .borderRadius(12)
-          }
-          .margin({ top: 50 })
-          .padding(8)
-          .borderRadius(12)
-          .backgroundBlurStyle(BackgroundImage.blurLevel)
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-          .opacity(BackgroundImage.opacityLevel)
+              .margin({ bottom: 20 })
 
-          Column() {
+          if (this.insiderUser) {
             Text($r('app.string.github'))
               .fontColor($r('app.color.active_text'))
               .decoration({
@@ -77,45 +71,46 @@ struct About {
                   console.error(`Router ERROR: [${err.name}] ${err.message}`)
                 })
               })
+          }
 
-            Text() {
-              Span($r('app.string.terms_of_use_and_privacy_policy'))
-                .fontColor($r('app.color.active_text'))
-                .decoration({
-                  type: TextDecorationType.Underline,
-                  color: $r('app.color.active_text')
+          Text() {
+            Span($r('app.string.terms_of_use_and_privacy_policy'))
+              .fontColor($r('app.color.active_text'))
+              .decoration({
+                type: TextDecorationType.Underline,
+                color: $r('app.color.active_text')
+              })
+              .onClick(() => {
+                this.context.getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: {
+                    title: $r('app.string.terms_of_use_and_privacy_policy'),
+                    url: $rawfile('TermsOfUse.html')
+                  }
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
                 })
-                .onClick(() => {
-                  this.context.getRouter().pushUrl({
-                    url: 'pages/Webview',
-                    params: {
-                      title: $r('app.string.terms_of_use_and_privacy_policy'),
-                      url: $rawfile('TermsOfUse.html')
-                    }
-                  }).catch((err: Error) => {
-                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                  })
-                })
+              })
 
-              Span('  |  ')
+            Span('  |  ')
 
-              Span($r('app.string.open_source_license'))
-                .fontColor($r('app.color.active_text'))
-                .decoration({
-                  type: TextDecorationType.Underline,
-                  color: $r('app.color.active_text')
+            Span($r('app.string.open_source_license'))
+              .fontColor($r('app.color.active_text'))
+              .decoration({
+                type: TextDecorationType.Underline,
+                color: $r('app.color.active_text')
+              })
+              .onClick(() => {
+                this.context.getRouter().pushUrl({
+                  url: 'pages/Webview',
+                  params: {
+                    title: $r('app.string.open_source_license'),
+                    url: $rawfile('OpenSourceLicense.html')
+                  }
+                }).catch((err: Error) => {
+                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
                 })
-                .onClick(() => {
-                  this.context.getRouter().pushUrl({
-                    url: 'pages/Webview',
-                    params: {
-                      title: $r('app.string.open_source_license'),
-                      url: $rawfile('OpenSourceLicense.html')
-                    }
-                  }).catch((err: Error) => {
-                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                  })
-                })
+              })
             }
             .margin({ top: 5 })
 
@@ -124,7 +119,7 @@ struct About {
               .lineSpacing({ value: 5, unit: LengthUnit.FP })
               .margin({ top: 15 })
           }
-          .margin({ top: 20 })
+          .margin({ top: 50 })
           .padding(8)
           .borderRadius(12)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
@@ -161,7 +156,7 @@ struct About {
         .height(42)
         .width(42)
         .onClick(() => {
-          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「妮可之记」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT~你可以直接在华为应用市场搜索，或者去github找到它！');
+          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「妮可之记」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT~你可以直接在华为应用市场搜索' + (this.insiderUser ? '，或者去github找到它！' : ''));
           const systemPasteboard = pasteboard.getSystemPasteboard();
           systemPasteboard.setData(pasteboardData);
           systemPasteboard.getData().then((data) => {
