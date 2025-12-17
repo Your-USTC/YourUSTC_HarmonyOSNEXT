@@ -17,6 +17,10 @@
       "value": "#101015"
     },
     {
+      "name": "help_webview",
+      "value": "#1e1e1e"
+    },
+    {
       "name": "normal_background_transparent",
       "value": "#AA101015"
     },

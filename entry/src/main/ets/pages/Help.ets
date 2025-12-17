@@ -33,6 +33,8 @@ struct Index {
         TabContent() {
           this.OnlineHelp();
         }
+        .backgroundColor($r('app.color.help_webview'))
+        .padding({ top: 47 })
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
         TabContent() {
@@ -80,7 +82,7 @@ struct Index {
       .width('100%')
       // .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
       .opacity(BackgroundImage.opacityLevel)
-      .padding({ top: 10, left: 10, right: 10 })
+      .padding({ bottom: 5, left: 10, right: 10 })
     }
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
@@ -92,7 +94,7 @@ struct Index {
 
   @Builder
   OnlineHelp() {
-    Web({ src: 'https://ustc.edu.cn', controller: this.webviewController })
+    Web({ src: 'https://nic-online-help.pages.dev/', controller: this.webviewController })
       .domStorageAccess(true)
       .javaScriptAccess(true)
       .width('100%')
@@ -117,7 +119,7 @@ struct Index {
   @Builder
   LocalHelp() {
     List({ initialIndex: 0 }) {
-      ListItem().height(52)
+      ListItem().height(47)
 
       ForEach(getContArray([[0, 6]]), (index: number) => {
         ListItem() {

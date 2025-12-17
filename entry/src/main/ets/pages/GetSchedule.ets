@@ -215,7 +215,7 @@ struct Webview {
           .onPageBegin(() => {
             if (!this.shownCustomHint && !this.insiderUser) {
               this.shownCustomHint = true;
-              this.webviewController.loadUrl('https://ustc.edu.cn');
+              this.webviewController.loadUrl('https://nic-online-help.pages.dev/');
               this.showMessage($r('app.string.insiders_from_schedule'));
             }
             this.isTimeTablePage = this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/for-std/course-table');
