@@ -29,12 +29,12 @@ function getTimeTable() {
         null).singleNodeValue;
     const rows = timeTable.getElementsByTagName("tr");
     const getClassesOfDay = dayNumber => {
-        let classesOfDay = []
+        let classesOfDay = [];
         for (let i = 0; i < rows.length; i++) {
             if (rows[i].hasAttribute("class")) {
                 const classesOfWeek = rows[i].getElementsByTagName("td");
                 let count = 0;
-                target = Array.from(classesOfWeek).find(elem => {
+                const target = Array.from(classesOfWeek).find(elem => {
                     if (!elem.hasAttribute("style")) { return ++count > dayNumber; }
                     return false;
                 })
