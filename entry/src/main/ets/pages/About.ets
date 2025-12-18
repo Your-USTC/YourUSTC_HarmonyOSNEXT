@@ -125,7 +125,6 @@ struct About {
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
           .opacity(BackgroundImage.opacityLevel)
-          .opacity(BackgroundImage.opacityLevel)
         }
         .width('100%')
         .justifyContent(FlexAlign.Center)

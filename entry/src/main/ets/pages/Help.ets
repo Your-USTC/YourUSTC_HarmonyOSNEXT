@@ -45,6 +45,7 @@ struct Index {
       .width('100%')
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .opacity(BackgroundImage.opacityLevel)
       .barHeight(0)
       .onAnimationStart((index: number, targetIndex: number, event: TabsAnimationEvent) => {
         if (index === targetIndex) {
@@ -80,11 +81,11 @@ struct Index {
           .width(42)
           .visibility(this.showLoading ? Visibility.Visible : Visibility.Hidden)
       }
+      .opacity(BackgroundImage.opacityLevel)
       .justifyContent(FlexAlign.SpaceBetween)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .width('100%')
       // .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
-      .opacity(BackgroundImage.opacityLevel)
       .padding({ bottom: 5, left: 10, right: 10 })
     }
     .backgroundImage(BackgroundImage.pic)
@@ -190,7 +191,6 @@ struct Index {
             }
           }
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-          .opacity(BackgroundImage.opacityLevel)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .width('100%')
           .margin({ top: 10 })
