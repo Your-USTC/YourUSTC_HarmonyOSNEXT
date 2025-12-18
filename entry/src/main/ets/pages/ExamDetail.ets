@@ -505,6 +505,8 @@ struct ExamDetail {
             Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center);
           }
           .backgroundBlurStyle(BackgroundImage.blurLevel)
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+          .opacity(BackgroundImage.opacityLevel)
           .padding({ top: 5, left: 10, right: 10, bottom: 10})
           .borderRadius(12);
         }
