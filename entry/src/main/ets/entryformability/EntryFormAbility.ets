@@ -38,7 +38,7 @@ class FormDataClass {
     }
     this.cardListParameter.itemCount = this.todayCourse.length;
     const now = scheduleManager.currentTime;
-    this.lastRefresh = `上次刷新: ${now.getMonth()}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
+    this.lastRefresh = `上次刷新: ${now.getMonth() + 1}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
   }
 }
 
