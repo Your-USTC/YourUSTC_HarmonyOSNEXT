@@ -6,9 +6,10 @@ import { common } from '@kit.AbilityKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
-import { fillInformationJS } from '../utils/TimeTable'
-import accountInfoProvider from '../utils/Encryption'
-import PasswordDialog from '../view/PasswordDialog'
+import { fillInformationJS } from '../utils/TimeTable';
+import accountInfoProvider from '../utils/Encryption';
+import PasswordDialog from '../view/PasswordDialog';
+import BackgroundImage from '../view/BgImageManager';
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
@@ -234,10 +235,13 @@ struct Webview {
       .id('header')
       .width('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
-      .backgroundColor($r('app.color.shaded_background'))
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
 
       Stack({ alignContent: Alignment.TopStart}) {
         Web({ src: this.url, controller: this.webviewController })
+          .backgroundColor('#00d00721')
+          .opacity(BackgroundImage.opacityLevel)
           .javaScriptProxy({
             object: accountInfoProvider,
             name: "infoProvider",
@@ -457,6 +461,7 @@ struct Webview {
           .height(5)
           .startPoint([0, 0])
           .backgroundColor($r('app.color.pink'))
+
         Row() {
           Row({ space: 5 }) {
             LoadingProgress()
@@ -466,8 +471,8 @@ struct Webview {
             Text($r('app.string.loading'))
               .fontColor($r('app.color.pink'));
           }
-          .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible);
-          Blank();
+          .visibility(this.loadingProgress === 100 ? Visibility.Hidden : Visibility.Visible);
+
           Row({ space: 5 }) {
             Text($r('app.string.downloading_d', this.downloadItemNum))
               .fontColor($r('app.color.pink'));
@@ -478,16 +483,23 @@ struct Webview {
           }
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
+          .margin({ top: 5 })
           .padding({ left: 13, top: 5, right: 5, bottom: 5})
-          .visibility(this.downloadItemTotal === 0 ? Visibility.None : Visibility.Visible);
+          .visibility(this.downloadItemTotal === 0 ? Visibility.Hidden : Visibility.Visible);
         }
+        .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Top)
         .width('100%')
-        .padding({ left: 5, top: 5, right: 5 })
+        .padding({ left: 5, right: 5 })
         .hitTestBehavior(HitTestMode.Transparent)
       }
       .layoutWeight(1)
     }
+    .backgroundBlurStyle(BackgroundImage.blurLevel)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .backgroundImage(BackgroundImage.pic)
+    .backgroundImageSize(ImageSize.Cover)
+    .backgroundImagePosition(Alignment.Center)
   }
 }
 
