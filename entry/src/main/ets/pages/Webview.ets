@@ -483,14 +483,13 @@ struct Webview {
           }
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
-          .margin({ top: 5 })
           .padding({ left: 13, top: 5, right: 5, bottom: 5})
           .visibility(this.downloadItemTotal === 0 ? Visibility.Hidden : Visibility.Visible);
         }
         .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Top)
         .width('100%')
-        .padding({ left: 5, right: 5 })
+        .padding({ left: 5, top: 5, right: 5 })
         .hitTestBehavior(HitTestMode.Transparent)
       }
       .layoutWeight(1)
