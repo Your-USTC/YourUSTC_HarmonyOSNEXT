@@ -17,6 +17,7 @@ struct Index {
     buttons: [{ text: $r('app.string.online_help') }, { text: $r('app.string.help') }] as ItemRestriction<SegmentButtonTextItem>,
     backgroundBlurStyle: BackgroundImage.blurLevel
   });
+  @State showLoading: boolean = true;
 
   @State @Watch('onSegmentButtonChange') tabSelectedIndexes: number[] = [0];
   private tabsController: TabsController = new TabsController();
@@ -33,7 +34,6 @@ struct Index {
         TabContent() {
           this.OnlineHelp();
         }
-        .backgroundColor($r('app.color.help_webview'))
         .padding({ top: 47 })
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
@@ -67,8 +67,6 @@ struct Index {
           this.getUIContext().getRouter().back();
         })
 
-        Blank()
-
         SegmentButton({
           options: this.tabOptions,
           selectedIndexes: $tabSelectedIndexes,
@@ -76,8 +74,13 @@ struct Index {
           .width('50%')
           .constraintSize({ maxWidth: 500 })
 
-        Blank().margin({ right: 32 })
+        LoadingProgress()
+          .color($r('app.color.pink'))
+          .height(42)
+          .width(42)
+          .visibility(this.showLoading ? Visibility.Visible : Visibility.Hidden)
       }
+      .justifyContent(FlexAlign.SpaceBetween)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .width('100%')
       // .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
@@ -100,11 +103,20 @@ struct Index {
       .width('100%')
       .height('100%')
       .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
-      .forceDarkAccess(this.webAutoDarkMode)
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .backgroundColor('#00d00721')
       .onErrorReceive((event) => {
         // Only handle loading errors of the main framework to avoid duplicate processing of errors in sub-resources
         if (event && event.request.isMainFrame()) {
+          this.getUIContext().showAlertDialog({
+            title: "在线帮助加载失败",
+            message: "你可以查看应用内置帮助。稍后，你可以重新进入此页面以刷新在线帮助网页。",
+            confirm:{
+              value: "好吧╮(╯-╰)╭",
+              action: () => {}
+            },
+            cancel: () => {}
+          });
           this.tabSelectedIndexes = [1];
           try {
             this.webviewController.loadUrl($rawfile('WebError.html')); // 加载自定义错误页面
@@ -112,6 +124,9 @@ struct Index {
             console.error(`ErrorCode: ${(error as BusinessError).code}, Message: ${(error as BusinessError).message}`);
           }
         }
+      })
+      .onProgressChange((event) => {
+        this.showLoading = (event.newProgress !== 100);
       })
   }
 

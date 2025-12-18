@@ -24,7 +24,7 @@ export default struct customFuncDialog {
 
       Text($r('app.string.insiders_from_clipboard_failed'))
         .fontColor($r('app.color.red'))
-        .visibility(this.showError ? Visibility.Visible : Visibility.None)
+        .visibility((this.showError && !this.showSuccess) ? Visibility.Visible : Visibility.None)
         .textAlign(TextAlign.Center)
 
       Text(this.insiderUser ? $r('app.string.insiders') : $r('app.string.insiders_from_clipboard_success', this.userInput.length))
