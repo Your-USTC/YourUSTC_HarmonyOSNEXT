@@ -9,6 +9,11 @@ interface num_to_key {
   url: string
 }
 
+let change_func_num: string = '0.0';
+export function set_func_num(toChange: string) {
+  change_func_num = toChange;
+}
+
 @CustomDialog
 export default struct customFuncDialog {
   controller: CustomDialogController;
@@ -16,6 +21,8 @@ export default struct customFuncDialog {
   @State showSuccess: boolean = false;
   @State insiderUser: boolean = false;
   private userInput: num_to_key[] = [];
+  private singleURL: string = '';
+  private singleTitle: string = '';
 
   build() {
     Column({ space: 5 }) {
@@ -24,7 +31,7 @@ export default struct customFuncDialog {
 
       Text($r('app.string.insiders_from_clipboard_failed'))
         .fontColor($r('app.color.red'))
-        .visibility((this.showError && !this.showSuccess) ? Visibility.Visible : Visibility.None)
+        .visibility(this.showError ? Visibility.Visible : Visibility.None)
         .textAlign(TextAlign.Center)
 
       Text(this.insiderUser ? $r('app.string.insiders') : $r('app.string.insiders_from_clipboard_success', this.userInput.length))
@@ -45,6 +52,50 @@ export default struct customFuncDialog {
             .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
         })
 
+      if (change_func_num !== 'all') {
+        Row() {
+          TextInput({ placeholder: $r('app.string.fill_single_title') })
+            .layoutWeight(1)
+            .onChange((value: string) => {
+              this.singleTitle = value;
+            })
+
+          TextInput({ placeholder: $r('app.string.fill_single_url') })
+            .layoutWeight(1)
+            .type(InputType.URL)
+            .onChange((value: string) => {
+              this.singleURL = value;
+            })
+
+          Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
+            Image($r('app.media.checkmark'))
+              .height(24).width(24)
+          }
+          .height(36)
+          .width(36)
+          .onClick(() => {
+            if (/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w.-]*)*\/?$/i.test(this.singleURL)) {
+              this.userInput = [{ num: '', title: '', url: '' }];
+              LINK.set(change_func_num, { title: this.singleTitle, url: this.singleURL });
+              this.showError = false;
+              this.showSuccess = true;
+            } else {
+              this.showSuccess = false;
+              this.showError = true;
+            }
+          })
+        }
+
+        Row({ space: 3 }) {
+          Divider()
+            .layoutWeight(1)
+          Text($r('app.string.or_you_can'))
+            .fontSize(12)
+          Divider()
+            .layoutWeight(1)
+        }
+      }
+
       Row() {
         PasteButton({ icon: PasteIconStyle.LINES, buttonType: ButtonType.Circle })
           .size({ width: 30, height: 30 })
@@ -53,6 +104,7 @@ export default struct customFuncDialog {
               pasteboard.getSystemPasteboard().getData((err: BusinessError, pasteData: pasteboard.PasteData) => {
                 if (err) {
                   this.showError = true;
+                  this.showSuccess = false;
                   return;
                 }
                 const pasteText: string = pasteData.getPrimaryText();
@@ -73,13 +125,16 @@ export default struct customFuncDialog {
                       }
                     }
                   }
+                  this.showError = false;
                   this.showSuccess = true;
                 } catch (error) {
+                  this.showSuccess = false;
                   this.showError = true;
                 }
               });
             } else {
               this.showError = true;
+              this.showSuccess = false;
             }
           });
 

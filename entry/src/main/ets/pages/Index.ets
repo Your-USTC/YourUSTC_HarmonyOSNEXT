@@ -22,7 +22,7 @@ import BackgroundImage from '../view/BgImageManager'
 import GridComponent from '../view/GridComponent'
 import PasswordDialog from '../view/PasswordDialog'
 import ItemData from '../view/SettingsComponent'
-import customFuncDialog from '../view/customFuncDialog'
+import customFuncDialog, { set_func_num } from '../view/customFuncDialog'
 
 // 滚动条参数
 enum ScrollPosition {
@@ -795,6 +795,11 @@ struct Index {
     .padding({ left: 12, right: 12 })
     .margin({ top: 8 })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
+    Button('访问一个undefined元素！')
+      .onClick(() => {
+        scheduleManager.parsedSchedule[30][1];
+      })
   }
 
   /**
@@ -921,6 +926,7 @@ struct Index {
                   break;
 
                 case 5:
+                  set_func_num('all');
                   this.dialogController3.open();
                   break;
 

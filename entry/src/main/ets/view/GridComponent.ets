@@ -4,6 +4,7 @@ import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
 import * as tools from '../utils/tools';
 import BackgroundImage from '../view/BgImageManager';
+import { set_func_num } from './customFuncDialog';
 
 @Component
 export default struct GridComponent {
@@ -75,6 +76,7 @@ export default struct GridComponent {
               if (this.funcHintController == undefined) {
                 this.getUIContext().getPromptAction().showToast({ message: $r('app.string.under_construction') });
               } else {
+                set_func_num(`${this.gridIndex}.${index}`);
                 this.funcHintController.open();
               }
             } else { // 已设置对应网址

@@ -782,7 +782,7 @@
     },
     {
       "name": "custom_function",
-      "value": "你本次尚未设置功能页常用链接"
+      "value": "你本次尚未设置此项跳转链接"
     },
     {
       "name": "show_how_to_custom",
@@ -802,11 +802,23 @@
     },
     {
       "name": "insiders_from_clipboard",
-      "value": "从剪贴板导入"
+      "value": "从剪贴板一次性导入所有链接"
     },
     {
       "name": "insiders_from_schedule",
       "value": "你还没有设置跳转链接，请先查看设置页面的帮助"
+    },
+    {
+      "name": "fill_single_url",
+      "value": "仅此链接对应网址"
+    },
+    {
+      "name": "fill_single_title",
+      "value": "仅此链接对应标题"
+    },
+    {
+      "name": "or_you_can",
+      "value": "或者，你可以"
     }
   ]
 }
