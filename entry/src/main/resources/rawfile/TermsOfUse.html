@@ -18,6 +18,8 @@
         padding: 20px;
         max-width: 1200px;
         margin: 0 auto;
+        /* 过渡效果，让深色/浅色切换更平滑 */
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .container {
         background: #fff;
@@ -25,28 +27,33 @@
         box-shadow: 0 2px 15px rgba(0,0,0,0.05);
         padding: 40px;
         margin-bottom: 30px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
     header {
         text-align: center;
         margin-bottom: 40px;
         padding-bottom: 20px;
         border-bottom: 1px solid #eee;
+        transition: border-color 0.3s ease;
     }
     h1 {
         font-size: 28px;
         color: #2d3748;
         margin-bottom: 15px;
+        transition: color 0.3s ease;
     }
     .date-info {
         color: #718096;
         font-size: 15px;
         margin: 0 10px;
+        transition: color 0.3s ease;
     }
     .intro {
         font-size: 16px;
         color: #4a5568;
         margin-bottom: 30px;
         line-height: 1.8;
+        transition: color 0.3s ease;
     }
     h2 {
         font-size: 22px;
@@ -54,17 +61,20 @@
         margin: 35px 0 15px;
         padding-bottom: 8px;
         border-bottom: 1px solid #e2e8f0;
+        transition: color 0.3s ease, border-color 0.3s ease;
     }
     h3 {
         font-size: 18px;
         color: #2d3748;
         margin: 25px 0 12px;
+        transition: color 0.3s ease;
     }
     p {
         font-size: 16px;
         color: #4a5568;
         margin-bottom: 15px;
         text-align: justify;
+        transition: color 0.3s ease;
     }
     ul {
         font-size: 16px;
@@ -72,9 +82,11 @@
         margin-left: 30px;
         color: #4a5568;
         text-align: justify;
+        transition: color 0.3s ease;
     }
     strong {
         color: #2d3748;
+        transition: color 0.3s ease;
     }
     .license-note {
         background-color: #f0f8fb;
@@ -82,12 +94,14 @@
         padding: 15px 20px;
         margin: 20px 0;
         border-radius: 4px;
+        transition: background-color 0.3s ease;
     }
     .contact-section {
         background-color: #f5fafe;
         padding: 20px;
         border-radius: 8px;
         margin-top: 30px;
+        transition: background-color 0.3s ease;
     }
     .contact-item {
         margin-bottom: 10px;
@@ -99,6 +113,7 @@
         margin-top: 50px;
         padding-top: 20px;
         border-top: 1px solid #eee;
+        transition: color 0.3s ease, border-color 0.3s ease;
     }
     @media (max-width: 768px) {
         .container {
@@ -119,6 +134,43 @@
         .date-info {
             display: block;
             margin: 8px 0;
+        }
+    }
+
+    /* 深色模式适配 - 核心代码 */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e1e;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+        }
+        header {
+            border-bottom: 1px solid #333;
+        }
+        h1, h2, h3, strong {
+            color: #f5f5f5;
+        }
+        .date-info, footer {
+            color: #aaa;
+        }
+        .intro, p, ul {
+            color: #d0d0d0;
+        }
+        h2 {
+            border-bottom: 1px solid #333;
+        }
+        .license-note {
+            background-color: #1a2634;
+            border-left: 4px solid #58a6ff;
+        }
+        .contact-section {
+            background-color: #1a1a1a;
+        }
+        footer {
+            border-top: 1px solid #333;
         }
     }
   </style>

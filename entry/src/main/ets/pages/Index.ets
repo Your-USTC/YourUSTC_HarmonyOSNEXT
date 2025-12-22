@@ -313,33 +313,28 @@ struct Index {
           .draggable(false)
       } else if (item.id == 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
-          .onClick(() => {
-            this.showCheckIn = !this.showCheckIn;
-            UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showCheckIn', value);
           });
       } else if (item.id == 2) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
-          .onClick(() => {
-            this.showRecentCourse = !this.showRecentCourse;
-            UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showRecentCourse', value);
           });
       } else if (item.id == 3){
         Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
-          .onClick(() => {
-            this.showExamDetail = !this.showExamDetail;
-            UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showExamDetail', value);
           });
       } else if (item.id == 7) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
-          .onClick(() => {
-            this.webAutoDarkMode = !this.webAutoDarkMode;
-            UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('webAutoDarkMode', value);
           });
       } else { // item.id == 8
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
-          .onClick(() => {
-            this.webBackPress = !this.webBackPress;
-            UnifiedPreferences.putSync('webBackPress', this.webBackPress);
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('webBackPress', value);
           });
       }
     }
@@ -882,9 +877,9 @@ struct Index {
   @Builder
   pageSettings() {
     List({ space: 12 }) {
-      ForEach(SettingsData.getSettingListData(), (item: ItemData[], index: number) => {
+      ForEach(SettingsData.getSettingListData(), (item: ItemData[]/*, index: number*/) => {
         ListItemGroup() {
-          ForEach(item, (cell: ItemData, cellIndex) => {
+          ForEach(item, (cell: ItemData/*, cellIndex*/) => {
             ListItem() {
               this.settingCell(cell)
             }
@@ -895,21 +890,8 @@ struct Index {
                   this.dialogController.open();
                   break;
                 case 1:
-                  // 显示签到
-                  this.showCheckIn = !this.showCheckIn;
-                  UnifiedPreferences.putSync('showCheckIn', this.showCheckIn);
-                  break;
-
                 case 2:
-                  // 显示课表
-                  this.showRecentCourse = !this.showRecentCourse;
-                  UnifiedPreferences.putSync('showRecentCourse', this.showRecentCourse);
-                  break;
-
                 case 3:
-                  // 显示考试
-                  this.showExamDetail = !this.showExamDetail;
-                  UnifiedPreferences.putSync('showExamDetail', this.showExamDetail);
                   break;
 
                 case 4:
@@ -942,13 +924,7 @@ struct Index {
                   break;
 
                 case 7:
-                  this.webAutoDarkMode = !this.webAutoDarkMode;
-                  UnifiedPreferences.putSync('webAutoDarkMode', this.webAutoDarkMode);
-                  break;
-
                 case 8:
-                  this.webBackPress = !this.webBackPress;
-                  UnifiedPreferences.putSync('webBackPress', this.webBackPress);
                   break;
 
                 case 9:
@@ -986,7 +962,6 @@ struct Index {
                   break;
                 case 15:
                   // 进入恢复模式
-                  UnifiedPreferences.deleteSync('initialLaunch')
                   UnifiedPreferences.putSync('RecoveryMode', true);
                   let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
                   let want: Want = {
@@ -1126,7 +1101,7 @@ struct Index {
       .barPosition(BarPosition.End)
       .barMode(BarMode.Fixed)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .onAnimationStart((index: number, targetIndex: number) => {
+      .onAnimationStart((/*index: number, */targetIndex: number) => {
         this.currentIndex = targetIndex;
         if (this.currentIndex === 1) {
           FunctionOrder.refreshFunc(); // 刷新点击次数显示

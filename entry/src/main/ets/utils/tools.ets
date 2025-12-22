@@ -43,7 +43,7 @@ function getFileExtension(filePath: string): string {
  * @param filePath 字符串格式的文件路径
  * @returns 带`.`的扩展名（无扩展名返回空字符串）
  */
-export function copyFileExtension(filePath: string): string {
+function copyFileExtension(filePath: string): string {
   const ext = getFileExtension(filePath);
   return ext ? `.${ext}` : '';
 }

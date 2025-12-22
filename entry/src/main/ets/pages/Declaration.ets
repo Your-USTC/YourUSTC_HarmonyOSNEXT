@@ -1,6 +1,5 @@
 import { webview } from '@kit.ArkWeb';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import { font } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -9,9 +8,10 @@ struct Declaration {
   @State knowIndependence: boolean = false;
   @State showSheet: boolean = false;
   private webController: webview.WebviewController = new webview.WebviewController();
+  @State countdown: number = 20;
 
   onBackPress(): boolean {
-    return false;
+    return true;
   }
 
   build() {
@@ -67,11 +67,28 @@ struct Declaration {
             .fontWeight(FontWeight.Bolder)
           Text($r('app.string.no_association2'))
             .fontColor($r('app.color.red'))
+        }
+        .justifyContent(FlexAlign.Center)
+        .borderRadius(20)
+        .backgroundColor($r('app.color.grid_background'))
+        .padding(15)
+        .height('90%')
+        .width('90%')
+      }
+      .nextLabel((this.countdown <= 0) ? '下一步' : `${this.countdown}秒后继续`)
+      .status((this.countdown <= 0) ? ItemState.Normal : ItemState.Disabled)
+
+      StepperItem() {
+        Column({ space: 7 }) {
+          Text($r('app.string.no_association1'))
+            .fontSize(24)
+            .fontWeight(FontWeight.Bolder)
           Text($r('app.string.no_association3'))
             .copyOption(CopyOptions.InApp)
           TextArea()
+            .maxLines(4)
             .onChange((value: string) => {
-              if (value === '我已知晓“你的科大”为中科大学生独立开发，与中国科学技术大学官方无任何关联')
+              if (value === '我已知晓并承认“你的科大”由中科大学生独立开发，与中国科学技术大学官方无任何关联')
                 this.knowIndependence = true;
             })
           Text($r('app.string.no_association4'))
@@ -94,6 +111,16 @@ struct Declaration {
       UnifiedPreferences.putSync('InitialLaunch', false);
       this.getUIContext().getRouter().back();
     })
+    .onChange((_prevIndex: number, index: number) => {
+      if (index == 1 && this.countdown > 0) {
+        const timerId = setInterval(() => {
+          this.countdown -= 1;
+          if (this.countdown <= 0) {
+            clearInterval(timerId);
+          }
+        }, 1000);
+      }
+    })
   }
 
   @Builder
@@ -101,5 +128,7 @@ struct Declaration {
     Web({ src: $rawfile('TermsOfUse.html'), controller: this.webController })
       .height('100%')
       .width('100%')
+      .darkMode(WebDarkMode.Auto)
+      .backgroundColor($r('app.color.normal_background'))
   }
 }

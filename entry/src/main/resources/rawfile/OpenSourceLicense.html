@@ -11,6 +11,83 @@
   <script>
     document.documentElement.style.fontSize = 8 + 'px';
   </script>
+
+  <style type="text/css">
+    * {
+      margin: 0;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.9);
+    }
+
+    body {
+      max-width: 860px;
+      margin: auto;
+      padding: 2rem 2rem 5rem 2rem;
+    }
+
+    ul {
+      padding: 0;
+    }
+
+    a {
+      color: #0a59f7;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .font-secondary {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    th {
+      padding: 9px 5px;
+    }
+
+    td {
+      padding: 9px 5px;
+
+      p {
+        line-height: 24px;
+      }
+    }
+
+    tr:nth-child(odd) td {
+      background: #f7f7f7;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    h5 {
+      word-break: break-all;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #000000;
+      }
+
+      .font-secondary {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      * {
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+  </style>
 </head>
 
 <body style="display: block;">
@@ -305,7 +382,7 @@
 
   <p>为此，请将以下声明附加到程序中。最安全的方法是将它们附加到每个源文件的开头，以最有效地声明排除担保；每个文件应至少包含“版权”行和指向完整声明所在位置的指针。</p>
 
-  <pre>    「妮可之记」App for HarmonyOS NEXT -- 中国科大一站式导航
+  <pre>    「妮可之记」App for HarmonyOS NEXT
     Copyright (C) 2025  「妮可之记」开发团队
 
     This program is free software: you can redistribute it and/or modify
@@ -340,168 +417,6 @@
   <p>GNU 通用公共许可证不允许将您的程序并入专有程序。如果您的程序是一个子例程库，您可能会认为允许专有应用程序与该库链接更有用。如果您想这样做，请使用 GNU 宽通用公共许可证而不是本许可证。但首先，请阅读 &lt;<a
       href="https://gnu.ac.cn/licenses/why-not-lgpl.html">https://gnu.ac.cn/licenses/why-not-lgpl.html</a>&gt;。</p>
 
-  <style type="text/css">
-    * {
-      margin: 0;
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.9);
-    }
-
-    body {
-      max-width: 860px;
-      margin: auto;
-      padding: 2rem 2rem 5rem 2rem;
-    }
-
-    ul {
-      padding: 0;
-    }
-
-    a {
-      color: #0a59f7;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    ul {
-      list-style: none;
-    }
-
-    #icon {
-      font-size: 0;
-      text-align: center;
-    }
-
-    #icon svg {
-      width: 4rem;
-      height: 4rem;
-    }
-
-    #dark {
-      display: none;
-    }
-
-    #update-time {
-      text-align: center;
-
-      span {
-        font-size: 14px;
-      }
-    }
-
-    .font-secondary {
-      color: rgba(0, 0, 0, 0.6);
-    }
-
-    #firstDesc {
-      margin-top: 3rem;
-    }
-
-    #firstDesc span {
-      font-weight: 600;
-    }
-
-    #privacyName {
-      margin: 2rem 0 0.5rem;
-      text-align: center;
-      font-size: 18px;
-    }
-
-    #device-permissions {
-      display: none;
-    }
-
-    th {
-      padding: 9px 5px;
-    }
-
-    td {
-      padding: 9px 5px;
-
-      p {
-        line-height: 24px;
-      }
-    }
-
-    table {
-      table-layout: fixed;
-      border-bottom: 1px solid #e0e0e0;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    tr:nth-child(odd) td {
-      background: #f7f7f7;
-    }
-
-    .privacy-word {
-      word-break: break-all;
-    }
-
-    .bold {
-      font-weight: bold;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    .text-left {
-      text-align: left;
-    }
-
-    h5 {
-      word-break: break-all;
-      margin-top: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    h6 {
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      word-break: break-all;
-      line-height: 1.4;
-    }
-
-    #date-info {
-      margin-top: 40px;
-    }
-
-    .share-content {
-      margin-bottom: 2rem;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #000000;
-      }
-
-      #light {
-        display: none;
-      }
-
-      #dark {
-        display: inline;
-      }
-
-      .font-secondary {
-        color: rgba(255, 255, 255, 0.6);
-      }
-
-      * {
-        color: rgba(255, 255, 255, 0.9);
-      }
-    }
-  </style>
-  <style id="style">
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: rgba(0, 0, 0, 1.0);
-      }
-    }
-  </style>
 </body>
 
 </html>

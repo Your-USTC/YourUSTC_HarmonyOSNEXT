@@ -22,8 +22,6 @@ export default struct PasswordDialog {
 
   onConfirm: () => void = () => {};
 
-  private oriInputUID: string = '';
-  private oriInputPassword: string = '';
   @State passwordState: boolean = false;
 
   aboutToAppear(): void {
@@ -31,8 +29,6 @@ export default struct PasswordDialog {
       this.inputUID = '';
     if (this.inputPassword === null)
       this.inputPassword = '';
-    this.oriInputUID = this.inputUID;
-    this.oriInputPassword = this.inputPassword;
     authResult = 0;
   }
 
@@ -45,7 +41,7 @@ export default struct PasswordDialog {
       Column() {
         Row() {
           Text($r('app.string.student_id'))
-          TextInput({ text: this.oriInputUID })
+          TextInput({ text: this.inputUID })
             .type(InputType.USER_NAME)
             .enableAutoFill(false)
             .layoutWeight(1)
@@ -58,7 +54,7 @@ export default struct PasswordDialog {
         Row() {
           Text($r('app.string.password'))
 
-          TextInput({ text: this.oriInputPassword })
+          TextInput({ text: this.inputPassword })
             .type(InputType.Password)
             .showPasswordIcon(false)
             .showPassword(this.passwordState)
@@ -78,12 +74,9 @@ export default struct PasswordDialog {
           .onClick(() => {
             if (this.passwordState) {
               this.passwordState = false;
-              console.log('!!1');
             } else if (authResult === 1) {
               this.passwordState = true;
-              console.log('!!2');
             } else {
-              console.log('!!3');
               try {
                 authResult = 0;
                 const rand = cryptoFramework.createRandom();

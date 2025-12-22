@@ -5,7 +5,6 @@ import UnifiedPreferences from '../utils/UnifyPreference';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo, fileUri } from '@kit.CoreFileKit';
-import { copyFileExtension } from '../utils/tools';
 
 @CustomDialog
 export default struct BgImageDialog {
@@ -36,8 +35,11 @@ export default struct BgImageDialog {
           .fontWeight("bold")
           .layoutWeight(1);
         Toggle({ isOn: $$this.isShown, type: ToggleType.Switch })
-          .onClick(() => {
-            this.isShown = !this.isShown;
+          .onChange((value: boolean) => {
+            if (BackgroundImage.imgPath == '' && this.selectResult == undefined && value) {
+              this.isShown = false;
+              this.SelectImage();
+            }
           })
       }
 
@@ -71,25 +73,7 @@ export default struct BgImageDialog {
           .backgroundBlurStyle(this.showBlurSlider ? this.blurNum : undefined)
           .opacity(this.showBlurSlider ? 1 : this.opacityNum / 100)
           .onClick(() => {
-            try {
-              const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
-              photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
-              photoSelectOptions.maxSelectNumber = 1;
-              const photoPicker = new photoAccessHelper.PhotoViewPicker();
-              photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
-                if (photoSelectResult.photoUris[0] !== undefined) {
-                  this.selectResult = photoSelectResult.photoUris[0];
-                  this.oriImgPath = new fileUri.FileUri(this.selectResult).path;
-                  this.imageSize = fileIo.statSync(this.oriImgPath).size;
-                  this.imgPreview = photoSelectResult.photoUris[0];
-                  this.isShown = true;
-                }
-              }).catch((err: BusinessError) => {
-                console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
-              })
-            } catch (error) {
-              console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
-            }
+            this.SelectImage();
           })
       }
       .margin({ bottom: 5 })
@@ -98,11 +82,8 @@ export default struct BgImageDialog {
         Text($r('app.string.background_opaque'))
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
-        Toggle({ isOn: BackgroundImage.backgroundBlur, type: ToggleType.Switch })
+        Toggle({ isOn: $$this.showBlurSlider, type: ToggleType.Switch })
           .switchStyle({ unselectedColor: $r('sys.color.ohos_id_color_component_activated') })
-          .onClick(() => {
-            this.showBlurSlider = !this.showBlurSlider;
-          })
         Text($r('app.string.background_blur'))
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
@@ -143,7 +124,6 @@ export default struct BgImageDialog {
             .showTips(true)
             .layoutWeight(1)
             .onChange((value: number) => {
-              console.log('!!');
               this.opacityNum = value;
             });
         }
@@ -179,8 +159,7 @@ export default struct BgImageDialog {
           .enabled(!this.showWarning)
           .onClick(() => {
             if (this.selectResult !== undefined) {
-              const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage'
-                + copyFileExtension(this.selectResult);
+              const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage';
 
               fileIo.copyFile(this.oriImgPath, newImgPath)
                 .catch((error: BusinessError) => console.error('Copy image failed:', JSON.stringify(error)));
@@ -238,6 +217,28 @@ export default struct BgImageDialog {
         return 5;
       default:
         return 3;
+    }
+  }
+
+  SelectImage() {
+    try {
+      const photoSelectOptions = new photoAccessHelper.PhotoSelectOptions();
+      photoSelectOptions.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE;
+      photoSelectOptions.maxSelectNumber = 1;
+      const photoPicker = new photoAccessHelper.PhotoViewPicker();
+      photoPicker.select(photoSelectOptions).then((photoSelectResult: photoAccessHelper.PhotoSelectResult) => {
+        if (photoSelectResult.photoUris[0] !== undefined) {
+          this.selectResult = photoSelectResult.photoUris[0];
+          this.oriImgPath = new fileUri.FileUri(this.selectResult).path;
+          this.imageSize = fileIo.statSync(this.oriImgPath).size;
+          this.imgPreview = photoSelectResult.photoUris[0];
+          this.isShown = true;
+        }
+      }).catch((err: BusinessError) => {
+        console.error(`PhotoViewPicker failed: ${JSON.stringify(err)}`)
+      })
+    } catch (error) {
+      console.error(`PhotoViewPicker failed: ${JSON.stringify(error)}`);
     }
   }
 }
