@@ -517,6 +517,20 @@ struct Index {
                   + ScheduleSources.commonClassStamp[course.timeSpan[course.timeSpan.length - 1]][1] + 1800000) {
                   Row() {
                     Column() {
+                      Line()
+                        .stroke((course.color.length === 9) ? `#${course.color.slice(3)}` : ((course.color.length === 5) ? `#${course.color.slice(2)}` : course.color))
+                        .width(6)
+                        .height(20)
+                        .strokeLineCap(LineCapStyle.Round)
+                        .strokeWidth(6)
+                        .startPoint([3, 0])
+                        .endPoint([3, 20])
+                        .margin({ right: 4 });
+                    }
+                    .alignItems(HorizontalAlign.End)
+                    .width('5%')
+
+                    Column() {
                       Text(course.name)
                         .textAlign(TextAlign.Start)
                         .fontSize(18)
@@ -547,7 +561,7 @@ struct Index {
                           .fontColor($r('app.color.green'));
                       }
                     }
-                    .width('50%')
+                    .width('45%')
                     .alignItems(HorizontalAlign.Start)
                     .padding({ right: 10 });
 
@@ -566,10 +580,11 @@ struct Index {
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                     }
-                    .width('50%')
+                    .width('45%')
                     .alignItems(HorizontalAlign.Start);
                   }
-                  .width('90%')
+                  .width('100%')
+                  .justifyContent(FlexAlign.Start)
                   .margin({ top: 7, bottom: 7 });
 
                   if (index < this.todayCourse.length - 1) {
@@ -747,15 +762,15 @@ struct Index {
                   }
 
                   Column() {
-                    Row() {
-                      Text(singleExam.name + '  ')
+                    Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
+                      Text(singleExam.name)
                         .fontSize(18)
                         .fontWeight(FontWeight.Bold)
-                        .margin({ bottom: 5 })
+                        .margin({ right: 5 })
                       Text(singleExam.type)
-                        .fontSize(18)
-                        .margin({ bottom: 5 })
+                        .fontSize(16)
                     }
+                    .margin({ bottom: 5 })
 
                     Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
                       .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None : Visibility.Visible);

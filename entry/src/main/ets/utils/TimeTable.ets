@@ -188,6 +188,7 @@ class scheduleManager {
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
 
       let courseToColor = new Map<string, string>();
+      let randColor: number = tools.getRandomInt(0, tools.colorSetLen - 1);
       for (let i of this.parsedSchedule)
         if (i != null)
           for (let j of i)
@@ -197,7 +198,8 @@ class scheduleManager {
                   if (courseToColor.has(k.name)) {
                     k.color = courseToColor.get(k.name) as string;
                   } else {
-                    k.color = tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)];
+                    k.color = tools.colorSet[randColor];
+                    randColor = (randColor + 1) % tools.colorSetLen;
                     courseToColor.set(k.name, k.color);
                   }
                 }
