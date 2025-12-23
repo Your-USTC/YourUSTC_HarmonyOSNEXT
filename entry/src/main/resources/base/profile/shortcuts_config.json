@@ -6,7 +6,7 @@
       "icon": "$media:shortcut_schedule",
       "wants": [
         {
-          "bundleName": "com.nic.yourustc",
+          "bundleName": "com.nic.dailynic",
           "moduleName": "entry",
           "abilityName": "EntryAbility",
           "parameters": {
@@ -21,7 +21,7 @@
       "icon": "$media:shortcut_exam",
       "wants": [
         {
-          "bundleName": "com.nic.yourustc",
+          "bundleName": "com.nic.dailynic",
           "moduleName": "entry",
           "abilityName": "EntryAbility",
           "parameters": {

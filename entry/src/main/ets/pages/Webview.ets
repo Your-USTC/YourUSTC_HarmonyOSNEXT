@@ -6,7 +6,7 @@ import { common } from '@kit.AbilityKit'
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference'
 import { call } from '@kit.TelephonyKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
-import { fillInformationJS } from '../utils/TimeTable';
+import { fillInformationJS, deleteAIHelper } from '../utils/TimeTable';
 import accountInfoProvider from '../utils/Encryption';
 import PasswordDialog from '../view/PasswordDialog';
 import BackgroundImage from '../view/BgImageManager';
@@ -278,6 +278,8 @@ struct Webview {
                 this.webviewController.runJavaScript(fillInformationJS, (error, result) => {});
               }
             }
+            if (this.webviewController.getUrl().includes('https://i.ustc.edu.cn'))
+              this.webviewController.runJavaScript(deleteAIHelper, (error, result) => {});
           })
           .onLoadIntercept((event) => {
             if (event) {

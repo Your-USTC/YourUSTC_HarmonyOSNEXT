@@ -119,6 +119,44 @@ export const fillInformationJS = `
 })();
 `
 
+// 删除智慧门户中的AI助手
+export const deleteAIHelper: string = `
+function removeTargetElement() {
+    const targetElement = Array.from(document.querySelectorAll('.dh-cl-item-name')).find(
+        el => el.textContent.trim() === "AI助手"
+    );
+    if (targetElement) {
+        const parentItem = targetElement.closest('.dh-cl-item');
+        if (parentItem) {
+            parentItem.remove();
+            return true;
+        }
+    }
+    return false;
+}
+const isRemoved = removeTargetElement();
+if (!isRemoved || true) {
+    const observerConfig = {
+        childList: true,
+        subtree: true
+    };
+    const callback = function(mutationsList) {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                removeTargetElement();
+            }
+        }
+    };
+    const observer = new MutationObserver(callback);
+    const targetNode = document.querySelector('.hd-zs') || document.body;
+    observer.observe(targetNode, observerConfig);
+    setTimeout(() => {
+        observer.disconnect();
+        console.log('监听超时，已停止');
+    }, 10000);
+}
+`
+
 /**
  * 比较两个 classAttribute 对象是否完全相同
  * @param a 第一个对象

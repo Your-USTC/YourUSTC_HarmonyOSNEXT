@@ -175,7 +175,7 @@ export default struct BgImageDialog {
             // 重启
             let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
             let want: Want = {
-              bundleName: 'com.nic.yourustc',
+              bundleName: 'com.nic.dailynic',
               abilityName: 'EntryAbility'
             };
             try {

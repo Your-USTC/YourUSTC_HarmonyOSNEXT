@@ -88,7 +88,7 @@ struct Declaration {
           TextArea()
             .maxLines(4)
             .onChange((value: string) => {
-              if (value === '我已知晓并承认“你的科大”由中科大学生独立开发，与中国科学技术大学官方无任何关联')
+              if (value === '我已知晓并承认“妮可之记”由中科大学生独立开发，与中国科学技术大学官方无任何关联')
                 this.knowIndependence = true;
             })
           Text($r('app.string.no_association4'))
