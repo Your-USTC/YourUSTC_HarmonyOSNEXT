@@ -577,15 +577,15 @@ struct ExamDetail {
                 }
 
                 Column() {
-                  Row() {
+                  Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                     Text(singleExam.name + '  ')
                       .fontSize(18)
                       .fontWeight(FontWeight.Bold)
-                      .margin({ bottom: 5 })
+                      .margin({ right: 5 })
                     Text(singleExam.type)
-                      .fontSize(18)
-                      .margin({ bottom: 5 })
+                      .fontSize(16)
                   }
+                  .margin({ bottom: 5 })
 
                   Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
                     .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None :
