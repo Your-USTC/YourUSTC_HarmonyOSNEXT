@@ -877,9 +877,9 @@ struct Index {
   @Builder
   pageSettings() {
     List({ space: 12 }) {
-      ForEach(SettingsData.getSettingListData(), (item: ItemData[]/*, index: number*/) => {
+      ForEach(SettingsData.getSettingListData(), (item: ItemData[], _index: number) => {
         ListItemGroup() {
-          ForEach(item, (cell: ItemData/*, cellIndex*/) => {
+          ForEach(item, (cell: ItemData, _cellIndex) => {
             ListItem() {
               this.settingCell(cell)
             }
@@ -1101,7 +1101,7 @@ struct Index {
       .barPosition(BarPosition.End)
       .barMode(BarMode.Fixed)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .onAnimationStart((/*index: number, */targetIndex: number) => {
+      .onAnimationStart((_index: number, targetIndex: number) => {
         this.currentIndex = targetIndex;
         if (this.currentIndex === 1) {
           FunctionOrder.refreshFunc(); // 刷新点击次数显示
