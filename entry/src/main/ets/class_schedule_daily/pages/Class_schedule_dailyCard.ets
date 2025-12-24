@@ -1,13 +1,20 @@
+
+/**
+ * 卡片主程序
+ */
+
+import * as ScheduleSources from '../../constants/ScheduleSources';
 import scheduleManager from '../../utils/TimeTable';
 import { CardListComponent } from '../view/CardListComponent';
 import { CardListParameter } from '../viewmodel/CardListParameter';
-import * as ScheduleSources from '../../constants/ScheduleSources'
 
 let localStorage = new LocalStorage();
 
 @Entry(localStorage)
 @Component
 struct Class_schedule_dailyCard {
+
+  // 内部变量
   @LocalStorageProp('todayCourse') todayCourse: ScheduleSources.classAttribute[] = [];
   @LocalStorageProp('tomorrowCourse') tomorrowCourse: ScheduleSources.classAttribute[] = [];
 
@@ -25,15 +32,19 @@ struct Class_schedule_dailyCard {
     /* titleColor               */ undefined,
     /* isBottomIcon             */ false,
     /* bottomIcon               */ undefined
-  )
+  );
 
+  // 课程列表模块
   @Builder
   cardListBuilder() {
+
     if (this.todayCourse.length == 0) {
+      // 今天没有课程
       ListItem() {
         Column() {
           Image($r('app.media.no_course_today'))
             .height(50)
+
           Text(scheduleManager.isTermEnd ? $r('app.string.no_class_term_end') : $r('app.string.no_class_today'))
         }
         .justifyContent(FlexAlign.Center)
@@ -41,8 +52,11 @@ struct Class_schedule_dailyCard {
       .width('100%')
       .height(scheduleManager.isTermEnd ? '100%' : undefined)
       .padding({ top: 12, bottom: 12 })
+
     } else {
+      // 今天有课程
       ForEach(this.todayCourse, (course: ScheduleSources.classAttribute, index: number) => {
+        // 课程信息
         Row() {
           Column() {
             Text(course.name)
@@ -50,42 +64,44 @@ struct Class_schedule_dailyCard {
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
               .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis });
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('50%')
           .alignItems(HorizontalAlign.Start)
-          .padding({ right: 10 });
+          .padding({ right: 10 })
 
           Column() {
             Text(`\udb81\uddf3 ${course.teacher}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
+              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible)
 
             Text(`\udb80\uddb8 ${course.location}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
+              .visibility(course.location == '' ? Visibility.None : Visibility.Visible)
 
             Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('50%')
-          .alignItems(HorizontalAlign.Start);
+          .alignItems(HorizontalAlign.Start)
         }
         .width('90%')
-        .margin({ top: 7, bottom: 7 });
+        .margin({ top: 7, bottom: 7 })
 
         if (index < this.todayCourse.length - 1) {
           Divider()
-            .width('90%');
+            .width('90%')
         }
-      });
+      })
     }
 
     if (this.tomorrowCourse.length > 0) {
+      // 明天有课程
 
+      // 小标题
       ListItem() {
         Row() {
           Text($r('app.string.tomorrow_class'))
@@ -102,8 +118,10 @@ struct Class_schedule_dailyCard {
       ForEach(this.tomorrowCourse, (course: ScheduleSources.classAttribute, index) => {
         if (index > 0) {
           Divider()
-            .width('90%');
+            .width('90%')
         }
+
+        // 课程信息
         Row() {
           Column() {
             Text(course.name)
@@ -111,7 +129,7 @@ struct Class_schedule_dailyCard {
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
               .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis });
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('50%')
           .alignItems(HorizontalAlign.Start)
@@ -121,35 +139,39 @@ struct Class_schedule_dailyCard {
             Text(`\udb81\uddf3 ${course.teacher}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible);
+              .visibility(course.teacher == '' ? Visibility.None : Visibility.Visible)
 
             Text(`\udb80\uddb8 ${course.location}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .visibility(course.location == '' ? Visibility.None : Visibility.Visible);
+              .visibility(course.location == '' ? Visibility.None : Visibility.Visible)
 
             Text(`\udb80\udfdc ${ScheduleSources.commonClassTime[course.timeSpan[0]][0]}~${ScheduleSources.commonClassTime[course.timeSpan[course.timeSpan.length - 1]][1]}`)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('50%')
-          .alignItems(HorizontalAlign.Start);
+          .alignItems(HorizontalAlign.Start)
         }
         .width('90%')
         .margin({ top: 7, bottom: 7 })
-      });
+      })
     }
   }
 
+  // 卡片主程序
   build() {
     Column() {
+      // 卡片框架
       CardListComponent({ cardListParameter: this.cardListParameter }) {
+        // 课程列表模块
         this.cardListBuilder();
       }
     }
     .width('100%')
     .height('100%')
     .onClick(() => {
+      // 点击时进入课表页面
       postCardAction(this, {
         action: 'router',
         abilityName: 'EntryAbility',
