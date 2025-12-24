@@ -59,9 +59,9 @@
 ### 环境构建
 
 1. 注册一个华为[开发者账号](https://developer.huawei.com/consumer/cn/)，如果仅运行在自己的设备上则无需实名认证
-2. 下载 [DevEco Studio 6.0.0](https://developer.huawei.com/consumer/cn/deveco-studio/)
+2. 下载 [DevEco Studio 6.0.0](https://developer.huawei.com/consumer/cn/deveco-studio/) 或更高版本
 3. Fork 本仓库并将 Fork 后你自己的仓库下载到本地
-4. 将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
+4. （重要）将 `build-profile.json5.bak` 重命名为 `build-profile.json5`
 5. （可选）修改相应 链接/图标 和 课表/考试 提取函数
 6. 在手机/平板的系统设置中，打开“xxx的xxx”（例如：user的Mate 70 Pro+），连续点击“软件版本”7次，启用“开发者选项”（需要输入密码并重启）
 7. 转到 设置→系统→开发者选项→打开“USB调试”
