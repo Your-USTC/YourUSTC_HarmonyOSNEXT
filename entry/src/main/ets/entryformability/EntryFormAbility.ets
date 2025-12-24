@@ -1,15 +1,21 @@
 
-import { formBindingData, FormExtensionAbility, formInfo, formProvider } from '@kit.FormKit';
+/**
+ * 卡片生命周期接口
+ */
+
 import { Want } from '@kit.AbilityKit';
+import { formBindingData, FormExtensionAbility, formInfo, formProvider } from '@kit.FormKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
 import * as ScheduleSources from '../constants/ScheduleSources';
 import scheduleManager from '../utils/TimeTable';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import UnifiedPreferences, { SCHEDULE_KEY, UID_KEY } from '../utils/UnifyPreference'
+import UnifiedPreferences from '../utils/UnifyPreference';
 import { CardListParameter } from '../class_schedule_daily/viewmodel/CardListParameter';
 
 const TAG: string = 'EntryFormAbility';
 const DOMAIN_NUMBER: number = 0xFF00;
 
+// 卡片数据存储类
 class FormDataClass {
   todayCourse: ScheduleSources.classAttribute[] = [];
   tomorrowCourse: ScheduleSources.classAttribute[] = [];
@@ -27,8 +33,9 @@ class FormDataClass {
     /* titleColor               */ undefined,
     /* isBottomIcon             */ false,
     /* bottomIcon               */ undefined
-  )
+  );
   lastRefresh: string = '';
+
   constructor() {
     scheduleManager.getFormattedSchedule();
     if (!scheduleManager.isTermEnd) {
@@ -38,14 +45,14 @@ class FormDataClass {
     }
     this.cardListParameter.itemCount = this.todayCourse.length;
     const now = scheduleManager.currentTime;
-    this.lastRefresh = `上次刷新: ${now.getMonth() + 1}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`
+    this.lastRefresh = `上次刷新: ${now.getMonth() + 1}月${now.getDate()}日${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
   }
 }
 
 export default class EntryFormAbility extends FormExtensionAbility {
   onAddForm(want: Want) {
     // Called to return a FormBindingData object.
-    UnifiedPreferences.init(this.context)
+    UnifiedPreferences.init(this.context);
     return formBindingData.createFormBindingData(new FormDataClass());
   }
 
@@ -59,15 +66,18 @@ export default class EntryFormAbility extends FormExtensionAbility {
   }
 
   onFormEvent(formId: string, message: string): void {
+    // 刷新
     hilog.info(DOMAIN_NUMBER, TAG, `FormAbility onFormEvent, formId = ${formId}, message: ${JSON.stringify(message)}`);
 
     UnifiedPreferences.init(this.context)
     let formData = new FormDataClass();
 
-    const formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
+    const formInfo: formBindingData.FormBindingData
+      = formBindingData.createFormBindingData(formData);
+
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');
-      console.info('FormAbility updateForm success')
+      console.info('FormAbility updateForm success');
     }).catch((error: Error) => {
       hilog.error(DOMAIN_NUMBER, TAG, `Operation updateForm failed. Cause: ${JSON.stringify(error)}`);
     });

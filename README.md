@@ -77,14 +77,14 @@ AppScope/                                   // 应用信息、全局资源
 
 entry/src/main/
 │
-├── module.json5                            // 主程序配置信息
+├── module.json5                            // 应用程序配置信息
 │
-├── resources/                              // 主程序资源目录
+├── resources/                              // 应用程序资源目录
 │   └── base/profile/                       // 页面、卡片、快捷方式配置
 │
 └── ets/                                    // 源代码目录
     │
-    │   // 应用程序
+    │   /* 应用程序 */
     │
     ├── entryability/
     │   └── EntryAbility.ets                // 应用程序入口点
@@ -97,7 +97,8 @@ entry/src/main/
     │   ├── GetSchedule.ets                 // 同步在线课表、考试页面
     │   ├── Help.ets                        // 帮助页面
     │   ├── About.ets                       // 关于页面
-    │   └── FaultOccurred.ets               // 恢复模式页面
+    │   ├── FaultOccurred.ets               // 恢复模式页面
+    │   └── Declaration.ets                 // 首次启动声明页面
     │
     ├── constants/
     │   ├── ScheduleSources.ets             // 课表数据结构
@@ -117,7 +118,7 @@ entry/src/main/
     │   ├── UnifyPreference.ets             // 全局共享首选项读写功能
     │   ├── WriteCalendar.ets               // 系统日历读写功能
     │   │
-    │   ├── jsencrypt/                      // 加密功能
+    │   ├── jsencrypt/                      // 加密功能（三方库）
     │   └── Encryption.ets                  // 加密功能接口
     │
     ├── view/
@@ -127,7 +128,7 @@ entry/src/main/
     │   ├── SettingsComponent.ets           // 设置项组件
     │   └── PasswordDialog.ets              // 账号密码弹窗
     │
-    │   // 服务卡片
+    │   /* 服务卡片 */
     │
     ├── entryformability/
     │   └── EntryFormAbility.ets            // 卡片生命周期接口
@@ -138,7 +139,7 @@ entry/src/main/
         ├── view/
         │   └── CardListComponent.ets       // 卡片框架
         └── viewmodel/
-            └── CardListParameter.ets       // 卡片构造函数
+            └── CardListParameter.ets       // 卡片构造参数
 ```
 
 </details>

@@ -1,10 +1,18 @@
 
+/**
+ * 卡片框架
+ */
+
 import { CardListParameter } from '../viewmodel/CardListParameter';
 
 @Component
 export struct CardListComponent {
-  @BuilderParam customBuilderParam: () => void = this.customBuilder;
+
+  // 外部参数
   @Link cardListParameter: CardListParameter | undefined;
+
+  // 内部变量
+  @BuilderParam customBuilderParam: () => void = this.customBuilder;
   @LocalStorageProp('lastRefresh') lastRefresh: string = '点击右侧按钮刷新';
 
   @Builder
@@ -15,7 +23,9 @@ export struct CardListComponent {
   build() {
     if (this.cardListParameter !== undefined) {
       Stack({ alignContent: Alignment.Bottom }) {
+        // 卡片主体区域
         Column({ space: FlexAlign.Start }) {
+          // 标题区域
           Row() {
             Row() {
               Text(this.cardListParameter.title)
@@ -41,6 +51,7 @@ export struct CardListComponent {
               }
             }
             .layoutWeight(1)
+
             Text(this.lastRefresh)
               .opacity(0.8)
               .fontSize(14)
@@ -61,8 +72,9 @@ export struct CardListComponent {
           .justifyContent(FlexAlign.SpaceBetween)
           .padding({ bottom: 4 })
 
+          // 课程列表模块
           List() {
-            this.customBuilderParam();
+            this.customBuilderParam()
           }
           .width('100%')
           .height('100%')
@@ -72,7 +84,9 @@ export struct CardListComponent {
         }
         .pixelRound({ bottom: PixelRoundCalcPolicy.FORCE_CEIL })
 
+        // 卡片底部区域
         Stack({ alignContent: Alignment.BottomEnd }) {
+          // 底部渐变遮罩
           if (this.cardListParameter.isMask !== undefined) {
             Row()
               .width('100%')
@@ -86,6 +100,7 @@ export struct CardListComponent {
               .hitTestBehavior(HitTestMode.None)
           }
 
+          // 右下角图标
           if (this.cardListParameter.isBottomIcon !== undefined) {
             Image(this.cardListParameter.bottomIcon)
               .width(32)
