@@ -10,6 +10,7 @@
  */
 
 export class GridData {
+
   groupName: ResourceStr = '';
   gridItemList: ResourceStr[] = [];
 

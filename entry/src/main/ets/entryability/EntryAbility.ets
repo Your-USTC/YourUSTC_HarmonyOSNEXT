@@ -1,4 +1,8 @@
 
+/**
+ * 应用程序入口点
+ */
+
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { router, window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -8,12 +12,16 @@ import UnifiedPreferences from '../utils/UnifyPreference';
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
+
+  // 决定从哪个页面启动
   routerPath: string = '';
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // 应用程序初始化
     try {
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     } catch (error) {
-      console.error('onCreate ERROR: ' + JSON.stringify(error))
+      console.error('onCreate ERROR: ' + JSON.stringify(error));
     }
     UnifiedPreferences.init(this.context);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
@@ -23,6 +31,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
+    // 应用程序退出
     UnifiedPreferences.putSync('FaultOccurred', false);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
   }
@@ -31,8 +40,10 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    if (UnifiedPreferences.getBoolSync('RecoveryMode', false) || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
-      UnifiedPreferences.putSync('RecoveryMode', false)
+    if (UnifiedPreferences.getBoolSync('RecoveryMode', false)
+      || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
+      // 恢复模式
+      UnifiedPreferences.putSync('RecoveryMode', false);
       windowStage.loadContent('pages/FaultOccurred', (err) => {
         if (err.code) {
           hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -40,7 +51,9 @@ export default class EntryAbility extends UIAbility {
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
       });
+
     } else {
+      // 正常启动
       UnifiedPreferences.putSync('FaultOccurred', true);
       windowStage.loadContent('pages/Index', (err) => {
         if (err.code) {
@@ -49,6 +62,7 @@ export default class EntryAbility extends UIAbility {
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
         if (this.routerPath) {
+          // 打开特定页面
           const mainWindow = windowStage.getMainWindowSync();
           setTimeout(() => {
             mainWindow.getUIContext().getRouter().pushUrl({
@@ -61,9 +75,11 @@ export default class EntryAbility extends UIAbility {
   }
 
   onNewWant(want: Want) {
+    // 应用程序切到前台
     if (want.parameters?.router) {
       const windowRouter = this.context.windowStage.getMainWindowSync().getUIContext().getRouter();
       if (!want.parameters?.router.toString().endsWith(windowRouter.getState().name)) {
+        // 打开特定页面
         windowRouter.pushUrl({
           url: want.parameters?.router.toString()
         }, router.RouterMode.Standard);

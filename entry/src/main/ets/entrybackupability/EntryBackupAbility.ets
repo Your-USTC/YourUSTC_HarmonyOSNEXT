@@ -1,5 +1,6 @@
-import { hilog } from '@kit.PerformanceAnalysisKit';
+
 import { BackupExtensionAbility, BundleVersion } from '@kit.CoreFileKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 const DOMAIN = 0x0000;
 
