@@ -7,7 +7,6 @@ import * as ScheduleSources from '../constants/ScheduleSources';
 import BackgroundImage from '../view/BgImageManager';
 import { classAttribute } from '../constants/ScheduleSources';
 import { weekTranslate } from '../utils/tools';
-import { text } from '@kit.ArkGraphics2D';
 
 
 @Entry
@@ -414,7 +413,6 @@ struct Schedule {
                 nonConflict = false;
                 break haveOccupied;
               }
-              console.log(`!!${j.name} ${k}`)
               flag[k] = true;
             }
           if (nonConflict)
@@ -623,6 +621,7 @@ struct Schedule {
           Blank()
 
           Text('xiu~')
+            .visibility(this.weekDisplayed === scheduleManager.weekDisplayed ? Visibility.Hidden : Visibility.Visible)
             .onClick(() => {
               this.weekDisplayed = scheduleManager.weekDisplayed;
               this.weekStart = scheduleManager.weekStart;
