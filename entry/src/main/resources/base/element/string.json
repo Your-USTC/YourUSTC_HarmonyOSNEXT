@@ -206,11 +206,11 @@
     },
     {
       "name": "add_class_notification",
-      "value": "在日历中新建上课提醒日程"
+      "value": "在日历中新建上课提醒"
     },
     {
       "name": "add_exam_notification",
-      "value": "在日历中新建考试提醒日程"
+      "value": "在日历中新建考试提醒"
     },
     {
       "name": "ok",
