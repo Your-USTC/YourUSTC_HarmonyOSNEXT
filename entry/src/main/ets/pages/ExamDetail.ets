@@ -1,14 +1,20 @@
 
-import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI'
-import * as tools from '../utils/tools'
-import { obtainedData } from '../constants/ScheduleSources'
+/**
+ * 本地考试信息页面
+ */
+
+import { CounterComponent, CounterType, LengthUnit } from '@kit.ArkUI';
+
+import { obtainedData } from '../constants/ScheduleSources';
 import examManager, { examAttribute, areExamAttributesEqual } from '../utils/ExamManager';
+import * as tools from '../utils/tools';
 import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
 struct ExamDetail {
 
+  // 内部变量
   context: UIContext = this.getUIContext();
   @State examInfo: examAttribute[] = [];
   @State currentTime: Date = new Date();
@@ -18,7 +24,6 @@ struct ExamDetail {
    */
   @State showSheet: boolean = false;
   private isChangeSchedule: boolean = true;
-
   private newExamInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0, importance: 5};
   private oriExamInfo: examAttribute = { id: '', type: '', name: '', date: '', classroom: '', building: '', campus: '', info: '', beginTimeStamp: 0, endTimeStamp: 0, importance: 5};
   private date: string = '2025-07-21';
@@ -188,41 +193,43 @@ struct ExamDetail {
         });
       }
       .margin({ bottom: 10 })
-      .width('100%');
+      .width('100%')
 
       Column() {
         Row() {
-          Text($r('app.string.exam_detail_object'));
+          Text($r('app.string.exam_detail_object'))
           TextInput({ text: this.oriExamInfo.name })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.name = input)
-            .selectAll(true);
+            .selectAll(true)
         }
-        .margin({ bottom: 5 });
+        .margin({ bottom: 5 })
 
         Row() {
-          Text($r('app.string.exam_detail_type'));
+          Text($r('app.string.exam_detail_type'))
           TextInput({ text: this.oriExamInfo.type })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.type = input)
-            .selectAll(true);
+            .selectAll(true)
         }
-        .margin({ bottom: 5 });
+        .margin({ bottom: 5 })
 
         Row() {
-          Text($r('app.string.exam_detail_date'));
+          Text($r('app.string.exam_detail_date'))
           CalendarPicker({ selected: new Date(this.oriExamInfo.date.slice(0, 10)) })
             .edgeAlign(CalendarAlign.CENTER)
             .onChange((value) => {
-              this.date = `${value.getFullYear().toString().padStart(4, '0')}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
+              this.date =
+                `${value.getFullYear().toString().padStart(4, '0')}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')}`;
             })
         }
-        .margin({ bottom: 5 });
+        .margin({ bottom: 5 })
 
         Row() {
-          Text($r('app.string.exam_detail_start_time'));
+          Text($r('app.string.exam_detail_start_time'))
+
           CounterComponent({
             options: {
               type: CounterType.INLINE,
@@ -238,7 +245,9 @@ struct ExamDetail {
               }
             }
           })
+
           Text(' : ')
+
           CounterComponent({
             options: {
               type: CounterType.INLINE,
@@ -255,9 +264,11 @@ struct ExamDetail {
             }
           })
         }
-        .margin({ bottom: 5 });
+        .margin({ bottom: 5 })
+
         Row() {
-          Text($r('app.string.exam_detail_end_time'));
+          Text($r('app.string.exam_detail_end_time'))
+
           CounterComponent({
             options: {
               type: CounterType.INLINE,
@@ -273,7 +284,9 @@ struct ExamDetail {
               }
             }
           })
+
           Text(' : ')
+
           CounterComponent({
             options: {
               type: CounterType.INLINE,
@@ -292,50 +305,56 @@ struct ExamDetail {
         }
 
         Row() {
-          Text($r('app.string.class_detail_location'));
+          Text($r('app.string.class_detail_location'))
+
           TextInput({ text: this.oriExamInfo.campus, placeholder: $r('app.string.campus') })
             .layoutWeight(3)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.campus = input)
             .textAlign(TextAlign.Center)
             .selectAll(true)
-            .showUnderline(true);
+            .showUnderline(true)
+
           TextInput({ text: this.oriExamInfo.building, placeholder: $r('app.string.building') })
             .layoutWeight(5)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.building = input)
             .textAlign(TextAlign.Center)
             .selectAll(true)
-            .showUnderline(true);
+            .showUnderline(true)
+
           TextInput({ text: this.oriExamInfo.classroom, placeholder: $r('app.string.classroom') })
             .layoutWeight(3)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.classroom = input)
             .textAlign(TextAlign.Center)
             .selectAll(true)
-            .showUnderline(true);
+            .showUnderline(true)
         }
 
         Row() {
-          Text($r('app.string.exam_detail_other'));
+          Text($r('app.string.exam_detail_other'))
+
           TextInput({ text: this.oriExamInfo.id, placeholder: $r('app.string.id') })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.id = input)
             .textAlign(TextAlign.Center)
             .selectAll(true)
-            .showUnderline(true);
+            .showUnderline(true)
+
           TextInput({ text: this.oriExamInfo.info, placeholder: $r('app.string.note') })
             .layoutWeight(1)
             .textOverflow(TextOverflow.Ellipsis)
             .onChange((input: string) => this.newExamInfo.info = input)
             .textAlign(TextAlign.Center)
             .selectAll(true)
-            .showUnderline(true);
+            .showUnderline(true)
         }
 
         Row() {
-          Text($r('app.string.class_detail_priority'));
+          Text($r('app.string.class_detail_priority'))
+
           Slider({ min: 0, max: 10, value: this.oriExamInfo.importance, step: 1, style: SliderStyle.InSet })
             .showSteps(true)
             .layoutWeight(1)
@@ -345,10 +364,10 @@ struct ExamDetail {
         }
       }
       .alignItems(HorizontalAlign.Start)
-      .width('90%');
+      .width('90%')
     }
     .width('100%')
-    .padding({ top: 16, right: 16, left: 16});
+    .padding({ top: 16, right: 16, left: 16 })
   }
 
   /**
@@ -362,6 +381,7 @@ struct ExamDetail {
       }
       examManager.readStoredExam();
       this.examInfo = examManager.allExamInfo;
+
     } catch (error) {
       examManager.readStoredExam();
       this.currentTime = new Date();
@@ -371,9 +391,10 @@ struct ExamDetail {
   }
 
   build() {
-
     Column() {
+      // 标题栏
       Row() {
+        // 关闭
         Image($r('app.media.close'))
           .padding({ left: 12 })
           .height(22)
@@ -381,6 +402,8 @@ struct ExamDetail {
           .onClick(() => {
             this.context.getRouter().back();
           })
+
+        // 刷新
         Image($r('app.media.refresh'))
           .padding({ left: 12 })
           .height(22)
@@ -393,6 +416,7 @@ struct ExamDetail {
 
         Blank()
 
+        // 标题（绑定考试信息弹窗）
         Text($r('app.string.exam_detail'))
           .fontSize(18)
           .fontColor($r('app.color.normal_text'))
@@ -405,7 +429,8 @@ struct ExamDetail {
             backgroundColor: '#00d00721',
             blurStyle: BlurStyle.Regular,
             onWillDismiss: ((DismissSheetAction: DismissSheetAction) => {
-              if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute){
+              if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute) {
+                // 时间输入错误修正
                 let temp: number = this.startHour;
                 this.startHour = this.endHour;
                 this.endHour = temp;
@@ -413,8 +438,12 @@ struct ExamDetail {
                 this.startMinute = this.endMinute;
                 this.endMinute = temp;
               }
-              this.newExamInfo.date = `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
+
+              this.newExamInfo.date =
+                `${this.date} ${this.startHour.toString().padStart(2, '0')}:${this.startMinute.toString().padStart(2, '0')}~${this.endHour.toString().padStart(2, '0')}:${this.endMinute.toString().padStart(2, '0')}`;
+
               if (!areExamAttributesEqual(this.oriExamInfo, this.newExamInfo)) {
+                // 未保存更改
                 this.getUIContext().showAlertDialog({
                   title: $r('app.string.unsaved_change'),
                   message: $r('app.string.back_to_schedule_or_not'),
@@ -445,12 +474,15 @@ struct ExamDetail {
                   }
                 });
               } else {
+                // 已保存更改
                 DismissSheetAction.dismiss();
               }
             })
           })
 
         Blank()
+
+        // 新建
         Image($r('app.media.plus_square'))
           .padding({right: 12})
           .height(22)
@@ -476,6 +508,8 @@ struct ExamDetail {
             this.endMinute = this.currentTime.getMinutes();
             this.showSheet = true;
           })
+
+        // 同步
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(22)
@@ -483,10 +517,13 @@ struct ExamDetail {
           .onClick(() => {
             this.context.getRouter().pushUrl({
               url: 'pages/GetSchedule',
-              params: { title: $r('app.string.online_exam_info'), url: 'https://jw.ustc.edu.cn/for-std/exam-arrange'}
+              params: {
+                title: $r('app.string.online_exam_info'),
+                url: 'https://jw.ustc.edu.cn/for-std/exam-arrange'
+              }
             }).catch((err: Error) => {
-              console.error(`Router ERROR: [${err.name}] ${err.message}`)
-            })
+              console.error(`Router ERROR: [${err.name}] ${err.message}`);
+            });
           })
       }
       .width('100%')
@@ -495,24 +532,31 @@ struct ExamDetail {
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
+      // 页面内容
       if (this.examInfo.length === 0) {
+        // 无考试
         Column() {
+          // 组件模糊部分
           Column() {
             Image($r('app.media.no_exam2'))
               .width(100)
               .interpolation(ImageInterpolation.Medium)
               .draggable(false)
-            Text($r('app.string.no_exam_info2')).fontSize(18).textAlign(TextAlign.Center);
+            Text($r('app.string.no_exam_info2'))
+              .fontSize(18)
+              .textAlign(TextAlign.Center)
           }
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
           .opacity(BackgroundImage.opacityLevel)
           .padding({ top: 5, left: 10, right: 10, bottom: 10})
-          .borderRadius(12);
+          .borderRadius(12)
         }
         .height('80%')
-        .justifyContent(FlexAlign.Center);
+        .justifyContent(FlexAlign.Center)
+
       } else {
+        // 有考试
         List() {
           ForEach(this.examInfo, (singleExam: examAttribute) => {
             ListItem() {
@@ -561,19 +605,21 @@ struct ExamDetail {
                     .margin({ bottom: 2 })
                     .alignItems(VerticalAlign.Bottom)
                   }
-                  .width('30%');
+                  .width('30%')
+
                 } else if (this.currentTime.getTime() < singleExam.endTimeStamp) {
                   Text($r('app.string.exam_processing'))
                     .fontSize(20)
                     .fontColor($r('app.color.transparent_text'))
                     .width('30%')
-                    .textAlign(TextAlign.Start);
+                    .textAlign(TextAlign.Start)
+
                 } else {
                   Text($r('app.string.exam_ended'))
                     .fontSize(20)
                     .fontColor($r('app.color.transparent_text'))
                     .width('30%')
-                    .textAlign(TextAlign.Start);
+                    .textAlign(TextAlign.Start)
                 }
 
                 Column() {
@@ -588,12 +634,13 @@ struct ExamDetail {
                   .margin({ bottom: 5 })
 
                   Text(`\udb80\uddb8 ${singleExam.campus} ${singleExam.building} ${singleExam.classroom}`)
-                    .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None :
-                      Visibility.Visible);
+                    .visibility(singleExam.campus + singleExam.building + singleExam.classroom == '' ? Visibility.None : Visibility.Visible)
+
                   Text(`\udb80\udfdc ${singleExam.date}`)
-                    .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible);
+                    .visibility(singleExam.date == '' ? Visibility.None : Visibility.Visible)
+
                   Text(`\udb80\ude95 ${singleExam.id} ${singleExam.info}`)
-                    .visibility(singleExam.id + singleExam.info == '' ? Visibility.None : Visibility.Visible);
+                    .visibility(singleExam.id + singleExam.info == '' ? Visibility.None : Visibility.Visible)
                 }
                 .width('70%')
                 .alignItems(HorizontalAlign.Start)
@@ -607,7 +654,7 @@ struct ExamDetail {
             .opacity(BackgroundImage.opacityLevel)
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .borderRadius(20)
-            .onClick(() => {
+            .onClick(() => {            // 点击显示详情弹窗
               this.oriExamInfo = {
                 id: singleExam.id,
                 type: singleExam.type,
@@ -641,11 +688,8 @@ struct ExamDetail {
               this.endHour = Number(this.oriExamInfo.date.slice(17, 19));
               this.endMinute = Number(this.oriExamInfo.date.slice(20, 22));
               this.showSheet = true;
-            });
+            })
           })
-
-          ListItem()
-            .height(40)
         }
         .width('100%')
         .height('100%')

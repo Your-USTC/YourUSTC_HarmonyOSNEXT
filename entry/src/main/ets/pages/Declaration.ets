@@ -1,9 +1,17 @@
+
+/**
+ * 首次启动声明页面
+ */
+
 import { webview } from '@kit.ArkWeb';
+
 import UnifiedPreferences from '../utils/UnifyPreference';
 
 @Entry
 @Component
 struct Declaration {
+
+  // 内部变量
   @State agreePolitic: boolean = false;
   @State knowIndependence: boolean = false;
   @State showSheet: boolean = false;
@@ -15,7 +23,9 @@ struct Declaration {
   }
 
   build() {
+    // 全屏步骤导航器
     Stepper() {
+      // 同意用户协议
       StepperItem() {
         Column() {
           Column({ space: 7 }) {
@@ -60,6 +70,7 @@ struct Declaration {
       }
       .status(this.agreePolitic ? ItemState.Normal: ItemState.Disabled)
 
+      // 原创性声明
       StepperItem() {
         Column({ space: 7 }) {
           Text($r('app.string.no_association1'))
@@ -78,6 +89,7 @@ struct Declaration {
       .nextLabel((this.countdown <= 0) ? '下一步' : `${this.countdown}秒后继续`)
       .status((this.countdown <= 0) ? ItemState.Normal : ItemState.Disabled)
 
+      // 输入或粘贴“我已知晓”才能使用应用
       StepperItem() {
         Column({ space: 7 }) {
           Text($r('app.string.no_association1'))
@@ -123,6 +135,7 @@ struct Declaration {
     })
   }
 
+  // 组件：用户协议网页
   @Builder
   agreementSheet() {
     Web({ src: $rawfile('TermsOfUse.html'), controller: this.webController })
