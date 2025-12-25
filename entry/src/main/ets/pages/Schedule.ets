@@ -7,6 +7,7 @@ import * as ScheduleSources from '../constants/ScheduleSources';
 import BackgroundImage from '../view/BgImageManager';
 import { classAttribute } from '../constants/ScheduleSources';
 import { weekTranslate } from '../utils/tools';
+import { text } from '@kit.ArkGraphics2D';
 
 
 @Entry
@@ -443,13 +444,6 @@ struct Schedule {
         tong[i].push(false);
       }
     }
-
-    // TODO: 将 weekStart 和 weekEnd 存入首选项
-    console.info(`课表 weekDisplayed: ${this.weekDisplayed}`)
-    console.info(`课表 currentTime: ${tools.timestampToDateTime(currentTime.getTime())}`)
-    console.info(`课表 termStart: ${tools.timestampToDateTime(this.termStart)}`)
-    console.info(`课表 weekStart: ${tools.timestampToDateTime(this.weekStart)}`)
-    console.info(`课表 weekEnd: ${tools.timestampToDateTime(this.weekEnd)}`)
   }
 
   aboutToAppear(): void {
@@ -501,12 +495,12 @@ struct Schedule {
             this.showConflictClass = true;
           })
 
-          Blank()
-
           Text($r('app.string.local_schedule'))
             .fontSize(18)
             .fontColor($r('app.color.normal_text'))
             .height(48)
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
             .bindSheet($$this.showSheet, this.ClassDetailDialog(), {
               // 如果与 gridItem 绑定，会弹出很多个！
               detents: [SheetSize.MEDIUM, SheetSize.LARGE],
@@ -563,8 +557,6 @@ struct Schedule {
                 }
               })
             })
-
-          Blank()
 
           Image($r('app.media.plus_square'))
             .padding({ right: 12 })
@@ -630,6 +622,16 @@ struct Schedule {
 
           Blank()
 
+          Text('xiu~')
+            .onClick(() => {
+              this.weekDisplayed = scheduleManager.weekDisplayed;
+              this.weekStart = scheduleManager.weekStart;
+              this.weekEnd = scheduleManager.weekEnd;
+              this.sepConflictClass();
+            })
+
+          Blank()
+
           Image(this.weekDisplayed == 1 ? $r('app.media.arrow_left_circle_unavailable') :
             $r('app.media.arrow_left_circle'))
             .height(18)
@@ -667,7 +669,7 @@ struct Schedule {
         }
         .width('100%')
         .height(30)
-        .padding({ left: 20, right: 10 })
+        .padding({ left: 15, right: 5 })
         .justifyContent(FlexAlign.Center)
         .border({
           width: { bottom: 1 },
