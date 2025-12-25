@@ -1,19 +1,27 @@
 
+/**
+ * 帮助页面
+ */
+
 import { LengthUnit } from '@kit.ArkUI';
+
 import { getContArray } from '../utils/tools';
 import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
 struct Index {
+
+  // 内部变量
   @State isContentShow: boolean[] = new Array(15).fill(false);
   context: UIContext = this.getUIContext();
   @State rotateAngle: number[] = new Array(15).fill(0);
 
   build() {
-
     Column() {
+      // 标题栏
       Row() {
+        // 退出
         Image($r('app.media.close'))
           .padding({ left: 12 })
           .height(22)
@@ -24,12 +32,14 @@ struct Index {
 
         Blank()
 
+        // 标题
         Text($r('app.string.help'))
           .fontSize(18)
           .height(48)
           .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
+        // 占位符：保证标题居中
         Blank()
           .margin({ right: 32 })
       }
@@ -40,14 +50,17 @@ struct Index {
       .opacity(BackgroundImage.opacityLevel)
       .backgroundBlurStyle(BackgroundImage.blurLevel)
 
+      // 页面内容
       List({ initialIndex: 0 }) {
         ForEach(getContArray([[0, 8]]), (index: number) => {
           ListItem() {
             Column() {
+              // 帮助项标题
               Row() {
                 Text($r(`app.string.help${index}_title`))
                   .margin({ right: 15 })
-                  .fontWeight(FontWeight.Bold);
+                  .fontWeight(FontWeight.Bold)
+
                 Image($r('app.media.chevron_right'))
                   .height(20)
                   .rotate({ angle: this.rotateAngle[index] })
@@ -60,14 +73,14 @@ struct Index {
                       max: 120,
                       expected: 90,
                     }
-                  });
+                  })
               }
               .padding({ left: 16, right: 16, top: 12, bottom: 12 })
               .width('100%')
               .justifyContent(FlexAlign.SpaceBetween)
               .onClick(() => {
+                // 设置按钮收起展开动画效果
                 this.context.animateTo({
-                  // 设置按钮收起展开动画效果
                   duration: 300,
                   onFinish: () => {
                     console.info('animation end');
@@ -79,11 +92,12 @@ struct Index {
                   this.rotateAngle[index] = 90;
                 else
                   this.rotateAngle[index] = 0;
-              });
+              })
 
+              // 详细内容
               if (this.isContentShow[index]) { // 判断当前按钮为“收起”显示内容区域
                 Divider()
-                  .color($r('app.color.grid_border'));
+                  .color($r('app.color.grid_border'))
 
                 Text($r(`app.string.help${index}_content`))
                   .backgroundColor(BackgroundImage.showImage ? undefined : $r('app.color.help_context'))
@@ -99,10 +113,11 @@ struct Index {
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .width('100%')
             .margin({ top: 10 })
-            .borderRadius(20);
-          };
-        }, (item: string) => item.toString());
+            .borderRadius(20)
+          }
+        }, (item: string) => item.toString())
 
+        // 占位符：防止底部遮挡
         ListItem()
           .visibility(Visibility.Hidden)
           .height('50vp')
@@ -117,6 +132,6 @@ struct Index {
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-    .backgroundColor($r('app.color.normal_background'));
+    .backgroundColor($r('app.color.normal_background'))
   }
 }

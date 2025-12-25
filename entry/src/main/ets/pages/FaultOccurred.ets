@@ -1,10 +1,16 @@
 
-import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
-import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
-import { common, Want } from '@kit.AbilityKit';
-import { examAttribute } from '../utils/ExamManager';
-import { classAttribute } from '../constants/ScheduleSources';
+/**
+ * 恢复模式页面
+ */
 
+import { common, Want } from '@kit.AbilityKit';
+import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
+
+import { classAttribute } from '../constants/ScheduleSources';
+import { examAttribute } from '../utils/ExamManager';
+import UnifiedPreferences, { SCHEDULE_KEY, START_TIME_KEY } from '../utils/UnifyPreference';
+
+// “导出课表到剪贴板”的格式
 interface exportClassInfo {
   data: string,
   termBegin: string
@@ -13,6 +19,8 @@ interface exportClassInfo {
 @Entry
 @Component
 struct FaultOccurred {
+
+  // 内部变量
   private button1ClickTimes: number = 0;
   private button2ClickTimes: number = 0;
   private button3ClickTimes: number = 0;
@@ -26,17 +34,22 @@ struct FaultOccurred {
         Image($r('app.media.fault_occurred'))
           .height(180)
           .draggable(false)
+
         Text($r('app.string.runtime_error'))
           .fontColor($r('app.color.normal_text'))
           .fontSize(20)
           .margin({ bottom: 10 })
           .fontWeight(FontWeight.Bold)
-          .textAlign(TextAlign.Center);
+          .textAlign(TextAlign.Center)
+
         Text($r('app.string.dangerous_behavior'))
           .fontSize(24)
           .fontWeight(FontWeight.Bolder)
-          .fontColor($r('app.color.red'));
+          .fontColor($r('app.color.red'))
+
+        // 以下按钮需双击确认
         Flex() {
+          // 删除课表
           Button(this.button1Text)
             .backgroundColor($r('app.color.red'))
             .onClick(() => {
@@ -48,7 +61,9 @@ struct FaultOccurred {
               } else if (this.button1ClickTimes == 1) {
                 this.button1Text = $r('app.string.click_again_to_delete');
               }
-            });
+            })
+
+          // 删除所有数据
           Button(this.button2Text)
             .backgroundColor($r('app.color.red'))
             .margin({ left: 8 })
@@ -60,7 +75,9 @@ struct FaultOccurred {
               } else if (this.button2ClickTimes == 1) {
                 this.button2Text = $r('app.string.click_again_to_delete');
               }
-            });
+            })
+
+          // 删除考试信息
           Button(this.button3Text)
             .backgroundColor($r('app.color.red'))
             .margin({ left: 8 })
@@ -72,16 +89,22 @@ struct FaultOccurred {
               } else if (this.button3ClickTimes == 1) {
                 this.button3Text = $r('app.string.click_again_to_delete');
               }
-            });
+            })
         }
         .borderStyle(BorderStyle.Solid)
         .width('auto')
         .borderWidth(2)
         .borderColor($r('app.color.red'))
-        .padding({ top: 10, bottom: 10, left: 10, right: 10 });
+        .padding({ top: 10, bottom: 10, left: 10, right: 10 })
 
-        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center, alignContent: FlexAlign.Start }) {
+        Flex({
+          wrap: FlexWrap.Wrap,
+          justifyContent: FlexAlign.Center,
+          alignItems: ItemAlign.Center,
+          alignContent: FlexAlign.Start,
+        }) {
           Row() {
+            // 从剪贴板导入课表
             Row() {
               PasteButton({ icon: PasteIconStyle.LINES, buttonType: ButtonType.Circle})
                 .size({ width: 30, height: 30 })
@@ -133,10 +156,14 @@ struct FaultOccurred {
             }
             .margin({ right: 8 })
 
+            // 导出课表到剪贴板
             Button($r('app.string.export_schedule'))
               .buttonStyle(ButtonStyleMode.TEXTUAL)
               .onClick(() => {
-                const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, JSON.stringify({ data: UnifiedPreferences.getSync('scheduleInfo', '[[[]]]'), termBegin: UnifiedPreferences.getSync('termStartTime', '20250721') }));
+                const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, JSON.stringify({
+                  data: UnifiedPreferences.getSync('scheduleInfo', '[[[]]]'),
+                  termBegin: UnifiedPreferences.getSync('termStartTime', '20250721')
+                }));
                 const systemPasteboard = pasteboard.getSystemPasteboard();
                 systemPasteboard.setData(pasteboardData);
                 systemPasteboard.getData().then((data) => {
@@ -146,11 +173,12 @@ struct FaultOccurred {
                     this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
                   }
                 });
-              });
+              })
           }
-          .margin({ top: 10 });
+          .margin({ top: 10 })
 
           Row() {
+            // 从剪贴板导入考试
             Row() {
               PasteButton({ icon: PasteIconStyle.LINES, buttonType: ButtonType.Circle})
                 .size({ width: 30, height: 30 })
@@ -197,8 +225,9 @@ struct FaultOccurred {
                 });
               Text($r('app.string.import_exam'));
             }
-            .margin({ right: 8 });
+            .margin({ right: 8 })
 
+            // 导出考试到剪贴板
             Button($r('app.string.export_exam'))
               .buttonStyle(ButtonStyleMode.TEXTUAL)
               .onClick(() => {
@@ -212,12 +241,13 @@ struct FaultOccurred {
                     this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed'), duration: 1000 });
                   }
                 });
-              });
+              })
           }
-          .margin({ top: 10 });
+          .margin({ top: 10 })
         }
         .width('100%')
 
+        // 尝试正常重新启动
         Button($r('app.string.normal_restart'))
           .margin({ top: 10 })
           .onClick(() => {
@@ -233,17 +263,21 @@ struct FaultOccurred {
             } catch (error) {
               console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
               if (error.code === 16000064) {
+                // 错误来源：重启应用频繁
+                // （请等待至少3s后再次尝试重启操作）
                 const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
                 context.terminateSelf((err) => {
                   if (!err) {
                     context.getApplicationContext().killAllProcesses().catch((error: Error) => {
                       console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-                    })
+                    });
                   }
                 });
               }
             }
           })
+
+        // 联系开发者
         Button($r('app.string.contact_developer'))
           .buttonStyle(ButtonStyleMode.NORMAL)
           .margin({ top: 10})
@@ -254,7 +288,7 @@ struct FaultOccurred {
               uri: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT/issues'
             }).catch((err: BusinessError) => {
               console.error(`startAbility failed, code is ${err.code}, message is ${err.message}`);
-            })
+            });
           })
       }
       .width('100%')

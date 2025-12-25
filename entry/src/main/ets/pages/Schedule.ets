@@ -1,13 +1,17 @@
 
-import * as tools from '../utils/tools';
-import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
-import { mediaquery, PopoverDialog, Popup, window } from '@kit.ArkUI';
-import { common } from '@kit.AbilityKit';
-import * as ScheduleSources from '../constants/ScheduleSources';
-import BackgroundImage from '../view/BgImageManager';
-import { classAttribute } from '../constants/ScheduleSources';
-import { weekTranslate } from '../utils/tools';
+/**
+ * 本地课表页面
+ */
 
+import { common } from '@kit.AbilityKit';
+import { mediaquery, PopoverDialog, Popup, window } from '@kit.ArkUI';
+
+import * as ScheduleSources from '../constants/ScheduleSources';
+import { classAttribute } from '../constants/ScheduleSources';
+import scheduleManager, { areClassAttributesEqual } from '../utils/TimeTable';
+import * as tools from '../utils/tools';
+import { weekTranslate } from '../utils/tools';
+import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
@@ -22,7 +26,8 @@ struct Schedule {
   @State isLandscape: boolean = false;
   @State screenWidth: number = 0;
   @State screenHeight: number = 0;
-  private portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  private portraitListener: mediaquery.MediaQueryListener =
+    this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
     let windowClass: window.Window | undefined = undefined;
     try {
@@ -36,9 +41,11 @@ struct Schedule {
           let rect = properties.windowRect;
           this.screenWidth = rect.width;
           this.screenHeight = rect.height;
-          if (rect.width > rect.height) { // 横屏
+          if (rect.width > rect.height) {
+            // 横屏
             this.isLandscape = true;
-          } else { // 竖屏
+          } else {
+            // 竖屏
             this.isLandscape = false;
           }
           //rect.width: Window Width, rect.height: Window height
@@ -48,7 +55,8 @@ struct Schedule {
         console.info('Succeeded in obtaining the top window. Data: ' + JSON.stringify(data));
       }).catch((err: Error)=>{
         console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
-      });} catch (exception) {
+      });
+    } catch (exception) {
       console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(exception));
     }
   }
@@ -56,6 +64,7 @@ struct Schedule {
    * 以上是监听屏幕旋转
    */
 
+  // 内部变量
   @State weekDisplayed: number = 0;
   @State termStart: number = 0;
   @State weekStart: number = 0;
@@ -63,6 +72,9 @@ struct Schedule {
   @State thisWeekSchedule: ScheduleSources.classAttribute[] = [];
   @State conflictSchedule: ScheduleSources.classAttribute[] = [];
 
+  /**
+   * 提示弹窗部分
+   */
   @State showColorHint: boolean = false;
   @Builder
   colorHintPopup() {
@@ -82,7 +94,6 @@ struct Schedule {
     }
   }
 
-
   @State showScrollHint: boolean = false;
   @Builder
   scrollHintPopup() {
@@ -101,29 +112,36 @@ struct Schedule {
       })
     }
   }
+
   /**
-   * 详情弹窗部分
+   * 以下是详情弹窗部分
    */
   @State showSheet: boolean = false;
-  private classInfo: ScheduleSources.classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+  private classInfo: ScheduleSources.classAttribute = {
+    name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
     weekOfTerm: [2, 3, 4, 6, 7, 8, 9, 10, 14, 15, 16], timeSpan: [6, 7], dayOfWeek: 0,
-    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5 };
-  private oriClassInfo: ScheduleSources.classAttribute = { name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5
+  };
+  private oriClassInfo: ScheduleSources.classAttribute = {
+    name: '计算机程序设计', teacher: '李卫海', location: '3A212', id: 'CS1003.H2',
     weekOfTerm: [2, 3, 4, 6, 7, 8, 9, 10, 14, 15, 16], timeSpan: [6, 7], dayOfWeek: 0,
-    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5 };
-
-  private rectifyTimeSpan: number[] = [this.oriClassInfo.timeSpan[0], this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]];
-  private rectifyWeekOfTerm: boolean[] = [true, false, true, true, true, false, true, true, true, true, true,
-    false, false, false, true, true, true, false, false, false, false];
+    color: tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)], priority: 5
+  };
+  private rectifyTimeSpan: number[] = [
+    this.oriClassInfo.timeSpan[0],
+    this.oriClassInfo.timeSpan[this.oriClassInfo.timeSpan.length - 1]
+  ];
+  private rectifyWeekOfTerm: boolean[] = [
+    true, false, true, true, true, false, true, true, true, true, true,
+    false, false, false, true, true, true, false, false, false, false
+  ];
   @State isWeeksLegal: boolean = true;
   @State weekOfTerm: number[] = tools.getContArray([[2, 4], [6, 10], [14, 16]]) as number[];
   @State isColorLegal: boolean = true;
   private changeAllColor: boolean = true;
-
   private checkBoxGroup: number = 0;
-
   private isChangeSchedule: boolean = true;
-
+  // 构造自然数数列
   private createArray = (start: number, end: number): Array<SelectOption> => {
     const arr: Array<SelectOption> = [];
     for (let i = start; i <= end; i++) {
@@ -131,7 +149,7 @@ struct Schedule {
     }
     return arr;
   };
-
+  // 颜色选择器
   private colorARGB: number[] = [255, 255, 199, 205];
   @State classColor: string = '#FFC7CD';
   @State showColorPicker: boolean = false;
@@ -250,22 +268,25 @@ struct Schedule {
     .justifyContent(FlexAlign.Center)
   }
   /*
-   * 详情弹窗部分
+   * 以上是详情弹窗部分
    */
-  @State showConflictClass: boolean = false;
 
   /**
-   * 叠课弹窗部分
+   * 以下是叠课处理部分
    */
+  @State showConflictClass: boolean = false;
   @Builder
   ConflictClass() {
     Column() {
       Row() {
+        // 标题
         Text($r('app.string.conflict_class_detail_d', this.weekDisplayed))
           .fontWeight(FontWeight.Bold)
           .fontSize(24)
           .layoutWeight(1)
-          .margin({ left: 8 });
+          .margin({ left: 8 })
+
+        // 帮助
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.questionmark_circle'))
             .height(24)
@@ -276,9 +297,12 @@ struct Schedule {
         .margin({ right: 8 })
         .onClick(() => {
           this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
-            .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+            .catch((err: Error) => {
+              console.error(`Router ERROR: [${err.name}] ${err.message}`)
+            });
         })
 
+        // 退出
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
             .height(24)
@@ -292,6 +316,7 @@ struct Schedule {
       }
       .margin({ bottom: 5 })
 
+      // 叠课信息
       List({ space: 14 }) {
         if (this.conflictSchedule.length === 0) {
           ListItem() {
@@ -314,26 +339,26 @@ struct Schedule {
                 .fontWeight(FontWeight.Bold)
                 .maxLines(2)
                 .layoutWeight(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis });
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
 
               Column() {
                 Text(`\udb81\uddf3 ${lesson.teacher}`)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .visibility(lesson.teacher == '' ? Visibility.None : Visibility.Visible);
+                  .visibility(lesson.teacher == '' ? Visibility.None : Visibility.Visible)
 
                 Text(`\udb80\uddb8 ${lesson.location}`)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .visibility(lesson.location == '' ? Visibility.None : Visibility.Visible);
+                  .visibility(lesson.location == '' ? Visibility.None : Visibility.Visible)
 
                 Text() {
                   Span('\udb80\udfdc ');
                   Span(weekTranslate[lesson.dayOfWeek]);
-                  Span(` ${ScheduleSources.commonClassTime[lesson.timeSpan[0]][0]}-${ScheduleSources.commonClassTime[lesson.timeSpan[lesson.timeSpan.length - 1]][1]}`);
+                  Span(` ${ScheduleSources.commonClassTime[lesson.timeSpan[0]][0]}-${ScheduleSources.commonClassTime[lesson.timeSpan[lesson.timeSpan.length - 1]][1]}`)
                 }
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
               .alignItems(HorizontalAlign.Start);
             }
@@ -343,6 +368,7 @@ struct Schedule {
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
           .onClick(() => {
+            // 编辑课程信息
             this.checkBoxGroup = (this.checkBoxGroup + 1) % 2;
             this.isChangeSchedule = true;
             this.oriClassInfo = {
@@ -382,13 +408,10 @@ struct Schedule {
       }
       .width('100%')
       .layoutWeight(1)
-      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
     }
     .padding({ top: 16, left: 16, right: 16 })
   }
-  /*
-   * 叠课弹窗部分
-   */
 
   sepConflictClass() {
     this.thisWeekSchedule = [];
@@ -424,7 +447,11 @@ struct Schedule {
       }
     }
   }
+  /*
+   * 以上是叠课处理部分
+   */
 
+  // 初始化
   onPageShow(): void {
     const currentTime: Date = new Date();
     const routerParams = this.getUIContext().getRouter().getParams() as ScheduleSources.obtainedData;
@@ -453,22 +480,28 @@ struct Schedule {
   }
 
   aboutToAppear(): void {
+    // 开启监听屏幕旋转
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
       this.onPortrait(mediaQueryResult)
-    }); // 开启监听屏幕旋转
+    });
   }
 
   aboutToDisappear(): void {
-    this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
+    // 关闭监听屏幕旋转，防止内存泄露
+    this.portraitListener.off('change');
   }
 
   build() {
     Column() {
       /**
-       * Header
+       * 标题栏
        */
       Column() {
+        /**
+         * 标题栏
+         */
         Row() {
+          // 退出
           Image($r('app.media.close'))
             .padding({ left: 12 })
             .height(22)
@@ -477,6 +510,7 @@ struct Schedule {
               this.getUIContext().getRouter().back();
             })
 
+          // 叠课信息
           Badge({ count: this.conflictSchedule.length, style: { badgeSize: 14, badgeColor: '#FA2A2D' } }) {
             Image($r('app.media.pile'))
               .height(22)
@@ -503,6 +537,7 @@ struct Schedule {
 
           Blank()
 
+          // 标题
           Text($r('app.string.local_schedule'))
             .fontSize(18)
             .fontColor($r('app.color.normal_text'))
@@ -566,6 +601,7 @@ struct Schedule {
 
           Blank()
 
+          // 新建
           Image($r('app.media.plus_square'))
             .padding({ right: 12 })
             .height(22)
@@ -602,6 +638,7 @@ struct Schedule {
               this.showSheet = true;
             })
 
+          // 同步
           Image($r('app.media.get'))
             .padding({ right: 12 })
             .height(22)
@@ -945,10 +982,14 @@ struct Schedule {
     .backgroundImagePosition(Alignment.Center)
   }
 
+  /**
+   * 课程信息编辑
+   */
   @Builder
   ClassDetailDialog() {
     Column() {
       Row({ space: 8 }) {
+        // 标题
         Text(this.isChangeSchedule ? $r('app.string.class_detail') : $r('app.string.class_detail_new'))
           .fontWeight(FontWeight.Bold)
           .fontSize(24)
@@ -956,6 +997,7 @@ struct Schedule {
           .margin({ left: 8 })
 
         if (this.isChangeSchedule) {
+          // 删除
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
             Image($r('app.media.trash_red'))
               .height(24)
@@ -964,6 +1006,7 @@ struct Schedule {
           .width(42)
           .height(42)
           .onClick(() => {
+            // 警告弹窗
             this.getUIContext().showAlertDialog({
               message: $r('app.string.delete_class_or_not'),
               autoCancel: true,
@@ -999,6 +1042,7 @@ struct Schedule {
             });
           })
 
+          // 复制
           Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
             Image($r('app.media.copy'))
               .height(24)
@@ -1021,6 +1065,7 @@ struct Schedule {
           })
         }
 
+        // 退出
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
             .height(24)
@@ -1037,6 +1082,7 @@ struct Schedule {
           }
           this.classInfo.timeSpan = tools.getContArray([this.rectifyTimeSpan]) as number[];
           if (!areClassAttributesEqual(this.oriClassInfo, this.classInfo)) {
+            // 警告弹窗
             this.getUIContext().showAlertDialog({
               title: $r('app.string.unsaved_change'),
               message: $r('app.string.back_to_schedule_or_not'),
@@ -1071,6 +1117,7 @@ struct Schedule {
           }
         })
 
+        // 保存
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image(this.isChangeSchedule ? $r('app.media.save') : $r('app.media.checkmark'))
             .height(24)
@@ -1098,10 +1145,10 @@ struct Schedule {
             this.sepConflictClass();
           }
           this.showSheet = false;
-        });
+        })
       }
       .margin({ bottom: 10 })
-      .bindPopup(this.showScrollHint, {
+      .bindPopup(this.showScrollHint, {   // 绑定提示弹窗
         builder: this.scrollHintPopup(),
         placement: Placement.Bottom,
         width: 300,
@@ -1110,86 +1157,97 @@ struct Schedule {
             this.showScrollHint = false;
           }
         }
-      });
+      })
 
+      // 课程信息内容
       Scroll() {
         Column() {
           Row() {
-            Text($r('app.string.class_detail_name'));
+            Text($r('app.string.class_detail_name'))
             TextInput({ text: this.classInfo.name })
               .layoutWeight(1)
               .textOverflow(TextOverflow.Ellipsis)
               .onChange((input: string) => this.classInfo.name = input)
-              .selectAll(true);
+              .selectAll(true)
           }
-          .margin({ bottom: 5 });
+          .margin({ bottom: 5 })
 
           Row() {
-            Text($r('app.string.class_detail_teacher'));
+            Text($r('app.string.class_detail_teacher'))
             TextInput({ text: this.classInfo.teacher })
               .layoutWeight(1)
               .textOverflow(TextOverflow.Ellipsis)
               .onChange((input: string) => this.classInfo.teacher = input)
-              .selectAll(true);
+              .selectAll(true)
           }
-          .margin({ bottom: 5 });
+          .margin({ bottom: 5 })
 
           Row() {
-            Text($r('app.string.class_detail_location'));
+            Text($r('app.string.class_detail_location'))
             TextInput({ text: this.classInfo.location })
               .layoutWeight(1)
               .textOverflow(TextOverflow.Ellipsis)
               .onChange((input: string) => this.classInfo.location = input)
-              .selectAll(true);
+              .selectAll(true)
           }
-          .margin({ bottom: 5 });
+          .margin({ bottom: 5 })
 
           Row() {
-            Text($r('app.string.class_detail_id'));
+            Text($r('app.string.class_detail_id'))
             TextInput({ text: this.classInfo.id })
               .layoutWeight(1)
               .textOverflow(TextOverflow.Ellipsis)
               .onChange((input: string) => this.classInfo.id = input)
-              .selectAll(true);
+              .selectAll(true)
           }
-          .margin({ bottom: 5 });
+          .margin({ bottom: 5 })
 
           Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.SpaceBetween }) {
             Row() {
               Text($r('app.string.class_detail_time'))
-                .textAlign(TextAlign.Start);
+                .textAlign(TextAlign.Start)
+
               Select(this.createArray(1, 13))
                 .value(this.rectifyTimeSpan[0].toString())
                 .onSelect((index: number) => {
                   this.rectifyTimeSpan[0] = index + 1;
-                });
-              Text(' ~ ');
+                })
+
+              Text(' ~ ')
+
               Select(this.createArray(1, 13))
                 .value(this.rectifyTimeSpan[1].toString())
                 .onSelect((index: number) => {
                   this.rectifyTimeSpan[1] = index + 1;
-                });
+                })
             }
             .margin({ bottom: 5, right: 10 })
 
             Row() {
               Text($r('app.string.class_detail_day_of_week'))
                 .textAlign(TextAlign.Start);
-              Select([{ value: $r('app.string.monday') }, { value: $r('app.string.tuesday') },
+              Select([
+                { value: $r('app.string.monday') },
+                { value: $r('app.string.tuesday') },
                 { value: $r('app.string.wednesday') },
-                { value: $r('app.string.thursday') }, { value: $r('app.string.friday') },
-                { value: $r('app.string.saturday') }, { value: $r('app.string.sunday') }])
+                { value: $r('app.string.thursday') },
+                { value: $r('app.string.friday') },
+                { value: $r('app.string.saturday') },
+                { value: $r('app.string.sunday') },
+              ])
                 .value(tools.weekTranslate[this.classInfo.dayOfWeek])
                 .onSelect((index: number) => {
                   this.classInfo.dayOfWeek = index;
-                });
+                })
             }
             .margin({ bottom: 5 })
           }
 
+          // 颜色选取
           Row() {
             Text($r('app.string.class_detail_color'))
-              .textAlign(TextAlign.Start);
+              .textAlign(TextAlign.Start)
+
             Stack({ alignContent: Alignment.End }) {
               TextInput({ text: this.classColor })
                 .textOverflow(TextOverflow.Ellipsis)
@@ -1205,7 +1263,8 @@ struct Schedule {
                   this.classColor = input;
                 })
                 .width('100%')
-                .selectAll(true);
+                .selectAll(true)
+
               Circle()
                 .fill(this.isColorLegal ? this.classColor : '#00d00721')
                 .width(32)
@@ -1221,7 +1280,8 @@ struct Schedule {
                       this.showColorHint = false;
                     }
                   }
-                });
+                })
+
               Image($r('app.media.paintpalette'))
                 .height(25)
                 .offset({ x: -7 })
@@ -1240,9 +1300,11 @@ struct Schedule {
                   if (this.colorDialogText.length === 7)
                     this.colorDialogText = `#FF${this.colorDialogText.slice(1,7)}`;
                   this.showColorPicker = true;
-                });
+                })
             }
-            .layoutWeight(1);
+            .layoutWeight(1)
+
+            // 颜色选择器弹窗
             PopoverDialog({
               visible: this.showColorPicker,
               targetBuilder: () => {},
@@ -1273,12 +1335,14 @@ struct Schedule {
           }
           .margin({ bottom: 5 })
 
+          // 周数选取
           Row() {
             Text($r('app.string.class_detail_weeks', tools.shrinkContArrayToString(this.weekOfTerm)))
               .textAlign(TextAlign.Start)
               .layoutWeight(1)
               .maxLines(2)
-              .textOverflow({ overflow: TextOverflow.Ellipsis });
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+
             CheckboxGroup({ group: `checkboxGroup${this.checkBoxGroup}` })
               .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
               .onChange((itemName: CheckboxGroupResult) => {
@@ -1291,10 +1355,12 @@ struct Schedule {
                   }
                 }
                 this.isWeeksLegal = selectAny;
-              });
-            Text($r('app.string.select_all'));
+              })
+
+            Text($r('app.string.select_all'))
+
           }
-          .width('100%');
+          .width('100%')
 
           Flex({ wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceAround }) {
             ForEach(tools.getContArray([[1, 20]]), (checkboxId: number) => {
@@ -1304,15 +1370,22 @@ struct Schedule {
                   .select(this.rectifyWeekOfTerm[checkboxId])
                   .onChange((value: boolean) => {
                     this.rectifyWeekOfTerm[checkboxId] = value;
-                  });
-                Text((checkboxId).toString()).width(20);
+                  })
+
+                Text((checkboxId).toString())
+                  .width(20)
               }
-            });
+            })
           }
 
           Row() {
             Text($r('app.string.class_detail_priority'))
-            Slider({ min: 0, max: 10, value: this.oriClassInfo.priority, step: 1, style: SliderStyle.InSet })
+
+            Slider({
+              min: 0, max: 10,
+              value: this.oriClassInfo.priority,
+              step: 1, style: SliderStyle.InSet
+            })
               .showSteps(true)
               .layoutWeight(1)
               .onChange((value: number) => {
@@ -1321,14 +1394,14 @@ struct Schedule {
           }
         }
         .alignItems(HorizontalAlign.Start)
-        .width('90%');
+        .width('90%')
       }
       .fadingEdge(true)
       .width('100%')
       .layoutWeight(1)
       .align(Alignment.Top)
       .scrollBar(BarState.Auto)
-      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false });
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
     }
     .padding({ top: 16, left: 16, right: 16})
     .width('100%')

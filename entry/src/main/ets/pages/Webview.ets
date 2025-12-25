@@ -1,15 +1,22 @@
 
-import { webview } from '@kit.ArkWeb'
-import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent'
-import { BusinessError } from '@kit.BasicServicesKit'
-import { common } from '@kit.AbilityKit'
-import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference'
-import { call } from '@kit.TelephonyKit';
+/**
+ * 浏览器页面
+ */
+
+import { common } from '@kit.AbilityKit';
+import { webview } from '@kit.ArkWeb';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { picker, fileUri } from  '@kit.CoreFileKit';
-import { fillInformationJS } from '../utils/TimeTable';
+import { call } from '@kit.TelephonyKit';
+
+import { DESKTOP_MODE, MOBILE_MODE, TABLET_MODE, DESKTOP_UA, MOBILE_UA, TABLET_UA } from '../constants/UserAgent';
+
 import accountInfoProvider from '../utils/Encryption';
-import PasswordDialog from '../view/PasswordDialog';
+import { fillInformationJS } from '../utils/TimeTable';
+import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference';
+
 import BackgroundImage from '../view/BgImageManager';
+import PasswordDialog from '../view/PasswordDialog';
 
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
