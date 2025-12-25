@@ -111,9 +111,9 @@ entry/src/main/
     │
     ├── utils/
     │   ├── CheckIn.ets                     // 签到功能
-    │   ├── ExamManager.ets                 // 考试信息管理类
+    │   ├── ExamManager.ets                 // 考试信息管理
     │   ├── FunctionOrder.ets               // 最近使用功能
-    │   ├── TimeTable.ets                   // 课表管理类、在线课表获取脚本
+    │   ├── TimeTable.ets                   // 课表管理、在线课表获取
     │   ├── tools.ets                       // 公共工具区
     │   ├── UnifyPreference.ets             // 全局共享首选项读写功能
     │   ├── WriteCalendar.ets               // 系统日历读写功能

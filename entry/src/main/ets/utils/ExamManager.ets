@@ -1,6 +1,11 @@
 
+/**
+ * 考试信息管理
+ */
+
 import UnifiedPreferences from './UnifyPreference';
 
+// 考试信息结构体
 export interface examAttribute {
   id: string,
   type: string,
@@ -31,8 +36,10 @@ export function areExamAttributesEqual(a: examAttribute, b: examAttribute): bool
 }
 
 class examManager {
+
   allExamInfo: examAttribute[] = [];
 
+  // 读取
   readStoredExam() {
     let data = UnifiedPreferences.getSync('examInfo', '');
     if (data === '')
@@ -41,6 +48,7 @@ class examManager {
       this.allExamInfo = JSON.parse(data);
   }
 
+  // 存储
   storeExam(data: examAttribute[]) {
     for (let i = 0; i < data.length; i++) {
       data[i].beginTimeStamp = new Date(data[i].date.slice(0, 16)).getTime();
@@ -57,6 +65,7 @@ class examManager {
     UnifiedPreferences.putSync('examInfo', JSON.stringify(data));
   }
 
+  // 添加
   addExam(newExam: examAttribute) {
     newExam.beginTimeStamp = new Date(newExam.date.slice(0, 16)).getTime();
     newExam.endTimeStamp = new Date(newExam.date.slice(0, 11) + newExam.date.slice(17, 22)).getTime();
@@ -70,6 +79,7 @@ class examManager {
     UnifiedPreferences.putSync('examInfo', JSON.stringify(this.allExamInfo));
   }
 
+  // 删除
   deleteExam(deletedExam: examAttribute) {
     for (let i = this.allExamInfo.length - 1; i >= 0; i--)
       if (areExamAttributesEqual(deletedExam, this.allExamInfo[i])) {
