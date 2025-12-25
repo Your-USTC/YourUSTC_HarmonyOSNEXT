@@ -48,14 +48,14 @@ function copyFileExtension(filePath: string): string {
   return ext ? `.${ext}` : '';
 }
 
-export const colorSet: string[] = ["#DDFF8899", "#DDFFF5C4", "#DDFF2C75",
-  "#DD00F5C4", "#DDCCBBFF", "#DDAEDEFF", "#DDFFDD00",
-  "#DDB7FFFA", "#DDA4FFD6", "#DDD7FF9C", "#DDFFE690",
-  "#DDFFAF9C", "#DDFF9100", "#DDCAE1E6", "#DD0093AB",
-  "#DD7D6FFF", "#DD4377FF", "#DD66B78B", "#DD66E5FF",
-  "#DDF0DFCC", "#DD8C96FF", "#DD2196F3", "#DD1DE9B6",
-  "#DDFF1720", "#DD7DACFF", "#DD6AE1E6", "#DDFFC7CD",
-  "#DD7BD8E3", "#DD009348", "#DDFF7FB6", "#DDAE3EFF"
+export const colorSet: string[] = ["#FF8899", "#FFF5C4", "#FF2C75",
+  "#00F5C4", "#CCBBFF", "#AEDEFF", "#FFDD00",
+  "#B7FFFA", "#A4FFD6", "#D7FF9C", "#FFE690",
+  "#FFAF9C", "#FF9100", "#CAE1E6", "#0093AB",
+  "#7D6FFF", "#4377FF", "#66B78B", "#66E5FF",
+  "#F0DFCC", "#8C96FF", "#2196F3", "#1DE9B6",
+  "#FF1720", "#7DACFF", "#6AE1E6", "#FFC7CD",
+  "#7BD8E3", "#009348", "#FF7FB6", "#AE3EFF"
 ];
 export const colorSetLen = colorSet.length;
 

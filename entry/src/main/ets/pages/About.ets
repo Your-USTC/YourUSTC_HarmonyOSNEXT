@@ -2,7 +2,8 @@
 /**
  * 关于页面
  */
-
+ 
+import { common } from '@kit.AbilityKit';
 import { LengthUnit } from '@kit.ArkUI';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
@@ -70,14 +71,10 @@ struct About {
                 color: $r('app.color.active_text')
               })
               .onClick(() => {
-                this.context.getRouter().pushUrl({
-                  url: 'pages/Webview',
-                  params: {
-                    title: $r('app.string.github'),
-                    url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
-                  }
-                }).catch((err: Error) => {
-                  console.error(`Router ERROR: [${err.name}] ${err.message}`);
+                (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
+                  action: 'ohos.want.action.viewData',
+                  entities: ['entity.system.browsable'],
+                  uri: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
                 });
               })
 
