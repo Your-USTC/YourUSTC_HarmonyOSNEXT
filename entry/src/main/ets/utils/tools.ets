@@ -1,5 +1,9 @@
 
 /**
+ * 公共工具区
+ */
+
+/**
  * 提取文件路径的扩展名（不含分隔符`.`）
  * @param filePath 字符串格式的文件路径
  * @returns 扩展名（无扩展名返回空字符串）
@@ -15,6 +19,7 @@ function getFileExtension(filePath: string): string {
 
   // 定位最后一个`.`的位置（扩展名的分隔符）
   const lastDotIndex = normalizedPath.lastIndexOf('.');
+
   // 定位最后一个路径分隔符的位置（区分文件名和路径）
   const lastSeparatorIndex = Math.max(
     normalizedPath.lastIndexOf('/'),
@@ -39,7 +44,7 @@ function getFileExtension(filePath: string): string {
 }
 
 /**
- * 复制（提取）文件扩展名（包含分隔符`.`）
+ * 复制（提取）文件扩展名（含分隔符`.`）
  * @param filePath 字符串格式的文件路径
  * @returns 带`.`的扩展名（无扩展名返回空字符串）
  */
@@ -48,7 +53,11 @@ function copyFileExtension(filePath: string): string {
   return ext ? `.${ext}` : '';
 }
 
-export const colorSet: string[] = ["#DDFF8899", "#DDFFF5C4", "#DDFF2C75",
+/**
+ * 课程颜色随机表
+ */
+export const colorSet: string[] = [
+  "#DDFF8899", "#DDFFF5C4", "#DDFF2C75",
   "#DD00F5C4", "#DDCCBBFF", "#DDAEDEFF", "#DDFFDD00",
   "#DDB7FFFA", "#DDA4FFD6", "#DDD7FF9C", "#DDFFE690",
   "#DDFFAF9C", "#DDFF9100", "#DDCAE1E6", "#DD0093AB",
@@ -63,7 +72,6 @@ export const colorSetLen = colorSet.length;
  * 将 #RGB 系列颜色值转换为 RGBA 数值（0-255 范围）
  * @param color 支持格式：#RGB、#RGBA、#RRGGBB、#RRGGBBAA（必须以 # 开头）
  * @returns number[] [r: number; g: number; b: number; a: number] RGBA 数值对象（范围 0-255）
- * @throws 无效颜色格式时抛出错误
  */
 export function stringToRgba(color: string): number[] {
   // 正则表达式匹配所有合法格式（忽略大小写）
@@ -74,7 +82,7 @@ export function stringToRgba(color: string): number[] {
     return [a, r, g, b];
   }
   let hex = match[1].toLowerCase();
-  // 处理短格式（#RGB / #RGBA）：扩展为长格式
+  // 处理短格式（#RGB/#RGBA）：扩展为长格式
   if (hex.length === 3 || hex.length === 4) {
     hex = hex.split('').map(char => char.repeat(2)).join('');
   } else if (hex.length === 8) {
@@ -96,9 +104,19 @@ export function stringToRgba(color: string): number[] {
   return [a, r, g, b];
 }
 
-export const weekTranslate: ResourceStr[] = [$r('app.string.monday'), $r('app.string.tuesday'), $r('app.string.wednesday'),
-  $r('app.string.thursday'), $r('app.string.friday'), $r('app.string.saturday'), $r('app.string.sunday'), ];
+/**
+ * 本地化星期表达
+ */
+export const weekTranslate: ResourceStr[] = [
+  $r('app.string.monday'), $r('app.string.tuesday'), $r('app.string.wednesday'), $r('app.string.thursday'), $r('app.string.friday'), $r('app.string.saturday'), $r('app.string.sunday')
+];
 
+/**
+ * 生成随机整数
+ * @param min 最小值（包含本数）
+ * @param max 最大值（包含本数）
+ * @returns 随机整数
+ */
 export function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -107,9 +125,9 @@ export function getRandomInt(min: number, max: number): number {
 
 /**
  * 构造连续整数数组
- * (可以在调用的后面加上 as number[] 或 as string[] )
  * @param range 取值范围 (例如: 输入 [[1,3],[5,6]], 返回 [1,2,3,5,6] )
  * @param returnString 返回类型 (默认返回 number[], 为 true 则返回 string[] )
+ * @returns string[] 或 number[] (可以在调用的后面加上 as number[] 或 as string[] )
  */
 export function getContArray(range: number[][], returnString: boolean = false): string[] | number[] {
   if (returnString) {
@@ -131,7 +149,12 @@ export function getContArray(range: number[][], returnString: boolean = false): 
   }
 }
 
-export function shrinkContArrayToString(array: number[]):string {
+/**
+ * 格式化整数数组
+ * @param array 离散数组 (例如: 输入 [1,2,4,5] 返回 '1-2, 4-5' )
+ * @returns 空字符串返回 '---'，否则返回表示区间的字符串
+ */
+export function shrinkContArrayToString(array: number[]): string {
   if (array.length == 0) {
     return '---';
   }
@@ -143,13 +166,27 @@ export function shrinkContArrayToString(array: number[]):string {
   return res + `-${array[i - 1]}`;
 }
 
+/**
+ * 获取课程时间戳
+ * @param termBeginDate 学期开始时间
+ * @param week 周数
+ * @param day 一周的天数（从周日开始）
+ * @param surplus 一天内的时间
+ * @returns 课程开始的时间戳
+ */
 export function getClassTimestamp(termBeginDate: number, week: number, day: number, surplus: number): number {
   return termBeginDate
     + (week - 1) * 604800000    // 第几周
-    + day * 86400000            // 第几天，不-1是因为教务系统中一周从周日开始
+    + day * 86400000            // 第几天，不“减1”是因为教务系统中一周从周日开始
     + surplus;                  // 第几节课结束
 }
 
+/**
+ * 将时间戳转换为格式字符串
+ * @param timestamp 时间戳
+ * @param format 日期格式，默认为 'yyyy-MM-DD'
+ * @returns 表示日期的字符串
+ */
 export function timestampToDateTime(timestamp: number, format: string = 'yyyy-MM-DD'): string {
   const date = new Date(timestamp);
 
@@ -183,7 +220,6 @@ export function areNumberArraysEqual(arr1: number[], arr2: number[]): boolean {
  *               0 = 返回相差的天数
  *               1 = 返回相差的小时数（除去整天后的剩余小时）
  *               2 = 返回相差的分钟数（除去整小时后的剩余分钟）
- *
  * @returns 根据类型返回对应的时间差值（向下取整）
  */
 export function formatTimeDiff(start: number, end: number, type: number): number {

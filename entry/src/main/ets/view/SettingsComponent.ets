@@ -1,4 +1,8 @@
 
+/**
+ * 设置项数据结构
+ */
+
 export default class PageResource {
   id: number;
   title: Resource;

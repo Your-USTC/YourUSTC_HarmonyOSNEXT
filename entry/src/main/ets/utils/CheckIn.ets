@@ -1,8 +1,13 @@
 
+/**
+ * 签到功能
+ */
+
 import UnifiedPreferences from '../utils/UnifyPreference';
 import { LAST_DAY_KEY, TOTAL_DAYS_KEY, CONSECUTIVE_DAYS_KEY, CONTENT_KEY } from '../utils/UnifyPreference';
 
 export class CheckInTools {
+
   private static CHECK_IN_CONTENT_LIST: string[] = [
     '呐呐，作业写完了吗？该不会是……一个字都没动吧？噗——真是活该！', // 0
     '喂！早饭吃了吗？不会又饿着肚子吧？要是低血糖晕倒了，我可不会去医务室看你这种不爱惜自己的杂鱼的！',
@@ -41,7 +46,7 @@ export class CheckInTools {
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 27, 28, 29], // 早晨: 5~9点
     [0, 2, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 16, 17, 18, 20, 22, 23, 24, 25, 27, 28], // 白天: 10~18点
     [0, 7, 8, 9, 10, 11, 12, 13, 14, 18, 22, 23, 24, 25, 27, 28, 30], // 晚上: 19~24点
-  ]
+  ];
   private static millisecondsInADay = 86400000;
   private static defaultTimestamp = '1000000000'; // 用于没有签到记录时的Unix时间戳
 
@@ -81,7 +86,6 @@ export class CheckInTools {
   }
 
   static doCheckIn(): [number, number, string] {
-
     // 签到次数加1，判断是否连续
     const newTotal = Number(UnifiedPreferences.getSync(TOTAL_DAYS_KEY, '0')) + 1;
     let newConsecutive = Number(UnifiedPreferences.getSync(CONSECUTIVE_DAYS_KEY, '0'));

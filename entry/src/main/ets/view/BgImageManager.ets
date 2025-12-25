@@ -1,8 +1,15 @@
 
-import UnifiedPreferences from '../utils/UnifyPreference';
+/**
+ * 背景图片管理
+ */
+
 import { fileIo, fileUri } from "@kit.CoreFileKit";
 
+import UnifiedPreferences from '../utils/UnifyPreference';
+
 class BackgroundImage {
+
+  // 全局变量
   pic: ResourceStr | undefined = undefined;
   showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false); // 是否展示
   readonly imgPath: string = UnifiedPreferences.getSync('ImagePath', ''); // 图片路径
@@ -11,10 +18,7 @@ class BackgroundImage {
   opacityLevel: number = 1;
   backgroundBlur: boolean = UnifiedPreferences.getBoolSync('BackgroundBlur', true); // 选择背景模糊
 
-  /**
-   * 初始化
-   * @param context 传入上下文
-   */
+  // 初始化
   async init(context: Context) {
     if (this.imgPath === '' || !fileIo.accessSync(this.imgPath))
       this.showImage = false;

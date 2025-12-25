@@ -1,13 +1,20 @@
 
-import BackgroundImage from './BgImageManager';
+/**
+ * 背景图片弹窗
+ */
+
 import { common, Want } from '@kit.AbilityKit';
-import UnifiedPreferences from '../utils/UnifyPreference';
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo, fileUri } from '@kit.CoreFileKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+import BackgroundImage from './BgImageManager';
+import UnifiedPreferences from '../utils/UnifyPreference';
 
 @CustomDialog
 export default struct BgImageDialog {
+
+  // 内部变量
   controller: CustomDialogController; // 弹窗控制器
   private sliderNum: number = this.BlurStyleToNum(BackgroundImage.blurLevel); // 模糊程度滑动条参数
   @State opacityNum: number = UnifiedPreferences.getNumberSync('OpacityLevel', 100); // 不透明度

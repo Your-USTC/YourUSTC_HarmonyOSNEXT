@@ -1,8 +1,14 @@
-import { classAttribute, obtainedData } from '../constants/ScheduleSources';
-import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from './UnifyPreference';
-import UnifiedPreferences from './UnifyPreference';
-import * as tools from './tools';
 
+/**
+ * 课表管理、在线课表获取
+ */
+
+import { classAttribute, obtainedData } from '../constants/ScheduleSources';
+import * as tools from './tools';
+import UnifiedPreferences from './UnifyPreference';
+import { SCHEDULE_KEY, START_TIME_KEY, millisecondsPerWeek } from './UnifyPreference';
+
+// JS：提取在线课表（含函数定义）
 export const timeTableQueryJS = `
 function getWeekNumber(str) {
     const parts = str.replace(/[^0-9,-]/g, '').split(',');
@@ -57,8 +63,11 @@ function getTimeTable() {
 
 JSON.stringify(getTimeTable());
 `
+
+// JS：提取在线课表（不含函数定义）
 export const timeTableQueryJSShort = `JSON.stringify(getTimeTable());`
 
+// JS：提取学期起始时间
 export const startTimeQueryJS = `
 (() => {
   const startTime = new Date(document.getElementById('startDate').innerText);
@@ -66,6 +75,7 @@ export const startTimeQueryJS = `
 })();
 `
 
+// JS：提取考试信息
 export const examInfoQueryJS = `
 (() => {
     const examInfoTable = document.querySelector('#table-content');
@@ -88,6 +98,7 @@ export const examInfoQueryJS = `
 })()
 `
 
+// JS：自动填充
 export const fillInformationJS = `
 (() => {
     const inputUID = infoProvider.getUID();
@@ -119,12 +130,6 @@ export const fillInformationJS = `
 })();
 `
 
-/**
- * 比较两个 classAttribute 对象是否完全相同
- * @param a 第一个对象
- * @param b 第二个对象
- * @returns 是否完全相同
- */
 export function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
   // 基本类型直接比较
   if (a.name !== b.name) return false;
@@ -143,8 +148,10 @@ export function areClassAttributesEqual(a: classAttribute, b: classAttribute): b
   return true;
 }
 
+// 课表导出示例
 export const example: string = '[[[{"name":"批判性思维与英语沟通","teacher":"Bradley Johnson","weekOfTerm":[2],"timeSpan":[1,2],"location":"5106","id":"FL1106A.01 [2]"}],[],[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[3,4],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[{"name":"计算机程序设计","teacher":"李卫海","weekOfTerm":[2],"timeSpan":[6,7],"location":"3A212","id":"CS1003.H2 [3]"}],[],[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[8,9],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[],[],[],[]],[[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[1,2],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[{"name":"线性代数(B1)","teacher":"赵晨","weekOfTerm":[2],"timeSpan":[3,4],"location":"3C103","id":"MATH1009.06 [4]"}],[],[],[],[],[{"name":"习近平新时代中国特色社会主义思想概论","teacher":"陈慧瑞","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"1302","id":"MARX1014.06 [3]"}],[],[],[],[],[]],[[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[1,2],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[],[],[],[],[],[],[],[],[],[]],[[{"name":"线性代数(B1)","teacher":"赵晨","weekOfTerm":[2],"timeSpan":[1,2],"location":"3C103","id":"MATH1009.06 [4]"}],[],[{"name":"力学A(L)","teacher":"王春成","weekOfTerm":[2],"timeSpan":[3,4],"location":"2106","id":"PHYS1001AL.01 [4]"}],[],[],[{"name":"基础体育","teacher":"刘德海","weekOfTerm":[2],"timeSpan":[6,7],"location":"","id":"PE00001.28 [1]"}],[],[{"name":"思想道德与法治","teacher":"刘海龙","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"1202","id":"MARX1012.12 [2.5]"}],[],[],[],[],[]],[[],[],[{"name":"数学分析(B1)","teacher":"王建伟","weekOfTerm":[2],"timeSpan":[3,4],"location":"5403","id":"MATH1006.08 [6]"}],[],[],[{"name":"计算机程序设计","teacher":"李卫海","weekOfTerm":[2],"timeSpan":[6,7],"location":"3A212","id":"CS1003.H2 [3]"}],[],[{"name":"先进制造实践","teacher":"倪青, 刘志刚, ...","weekOfTerm":[2],"timeSpan":[8,9,10],"location":"","id":"ME2503.01 [2]"}],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[],[]],[[],[],[],[],[],[],[],[],[],[],[],[],[]]]'
 
+// 课表信息管理类
 class scheduleManager {
   weekDisplayed: number = 0;
   termStart: number = 0;
@@ -157,6 +164,7 @@ class scheduleManager {
   isTermEnd: boolean = false;
   showColorHint: boolean = UnifiedPreferences.getBoolSync('ShowColorHint', true);
 
+  // 从 JSON 导入课表
   getParsedSchedule(): void {
     this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
     if (UnifiedPreferences.hasSync(START_TIME_KEY)) {
@@ -181,6 +189,7 @@ class scheduleManager {
     this.weekEnd = this.weekStart + 518400000;
   }
 
+  // 本地化课表信息，以适配应用功能
   refreshParsedSchedule(routerParams: obtainedData): void {
     try {
       const timeTable = routerParams.timeTable.slice(1, -1).replace(/\\/g, '');
@@ -233,6 +242,7 @@ class scheduleManager {
     }
   }
 
+  // 格式化课表信息
   getFormattedSchedule(): void {
     this.currentTime = new Date();
     this.getParsedSchedule();
@@ -251,6 +261,7 @@ class scheduleManager {
                 this.formattedSchedule[week][i].push(k);
   }
 
+  // 新建课程
   addSchedule(toChangeInfo: classAttribute, changeAllColor: boolean) {
     let i: number = toChangeInfo.dayOfWeek;
     let j: number = toChangeInfo.timeSpan[0] - 1;
@@ -273,6 +284,7 @@ class scheduleManager {
     this.getFormattedSchedule();
   }
 
+  // 删除课程
   deleteSchedule(oriClassInfo: classAttribute) {
     let i: number = oriClassInfo.dayOfWeek;
     let j: number = oriClassInfo.timeSpan[0] - 1;
