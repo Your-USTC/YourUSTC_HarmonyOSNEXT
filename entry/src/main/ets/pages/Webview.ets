@@ -18,14 +18,16 @@ import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/U
 import BackgroundImage from '../view/BgImageManager';
 import PasswordDialog from '../view/PasswordDialog';
 
+// 全局变量
 const desktopUrl: string[] = ['https://young.ustc.edu.cn/login'] // 需要默认访问桌面版站点时使用
 const autoJumpUrl: string[] = ['https://jw.ustc.edu.cn/for-std/course-table', 'https://jw.ustc.edu.cn/for-std/exam-arrange', 'https://jw.ustc.edu.cn/for-std/grade/sheet'];
-
 let eachDownloadPercent = new Map<string, number>();
 
 @Entry
 @Component
 struct Webview {
+
+  // 内部变量
   webviewController: webview.WebviewController = new webview.WebviewController();
   downloadDelegate: webview.WebDownloadDelegate = new webview.WebDownloadDelegate();
   @State uaMode: number = MOBILE_MODE;
@@ -37,6 +39,7 @@ struct Webview {
   @State downloadPercent: number = 100;
   @State downloadItemNum: number = 0;
   @State downloadItemTotal: number = 0;
+  // 自动填充
   haveJumped: boolean = true;
   // @State infoProvider: accountInfoProvider = new accountInfoProvider();
   haveTriedLogin: boolean = false;
@@ -46,8 +49,11 @@ struct Webview {
       onConfirm: () => { this.webviewController.runJavaScript(fillInformationJS, (error, result) => {}); }
     }),
     autoCancel: true
-  })
+  });
 
+  /**
+   * Toast 弹窗
+   */
   showMessage(message: string | ResourceStr, duration: number) {
     try {
       this.getUIContext().getPromptAction().showToast({
@@ -59,6 +65,9 @@ struct Webview {
     }
   }
 
+  /**
+   * 系统导航：返回键（滑动）改为“后退”
+   */
   onBackPress() {
     if (this.webBackPress)
       return false;
@@ -70,35 +79,40 @@ struct Webview {
     }
   }
 
+  /**
+   * 组件：“更多”菜单
+   */
   @Builder
   WebviewMenu() {
     Menu() {
+      // 前进
       MenuItem({ content: $r('app.string.page_forward'), startIcon: $r('app.media.forth')})
-        .parallelGesture(
-          GestureGroup(
-            GestureMode.Exclusive,
-            TapGesture({ count: 1 })
-              .onAction(() => {
-                if (this.webviewController.accessForward()) {
-                  this.webviewController.forward();
-                } else {
-                  this.showMessage($r('app.string.already_last_page'), 500);
-                }
-              }),
-            LongPressGesture()
-              .onAction(() => {
-                if (this.webviewController.accessForward()) {
-                  let i: number = 1;
-                  while (this.webviewController.accessStep(i))
-                    i++;
-                  this.webviewController.backOrForward(i - 1);
-                } else {
-                  this.showMessage($r('app.string.already_last_page'), 500);
-                }
-              })
-          )
-        )
+        .parallelGesture(GestureGroup(
+          GestureMode.Exclusive,
+          // 点击
+          TapGesture({ count: 1 })
+            .onAction(() => {
+              if (this.webviewController.accessForward()) {
+                this.webviewController.forward();
+              } else {
+                this.showMessage($r('app.string.already_last_page'), 500);
+              }
+            }),
+          // 长按
+          LongPressGesture()
+            .onAction(() => {
+              if (this.webviewController.accessForward()) {
+                let i: number = 1;
+                while (this.webviewController.accessStep(i))
+                  i++;
+                this.webviewController.backOrForward(i - 1);
+              } else {
+                this.showMessage($r('app.string.already_last_page'), 500);
+              }
+            })
+        ))
 
+      // 清除 Cookies
       MenuItem({ content: $r('app.string.wipe_cookie'), startIcon: $r('app.media.remove_cookie') })
         .onClick(() => {
           try {
@@ -112,6 +126,7 @@ struct Webview {
           }
         })
 
+      // 释放内存
       MenuItem({ content: $r('app.string.trim_memory'), startIcon: $r('app.media.arrowshape_3_triangle_path') })
         .onClick(() => {
           try {
@@ -123,6 +138,7 @@ struct Webview {
           }
         })
 
+      // UA 切换
       MenuItemGroup({ header: $r('app.string.switch_ua') }) {
         MenuItem({ content: $r('app.string.visit_desktop_ua'),
           startIcon: $r('app.media.desktop'),
@@ -132,6 +148,7 @@ struct Webview {
             this.webviewController.refresh();
             this.uaMode = DESKTOP_MODE;
           })
+
         MenuItem({ content: $r('app.string.visit_mobile_ua'),
           startIcon: $r('app.media.mobile'),
           endIcon: (this.uaMode == MOBILE_MODE ? $r('app.media.checkmark') : undefined) })
@@ -140,6 +157,7 @@ struct Webview {
             this.webviewController.refresh();
             this.uaMode = MOBILE_MODE;
           })
+
         MenuItem({ content: $r('app.string.visit_tablet_ua'),
           startIcon: $r('app.media.tablet'),
           endIcon: (this.uaMode == TABLET_MODE ? $r('app.media.checkmark') : undefined) })
@@ -150,7 +168,9 @@ struct Webview {
           })
       }
 
-      MenuItem({ content: $r('app.string.open_in_browser'),
+      // 在系统浏览器中打开
+      MenuItem({
+        content: $r('app.string.open_in_browser'),
         startIcon: $r('app.media.browser')
       })
         .onClick(() => {
@@ -163,15 +183,21 @@ struct Webview {
             })
         })
 
+      // 帮助
       MenuItem({ content: $r('app.string.help'), startIcon: $r('app.media.questionmark_circle')})
         .onClick(() => {
           this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
-            .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
+            .catch((err: Error) => {
+              console.error(`Router ERROR: [${err.name}] ${err.message}`)
+            });
         })
     }
   }
 
-  aboutToAppear() { // Receive parameters before loading the page
+  /**
+   * 初始化：教务系统相关网站（白名单）登录后自动跳转
+   */
+  aboutToAppear() {
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
     if (params) {
       this.title = params.title ?? '';
@@ -183,6 +209,7 @@ struct Webview {
 
   build() {
     Column() {
+      // 标题栏
       Row() {
         Image($r('app.media.close'))
           .padding({ left: 12 })
@@ -245,17 +272,11 @@ struct Webview {
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
       .opacity(BackgroundImage.opacityLevel)
 
+      // 网页浏览器
       Stack({ alignContent: Alignment.TopStart}) {
         Web({ src: this.url, controller: this.webviewController })
           .backgroundColor('#00d00721')
           .opacity(BackgroundImage.opacityLevel)
-          .javaScriptProxy({
-            object: accountInfoProvider,
-            name: "infoProvider",
-            methodList: ["getUID", "getPassword"],
-            controller: this.webviewController,
-            asyncMethodList: []
-          })
           .domStorageAccess(true)
           .javaScriptAccess(true)
           .width('100%')
@@ -263,6 +284,17 @@ struct Webview {
           .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
           .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+          .onProgressChange((event) => {    // 加载/下载进度条
+            this.loadingProgress = event.newProgress;
+          })
+          .javaScriptProxy({                // 自动填充 JS
+            object: accountInfoProvider,
+            name: "infoProvider",
+            methodList: ["getUID", "getPassword"],
+            controller: this.webviewController,
+            asyncMethodList: []
+          })
+          // 开始加载（自动跳转）
           .onPageBegin(() => {
             if (!this.haveJumped) { // 不在白名单中的网站已在 aboutToAppear 中设置不跳转
               if (this.webviewController.getUrl().startsWith('https://jw.ustc.edu.cn/home')) {
@@ -275,6 +307,7 @@ struct Webview {
               }
             }
           })
+          // 加载结束
           .onPageEnd(() => {
             if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn/cas/login')) {
               this.haveTriedLogin = true;
@@ -286,6 +319,7 @@ struct Webview {
               }
             }
           })
+          // 特殊 URL 处理
           .onLoadIntercept((event) => {
             if (event) {
               let uri: string = event.data.getRequestUrl();
@@ -318,6 +352,7 @@ struct Webview {
             }
             return false;
           })
+          // 网络错误处理
           .onErrorReceive((event) => {
             // Only handle loading errors of the main framework to avoid duplicate processing of errors in sub-resources
             if (event && event.request.isMainFrame()) {
@@ -328,9 +363,7 @@ struct Webview {
               }
             }
           })
-          .onProgressChange((event) => {
-            this.loadingProgress = event.newProgress;
-          })
+          // 文件下载
           .onControllerAttached(() => {
             if (desktopUrl.includes(this.url)) {
               this.webviewController.setCustomUserAgent(DESKTOP_UA);
@@ -413,6 +446,7 @@ struct Webview {
               console.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
             }
           })
+          // 网页消息（警告）
           .onAlert((event) => {
             if (event) {
               this.getUIContext().showAlertDialog({
@@ -420,15 +454,14 @@ struct Webview {
                 message: event.message,
                 confirm:{
                   value: "确认",
-                  action: () => {
-                    event.result.handleConfirm();
-                  }
+                  action: () => { event.result.handleConfirm(); }
                 },
                 cancel: () => { event.result.handleCancel(); }
               });
             }
             return true;
           })
+          // 网页消息（一般）
           .onConfirm((event) => {
             if (event) {
               this.getUIContext().showAlertDialog({
@@ -447,6 +480,7 @@ struct Webview {
             }
             return true;
           })
+          // 网页消息（带输入框）
           .onPrompt((event) => {
             if (event) {
               this.getUIContext().showAlertDialog({
@@ -462,6 +496,7 @@ struct Webview {
             return true;
           })
 
+        // 加载/下载进度条
         Line()
           .visibility(this.loadingProgress == 100 ? Visibility.None : Visibility.Visible)
           .width(`${this.loadingProgress}%`)
@@ -474,24 +509,24 @@ struct Webview {
             LoadingProgress()
               .width(45)
               .height(45)
-              .color($r('app.color.pink'));
+              .color($r('app.color.pink'))
             Text($r('app.string.loading'))
-              .fontColor($r('app.color.pink'));
+              .fontColor($r('app.color.pink'))
           }
-          .visibility(this.loadingProgress === 100 ? Visibility.Hidden : Visibility.Visible);
+          .visibility(this.loadingProgress === 100 ? Visibility.Hidden : Visibility.Visible)
 
           Row({ space: 5 }) {
             Text($r('app.string.downloading_d', this.downloadItemNum))
-              .fontColor($r('app.color.pink'));
+              .fontColor($r('app.color.pink'))
             Progress({ value: this.downloadPercent, total: 100, type: ProgressType.Ring })
               .color($r('app.color.pink'))
               .style({ strokeWidth: 4, enableScanEffect: true, shadow: true })
-              .height(30);
+              .height(30)
           }
           .backgroundColor($r('app.color.grid_background'))
           .borderRadius(20)
           .padding({ left: 13, top: 5, right: 5, bottom: 5})
-          .visibility(this.downloadItemTotal === 0 ? Visibility.Hidden : Visibility.Visible);
+          .visibility(this.downloadItemTotal === 0 ? Visibility.Hidden : Visibility.Visible)
         }
         .justifyContent(FlexAlign.SpaceBetween)
         .alignItems(VerticalAlign.Top)
@@ -509,7 +544,9 @@ struct Webview {
   }
 }
 
-
+/**
+ * 获取下载路径
+ */
 function getDownloadPathFromPicker(): Promise<string> {
   return new Promise<string>(resolve => {
     try {
@@ -536,5 +573,5 @@ function getDownloadPathFromPicker(): Promise<string> {
     } catch (error) {
       resolve('');
     }
-  })
+  });
 }
