@@ -569,7 +569,7 @@ struct ExamDetail {
                     .width('30%')
                     .textAlign(TextAlign.Start);
                 } else {
-                  Text($r('app.string.exam_ended'))
+                  Text($r('app.string.ended'))
                     .fontSize(20)
                     .fontColor($r('app.color.transparent_text'))
                     .width('30%')
@@ -645,10 +645,11 @@ struct ExamDetail {
           })
         }
         .width('100%')
-        .height('100%')
+        .layoutWeight(1)
         .alignListItem(ListItemAlign.Center)
         .scrollBar(BarState.Auto)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
         .padding({ left: 12, right: 12 })
       }
     }

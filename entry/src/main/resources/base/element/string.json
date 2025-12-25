@@ -569,8 +569,12 @@
       "value": "正在进行"
     },
     {
-      "name": "exam_ended",
+      "name": "ended",
       "value": "考试已结束"
+    },
+    {
+      "name": "not_newest",
+      "value": "此处展示的内容可能不是最新，请以学校教务系统为准"
     },
     {
       "name": "write_calendar_permission_reason",
@@ -703,6 +707,14 @@
     {
       "name": "github",
       "value": "在 GitHub 上为我们点亮\uD83C\uDF1F！"
+    },
+    {
+      "name": "about_to_open_github",
+      "value": "即将打开 GitHub"
+    },
+    {
+      "name": "about_to_open_github_failed",
+      "value": "请注意，GitHub 当前可能无法访问，这取决于你的网络环境，而不是本应用的问题。"
     },
     {
       "name": "open_source_license",

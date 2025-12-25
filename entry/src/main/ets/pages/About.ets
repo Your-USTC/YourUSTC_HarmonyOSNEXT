@@ -6,6 +6,7 @@ import { image } from '@kit.ImageKit'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { getRandomInt } from '../utils/tools'
 import BackgroundImage from '../view/BgImageManager'
+import { common } from '@kit.AbilityKit'
 
 @Entry
 @Component
@@ -58,15 +59,20 @@ struct About {
                 color: $r('app.color.active_text')
               })
               .onClick(() => {
-                this.context.getRouter().pushUrl({
-                  url: 'pages/Webview',
-                  params: {
-                    title: $r('app.string.github'),
-                    url: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+                this.getUIContext().showAlertDialog({
+                  title: $r('app.string.about_to_open_github'),
+                  message: $r('app.string.about_to_open_github_failed'),
+                  confirm: {
+                    value: $r('app.string.ok'),
+                    action:() => {
+                      (this.getUIContext().getHostContext() as common.UIAbilityContext).startAbility({
+                        action: 'ohos.want.action.viewData',
+                        entities: ['entity.system.browsable'],
+                        uri: 'https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT'
+                      })
+                    }
                   }
-                }).catch((err: Error) => {
-                  console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                })
+                });
               })
 
             Text() {

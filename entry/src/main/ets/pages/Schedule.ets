@@ -716,7 +716,6 @@ struct Schedule {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-      .opacity(BackgroundImage.opacityLevel)
 
       /**
        * 课表
@@ -823,7 +822,6 @@ struct Schedule {
         .columnEnd(0)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-        .opacity(BackgroundImage.opacityLevel)
 
         /**
          * 课程内容
@@ -840,7 +838,6 @@ struct Schedule {
             }
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-            .opacity(BackgroundImage.opacityLevel)
             .padding({
               top: 5,
               left: 10,
@@ -924,6 +921,7 @@ struct Schedule {
             .columnEnd((lesson.dayOfWeek + 1) % 7 + 1)
             .padding(2)
             .backgroundColor(lesson.color)
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
             .border({
               width: 1,
               color: $r('app.color.grid_border')
@@ -940,10 +938,12 @@ struct Schedule {
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.normal_background'))
+    .opacity(BackgroundImage.opacityLevel)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
     .backgroundImagePosition(Alignment.Center)
+
   }
 
   @Builder

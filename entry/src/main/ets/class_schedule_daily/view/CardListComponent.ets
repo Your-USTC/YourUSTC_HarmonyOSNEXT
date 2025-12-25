@@ -17,38 +17,38 @@ export struct CardListComponent {
       Stack({ alignContent: Alignment.Bottom }) {
         Column({ space: FlexAlign.Start }) {
           Row() {
-            Row() {
-              Text(this.cardListParameter.title)
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-                .height(24)
-                .fontColor(this.cardListParameter.titleColor)
-                .padding({ right: 4 })
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            Text(this.cardListParameter.title)
+              .fontSize(15)
+              .fontWeight(FontWeight.Bold)
+              .height(20)
+              .fontColor(this.cardListParameter.titleColor)
+              .padding({ right: 4 })
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-              if (this.cardListParameter.isItemCount === true && this.cardListParameter.itemCount !== undefined) {
-                Text(this.cardListParameter.itemCount > 99 ? '99+' :
-                  this.cardListParameter.itemCount + '')
-                  .textAlign(TextAlign.Center)
-                  .fontSize(10)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor(this.cardListParameter.itemCountColor)
-                  .backgroundColor(this.cardListParameter.itemCountBackgroundColor)
-                  .width(24)
-                  .height(16)
-                  .borderRadius(8)
+            if (this.cardListParameter.isItemCount === true && this.cardListParameter.itemCount !== undefined) {
+              Text(this.cardListParameter.itemCount > 99 ? '99+' :
+                this.cardListParameter.itemCount + '')
+                .textAlign(TextAlign.Center)
+                .fontSize(10)
+                .fontWeight(FontWeight.Medium)
+                .fontColor(this.cardListParameter.itemCountColor)
+                .backgroundColor(this.cardListParameter.itemCountBackgroundColor)
+                .width(24)
+                .height(16)
+                .borderRadius(8)
               }
-            }
-            .layoutWeight(1)
+
             Text(this.lastRefresh)
               .opacity(0.8)
-              .fontSize(14)
+              .fontSize(12)
               .margin({ right: 4 })
+              .textAlign(TextAlign.End)
+              .layoutWeight(1)
 
             Image($r('app.media.refresh'))
-              .width(24)
-              .height(24)
+              .width(20)
+              .height(20)
               .onClick(() => {
                 postCardAction(this, {
                   action: 'message',
@@ -59,7 +59,7 @@ export struct CardListComponent {
           .width('100%')
           .alignItems(VerticalAlign.Center)
           .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: 4 })
+          .padding({ bottom: 2 })
 
           List() {
             this.customBuilderParam();
@@ -97,7 +97,7 @@ export struct CardListComponent {
       .backgroundImage(this.cardListParameter.backgroundImage)
       .backgroundImageSize(this.cardListParameter.backgroundImageSize)
       .backgroundColor(this.cardListParameter.backgroundColor)
-      .padding(12)
+      .padding({ top: 12, left: 12, right: 12 })
     }
   }
 }
