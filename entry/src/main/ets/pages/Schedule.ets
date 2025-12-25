@@ -436,7 +436,6 @@ struct Schedule {
                 nonConflict = false;
                 break haveOccupied;
               }
-              console.log(`!!${j.name} ${k}`)
               flag[k] = true;
             }
           if (nonConflict)
@@ -535,13 +534,13 @@ struct Schedule {
             this.showConflictClass = true;
           })
 
-          Blank()
-
           // 标题
           Text($r('app.string.local_schedule'))
             .fontSize(18)
             .fontColor($r('app.color.normal_text'))
             .height(48)
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
             .bindSheet($$this.showSheet, this.ClassDetailDialog(), {
               // 如果与 gridItem 绑定，会弹出很多个！
               detents: [SheetSize.MEDIUM, SheetSize.LARGE],
@@ -598,8 +597,6 @@ struct Schedule {
                 }
               })
             })
-
-          Blank()
 
           // 新建
           Image($r('app.media.plus_square'))
@@ -667,6 +664,17 @@ struct Schedule {
 
           Blank()
 
+          Text('xiu~')
+            .visibility(this.weekDisplayed === scheduleManager.weekDisplayed ? Visibility.Hidden : Visibility.Visible)
+            .onClick(() => {
+              this.weekDisplayed = scheduleManager.weekDisplayed;
+              this.weekStart = scheduleManager.weekStart;
+              this.weekEnd = scheduleManager.weekEnd;
+              this.sepConflictClass();
+            })
+
+          Blank()
+
           Image(this.weekDisplayed == 1 ? $r('app.media.arrow_left_circle_unavailable') :
             $r('app.media.arrow_left_circle'))
             .height(18)
@@ -704,7 +712,7 @@ struct Schedule {
         }
         .width('100%')
         .height(30)
-        .padding({ left: 20, right: 10 })
+        .padding({ left: 15, right: 5 })
         .justifyContent(FlexAlign.Center)
         .border({
           width: { bottom: 1 },
@@ -753,6 +761,7 @@ struct Schedule {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+      .opacity(BackgroundImage.opacityLevel)
 
       /**
        * 课表
@@ -859,6 +868,7 @@ struct Schedule {
         .columnEnd(0)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+        .opacity(BackgroundImage.opacityLevel)
 
         /**
          * 课程内容
@@ -875,6 +885,7 @@ struct Schedule {
             }
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+            .opacity(BackgroundImage.opacityLevel)
             .padding({
               top: 5,
               left: 10,
@@ -958,7 +969,6 @@ struct Schedule {
             .columnEnd((lesson.dayOfWeek + 1) % 7 + 1)
             .padding(2)
             .backgroundColor(lesson.color)
-            .backgroundBlurStyle(BackgroundImage.blurLevel)
             .border({
               width: 1,
               color: $r('app.color.grid_border')
@@ -975,7 +985,6 @@ struct Schedule {
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.normal_background'))
-    .opacity(BackgroundImage.opacityLevel)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
