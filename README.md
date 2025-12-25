@@ -122,11 +122,11 @@ entry/src/main/
     │   └── Encryption.ets                  // 加密功能接口
     │
     ├── view/
-    │   ├── BgImageManager.ets              // 背景图片控制
+    │   ├── BgImageManager.ets              // 背景图片管理
     │   ├── BgImageDialog.ets               // 背景图片弹窗
     │   ├── GridComponent.ets               // 功能组件
-    │   ├── SettingsComponent.ets           // 设置项组件
-    │   └── PasswordDialog.ets              // 账号密码弹窗
+    │   ├── SettingsComponent.ets           // 设置项数据结构
+    │   └── PasswordDialog.ets              // 自动填充对话框
     │
     │   /* 服务卡片 */
     │

@@ -1,9 +1,14 @@
 
-import UnifiedPreferences, { UID_KEY, PASSWORD_KEY, REMIND_KEY } from '../utils/UnifyPreference';
-import accountInfoProvider from '../utils/Encryption';
-import { userAuth } from '@kit.UserAuthenticationKit';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+/**
+ * 自动填充对话框
+ */
+
 import { BusinessError } from '@kit.BasicServicesKit';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { userAuth } from '@kit.UserAuthenticationKit';
+
+import accountInfoProvider from '../utils/Encryption';
+import UnifiedPreferences, { UID_KEY, PASSWORD_KEY, REMIND_KEY } from '../utils/UnifyPreference';
 
 /**
  * authResult 认证结果
@@ -15,15 +20,16 @@ let authResult: number = 0;
 
 @CustomDialog
 export default struct PasswordDialog {
-  controller: CustomDialogController;
+
+  // 内部变量
   private inputUID: string = accountInfoProvider.getUID();
   private inputPassword: string = accountInfoProvider.getPassword();
+  @State passwordState: boolean = false;
+  controller: CustomDialogController;
   isFromSetting: boolean= true;
-
   onConfirm: () => void = () => {};
 
-  @State passwordState: boolean = false;
-
+  // 初始化
   aboutToAppear(): void {
     if (this.inputUID === null)
       this.inputUID = '';
@@ -41,6 +47,7 @@ export default struct PasswordDialog {
       Column() {
         Row() {
           Text($r('app.string.student_id'))
+
           TextInput({ text: this.inputUID })
             .type(InputType.USER_NAME)
             .enableAutoFill(false)
@@ -92,6 +99,9 @@ export default struct PasswordDialog {
                 if(!randData){
                   return;
                 }
+
+                // 接入系统安全能力
+
                 // 设置认证参数。
                 const authParam: userAuth.AuthParam = {
                   challenge: randData,
@@ -144,7 +154,10 @@ export default struct PasswordDialog {
             .buttonStyle(ButtonStyleMode.NORMAL)
             .onClick(() => {
               UnifiedPreferences.putSync(REMIND_KEY, false);
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
+              this.getUIContext().getPromptAction().showToast({
+                message: $r('app.string.input_later'),
+                duration: 2000
+              });
               this.controller.close();
             })
             .layoutWeight(1)
@@ -165,7 +178,9 @@ export default struct PasswordDialog {
                 UnifiedPreferences.putSync(UID_KEY, this.inputUID);
               } else {
                 correctInput = false;
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete') });
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.incomplete')
+                });
               }
             }
 
@@ -179,7 +194,9 @@ export default struct PasswordDialog {
                 UnifiedPreferences.putSync(PASSWORD_KEY, accountInfoProvider.encryptPassword(this.inputPassword));
               else {
                 if (correctInput) {
-                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.incomplete') });
+                  this.getUIContext().getPromptAction().showToast({
+                    message: $r('app.string.incomplete')
+                  });
                   correctInput = false;
                 }
               }
@@ -187,11 +204,15 @@ export default struct PasswordDialog {
             
             if (correctInput) {
               if (this.inputUID !== '' && this.inputPassword !== '') {
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.fill_next_time') });
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.fill_next_time')
+                });
                 this.onConfirm();
               }
               else
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.cannot_fill') });
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.cannot_fill')
+                });
               this.controller.close();
             }
           })
