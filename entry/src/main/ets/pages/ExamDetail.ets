@@ -643,6 +643,9 @@ struct ExamDetail {
               this.showSheet = true;
             });
           })
+
+          ListItem()
+            .height(40)
         }
         .width('100%')
         .height('100%')
