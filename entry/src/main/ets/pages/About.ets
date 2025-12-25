@@ -1,50 +1,62 @@
 
-import { LengthUnit } from '@kit.ArkUI'
-import { pasteboard } from '@kit.BasicServicesKit'
-import { fileIo } from '@kit.CoreFileKit'
-import { image } from '@kit.ImageKit'
-import { photoAccessHelper } from '@kit.MediaLibraryKit'
-import { getRandomInt } from '../utils/tools'
-import BackgroundImage from '../view/BgImageManager'
-import { common } from '@kit.AbilityKit'
+/**
+ * 关于页面
+ */
+ 
+import { common } from '@kit.AbilityKit';
+import { LengthUnit } from '@kit.ArkUI';
+import { pasteboard } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
+import { image } from '@kit.ImageKit';
+import { photoAccessHelper } from '@kit.MediaLibraryKit';
+
+import { getRandomInt } from '../utils/tools';
+import BackgroundImage from '../view/BgImageManager';
 
 @Entry
 @Component
 struct About {
 
-  private context = this.getUIContext()
-  private iconClickTime: number = 0
-  @State isShowEggImage: boolean = false
-  @State imagePixelMap?: image.PixelMap = undefined
+  // 内部变量
+  private context = this.getUIContext();
+  private iconClickTime: number = 0;
+  @State isShowEggImage: boolean = false;
+  @State imagePixelMap?: image.PixelMap = undefined;
 
+  // 初始化：导入图片资源
   async aboutToAppear() {
-    console.log('aboutToAppear!!')
-    this.imagePixelMap = await this.getPixmapFromMedia($r('app.media.nic'))
+    console.log('aboutToAppear!!');
+    this.imagePixelMap = await this.getPixmapFromMedia($r('app.media.nic'));
   }
 
+  // 退出时：释放图片资源
   aboutToDisappear(): void {
-    console.log('aboutToDisappear!!!')
+    console.log('aboutToDisappear!!!');
     this.imagePixelMap?.release();
   }
 
   build() {
-
     Stack({ alignContent: Alignment.Top}) {
+      // 页面内容
       Scroll() {
         Column() {
+          // 背景模糊部分
           Column() {
+            // 点击图片 7 次触发彩蛋
             Image($r('app.media.ciallo'))
               .width('90%')
               .draggable(false)
               .constraintSize({ maxWidth: 300 })
+              .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
               .onClick(() => {
-                this.getUIContext().getPromptAction().showToast({ message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString()) });
+                this.getUIContext().getPromptAction().showToast({
+                  message: $r('app.string.egg_hint' + getRandomInt(1, 2).toString())
+                });
                 this.iconClickTime++;
                 if (this.iconClickTime >= 7) {
                   this.isShowEggImage = true;
                 }
               })
-              .bindContentCover(this.isShowEggImage, this.EggImage(), ModalTransition.DEFAULT)
 
             Text($r('app.string.welcome_to_your_ustc'))
               .fontSize(22)
@@ -67,6 +79,7 @@ struct About {
               })
 
             Text() {
+              // 行内文本组件
               Span($r('app.string.terms_of_use_and_privacy_policy'))
                 .fontColor($r('app.color.active_text'))
                 .decoration({
@@ -81,8 +94,8 @@ struct About {
                       url: $rawfile('TermsOfUse.html')
                     }
                   }).catch((err: Error) => {
-                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                  })
+                    console.error(`Router ERROR: [${err.name}] ${err.message}`);
+                  });
                 })
 
               Span('  |  ')
@@ -101,8 +114,8 @@ struct About {
                       url: $rawfile('OpenSourceLicense.html')
                     }
                   }).catch((err: Error) => {
-                    console.error(`Router ERROR: [${err.name}] ${err.message}`)
-                  })
+                    console.error(`Router ERROR: [${err.name}] ${err.message}`);
+                  });
                 })
             }
             .margin({ top: 5 })
@@ -128,7 +141,9 @@ struct About {
       .padding({ bottom: 20 })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
+      // “退出”和“分享”按钮
       Row() {
+        // 退出
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.close'))
             .height(24)
@@ -140,10 +155,11 @@ struct About {
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
           this.getUIContext().getRouter().back();
-        });
+        })
 
-        Blank();
+        Blank()
 
+        // 分享（从剪贴板）
         Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
           Image($r('app.media.share'))
             .height(24)
@@ -154,7 +170,9 @@ struct About {
         .width(42)
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .onClick(() => {
-          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在华为应用市场搜索，或者去https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT找到它！');
+          const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN,
+            '还在为找校园服务入口发愁？试试我正在使用的「你的科大」鸿蒙版！一站式导航+课表/考试管理，适配HarmonyOS NEXT，科大师生必备～你可以直接在华为应用市场搜索，或者去https://github.com/Your-USTC/YourUSTC_HarmonyOSNEXT找到它！'
+          );
           const systemPasteboard = pasteboard.getSystemPasteboard();
           systemPasteboard.setData(pasteboardData);
           systemPasteboard.getData().then((data) => {
@@ -164,7 +182,7 @@ struct About {
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.copy_failed') });
             }
           });
-        });
+        })
       }
       .opacity(BackgroundImage.opacityLevel)
       .width('100%')
@@ -177,6 +195,7 @@ struct About {
     .backgroundColor($r('app.color.normal_background'))
   }
 
+  // 组件：彩蛋图片
   @Builder
   EggImage() {
     WithTheme({ colorMode: ThemeColorMode.LIGHT }) {
@@ -189,20 +208,24 @@ struct About {
           .onDisAppear(() => {
             this.iconClickTime = 0;
             this.isShowEggImage = false;
-          });
+          })
       }
       .linearGradient({
         angle: 45,
         colors: [[0xb1b2cd, 0.0], [0xf9f9fb, 0.75], [0xffffff, 1.0]]
       })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .overlay(this.ExitAndSave(), { align: Alignment.Top, offset: { x: 0, y: 45 } });
+      .overlay(this.ExitAndSave(), {        // 让“退出”和“保存”按钮浮于其上
+        align: Alignment.Top, offset: { x: 0, y: 45 }
+      })
     }
   }
 
+  // 组件：“退出”和“保存”按钮
   @Builder
   ExitAndSave() {
     Row() {
+      // 退出
       Button({ type: ButtonType.Circle, buttonStyle: ButtonStyleMode.NORMAL }) {
         Image($r('app.media.close'))
           .height(24)
@@ -213,7 +236,10 @@ struct About {
       .width(42)
       .margin({ left: 10 })
       .onClick(() => { this.isShowEggImage = false; })
-      Blank();
+
+      Blank()
+
+      // 保存（调用系统能力）
       SaveButton({ icon: SaveIconStyle.FULL_FILLED })
         .width(42)
         .height(42)
@@ -240,40 +266,44 @@ struct About {
                       fileIo.close(file.fd);
                     }
                   })
-                  this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_success') });
+                  this.getUIContext().getPromptAction().showToast({
+                    message: $r('app.string.save_image_success')
+                  });
                 }
               });
             } catch (error) {
-              this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_fail') });
+              this.getUIContext().getPromptAction().showToast({
+                message: $r('app.string.save_image_fail')    // 不知为何，切后台再回到此处重新保存能成功
+              });
             }
           } else {
-            this.getUIContext().getPromptAction().showToast({ message: $r('app.string.save_image_fail') });
+            this.getUIContext().getPromptAction().showToast({
+              message: $r('app.string.save_image_fail')
+            });
           }
-        });
+        })
     }
     // .alignItems(VerticalAlign.Top)
     .width('100%')
     .height(42)
   }
 
+  // 导入图片资源
   private async getPixmapFromMedia(resource: Resource) {
-
-    let createPixelMap: image.PixelMap
+    let createPixelMap: image.PixelMap;
     try {
-
-      const unit8Array = await this.getUIContext().getHostContext()!.resourceManager?.getMediaContent(resource.id)
-      const imageSource = image.createImageSource(unit8Array.buffer.slice(0, unit8Array.buffer.byteLength))
+      const unit8Array = await this.getUIContext().getHostContext()!.resourceManager?.getMediaContent(resource.id);
+      const imageSource = image.createImageSource(unit8Array.buffer.slice(0, unit8Array.buffer.byteLength));
       createPixelMap = await imageSource.createPixelMap({
         desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
-      })
-      await imageSource.release()
-      this.imagePixelMap?.release()
+      });
+      await imageSource.release();
+      this.imagePixelMap?.release();
 
     } catch (error) {
-
-      console.error(`getPixmapFromMedia ERROR: [${error.code}] ${error.message}`)
-      return
+      console.error(`getPixmapFromMedia ERROR: [${error.code}] ${error.message}`);
+      return;
     }
-    return createPixelMap
+    return createPixelMap;
   }
 }
