@@ -938,10 +938,10 @@ struct Schedule {
     .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.normal_background'))
+    .opacity(BackgroundImage.opacityLevel)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundImage(BackgroundImage.pic)
     .backgroundImageSize(ImageSize.Cover)
-    .opacity(BackgroundImage.opacityLevel)
     .backgroundImagePosition(Alignment.Center)
   }
 
