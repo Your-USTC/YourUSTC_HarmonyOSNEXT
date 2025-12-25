@@ -413,7 +413,6 @@ struct Schedule {
                 nonConflict = false;
                 break haveOccupied;
               }
-              console.log(`!!${j.name} ${k}`)
               flag[k] = true;
             }
           if (nonConflict)
@@ -501,12 +500,12 @@ struct Schedule {
             this.showConflictClass = true;
           })
 
-          Blank()
-
           Text($r('app.string.local_schedule'))
             .fontSize(18)
             .fontColor($r('app.color.normal_text'))
             .height(48)
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
             .bindSheet($$this.showSheet, this.ClassDetailDialog(), {
               // 如果与 gridItem 绑定，会弹出很多个！
               detents: [SheetSize.MEDIUM, SheetSize.LARGE],
@@ -563,8 +562,6 @@ struct Schedule {
                 }
               })
             })
-
-          Blank()
 
           Image($r('app.media.plus_square'))
             .padding({ right: 12 })
@@ -630,6 +627,17 @@ struct Schedule {
 
           Blank()
 
+          Text('xiu~')
+            .visibility(this.weekDisplayed === scheduleManager.weekDisplayed ? Visibility.Hidden : Visibility.Visible)
+            .onClick(() => {
+              this.weekDisplayed = scheduleManager.weekDisplayed;
+              this.weekStart = scheduleManager.weekStart;
+              this.weekEnd = scheduleManager.weekEnd;
+              this.sepConflictClass();
+            })
+
+          Blank()
+
           Image(this.weekDisplayed == 1 ? $r('app.media.arrow_left_circle_unavailable') :
             $r('app.media.arrow_left_circle'))
             .height(18)
@@ -667,7 +675,7 @@ struct Schedule {
         }
         .width('100%')
         .height(30)
-        .padding({ left: 20, right: 10 })
+        .padding({ left: 15, right: 5 })
         .justifyContent(FlexAlign.Center)
         .border({
           width: { bottom: 1 },

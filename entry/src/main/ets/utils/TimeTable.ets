@@ -161,7 +161,7 @@ class scheduleManager {
     this.parsedSchedule = JSON.parse(UnifiedPreferences.getSync(SCHEDULE_KEY, '[[[]]]')) as classAttribute[][][];
     if (UnifiedPreferences.hasSync(START_TIME_KEY)) {
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - Number(UnifiedPreferences.getSync(START_TIME_KEY))) / millisecondsPerWeek);
-      if (this.weekDisplayed > 20) {
+      if (this.weekDisplayed > 20 || this.weekDisplayed < 1) {
         this.weekDisplayed = 1;
         this.isTermEnd = true;
       }
@@ -209,7 +209,7 @@ class scheduleManager {
 
       UnifiedPreferences.putSync(SCHEDULE_KEY, JSON.stringify(this.parsedSchedule));
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
-      if (this.weekDisplayed > 20) {
+      if (this.weekDisplayed > 20 || this.weekDisplayed < 1) {
         this.weekDisplayed = 1;
         if (this.termStart == 0 ) { // 如果没有学期开始信息，将上一个周日作为一周开始
           const monday = new Date(this.currentTime);
