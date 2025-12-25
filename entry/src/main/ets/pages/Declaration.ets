@@ -48,8 +48,6 @@ struct Declaration {
           }
         }
         .justifyContent(FlexAlign.SpaceAround)
-        .borderRadius(20)
-        .backgroundColor($r('app.color.grid_background'))
         .padding(15)
         .height('90%')
         .width('90%')
@@ -70,7 +68,6 @@ struct Declaration {
         }
         .justifyContent(FlexAlign.Center)
         .borderRadius(20)
-        .backgroundColor($r('app.color.grid_background'))
         .padding(15)
         .height('90%')
         .width('90%')
@@ -97,7 +94,6 @@ struct Declaration {
         }
         .justifyContent(FlexAlign.Center)
         .borderRadius(20)
-        .backgroundColor($r('app.color.grid_background'))
         .padding(15)
         .height('90%')
         .width('90%')
@@ -106,7 +102,6 @@ struct Declaration {
       .status(this.knowIndependence ? ItemState.Normal : ItemState.Disabled)
     }
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-    .backgroundColor($r('app.color.normal_background'))
     .onFinish(() => {
       UnifiedPreferences.putSync('InitialLaunch', false);
       this.getUIContext().getRouter().back();

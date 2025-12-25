@@ -137,15 +137,10 @@ export default struct BgImageDialog {
         .maxLines(1)
         .visibility(this.showWarning ? Visibility.Visible : Visibility.None);
 
-      Text() {
-        ImageSpan($r('app.media.lightbulb'))
-          .height(18)
-          .verticalAlign(ImageSpanAlignment.CENTER)
-        Span($r('app.string.custom_background_hint'))
-          .fontSize(12)
-          .margin({ left: 3, right: 16 })
-      }
-      .width('95%')
+      Text($r('app.string.custom_background_hint'))
+        .fontSize(12)
+        .margin({ left: 3, right: 16 })
+        .width('95%')
 
       Row() {
         Button($r('app.string.cancel'))
