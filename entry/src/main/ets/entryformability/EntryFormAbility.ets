@@ -72,8 +72,7 @@ export default class EntryFormAbility extends FormExtensionAbility {
     UnifiedPreferences.init(this.context)
     let formData = new FormDataClass();
 
-    const formInfo: formBindingData.FormBindingData
-      = formBindingData.createFormBindingData(formData);
+    const formInfo: formBindingData.FormBindingData = formBindingData.createFormBindingData(formData);
 
     formProvider.updateForm(formId, formInfo).then(() => {
       hilog.info(DOMAIN_NUMBER, TAG, 'FormAbility updateForm success.');

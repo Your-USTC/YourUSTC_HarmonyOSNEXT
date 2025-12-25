@@ -766,6 +766,8 @@ struct Index {
                       Text(singleExam.name)
                         .fontSize(18)
                         .fontWeight(FontWeight.Bold)
+                        .maxLines(2)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
                         .margin({ right: 5 })
                       Text(singleExam.type)
                         .fontSize(16)
@@ -794,9 +796,16 @@ struct Index {
       }
       .width('100%')
       .borderRadius(20)
-      .margin({ top: 5, bottom: 12 })
+      .margin({ top: 5 })
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
       .backgroundBlurStyle(BackgroundImage.blurLevel);
+
+      ListItem() {
+        Text($r('app.string.not_newest'))
+          .fontColor($r('app.color.transparent_text'))
+          .fontSize(12)
+      }
+      .margin({ bottom: 13 })
     }
     .width('100%')
     .height('100%')

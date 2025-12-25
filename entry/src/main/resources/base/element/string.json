@@ -569,8 +569,12 @@
       "value": "正在进行"
     },
     {
-      "name": "exam_ended",
-      "value": "考试已结束"
+      "name": "ended",
+      "value": "已结束"
+    },
+    {
+      "name": "not_newest",
+      "value": "此处展示的内容可能不是最新，请以学校教务系统为准"
     },
     {
       "name": "write_calendar_permission_reason",

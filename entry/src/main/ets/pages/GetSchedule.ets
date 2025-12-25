@@ -278,6 +278,9 @@ struct Webview {
               })
             }
           })
+          .onControllerAttached(() => {
+            this.webviewController
+          })
 
         Line()
           .visibility(this.loadingProgress == 100 ? Visibility.None : Visibility.Visible)

@@ -40,8 +40,7 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    if (UnifiedPreferences.getBoolSync('RecoveryMode', false)
-      || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
+    if (UnifiedPreferences.getBoolSync('RecoveryMode', false) || UnifiedPreferences.getBoolSync('FaultOccurred', false)) {
       // 恢复模式
       UnifiedPreferences.putSync('RecoveryMode', false);
       windowStage.loadContent('pages/FaultOccurred', (err) => {
@@ -62,7 +61,7 @@ export default class EntryAbility extends UIAbility {
         }
         hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
         if (this.routerPath) {
-          // 打开特定页面
+          // 如果用户点击的是桌面快捷方式
           const mainWindow = windowStage.getMainWindowSync();
           setTimeout(() => {
             mainWindow.getUIContext().getRouter().pushUrl({
@@ -75,9 +74,10 @@ export default class EntryAbility extends UIAbility {
   }
 
   onNewWant(want: Want) {
-    // 应用程序切到前台
+    // 应用程序被召唤
     if (want.parameters?.router) {
       const windowRouter = this.context.windowStage.getMainWindowSync().getUIContext().getRouter();
+      // 如果用户点击的是桌面快捷方式
       if (!want.parameters?.router.toString().endsWith(windowRouter.getState().name)) {
         // 打开特定页面
         windowRouter.pushUrl({
