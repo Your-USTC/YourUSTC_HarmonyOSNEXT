@@ -111,9 +111,9 @@ entry/src/main/
     │
     ├── utils/
     │   ├── CheckIn.ets                     // 签到功能
-    │   ├── ExamManager.ets                 // 考试信息管理类
+    │   ├── ExamManager.ets                 // 考试信息管理
     │   ├── FunctionOrder.ets               // 最近使用功能
-    │   ├── TimeTable.ets                   // 课表管理类、在线课表获取脚本
+    │   ├── TimeTable.ets                   // 课表管理、在线课表获取
     │   ├── tools.ets                       // 公共工具区
     │   ├── UnifyPreference.ets             // 全局共享首选项读写功能
     │   ├── WriteCalendar.ets               // 系统日历读写功能
@@ -122,11 +122,11 @@ entry/src/main/
     │   └── Encryption.ets                  // 加密功能接口
     │
     ├── view/
-    │   ├── BgImageManager.ets              // 背景图片控制
+    │   ├── BgImageManager.ets              // 背景图片管理
     │   ├── BgImageDialog.ets               // 背景图片弹窗
     │   ├── GridComponent.ets               // 功能组件
-    │   ├── SettingsComponent.ets           // 设置项组件
-    │   └── PasswordDialog.ets              // 账号密码弹窗
+    │   ├── SettingsComponent.ets           // 设置项数据结构
+    │   └── PasswordDialog.ets              // 自动填充对话框
     │
     │   /* 服务卡片 */
     │

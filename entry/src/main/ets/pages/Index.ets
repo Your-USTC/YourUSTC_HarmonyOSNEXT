@@ -1,29 +1,35 @@
 
-import { application, common, contextConstant, Want } from '@kit.AbilityKit'
-import { LengthUnit, mediaquery, window } from '@kit.ArkUI'
-import { BusinessError } from '@kit.BasicServicesKit'
-import { fileIo } from '@kit.CoreFileKit'
+/**
+ * -- 应用程序主体框架 --
+ *
+ * 主界面由“首页”“功能”“设置”三个 Tab 构成，
+ * 除公用内容外，三个页面的内容分别归类整理。
+ */
 
-import { GridData, otherGridDataList } from '../constants/GridListDataSources'
-import { ListDataConstants } from '../constants/ListDataConstants'
-import * as ScheduleSources from '../constants/ScheduleSources'
-import SettingsData from '../constants/SettingsSources'
+import { application, common, contextConstant, Want } from '@kit.AbilityKit';
+import { LengthUnit, mediaquery, window } from '@kit.ArkUI';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { fileIo } from '@kit.CoreFileKit';
 
-import { CheckInTools } from '../utils/CheckIn'
-import examManager, { examAttribute } from '../utils/ExamManager'
-import * as FunctionOrder from '../utils/FunctionOrder'
-import scheduleManager from '../utils/TimeTable'
-import * as tools from '../utils/tools'
-import UnifiedPreferences from '../utils/UnifyPreference'
-import WriteCalendar from '../utils/WriteCalendar'
+import { GridData, otherGridDataList } from '../constants/GridListDataSources';
+import { ListDataConstants } from '../constants/ListDataConstants';
+import * as ScheduleSources from '../constants/ScheduleSources';
+import SettingsData from '../constants/SettingsSources';
 
-import BgImageDialog from '../view/BgImageDialog'
-import BackgroundImage from '../view/BgImageManager'
-import GridComponent from '../view/GridComponent'
-import PasswordDialog from '../view/PasswordDialog'
-import ItemData from '../view/SettingsComponent'
+import { CheckInTools } from '../utils/CheckIn';
+import examManager, { examAttribute } from '../utils/ExamManager';
+import * as FunctionOrder from '../utils/FunctionOrder';
+import scheduleManager from '../utils/TimeTable';
+import * as tools from '../utils/tools';
+import UnifiedPreferences from '../utils/UnifyPreference';
+import WriteCalendar from '../utils/WriteCalendar';
 
-// 滚动条参数
+import BgImageDialog from '../view/BgImageDialog';
+import BackgroundImage from '../view/BgImageManager';
+import GridComponent from '../view/GridComponent';
+import PasswordDialog from '../view/PasswordDialog';
+import ItemData from '../view/SettingsComponent';
+
 enum ScrollPosition {
   start = 0,
   center = 1,
@@ -35,18 +41,36 @@ interface Rect {
   height: number
 }
 
-// 主界面UI
 @Entry
 @Component
 struct Index {
-  /*
-   * 以下是监听屏幕旋转
+
+  /**
+   * 公用
    */
+
+  private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+  @State currentTime: Date = new Date();
+
+  // Toast 消息
+  showMessage(message: string | ResourceStr, duration?: number) {
+    try {
+      this.getUIContext().getPromptAction().showToast({
+        message: message,
+        duration: duration
+      });
+    } catch (error) {
+      console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
+    }
+  }
+
+  // 监听屏幕旋转
   @State tabWidth: string = '100%';
   @State tabHeight: string = 'auto';
   @State tabHorizontal: boolean = false;
   private windowRect: Rect = { width: 1840, height: 2800 };
-  portraitListener: mediaquery.MediaQueryListener = this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
+  portraitListener: mediaquery.MediaQueryListener =
+    this.getUIContext().getMediaQuery().matchMediaSync('(orientation: landscape)');
   onPortrait(mediaQueryResult: mediaquery.MediaQueryResult) {
     let windowClass: window.Window | undefined = undefined;
     try {
@@ -59,11 +83,13 @@ struct Index {
           let properties = windowClass.getWindowProperties();
           this.windowRect.width = properties.windowRect.width;
           this.windowRect.height = properties.windowRect.height;
-          if (this.windowRect.width > this.windowRect.height) { // 横屏
+          if (this.windowRect.width > this.windowRect.height) {
+            // 横屏
             this.tabWidth = '52vp';
             this.tabHeight = '100%';
             this.tabHorizontal = true;
-          } else { // 竖屏
+          } else {
+            // 竖屏
             this.tabWidth = '100%';
             this.tabHeight = 'auto';
             this.tabHorizontal = false;
@@ -74,41 +100,15 @@ struct Index {
         console.info('Succeeded in obtaining the top window. Data: ' + JSON.stringify(data));
       }).catch((err: BusinessError)=>{
         console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
-      });} catch (exception) {
+      });
+    } catch (exception) {
       console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(exception));
     }
   }
-  /*
-   * 以上是监听屏幕旋转
-   */
 
-  @State currentIndex: number = 0; // 当前标签索引 (从0开始), 初始值即为默认标签索引
+  // Tabs 控件
+  @State currentIndex: number = 0;
   private tabsController: TabsController = new TabsController();
-
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: PasswordDialog({
-      isFromSetting: true
-    }),
-    autoCancel: true,
-    gridCount: 4
-  })
-
-  dialogController2: CustomDialogController = new CustomDialogController({
-    builder: BgImageDialog({
-      windowWidth: Math.min(this.windowRect.width, this.windowRect.height),
-      windowHeight: Math.max(this.windowRect.width, this.windowRect.height)
-    }),
-    autoCancel: true,
-    gridCount: 4
-  })
-
-  /**
-   * 函数: 构建 Tab 按钮
-   * @param title 按钮文字
-   * @param index 标签索引 (从0开始)
-   * @param selectedImg 按钮图片 (选中时)
-   * @param normalImg 按钮图片 (未选中时)
-   */
   @Builder
   tabBuilder(title: string | Resource, index: number, selectedImg: Resource, normalImg: Resource) {
     Column() {
@@ -128,7 +128,7 @@ struct Index {
     .width('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     .onClick(() => {
-      this.currentIndex = index
+      this.currentIndex = index;
       this.tabsController.changeIndex(this.currentIndex);
       if (this.currentIndex === 1) {
         FunctionOrder.refreshFunc(); // 刷新点击次数显示
@@ -137,28 +137,7 @@ struct Index {
     })
   }
 
-  /**
-   * 全局资源: 首页
-   */
-  @State checkInTotal: number = 0;
-  @State checkInConsecutive: number = 0;
-  @State checkedInToday: boolean = false;
-  @State checkInContent: string = ''; // 签到后展示的随机内容
-
-  @State todayCourse: ScheduleSources.classAttribute[] = [];
-  @State tomorrowCourse: ScheduleSources.classAttribute[] = [];
-  @State exams: examAttribute[] = [];
-
-  @State showCheckIn: boolean = UnifiedPreferences.getBoolSync('showCheckIn', true);
-  @State showRecentCourse: boolean = UnifiedPreferences.getBoolSync('showRecentCourse', true);
-  @State showExamDetail: boolean = UnifiedPreferences.getBoolSync('showExamDetail', true);
-  @State webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
-  @State webBackPress: boolean = UnifiedPreferences.getBoolSync('webBackPress', true);
-
-  private context: Context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-  @State currentTime: Date = new Date();
-  @State isTodayCourseEnd: boolean = true;
-
+  // 初始化
   aboutToAppear(): void {
     // 获取课表
     ScheduleSources.initSchedulePre();
@@ -170,7 +149,7 @@ struct Index {
     this.refreshInfo();
     // 初始化日历
     WriteCalendar.initializeCalendar(this.getUIContext());
-    //初始化背景
+    // 初始化背景
     BackgroundImage.init(this.context);
     // 开启监听屏幕旋转
     this.portraitListener.on('change', (mediaQueryResult: mediaquery.MediaQueryResult) => {
@@ -179,176 +158,40 @@ struct Index {
     // 首次启动提示
     if (UnifiedPreferences.getBoolSync('InitialLaunch', true)) {
       this.getUIContext().getRouter().pushUrl({ url: 'pages/Declaration' })
-        .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) })
+        .catch((err: Error) => {
+          console.error(`Router ERROR: [${err.name}] ${err.message}`)
+        });
     }
   }
 
-  aboutToDisappear(): void {
-    this.portraitListener.off('change'); // 关闭监听屏幕旋转，防止内存泄露
-  }
-
-  /**
-   * 全局资源: 功能
-   */
-  @State listPosition: number = ScrollPosition.start;
-  @State scrollPosition: number = ScrollPosition.start;
-  @State currentListIndex: number = 0;
-  private scrollerForScroll: Scroller = new Scroller();
-  private scrollerForList: Scroller = new Scroller();
-  private scrollerForTitle: Scroller = new Scroller();
-
-  @Builder
-  listBuilder() {
-    Row() {
-      List({ space: 16, scroller: this.scrollerForTitle }) {
-        ForEach(ListDataConstants.TITLE_LIST, (item: string, index) => {
-          ListItem() {
-            Column() {
-              Text(item)
-                .fontColor(this.currentListIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
-                .fontSize('16fp')
-                .fontWeight(this.currentListIndex === index ? FontWeight.Bold : FontWeight.Normal)
-                .margin({ top: '16vp' })
-
-              if (this.currentListIndex === index) {
-                Divider()
-                  .color($r('app.color.active_text'))
-                  .strokeWidth(2)
-                  .width('84vp')
-                  .margin({ top: '7vp' })
-              }
-            }
-            .justifyContent(FlexAlign.Center)
-            .onClick(() => {
-              this.scrollerForList.scrollToIndex(index);
-              this.scrollerForScroll.scrollEdge(Edge.Bottom);
-              this.scrollerForTitle.scrollToIndex(index);
-              this.currentListIndex = index;
-            })
-          }
-        }, (item: string, index: number) => index + JSON.stringify(item))
-      }
-      .width('100%')
-      .height('56vp')
-      .listDirection(Axis.Horizontal)
-      .scrollBar(BarState.Off)
-    }
-    .margin({ top: '16vp', left: '12vp', right: '12vp' })
-    .padding({ left: '16vp', right: '16vp' })
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
-    .backgroundBlurStyle(BackgroundImage.blurLevel)
-    .borderRadius(12)
-  }
-
-  @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
+  // 进入页面
   onPageShow(): void {
-    FunctionOrder.refreshFunc(); // 刷新点击次数显示
+    FunctionOrder.refreshFunc();        // 刷新点击次数显示
     this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
   }
 
+  // 离开页面
+  aboutToDisappear(): void {
+    this.portraitListener.off('change');  // 关闭监听屏幕旋转，防止内存泄漏
+  }
+
   /**
-   * 全局资源: 设置
+   * 首页
    */
-  clearCache = async () => {
-    let paths: Array<string> = [];
-    let moduleContext: common.Context;
-    moduleContext = await application.createModuleContext(this.context, 'entry');
-    // 缓存路径/data/storage/el2/base/cache
-    paths.push(moduleContext.cacheDir);
-    // 缓存路径/data/storage/el2/base/cache/web
-    paths.push(moduleContext.cacheDir + '/web');
-    // 缓存路径/data/storage/el2/base/haps/entry/cache
-    paths.push(this.context.cacheDir);
-    // 缓存路径/data/storage/el1/base/cache
-    moduleContext.area = contextConstant.AreaMode.EL1;
-    paths.push(moduleContext.cacheDir);
-    // 缓存路径/data/storage/el1/base/haps/entry/cache
-    this.context.area = contextConstant.AreaMode.EL1;
-    paths.push(this.context.cacheDir);
 
-    // 遍历paths数组，彻底删除每个文件夹下的缓存数据
-    for (let i = 0; i < paths.length; i++) {
-      let path = paths[i];
-      fileIo.listFile(path).then((filenames) => {
-        for (let i = 0; i < filenames.length; i++) {
-          let dirPath = path + '/' + filenames[i];
-          if (dirPath === '/data/storage/el2/base/cache/web' || dirPath === '/data/storage/el2/base/cache/web/Cookies')
-            continue;
-          // 判断是否为文件夹
-          let isDirectory: boolean = false;
-          try {
-            isDirectory = fileIo.statSync(dirPath).isDirectory();
-          } catch (err) {
-            console.error(`remove file failed with error message: ${err.message}`);
-          }
-          if (isDirectory) {
-            fileIo.rmdirSync(dirPath);
-          } else {
-            fileIo.unlink(dirPath).catch((err: Error) => {
-              console.error(`remove file failed with error message: ${err.message}`);
-            });
-          }
-        }
-      });
-    }
-  }
+  // 每日签到
+  @State checkInTotal: number = 0;
+  @State checkInConsecutive: number = 0;
+  @State checkedInToday: boolean = false;
+  @State checkInContent: string = '';
+  // 你的课表
+  @State todayCourse: ScheduleSources.classAttribute[] = [];
+  @State isTodayCourseEnd: boolean = true;
+  @State tomorrowCourse: ScheduleSources.classAttribute[] = [];
+  // 考试信息
+  @State exams: examAttribute[] = [];
 
-  @Builder
-  settingCell(item: ItemData) {
-    Row() {
-      Row() {
-        Image(item.img)
-          .height('22vp')
-          .margin({ left: '16vp', right: '12vp' })
-          .draggable(false)
-        Text(item.title)
-          .fontSize('16fp')
-          .fontColor($r('app.color.normal_text'))
-      }
-
-      if (item.others === undefined) {
-        Image($r('app.media.right_arrow'))
-          .width('12vp')
-          .height('12vp')
-          .draggable(false)
-      } else if (item.id == 1) {
-        Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
-          .onChange((value: boolean) => {
-            UnifiedPreferences.putSync('showCheckIn', value);
-          });
-      } else if (item.id == 2) {
-        Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
-          .onChange((value: boolean) => {
-            UnifiedPreferences.putSync('showRecentCourse', value);
-          });
-      } else if (item.id == 3){
-        Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
-          .onChange((value: boolean) => {
-            UnifiedPreferences.putSync('showExamDetail', value);
-          });
-      } else if (item.id == 7) {
-        Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
-          .onChange((value: boolean) => {
-            UnifiedPreferences.putSync('webAutoDarkMode', value);
-          });
-      } else { // item.id == 8
-        Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
-          .onChange((value: boolean) => {
-            UnifiedPreferences.putSync('webBackPress', value);
-          });
-      }
-    }
-    .justifyContent(FlexAlign.SpaceBetween)
-    .width('100%')
-    .padding({
-      left: '8vp',
-      right: '22vp'
-    })
-  }
-
-  /*
-   * 常用功能
-   */
+  // 根据时间刷新课表/考试信息
   refreshInfo() {
     this.currentTime = new Date();
     scheduleManager.getFormattedSchedule(); // 初始化首页课表
@@ -373,24 +216,7 @@ struct Index {
         this.exams.splice(i, 1);
   }
 
-  showMessage(message: string | ResourceStr, duration?: number) {
-    try {
-      this.getUIContext().getPromptAction().showToast({
-        message: message,
-        duration: duration
-      });
-    } catch (error) {
-      console.error(`ShowToast ERROR: [${error.name}] ${error.message}`);
-    }
-  }
-
-  /*
-   * 日历权限相关
-   */
-
-  /**
-   * 页面: 首页
-   */
+  // Tab 页面：首页
   @Builder
   pageStart() {
     List({ space: 10 }) {
@@ -539,7 +365,7 @@ struct Index {
                         .textOverflow({ overflow: TextOverflow.Ellipsis });
 
                       if (this.currentTime.getTime() < scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
-                          + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
+                        + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] &&
                         this.currentTime.getTime() > scheduleManager.weekStart + (scheduleManager.today + 1) % 7 * 86400000
                           + ScheduleSources.commonClassStamp[course.timeSpan[0]][0] - 1800000) {
                         Text($r('app.string.class_soon'))
@@ -816,8 +642,62 @@ struct Index {
   }
 
   /**
-   * 页面: 功能
+   * 功能
    */
+
+  @State listPosition: number = ScrollPosition.start;
+  @State scrollPosition: number = ScrollPosition.start;
+  private scrollerForScroll: Scroller = new Scroller();
+  private scrollerForList: Scroller = new Scroller();
+  private scrollerForTitle: Scroller = new Scroller();
+  @State copyMostUsedFunc: GridData = FunctionOrder.mostUsedFunc;
+
+  // 组件：功能分区标题
+  @State currentListIndex: number = 0;
+  @Builder
+  listBuilder() {
+    Row() {
+      List({ space: 16, scroller: this.scrollerForTitle }) {
+        ForEach(ListDataConstants.TITLE_LIST, (item: string, index) => {
+          ListItem() {
+            Column() {
+              Text(item)
+                .fontColor(this.currentListIndex === index ? $r('app.color.active_text') : $r('app.color.normal_text'))
+                .fontSize('16fp')
+                .fontWeight(this.currentListIndex === index ? FontWeight.Bold : FontWeight.Normal)
+                .margin({ top: '16vp' })
+
+              if (this.currentListIndex === index) {
+                Divider()
+                  .color($r('app.color.active_text'))
+                  .strokeWidth(2)
+                  .width('84vp')
+                  .margin({ top: '7vp' })
+              }
+            }
+            .justifyContent(FlexAlign.Center)
+            .onClick(() => {
+              this.scrollerForList.scrollToIndex(index);
+              this.scrollerForScroll.scrollEdge(Edge.Bottom);
+              this.scrollerForTitle.scrollToIndex(index);
+              this.currentListIndex = index;
+            })
+          }
+        }, (item: string, index: number) => index + JSON.stringify(item))
+      }
+      .width('100%')
+      .height('56vp')
+      .listDirection(Axis.Horizontal)
+      .scrollBar(BarState.Off)
+    }
+    .margin({ top: '16vp', left: '12vp', right: '12vp' })
+    .padding({ left: '16vp', right: '16vp' })
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+    .backgroundBlurStyle(BackgroundImage.blurLevel)
+    .borderRadius(12)
+  }
+
+  // Tab 页面：功能
   @Builder
   pageFunction() {
     Column() {
@@ -896,149 +776,67 @@ struct Index {
   }
 
   /**
-   * 页面: 设置
+   * 设置
    */
+
+  @State showCheckIn: boolean = UnifiedPreferences.getBoolSync('showCheckIn', true);
+  @State showRecentCourse: boolean = UnifiedPreferences.getBoolSync('showRecentCourse', true);
+  @State showExamDetail: boolean = UnifiedPreferences.getBoolSync('showExamDetail', true);
+  @State webAutoDarkMode: boolean = UnifiedPreferences.getBoolSync('webAutoDarkMode', true);
+  @State webBackPress: boolean = UnifiedPreferences.getBoolSync('webBackPress', true);
+
+  // 组件：单个设置项格式
   @Builder
-  pageSettings() {
-    List({ space: 12 }) {
-      ForEach(SettingsData.getSettingListData(), (item: ItemData[], _index: number) => {
-        ListItemGroup() {
-          ForEach(item, (cell: ItemData, _cellIndex) => {
-            ListItem() {
-              this.settingCell(cell)
-            }
-            .height('48vp')
-            .onClick(() => {
-              switch (cell.id) { // 根据 cell.id 区分设置项
-                case 0:
-                  this.dialogController.open();
-                  break;
-                case 1:
-                case 2:
-                case 3:
-                  break;
+  settingCell(item: ItemData) {
+    Row() {
+      Row() {
+        Image(item.img)
+          .height('22vp')
+          .margin({ left: '16vp', right: '12vp' })
+          .draggable(false)
+        Text(item.title)
+          .fontSize('16fp')
+          .fontColor($r('app.color.normal_text'))
+      }
 
-                case 4:
-                  // 自定义背景!
-                  this.dialogController2.open();
-                  break;
-
-                case 5:
-                  // 选择最近使用
-                  this.getUIContext().showTextPickerDialog({
-                    selected: FunctionOrder.maxRecord - 1,
-                    range: tools.getContArray([[1, 20]], true) as string[], // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
-                    defaultPickerItemHeight: 36,
-                    canLoop: false,
-                    onAccept: (value: TextPickerResult) => {
-                      FunctionOrder.setMaxRecord(Number(value.value));
-                      this.showMessage(`已更改为 ${value.value}`);
-                      FunctionOrder.refreshFunc(); // 刷新点击次数显示
-                      this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-                    }
-                  })
-                  break;
-
-                case 6:
-                  // 重置最近使用
-                  FunctionOrder.resetFunc();
-                  FunctionOrder.refreshFunc(); // 刷新点击次数显示
-                  this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
-                  this.showMessage($r('app.string.have_cleared'));
-                  break;
-
-                case 7:
-                case 8:
-                  break;
-
-                case 9:
-                  if (WriteCalendar.askForCalendar(1)) {
-                    WriteCalendar.deleteCalendar();
-                  }
-                  break;
-
-                case 10:
-                  if (WriteCalendar.askForCalendar(2)) {
-                    WriteCalendar.setClassCalendar();
-                  }
-                  break;
-
-                case 11:
-                  if (WriteCalendar.askForCalendar(3)) {
-                    WriteCalendar.setExamCalendar();
-                  }
-                  break;
-
-                case 12:
-                  this.clearCache();
-                  this.showMessage($r('app.string.wipe_cache_success'));
-                  break;
-
-                case 13:
-                  // 帮助
-                  this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
-                    .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
-                  break;
-                case 14:
-                  // 关于
-                  this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
-                    .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
-                  break;
-                case 15:
-                  // 进入恢复模式
-                  UnifiedPreferences.putSync('RecoveryMode', true);
-                  let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
-                  let want: Want = {
-                    bundleName: 'com.nic.yourustc',
-                    abilityName: 'EntryAbility'
-                  };
-                  try {
-                    applicationContext.restartApp(want);
-                  } catch (error) {
-                    console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
-                    if (error.code === 16000064) {
-                      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-                      context.terminateSelf((err) => {
-                        if (!err) {
-                          context.getApplicationContext().killAllProcesses().catch((error: Error) => {
-                            console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
-                          })
-                        }
-                      });
-                    }
-                  }
-                  break;
-                default:
-                 this.showMessage($r('app.string.under_construction'));
-              }
-            })
+      if (item.others === undefined) {
+        Image($r('app.media.right_arrow'))
+          .width('12vp')
+          .height('12vp')
+          .draggable(false)
+      } else if (item.id == 1) {
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showCheckIn', value);
           })
-        }
-        .divider({
-          strokeWidth: '0.6vp',
-          color: $r('app.color.grid_border'),
-          startMargin: '12vp',
-          endMargin: '12vp'
-        })
-        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-        .backgroundBlurStyle(BackgroundImage.blurLevel)
-        .borderRadius(20)
-
-      }, (item: ItemData) => JSON.stringify(item))
-
-      ListItem()
-        .visibility(Visibility.Hidden)
-        .height(50)
+      } else if (item.id == 2) {
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showRecentCourse', value);
+          })
+      } else if (item.id == 3){
+        Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('showExamDetail', value);
+          })
+      } else if (item.id == 7) {
+        Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('webAutoDarkMode', value);
+          })
+      } else { // item.id == 8
+        Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
+          .onChange((value: boolean) => {
+            UnifiedPreferences.putSync('webBackPress', value);
+          })
+      }
     }
-    .height('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .padding({ left: 12, right: 12 })
-    .margin({ top: 8 })
-    .scrollBar(BarState.Auto)
-    .overlay(this.settingExitButton(), { align: Alignment.Bottom })
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .padding({ left: '8vp', right: '22vp' })
   }
 
+  // 组件：退出按钮
   @Builder
   settingExitButton(){
     Column() {
@@ -1069,19 +867,228 @@ struct Index {
     .hitTestBehavior(HitTestMode.Transparent);
   }
 
+  // 自动填充内容对话框
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: PasswordDialog({ isFromSetting: true }),
+    autoCancel: true,
+    gridCount: 4
+  });
+
+  // 自定义背景图片对话框
+  dialogController2: CustomDialogController = new CustomDialogController({
+    builder: BgImageDialog({
+      windowWidth: Math.min(this.windowRect.width, this.windowRect.height),
+      windowHeight: Math.max(this.windowRect.width, this.windowRect.height)
+    }),
+    autoCancel: true,
+    gridCount: 4
+  });
+
+  // 清除应用缓存
+  clearCache = async () => {
+    let paths: Array<string> = [];
+    let moduleContext: common.Context;
+
+    moduleContext = await application.createModuleContext(this.context, 'entry');
+    // 缓存路径/data/storage/el2/base/cache
+    paths.push(moduleContext.cacheDir);
+    // 缓存路径/data/storage/el2/base/cache/web
+    paths.push(moduleContext.cacheDir + '/web');
+    // 缓存路径/data/storage/el2/base/haps/entry/cache
+    paths.push(this.context.cacheDir);
+
+    moduleContext.area = contextConstant.AreaMode.EL1;
+    // 缓存路径/data/storage/el1/base/cache
+    paths.push(moduleContext.cacheDir);
+    // 缓存路径/data/storage/el1/base/haps/entry/cache
+    this.context.area = contextConstant.AreaMode.EL1;
+    paths.push(this.context.cacheDir);
+
+    // 遍历paths数组，彻底删除每个文件夹下的缓存数据
+    for (let i = 0; i < paths.length; i++) {
+      let path = paths[i];
+      fileIo.listFile(path).then((filenames) => {
+        for (let i = 0; i < filenames.length; i++) {
+          let dirPath = path + '/' + filenames[i];
+          if (dirPath === '/data/storage/el2/base/cache/web' || dirPath === '/data/storage/el2/base/cache/web/Cookies')
+            continue;
+          // 判断是否为文件夹
+          let isDirectory: boolean = false;
+          try {
+            isDirectory = fileIo.statSync(dirPath).isDirectory();
+          } catch (err) {
+            console.error(`remove file failed with error message: ${err.message}`);
+          }
+          if (isDirectory) {
+            fileIo.rmdirSync(dirPath);
+          } else {
+            fileIo.unlink(dirPath).catch((err: Error) => {
+              console.error(`remove file failed with error message: ${err.message}`);
+            });
+          }
+        }
+      });
+    }
+  };
+
+  // Tab 页面：设置
+  @Builder
+  pageSettings() {
+    List({ space: 12 }) {
+      ForEach(SettingsData.getSettingListData(), (item: ItemData[], _index: number) => {
+        ListItemGroup() {
+          ForEach(item, (cell: ItemData, _cellIndex) => {
+            // 单个设置项
+            ListItem() {
+              this.settingCell(cell)
+            }
+            .height('48vp')
+            .onClick(() => {
+              // 根据 cell.id 区分设置项，执行对应操作
+              // （若为开关则无需）
+              switch (cell.id) {
+                case 0:   // 设置统一身份认证信息
+                  this.dialogController.open();
+                  break;
+                case 1:
+                case 2:
+                case 3:
+                  break;
+                case 4:   // 自定义背景图片
+                  this.dialogController2.open();
+                  break;
+
+                case 5:   // 设置“最近使用”的显示数量
+                  this.getUIContext().showTextPickerDialog({
+                    selected: FunctionOrder.maxRecord - 1,
+                    // 在此处修改允许用户选择的最大显示数量上限！！（现在是20）
+                    range: tools.getContArray([[1, 20]], true) as string[],
+                    defaultPickerItemHeight: 36,
+                    canLoop: false,
+                    onAccept: (value: TextPickerResult) => {
+                      FunctionOrder.setMaxRecord(Number(value.value));
+                      this.showMessage(`已更改为 ${value.value}`);
+                      FunctionOrder.refreshFunc();  // 刷新点击次数显示
+                      this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+                    }
+                  });
+                  break;
+
+                case 6:   // 清空“最近使用”
+                  FunctionOrder.resetFunc();
+                  FunctionOrder.refreshFunc(); // 刷新点击次数显示
+                  this.copyMostUsedFunc = FunctionOrder.mostUsedFunc;
+                  this.showMessage($r('app.string.have_cleared'));
+                  break;
+
+                case 7:
+                case 8:
+                  break;
+
+                case 9:   // 清除所有提醒日程
+                  if (WriteCalendar.askForCalendar(1)) {
+                    WriteCalendar.deleteCalendar();
+                  }
+                  break;
+
+                case 10:  // 在日历中新建上课提醒
+                  if (WriteCalendar.askForCalendar(2)) {
+                    WriteCalendar.setClassCalendar();
+                  }
+                  break;
+
+                case 11:  // 在日历中新建考试提醒
+                  if (WriteCalendar.askForCalendar(3)) {
+                    WriteCalendar.setExamCalendar();
+                  }
+                  break;
+
+                case 12:  // 清除应用缓存
+                  this.clearCache();
+                  this.showMessage($r('app.string.wipe_cache_success'));
+                  break;
+
+                case 13:  // 帮助
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/Help' })
+                    .catch((err: Error) => {
+                      console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                    });
+                  break;
+
+                case 14:  // 关于
+                  this.getUIContext().getRouter().pushUrl({ url: 'pages/About' })
+                    .catch((err: Error) => {
+                      console.error(`Router ERROR: [${err.name}] ${err.message}`)
+                    });
+                  break;
+
+                case 15:  // 进入恢复模式
+                  UnifiedPreferences.putSync('RecoveryMode', true);
+                  let applicationContext = (this.getUIContext().getHostContext() as common.UIAbilityContext).getApplicationContext();
+                  let want: Want = {
+                    bundleName: 'com.nic.yourustc',
+                    abilityName: 'EntryAbility'
+                  };
+                  try {
+                    applicationContext.restartApp(want);
+                  } catch (error) {
+                    console.error(`restartApp fail, error: ${JSON.stringify(error)}`);
+                    if (error.code === 16000064) {
+                      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+                      context.terminateSelf((err) => {
+                        if (!err) {
+                          context.getApplicationContext().killAllProcesses().catch((error: Error) => {
+                            console.error(`Quitting ERROR: [${error.name}] ${error.message}`);
+                          })
+                        }
+                      });
+                    }
+                  }
+                  break;
+
+                default:
+                  this.showMessage($r('app.string.under_construction'));
+              }
+            })
+          })
+        }
+        .divider({
+          strokeWidth: '0.6vp',
+          color: $r('app.color.grid_border'),
+          startMargin: '12vp',
+          endMargin: '12vp'
+        })
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .borderRadius(20)
+
+      }, (item: ItemData) => JSON.stringify(item))
+
+      // 占位符（防止底部遮挡）
+      ListItem()
+        .visibility(Visibility.Hidden)
+        .height(50)
+    }
+    .height('100%')
+    .width('100%')
+    .padding({ left: 12, right: 12 })
+    .margin({ top: 8 })
+    .scrollBar(BarState.Auto)
+    .overlay(this.settingExitButton(), { align: Alignment.Bottom })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
   /**
-   * Tabs 主控程序
+   * 主程序
    */
+
   build() {
     Column() {
       Tabs({
         barPosition: BarPosition.End,
         controller: this.tabsController
       }) {
-
-        /**
-         * Tab: 首页
-         */
+        // 首页
         TabContent() {
           this.pageStart()
         }
@@ -1091,9 +1098,7 @@ struct Index {
           $r('app.media.tab0_unselected')))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
-        /**
-         * Tab: 功能
-         */
+        // 功能
         TabContent() {
           this.pageFunction()
         }
@@ -1103,9 +1108,7 @@ struct Index {
           $r('app.media.tab1_unselected')))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
-        /**
-         * Tab: 设置
-         */
+        // 设置
         TabContent() {
           this.pageSettings()
         }
@@ -1114,7 +1117,6 @@ struct Index {
         .tabBar(this.tabBuilder($r('app.string.page_settings'), 2, $r('app.media.tab2_selected'),
           $r('app.media.tab2_unselected')))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
       }
       .barBackgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background') : undefined)
       .barBackgroundBlurStyle(BackgroundImage.blurLevel)

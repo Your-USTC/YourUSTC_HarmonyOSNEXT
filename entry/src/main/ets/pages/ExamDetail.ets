@@ -561,6 +561,7 @@ struct ExamDetail {
           ForEach(this.examInfo, (singleExam: examAttribute) => {
             ListItem() {
               Row() {
+                // 倒计时
                 if (this.currentTime.getTime() < singleExam.beginTimeStamp) {
                   Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                     Row() {
@@ -622,6 +623,7 @@ struct ExamDetail {
                     .textAlign(TextAlign.Start)
                 }
 
+                // 考试信息
                 Column() {
                   Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.End }) {
                     Text(singleExam.name)

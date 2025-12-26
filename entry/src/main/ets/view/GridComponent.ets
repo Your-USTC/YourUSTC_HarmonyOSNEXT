@@ -1,20 +1,27 @@
 
+/**
+ * 功能组件
+ */
+
+import BackgroundImage from './BgImageManager';
 import { GridData } from '../constants/GridListDataSources';
 import { LINK } from '../constants/Links';
 import * as FunctionOrder from '../utils/FunctionOrder';
 import * as tools from '../utils/tools';
-import BackgroundImage from '../view/BgImageManager';
 
 @Component
 export default struct GridComponent {
+
+  // 内部变量
   @Prop gridData: GridData = new GridData('', []);
   @State isLastItem: boolean = false;
   @State gridIndex: number = 0;
 
   build() {
     Column() {
+      // 功能界面各组的标题
       Row() {
-        Text(this.gridData.groupName) // 功能界面各组的标题
+        Text(this.gridData.groupName)
           .fontSize('20fp')
           .height('30vp')
           .fontWeight(FontWeight.Bold)
@@ -29,7 +36,8 @@ export default struct GridComponent {
       .justifyContent(FlexAlign.Start)
 
       Grid() {
-        ForEach(this.gridData.gridItemList, (item: string, index: number) => { // index: 当前GridComponent的索引
+        ForEach(this.gridData.gridItemList, (item: string, index: number) => {
+          // index: 当前GridComponent的索引
           GridItem() {
             Column() {
               Image(FunctionOrder.gIndex_to_pic(this.gridIndex, index))
@@ -97,6 +105,7 @@ export default struct GridComponent {
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
 
+      // 占位符
       if (this.isLastItem) {
         Blank()
           .height('100%')

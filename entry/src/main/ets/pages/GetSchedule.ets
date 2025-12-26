@@ -1,15 +1,22 @@
 
-import { webview } from '@kit.ArkWeb'
-import { startTimeQueryJS, timeTableQueryJS, examInfoQueryJS, fillInformationJS} from '../utils/TimeTable'
-import { obtainedData } from '../constants/ScheduleSources'
-import { BusinessError } from '@kit.BasicServicesKit'
-import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY}  from '../utils/UnifyPreference'
-import accountInfoProvider from '../utils/Encryption'
-import PasswordDialog from '../view/PasswordDialog'
+/**
+ * 同步在线课表、考试页面
+ */
+
+import { webview } from '@kit.ArkWeb';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+import { obtainedData } from '../constants/ScheduleSources';
+import accountInfoProvider from '../utils/Encryption';
+import PasswordDialog from '../view/PasswordDialog';
+import { examInfoQueryJS, fillInformationJS, startTimeQueryJS, timeTableQueryJS } from '../utils/TimeTable';
+import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference';
 
 @Entry
 @Component
 struct Webview {
+
+  // 内部变量
   webviewController: webview.WebviewController = new webview.WebviewController();
   title: string = '';
   url: string = '';
@@ -22,14 +29,18 @@ struct Webview {
   @State loadingProgress: number = 0;
   haveTriedLogin: boolean = false;
   autoGetFailed: boolean = false;
+
   dialogController: CustomDialogController = new CustomDialogController({
     builder: PasswordDialog({
       isFromSetting: false,
-      onConfirm: () => { this.webviewController.runJavaScript(fillInformationJS, (error, result) => {}); }
+      onConfirm: () => {
+        this.webviewController.runJavaScript(fillInformationJS, (error, result) => {});
+      }
     }),
     autoCancel: true
-  })
+  });
 
+  // Toast 消息
   showMessage(message: string | ResourceStr, duration: number) {
     try {
       this.getUIContext().getPromptAction().showToast({
@@ -41,7 +52,8 @@ struct Webview {
     }
   }
 
-  aboutToAppear() { // Receive parameters before loading the page
+  // 初始化（传入参数）
+  aboutToAppear() {
     const params = this.getUIContext().getRouter().getParams() as Record<string, string>;
     if (params) {
       this.title = params.title ?? '';
@@ -51,7 +63,9 @@ struct Webview {
 
   build() {
     Column() {
+      // 标题栏
       Row() {
+        // 退出
         Image($r('app.media.close'))
           .padding({ left: 12 })
           .height(22)
@@ -64,46 +78,56 @@ struct Webview {
             }
             this.getUIContext().getRouter().back();
           })
+
+        // 返回上一页
         Image($r('app.media.back'))
           .padding(({ left: 12, right: 4 }))
           .height(16)
           .draggable(false)
-          .parallelGesture(
-            GestureGroup(
-              GestureMode.Exclusive,
-              TapGesture({ count: 1 })
-                .onAction(() => {
-                  if (this.webviewController.accessBackward()) {
-                    this.webviewController.backward();
-                  } else {
-                    this.getUIContext().getRouter().back();
-                  }
-                }),
-              LongPressGesture()
-                .onAction(() => {
-                  if (this.webviewController.accessBackward()) {
-                    let i: number = -1;
-                    while (this.webviewController.accessStep(i))
-                      i--;
-                    this.webviewController.backOrForward(i + 1);
-                  } else {
-                    this.showMessage($r('app.string.already_first_page'), 500);
-                  }
-                })
-            )
-          )
+          .parallelGesture(GestureGroup(
+            GestureMode.Exclusive,
+            // 单击
+            TapGesture({ count: 1 })
+              .onAction(() => {
+                if (this.webviewController.accessBackward()) {
+                  this.webviewController.backward();
+                } else {
+                  this.getUIContext().getRouter().back();
+                }
+              }),
+            // 长按
+            LongPressGesture()
+              .onAction(() => {
+                if (this.webviewController.accessBackward()) {
+                  let i: number = -1;
+                  while (this.webviewController.accessStep(i))
+                    i--;
+                  this.webviewController.backOrForward(i + 1);
+                } else {
+                  this.showMessage($r('app.string.already_first_page'), 500);
+                }
+              })
+          ))
+
         Blank()
+
+        // 标题
         Text(this.title)
           .fontSize(18)
           .fontColor($r('app.color.normal_text'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .height(48)
+
         Blank()
+
+        // 刷新
         Image($r('app.media.refresh'))
           .padding({ right: 12 })
           .height(22)
           .draggable(false)
           .onClick(() => this.webviewController.refresh())
+
+        // 手动同步
         Image($r('app.media.get'))
           .padding({ right: 12 })
           .height(22)
@@ -161,6 +185,7 @@ struct Webview {
       .backgroundColor($r('app.color.shaded_background'))
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
+      // 网页浏览器（获取课标/考试信息）
       Stack({ alignContent: Alignment.TopStart}) {
         Web({
           src: 'https://id.ustc.edu.cn/cas/login?service=https://jw.ustc.edu.cn/ucas-sso/login',
@@ -279,19 +304,21 @@ struct Webview {
             }
           })
 
+        // 加载进度条
         Line()
           .visibility(this.loadingProgress == 100 ? Visibility.None : Visibility.Visible)
           .width(`${this.loadingProgress}%`)
           .height(5)
           .startPoint([0, 0])
-          .backgroundColor($r('app.color.pink'));
+          .backgroundColor($r('app.color.pink'))
+
         Row({ space: 5 }) {
           LoadingProgress()
             .width(45)
             .height(45)
-            .color($r('app.color.pink'));
+            .color($r('app.color.pink'))
           Text($r('app.string.loading'))
-            .fontColor($r('app.color.pink'));
+            .fontColor($r('app.color.pink'))
         }
         .padding({ left: 5, top: 5 })
         .visibility(this.loadingProgress === 100 ? Visibility.None : Visibility.Visible);

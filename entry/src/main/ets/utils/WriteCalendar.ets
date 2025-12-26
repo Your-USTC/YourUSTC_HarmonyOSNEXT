@@ -1,15 +1,20 @@
 
-import { calendarManager } from "@kit.CalendarKit";
-import { BusinessError } from '@kit.BasicServicesKit';
-import { abilityAccessCtrl, bundleManager, PermissionRequestResult } from "@kit.AbilityKit";
+/**
+ * 系统日历读写功能
+ */
 
-import * as tools from './tools';
+import { abilityAccessCtrl, bundleManager, PermissionRequestResult } from "@kit.AbilityKit";
+import { BusinessError } from '@kit.BasicServicesKit';
+import { calendarManager } from "@kit.CalendarKit";
+
 import examManager from "./ExamManager";
-import scheduleManager from '../utils/TimeTable';
+import scheduleManager from './TimeTable';
+import * as tools from './tools';
 import * as ScheduleSources from '../constants/ScheduleSources';
 
-
 class WriteCalendar {
+
+  // 内部变量
   calendarMgr: calendarManager.CalendarManager | null = null;
   context: UIContext | null = null;
   readonly atManager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager();
@@ -17,16 +22,17 @@ class WriteCalendar {
   grantReadCalendar: boolean = false;
   grantWriteCalendar: boolean = false;
 
+  // 日历账户：你的科大上课提醒
   readonly calendarAccount: calendarManager.CalendarAccount = {
     name: 'YourUSTC.class_notification',
     type: calendarManager.CalendarType.LOCAL,
-    // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
     displayName: "你的科大上课提醒"
   };
+
+  // 日历账户：你的科大考试提醒
   readonly calendarAccount_exam: calendarManager.CalendarAccount = {
     name: 'YourUSTC.exam_notification',
     type: calendarManager.CalendarType.LOCAL,
-    // 日历账户显示名称，该字段如果不填，创建的日历账户在界面显示为空字符串。
     displayName: "你的科大考试提醒"
   };
 
@@ -34,6 +40,7 @@ class WriteCalendar {
     this.context = newContext;
   }
 
+  // Toast 弹窗
   showMessage(message: string | ResourceStr, duration?: number) {
     try {
       this.context?.getPromptAction().showToast({
@@ -45,7 +52,7 @@ class WriteCalendar {
     }
   }
 
-
+  // 请求日历权限
   askForCalendar(index: number): boolean {
     if (this.grantReadCalendar && this.grantWriteCalendar) {
       if (this.calendarMgr === null) {
@@ -101,6 +108,7 @@ class WriteCalendar {
     return false;
   }
 
+  // 无权限时的提示信息
   calendar_permission_denied(error: BusinessError, index: number) {
     this.context?.showAlertDialog({
       title: $r('app.string.error_occurred'),
@@ -144,6 +152,10 @@ class WriteCalendar {
     });
   }
 
+  /**
+   * 日历操作接口
+   * @param index 1-删除所有日程 2-设置上课日程 3-设置考试日程
+   */
   executeCorresponding(index: number) {
     switch (index) {
       case 1:
@@ -158,6 +170,7 @@ class WriteCalendar {
     }
   }
 
+  // 删除所有日程
   deleteCalendar() { // index 1
     this.calendarMgr?.getCalendar(this.calendarAccount).then((data: calendarManager.Calendar) => {
       // console.log('requestPermissionsFrom success',JSON.stringify(data))
@@ -197,6 +210,7 @@ class WriteCalendar {
     this.showMessage($r('app.string.clear_success'));
   }
 
+  // 设置上课日程
   setClassCalendar() { // index 2
     let selected3: number = 0;
     switch (ScheduleSources.remindBefore[0]) {
@@ -315,6 +329,7 @@ class WriteCalendar {
     })
   }
 
+  // 设置考试日程
   setExamCalendar() { // index 3
     let selected4: number = 0;
     switch (ScheduleSources.examRemindBefore[0]) {
