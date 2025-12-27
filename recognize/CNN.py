@@ -7,9 +7,7 @@ import os
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
-import constants as c
-'''
-constants 中的内容
+
 SOURCE_DIR = './training source' # 训练数据路径
 ALL_CHARS = '略' # 所有会出现的字符
 CHAR_TO_INDEX = {char: i for i, char in enumerate(ALL_CHARS)}  # 字符到索引的映射
@@ -17,10 +15,7 @@ INDEX_TO_CHAR = {i: char for char, i in CHAR_TO_INDEX.items()} # 索引到字符
 NUM_CLASSES = len(ALL_CHARS) # 字符数量
 IMAGE_HEIGHT = 70 # 高度
 IMAGE_WIDTH = 160 # 宽度
-'''
 
-
-print(f'正在从 {c.SOURCE_DIR} 读取图片并进行训练...')
 
 class CaptchaDataset(Dataset):
     def __init__(self, image_dir, transform=None):
@@ -45,19 +40,19 @@ class CaptchaDataset(Dataset):
         label_str = img_name.split('.')[0] 
         
         # 标签编码：将4个字符转换为4个索引
-        label = [c.CHAR_TO_INDEX[char] for char in label_str]
+        label = [CHAR_TO_INDEX[char] for char in label_str]
         label_tensor = torch.tensor(label, dtype=torch.long)
 
         return image, label_tensor
 
 # 使用transforms
 data_transform = transforms.Compose([
-    transforms.Resize((c.IMAGE_HEIGHT, c.IMAGE_WIDTH)), # 调整到统一大小
+    transforms.Resize((IMAGE_HEIGHT, IMAGE_WIDTH)), # 调整到统一大小
     transforms.ToTensor(),
 ])
 
 # 创建DataLoader
-train_dataset = CaptchaDataset(image_dir=c.SOURCE_DIR, transform=data_transform)
+train_dataset = CaptchaDataset(image_dir=SOURCE_DIR, transform=data_transform)
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
 class CaptchaCNN(nn.Module):
@@ -137,8 +132,10 @@ def calculate_accuracy(outputs, labels):
     
     return char_acc, image_acc
 
+print(f'正在从 {SOURCE_DIR} 读取图片并进行训练...')
+
 num_epochs = 10 # 其实可以提前结束
-model = CaptchaCNN(c.NUM_CLASSES, c.IMAGE_HEIGHT, c.IMAGE_WIDTH) 
+model = CaptchaCNN(NUM_CLASSES, IMAGE_HEIGHT, IMAGE_WIDTH) 
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -201,7 +198,7 @@ def predict_image(image_path, model, transform, device):
         _, predicted_index = torch.max(output.data, 1) 
         
         # 将索引转换为字符
-        char = c.INDEX_TO_CHAR[predicted_index.item()]
+        char = INDEX_TO_CHAR[predicted_index.item()]
         predicted_chars.append(char)
         
     return "".join(predicted_chars)
@@ -232,7 +229,7 @@ def predict_image_with_confidence(image_path, model, transform, device):
         char_confidences.append(max_confidence.item())
         
         # 将索引转换为字符
-        char = c.INDEX_TO_CHAR[predicted_index.item()]
+        char = INDEX_TO_CHAR[predicted_index.item()]
         predicted_chars.append(char)
         
     # 几何平均计算整图置信度
