@@ -86,15 +86,15 @@
     },
     {
       "name": "KeChengZiLiao",
-      "value": "课程资料 (来自我的科大)"
+      "value": "课程资料"
     },
     {
       "name": "QingChunKeDa",
-      "value": "青春科大"
+      "value": "第二课堂"
     },
     {
       "name": "QingChunKeDaPC",
-      "value": "青春科大(PC)"
+      "value": "第二课堂(PC)"
     },
     {
       "name": "YingXinWang",
@@ -102,7 +102,7 @@
     },
     {
       "name": "KeDaYouXiang",
-      "value": "科大邮箱"
+      "value": "邮箱"
     },
     {
       "name": "LiFanXiaoDengJi",
@@ -142,7 +142,7 @@
     },
     {
       "name": "KeDaYunPan",
-      "value": "科大云盘"
+      "value": "云盘"
     },
     {
       "name": "ZhiHuiMenHu",
@@ -174,7 +174,7 @@
     },
     {
       "name": "KeDaOJ",
-      "value": "科大 OJ"
+      "value": "Online Judge"
     },
     {
       "name": "VlabShiYanZhongXin",

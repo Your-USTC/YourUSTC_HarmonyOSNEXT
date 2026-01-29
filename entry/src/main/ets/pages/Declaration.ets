@@ -1,14 +1,14 @@
 import { webview } from '@kit.ArkWeb';
 import UnifiedPreferences from '../utils/UnifyPreference';
+import { setUSTCLink, setHUSTLink } from '../constants/Links';
 
 @Entry
 @Component
 struct Declaration {
   @State agreePolitic: boolean = false;
-  @State knowIndependence: boolean = false;
+  @State chooseSchool: number = -1;
   @State showSheet: boolean = false;
   private webController: webview.WebviewController = new webview.WebviewController();
-  @State countdown: number = 20;
 
   onBackPress(): boolean {
     return true;
@@ -60,37 +60,16 @@ struct Declaration {
 
       StepperItem() {
         Column({ space: 7 }) {
-          Text($r('app.string.no_association1'))
+          Text($r('app.string.choose_school'))
             .fontSize(24)
             .fontWeight(FontWeight.Bolder)
-          Text($r('app.string.no_association2'))
-            .fontColor($r('app.color.red'))
-        }
-        .justifyContent(FlexAlign.Center)
-        .borderRadius(20)
-        .padding(15)
-        .height('90%')
-        .width('90%')
-      }
-      .nextLabel((this.countdown <= 0) ? '下一步' : `${this.countdown}秒后继续`)
-      .status((this.countdown <= 0) ? ItemState.Normal : ItemState.Disabled)
-
-      StepperItem() {
-        Column({ space: 7 }) {
-          Text($r('app.string.no_association1'))
-            .fontSize(24)
-            .fontWeight(FontWeight.Bolder)
-          Text($r('app.string.no_association3'))
-            .copyOption(CopyOptions.InApp)
-          TextArea()
-            .maxLines(4)
-            .onChange((value: string) => {
-              if (value === '我已知晓并承认“妮可之记”由中科大学生独立开发，与中国科学技术大学官方无任何关联')
-                this.knowIndependence = true;
+          Select([{ value: '华中科技大学' }, { value: '中国科学技术大学' }])
+            .onSelect((index: number) => {
+              this.chooseSchool = index;
             })
-          Text($r('app.string.no_association4'))
-            .fontColor($r('app.color.green'))
-            .visibility(this.knowIndependence ? Visibility.Visible: Visibility.Hidden)
+          Text($r('app.string.will_support_school'))
+            .fontSize(12)
+            .fontColor($r('app.color.transparent_text'))
         }
         .justifyContent(FlexAlign.Center)
         .borderRadius(20)
@@ -99,22 +78,22 @@ struct Declaration {
         .width('90%')
       }
       .nextLabel('妮可，启动！')
-      .status(this.knowIndependence ? ItemState.Normal : ItemState.Disabled)
+      .status(this.chooseSchool === -1 ? ItemState.Disabled : ItemState.Normal)
     }
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onFinish(() => {
+      switch (this.chooseSchool) {
+        case 1:
+          UnifiedPreferences.putSync('school', 'USTC');
+          setUSTCLink();
+          break;
+        case 0:
+          UnifiedPreferences.putSync('school', 'HUST');
+          setHUSTLink();
+          break;
+      }
       UnifiedPreferences.putSync('InitialLaunch', false);
       this.getUIContext().getRouter().back();
-    })
-    .onChange((_prevIndex: number, index: number) => {
-      if (index == 1 && this.countdown > 0) {
-        const timerId = setInterval(() => {
-          this.countdown -= 1;
-          if (this.countdown <= 0) {
-            clearInterval(timerId);
-          }
-        }, 1000);
-      }
     })
   }
 

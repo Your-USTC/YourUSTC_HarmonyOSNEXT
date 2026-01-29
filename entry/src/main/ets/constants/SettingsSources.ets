@@ -5,6 +5,7 @@ export class SettingsData {
   getSettingListData(): Array<Array<ItemData>> {
     let settingListData: ItemData[][] = [
       [
+        new ItemData(-1, $r('app.string.choose_school'), $r('app.media.swap')),
         new ItemData(0, $r('app.string.set_account_info'), $r('app.media.key_horizontal'))
       ],
       [

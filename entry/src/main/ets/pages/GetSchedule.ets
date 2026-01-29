@@ -13,6 +13,7 @@ struct Webview {
   webviewController: webview.WebviewController = new webview.WebviewController();
   title: string = '';
   url: string = '';
+  initUrl: string = (UnifiedPreferences.getSync('school') === 'USTC') ? 'https://id.ustc.edu.cn/cas/login?service=https://jw.ustc.edu.cn/ucas-sso/login' : 'https://hub.hust.edu.cn/';
   isTimeTablePage: boolean = false;
   gotTimeTable: boolean = false;
   isExamInfoPage: boolean = false;
@@ -162,10 +163,7 @@ struct Webview {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
 
       Stack({ alignContent: Alignment.TopStart}) {
-        Web({
-          src: 'https://id.ustc.edu.cn/cas/login?service=https://jw.ustc.edu.cn/ucas-sso/login',
-          controller: this.webviewController
-        })
+        Web({ src: this.initUrl, controller: this.webviewController })
           .javaScriptProxy({
             object: accountInfoProvider,
             name: "infoProvider",
@@ -216,6 +214,12 @@ struct Webview {
             }
           })
           .onPageEnd(() => {
+            // this.autoGetFailed = true;
+            // return;
+            if (this.initUrl.startsWith('https://hub.hust.edu.cn/')
+              && !(UnifiedPreferences.hasSync(UID_KEY) && UnifiedPreferences.hasSync(PASSWORD_KEY))
+                && UnifiedPreferences.getBoolSync(REMIND_KEY, true))
+                  this.dialogController.open();
             if (!this.haveTriedLogin && this.webviewController.getUrl().startsWith('https://id.ustc.edu.cn/cas/login')) {
               this.haveTriedLogin = true;
               if (!(UnifiedPreferences.hasSync(UID_KEY) && UnifiedPreferences.hasSync(PASSWORD_KEY))) {

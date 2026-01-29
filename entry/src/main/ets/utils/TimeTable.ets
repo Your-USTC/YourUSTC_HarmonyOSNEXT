@@ -226,6 +226,7 @@ class scheduleManager {
       this.parsedSchedule = JSON.parse(timeTable) as classAttribute[][][];
 
       let courseToColor = new Map<string, string>();
+      let randColor: number = tools.getRandomInt(0, tools.colorSetLen - 1);
       for (let i of this.parsedSchedule)
         if (i != null)
           for (let j of i)
@@ -235,7 +236,8 @@ class scheduleManager {
                   if (courseToColor.has(k.name)) {
                     k.color = courseToColor.get(k.name) as string;
                   } else {
-                    k.color = tools.colorSet[tools.getRandomInt(0, tools.colorSetLen - 1)];
+                    k.color = tools.colorSet[randColor];
+                    randColor = (randColor + 1) % tools.colorSetLen;
                     courseToColor.set(k.name, k.color);
                   }
                 }
@@ -245,18 +247,21 @@ class scheduleManager {
 
       UnifiedPreferences.putSync(SCHEDULE_KEY, JSON.stringify(this.parsedSchedule));
       this.weekDisplayed = Math.ceil((this.currentTime.getTime() - this.termStart) / millisecondsPerWeek);
-      if (this.weekDisplayed > 20 || this.weekDisplayed <= 0) {
+      if (this.weekDisplayed > 20) { // 学期已结束
         this.weekDisplayed = 1;
-        if (this.termStart == 0 ) { // 如果没有学期开始信息，将上一个周日作为一周开始
+        if (this.termStart == 0 ) { // 如果没有学期开始信息（即手动添加第一门课），将上一个周日作为一周开始
           const monday = new Date(this.currentTime);
           monday.setDate(this.currentTime.getDate() + (this.currentTime.getDay() === 0 ? 1 : -(this.currentTime.getDay() - 1)));
           monday.setHours(0, 0, 0, 0);
           UnifiedPreferences.putSync(START_TIME_KEY, monday.getTime() - 86400000);
           this.isTermEnd = false;
         } else { // 如果有，说明学期结束
+          UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
           this.isTermEnd = true;
         }
       } else { // 否则说明学期未结束
+        if (this.weekDisplayed <= 0) // 学期未开始
+          this.weekDisplayed = 1;
         UnifiedPreferences.putSync(START_TIME_KEY, this.termStart);
         this.isTermEnd = false;
       }
