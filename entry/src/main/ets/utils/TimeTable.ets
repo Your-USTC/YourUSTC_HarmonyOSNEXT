@@ -130,6 +130,17 @@ export const fillInformationJS = `
 })();
 `
 
+export const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+export async function pollUntilLoad(callback: () => Promise<string>, intervalMs: number = 1000): Promise<string> {
+  let result: string = 'null';
+  while (result == 'null') {
+    result = await callback();
+    if (result == 'null') { await delay(intervalMs); }
+  }
+  return result;
+}
+
 export function areClassAttributesEqual(a: classAttribute, b: classAttribute): boolean {
   // 基本类型直接比较
   if (a.name !== b.name) return false;

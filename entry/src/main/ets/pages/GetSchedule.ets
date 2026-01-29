@@ -9,7 +9,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { obtainedData } from '../constants/ScheduleSources';
 import accountInfoProvider from '../utils/Encryption';
 import PasswordDialog from '../view/PasswordDialog';
-import { examInfoQueryJS, fillInformationJS, startTimeQueryJS, timeTableQueryJS } from '../utils/TimeTable';
+import { examInfoQueryJS, fillInformationJS, startTimeQueryJS, timeTableQueryJS, pollUntilLoad } from '../utils/TimeTable';
 import UnifiedPreferences, { PASSWORD_KEY, REMIND_KEY, UID_KEY} from '../utils/UnifyPreference';
 
 @Entry
@@ -259,29 +259,16 @@ struct Webview {
                 this.obtainedData.startTime = result;
                 console.info(`转换后的时间戳是${this.obtainedData.startTime}`);
               });
-              setTimeout(() => {
-                this.webviewController.runJavaScript(timeTableQueryJS, (error, result) => {
-                  if (error) {
-                    this.showMessage($r('app.string.get_timetable_err_msg'), 2000);
-                    this.autoGetFailed = true;
-                    return;
-                  }
-                  if (result === 'null') {
-                    this.showMessage($r('app.string.auto_get_timetable_fail_msg'), 2000);
-                    this.autoGetFailed = true;
-                    return;
-                  }
-                  this.gotTimeTable = true;
-                  this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
-                  console.info(`课表是：${result}`); /* TODO: 保存课程表到本地（需JSON.parse） */
-                  this.obtainedData.timeTable = result;
-                  //if (this.getUIContext().getRouter().getLength() === '3') { }
-                  this.getUIContext().getRouter().back({
-                    params: this.obtainedData,
-                    url: 'pages/Schedule'
-                  });
+              pollUntilLoad(() => this.webviewController.runJavaScript(timeTableQueryJS)).then((result) => {
+                this.gotTimeTable = true;
+                this.showMessage($r('app.string.get_timetable_succ_msg'), 2000);
+                console.info(`课表是：${result}`);
+                this.obtainedData.timeTable = result;
+                this.getUIContext().getRouter().back({
+                  params: this.obtainedData,
+                  url: 'pages/Schedule'
                 });
-              }, 1000);
+              });
             }
             if (this.isExamInfoPage && !this.gotExamInfo) {
               this.webviewController.runJavaScript(examInfoQueryJS, (error, result) => {
