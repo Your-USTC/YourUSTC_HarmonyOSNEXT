@@ -17,6 +17,7 @@ struct Declaration {
   @State showSheet: boolean = false;
   private webController: webview.WebviewController = new webview.WebviewController();
   @State countdown: number = 20;
+  timerId: number | undefined = undefined;
 
   onBackPress(): boolean {
     return true;
@@ -124,11 +125,11 @@ struct Declaration {
       this.getUIContext().getRouter().back();
     })
     .onChange((_prevIndex: number, index: number) => {
-      if (index == 1 && this.countdown > 0) {
-        const timerId = setInterval(() => {
+      if (index == 1 && this.countdown > 0 && this.timerId === undefined) {
+        this.timerId = setInterval(() => {
           this.countdown -= 1;
           if (this.countdown <= 0) {
-            clearInterval(timerId);
+            clearInterval(this.timerId);
           }
         }, 1000);
       }
