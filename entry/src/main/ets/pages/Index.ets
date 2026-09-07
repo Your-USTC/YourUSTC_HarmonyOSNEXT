@@ -123,6 +123,8 @@ struct Index {
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
     this.refreshInfo();
+    // 初始化导航模式（热更新时经AppStorage('isSplit')同步到.mode()）
+    this.isSplit = UnifiedPreferences.getNumberSync('AdaptSplit', NavigationMode.Auto);
     // 初始化背景
     BackgroundImage.init(hostContext());
     this.avatar = BackgroundImage.avatar;
@@ -1086,7 +1088,7 @@ struct Index {
       .navBarWidthRange(['336vp', '50%'])
       .hideTitleBar(true)
       .hideToolBar(true)
-      .mode(UnifiedPreferences.getNumberSync('AdaptSplit', NavigationMode.Auto))
+      .mode(this.isSplit)
       .onNavigationModeChange((mode: NavigationMode) => {
         this.isSplit = mode;
       })

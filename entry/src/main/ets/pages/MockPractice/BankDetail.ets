@@ -425,7 +425,7 @@ struct BankDetail {
         detents: [SheetSize.FIT_CONTENT, SheetSize.MEDIUM],
         preferType: SheetType.CENTER,
         showClose: false,
-        backgroundColor: '#00d00721',
+        backgroundColor: '#0000',
         blurStyle: BlurStyle.Regular,
         title: { title: '开始练习', subtitle: '可选题库中的全部或部分题号' }
       })
@@ -435,7 +435,7 @@ struct BankDetail {
       backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
     })
     .backButtonIcon($r('app.media.close'))
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
     })

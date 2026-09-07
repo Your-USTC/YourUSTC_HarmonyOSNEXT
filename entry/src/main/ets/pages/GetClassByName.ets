@@ -267,11 +267,11 @@ struct GetClassByName {
       .width('100%')
     }
     .title(this.customTitle(), {
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#00d00721'
+      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000'
     })
     .backButtonIcon($r('app.media.close'))
     .backgroundBlurStyle(BackgroundImage.blurLevel)
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
       if (this.obtainedData.length === 0)

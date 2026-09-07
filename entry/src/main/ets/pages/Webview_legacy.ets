@@ -240,7 +240,7 @@ struct Webview {
 
       Stack({ alignContent: Alignment.TopStart }) {
         Web({ src: this.url, controller: this.webviewController })
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#00d00721')
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#0000')
           .javaScriptProxy({
             object: accountInfoProvider,
             name: "infoProvider",

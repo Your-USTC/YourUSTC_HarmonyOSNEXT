@@ -605,7 +605,7 @@ struct MockPracticeMain {
       backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
     })
     .backButtonIcon($r('app.media.close'))
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
       this.loadQuestion();

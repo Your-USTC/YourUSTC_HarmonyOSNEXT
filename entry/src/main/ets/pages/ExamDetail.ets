@@ -556,7 +556,7 @@ struct ExamDetail {
         preferType: SheetType.CENTER,
         showClose: false,
         scrollSizeMode: ScrollSizeMode.CONTINUOUS,
-        backgroundColor: '#00d00721',
+        backgroundColor: '#0000',
         blurStyle: BlurStyle.Regular,
         onWillDismiss: ((DismissSheetAction: DismissSheetAction) => {
           if (this.startHour * 60 + this.startMinute > this.endHour * 60 + this.endMinute) {
@@ -596,7 +596,7 @@ struct ExamDetail {
     })
     .backButtonIcon($r('app.media.close'))
     .menus(this.menuItems)
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
 

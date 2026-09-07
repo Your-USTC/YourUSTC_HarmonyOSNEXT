@@ -215,7 +215,7 @@ struct Webview {
           .javaScriptAccess(true)
           .width('100%')
           .height('100%')
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#00d00721')
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#0000')
           .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
           .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
@@ -553,11 +553,11 @@ struct Webview {
       .layoutWeight(1)
     }
     .title(this.customTitle(), {
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#00d00721')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
     })
     .hideBackButton(true)
     .backgroundBlurStyle(BackgroundImage.blurLevel)
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#00d00721')
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#0000')
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
 

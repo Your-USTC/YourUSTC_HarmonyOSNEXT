@@ -256,10 +256,10 @@ struct CleanStorage {
     .onReady(() => this.getStorageSize())
     .title($r('app.string.storage_stat'), {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#00d00721')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
     })
     .backButtonIcon($r('app.media.close'))
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
   }
 }
 

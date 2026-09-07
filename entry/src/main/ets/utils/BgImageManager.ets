@@ -29,23 +29,25 @@ export const presetColor: string[][] = [
 const DARK_TARGET_LUMINANCE: number = 90;
 const DARK_MIN_FACTOR: number = 0.3;
 
+// 响应式单例：字段变化直接刷新全应用读取这些字段的UI（设置页热更新的基础）
+@ObservedV2
 class BackgroundImage {
-  pic: ResourceStr | undefined = undefined;
-  showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false); // 是否展示
-  imgPath: string = UnifiedPreferences.getSync('ImagePath', ''); // 图片路径
+  @Trace pic: ResourceStr | undefined = undefined;
+  @Trace showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false); // 是否展示
+  @Trace imgPath: string = UnifiedPreferences.getSync('ImagePath', ''); // 图片路径
   basicDir: string = '/data/storage/el2/base/files';
-  blurLevel: BlurStyle | undefined = undefined;
-  opacityLevel: number = 1;
-  backgroundBlur: boolean = UnifiedPreferences.getBoolSync('BackgroundBlur', true); // 选择背景模糊
-  themeColor: number = UnifiedPreferences.getNumberSync('ThemeColor', 0);
-  autoDecBright: boolean = UnifiedPreferences.getBoolSync('AutoDecBright', true); // 深色模式自动降低背景亮度
-  brightness: number = 1;
-  effectiveBrightness: number = 1; // 实际显示亮度，深色模式自动调节后可能小于手动亮度
-  avgBrightness: number = UnifiedPreferences.getNumberSync('ImageAvgBrightness', -1); // 图片平均亮度（0-255），-1表示未测量
-  darkMode: boolean = false; // 是否处于深色模式，init时确定
-  colorMode: number = UnifiedPreferences.getNumberSync('ColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+  @Trace blurLevel: BlurStyle | undefined = undefined;
+  @Trace opacityLevel: number = 1;
+  @Trace backgroundBlur: boolean = UnifiedPreferences.getBoolSync('BackgroundBlur', true); // 选择背景模糊
+  @Trace themeColor: number = UnifiedPreferences.getNumberSync('ThemeColor', 0);
+  @Trace autoDecBright: boolean = UnifiedPreferences.getBoolSync('AutoDecBright', true); // 深色模式自动降低背景亮度
+  @Trace brightness: number = 1;
+  @Trace effectiveBrightness: number = 1; // 实际显示亮度，深色模式自动调节后可能小于手动亮度
+  @Trace avgBrightness: number = UnifiedPreferences.getNumberSync('ImageAvgBrightness', -1); // 图片平均亮度（0-255），-1表示未测量
+  @Trace darkMode: boolean = false; // 是否处于深色模式，init/syncDarkMode时确定
+  @Trace colorMode: number = UnifiedPreferences.getNumberSync('ColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
 
-  avatar: ResourceStr = $r('app.media.avatar_placeholder');
+  @Trace avatar: ResourceStr = $r('app.media.avatar_placeholder');
   avatarPath: string = UnifiedPreferences.getSync('AvatarPath', '');
   /**
    * 初始化
@@ -58,37 +60,84 @@ class BackgroundImage {
     } catch {
       this.showImage = false;
     }
-    try {
-      this.darkMode = context.getApplicationContext().resourceManager.getConfigurationSync().colorMode
-        === resourceManager.ColorMode.DARK;
-    } catch {
-      this.darkMode = false;
-    }
-    if (this.showImage) {
-      this.pic = fileUri.getUriFromPath(this.imgPath);
-      if (this.backgroundBlur) { // 如果选择背景模糊
-        this.blurLevel = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.COMPONENT_REGULAR);
-        // this.opacityLevel = 1;
-      } else { // 如果选择背景透明
-        // this.blurLevel = undefined;
-        this.opacityLevel = UnifiedPreferences.getNumberSync('OpacityLevel', 100) / 100;
-      }
-      this.brightness = UnifiedPreferences.getNumberSync('BackgroundBrightness', 100) / 100;
-      this.effectiveBrightness = this.brightness * this.autoBrightFactor(this.avgBrightness, this.autoDecBright);
-      if (this.avgBrightness < 0) {
-        // 旧版本设置的图片没有亮度记录，后台补测一次并缓存，下次启动生效
-        this.updateAvgBrightness(this.imgPath);
-      }
-    } else {
-      this.pic = undefined;
-      // this.blurLevel = undefined;
-      // this.opacityLevel = 1;
+    this.syncDarkMode(context);
+    if (this.showImage && this.avgBrightness < 0) {
+      // 旧版本设置的图片没有亮度记录，后台补测一次并缓存
+      this.updateAvgBrightness(this.imgPath);
     }
 
     if (this.avatarPath !== '') {
       this.avatar = fileUri.getUriFromPath(this.avatarPath);
     }
     this.basicDir = context.filesDir;
+    this.refreshDisplay();
+  }
+
+  /**
+   * 同步深色模式缓存。手动 setColorMode 后收不到 onConfigurationUpdate，
+   * 热更新颜色模式后需调用此方法刷新 darkMode 供自动降亮等逻辑判断
+   * @param context 上下文，仅"跟随系统"时用于读取当前配置
+   */
+  syncDarkMode(context: Context) {
+    if (this.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK)
+      this.darkMode = true;
+    else if (this.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT)
+      this.darkMode = false;
+    else {
+      try {
+        this.darkMode = context.getApplicationContext().resourceManager.getConfigurationSync().colorMode
+          === resourceManager.ColorMode.DARK;
+      } catch {
+        this.darkMode = false;
+      }
+    }
+  }
+
+  /**
+   * 依据当前字段值与持久化设置重算显示状态（图片、模糊/透明互斥、有效亮度）。
+   * 启动初始化与设置热更新共用：热更新前需先持久化并同步字段值
+   */
+  refreshDisplay() {
+    if (this.showImage) {
+      this.pic = fileUri.getUriFromPath(this.imgPath);
+      if (this.backgroundBlur) { // 如果选择背景模糊
+        this.blurLevel = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.COMPONENT_REGULAR);
+        this.opacityLevel = 1;
+      } else { // 如果选择背景透明
+        this.blurLevel = undefined;
+        this.opacityLevel = UnifiedPreferences.getNumberSync('OpacityLevel', 100) / 100;
+      }
+      this.brightness = UnifiedPreferences.getNumberSync('BackgroundBrightness', 100) / 100;
+      this.effectiveBrightness = this.brightness * this.autoBrightFactor(this.avgBrightness, this.autoDecBright);
+    } else {
+      this.pic = undefined;
+      this.blurLevel = undefined;
+      this.opacityLevel = 1;
+    }
+  }
+
+  /**
+   * 清理除保留路径外的背景图文件（背景图文件名带时间戳，替换后需删除旧文件）
+   * @param keepPath 保留的背景图完整路径
+   */
+  cleanBackgroundFiles(keepPath: string) {
+    try {
+      const listFileOption: ListFileOptions = {
+        filter: { displayName: ['backgroundImage*'] }
+      };
+      fileIo.listFileSync(this.basicDir, listFileOption).forEach((value) => {
+        const filePath = `${this.basicDir}/${value}`;
+        if (filePath !== keepPath) {
+          try {
+            fileIo.unlinkSync(filePath);
+          } catch (e) {
+            console.error('Failed to delete old background image');
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Failed to list background images');
+    }
   }
 
   deleteBackgroundImage() {
@@ -159,12 +208,13 @@ class BackgroundImage {
   }
 
   /**
-   * 测量图片平均亮度并持久化，供下次启动计算自动亮度
+   * 测量图片平均亮度并持久化，完成后重算显示状态使自动亮度即时生效
    */
   async updateAvgBrightness(filePath: string): Promise<void> {
     try {
       this.avgBrightness = await this.calculateBrightnessByDownSample(filePath);
       UnifiedPreferences.putSync('ImageAvgBrightness', this.avgBrightness);
+      this.refreshDisplay();
     } catch (error) {
       console.error(`Failed to calculate image brightness: ${JSON.stringify(error)}`);
     }

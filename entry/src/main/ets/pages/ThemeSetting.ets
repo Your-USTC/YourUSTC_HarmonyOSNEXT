@@ -5,7 +5,6 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import UnifiedPreferences from '../utils/UnifyPreference';
 import BackgroundImage, { presetColor } from '../utils/BgImageManager';
-import { WantAbility } from '../utils/WantAbility';
 
 @Builder
 export function ThemeBuilder(name: string, param?: number[]) {
@@ -96,44 +95,13 @@ struct ThemeSetting {
   @State selectedColor: number = BackgroundImage.themeColor;
   readonly singleRotate: number = 360 / colorNum;
 
-  private oriBlurNum: number = 0;
-  private oriOpacityNum: number = 0;
-
   pathStack: NavPathStack = new NavPathStack();
   menuItems: Array<NavigationMenuItem> = [
     {
-      value: $r('app.string.ok_and_restart'),
+      value: $r('app.string.ok_and_apply'),
       icon: $r('app.media.checkmark'),
       action: () => {
-        if (this.selectResult !== undefined) {
-          const newImgPath: string = BackgroundImage.basicDir + '/backgroundImage';
-          fileIo.copyFile(this.oriImgPath, newImgPath)
-            .catch((error: BusinessError) => console.error('Copy image failed:', JSON.stringify(error)));
-          UnifiedPreferences.putSync('ImagePath', newImgPath, false);
-          if (this.pickedAvgBrightness >= 0)
-            UnifiedPreferences.putSync('ImageAvgBrightness', this.pickedAvgBrightness, false);
-        }
-        if (this.isShown !== BackgroundImage.showImage)
-          UnifiedPreferences.putSync('ShowImage', this.isShown, false);
-        if (this.showBlurSlider !== BackgroundImage.backgroundBlur)
-          UnifiedPreferences.putSync('BackgroundBlur', this.showBlurSlider, false);
-        if (this.blurNum !== this.oriBlurNum)
-          UnifiedPreferences.putSync('BlurLevel', this.blurNum, false);
-        if (this.opacityNum !== this.oriOpacityNum)
-          UnifiedPreferences.putSync('OpacityLevel', this.opacityNum, false);
-        if (this.selectedColor !== BackgroundImage.themeColor)
-          UnifiedPreferences.putSync('ThemeColor', this.selectedColor, false);
-        if (this.imgBrightness !== BackgroundImage.brightness)
-          UnifiedPreferences.putSync('BackgroundBrightness', this.imgBrightness, false);
-        if (this.autoDecBright !== BackgroundImage.autoDecBright)
-          UnifiedPreferences.putSync('AutoDecBright', this.autoDecBright, false);
-        if (this.colorMode !== BackgroundImage.colorMode)
-          UnifiedPreferences.putSync('ColorMode', this.colorMode);
-        UnifiedPreferences.putSync('AdaptSplit', this.adaptSplit, false);
-        UnifiedPreferences.putSync('FaultOccurred', false, false);
-        UnifiedPreferences.flush();
-
-        WantAbility.restart(this.getUIContext().getHostContext() as common.UIAbilityContext);
+        this.confirmAndApply();
       }
     }
   ];
@@ -550,15 +518,13 @@ struct ThemeSetting {
     }
     .title({ main: $r('app.string.theme_setting'), sub: $r('app.string.theme_setting_intro') }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
+      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000'
     })
     .backButtonIcon($r('app.media.close'))
     .menus(this.menuItems)
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : '#00d00721')
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : '#0000')
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
-      this.oriBlurNum = this.blurNum;
-      this.oriOpacityNum = this.opacityNum;
     })
   }
 
@@ -569,6 +535,63 @@ struct ThemeSetting {
   previewBrightnessFactor(): number {
     const avgBrightness = this.selectResult !== undefined ? this.pickedAvgBrightness : BackgroundImage.avgBrightness;
     return BackgroundImage.autoBrightFactor(avgBrightness, this.autoDecBright);
+  }
+
+  /**
+   * 应用并持久化全部设置。不重启应用：BackgroundImage 为响应式单例，
+   * 持久化并同步字段后调用 refreshDisplay() 即可让全应用UI热更新
+   */
+  private async confirmAndApply(): Promise<void> {
+    const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    // 深浅色模式：setColorMode即时生效；手动设置后收不到onConfigurationUpdate，需手动同步darkMode缓存
+    if (this.colorMode !== BackgroundImage.colorMode) {
+      try {
+        context.getApplicationContext().setColorMode(this.colorMode);
+      } catch (error) {
+        console.error(`SetColorMode ERROR: ${JSON.stringify(error)}`);
+      }
+      UnifiedPreferences.putSync('ColorMode', this.colorMode, false);
+      BackgroundImage.colorMode = this.colorMode;
+      BackgroundImage.syncDarkMode(context);
+    }
+    // 新背景图：以时间戳命名拷入沙箱（同名路径会命中图片缓存导致不刷新），成功后清理旧文件
+    let pickedImgPath: string | undefined = undefined;
+    if (this.selectResult !== undefined) {
+      try {
+        pickedImgPath = BackgroundImage.basicDir + `/backgroundImage_${Date.now()}`;
+        await fileIo.copyFile(this.oriImgPath, pickedImgPath);
+      } catch (error) {
+        pickedImgPath = undefined;
+        console.error('Copy image failed:', JSON.stringify(error));
+      }
+    }
+    // 先持久化全部设置，再同步到响应式单例并重算显示状态
+    if (pickedImgPath !== undefined) {
+      BackgroundImage.cleanBackgroundFiles(pickedImgPath);
+      BackgroundImage.imgPath = pickedImgPath;
+      if (this.pickedAvgBrightness >= 0)
+        BackgroundImage.avgBrightness = this.pickedAvgBrightness;
+      UnifiedPreferences.putSync('ImagePath', pickedImgPath, false);
+      if (this.pickedAvgBrightness >= 0)
+        UnifiedPreferences.putSync('ImageAvgBrightness', this.pickedAvgBrightness, false);
+    }
+    BackgroundImage.showImage = this.isShown;
+    BackgroundImage.backgroundBlur = this.showBlurSlider;
+    BackgroundImage.themeColor = this.selectedColor;
+    BackgroundImage.autoDecBright = this.autoDecBright;
+    UnifiedPreferences.putSync('ShowImage', this.isShown, false);
+    UnifiedPreferences.putSync('BackgroundBlur', this.showBlurSlider, false);
+    UnifiedPreferences.putSync('BlurLevel', this.blurNum, false);
+    UnifiedPreferences.putSync('OpacityLevel', this.opacityNum, false);
+    UnifiedPreferences.putSync('ThemeColor', this.selectedColor, false);
+    UnifiedPreferences.putSync('BackgroundBrightness', this.imgBrightness, false);
+    UnifiedPreferences.putSync('AutoDecBright', this.autoDecBright, false);
+    UnifiedPreferences.putSync('AdaptSplit', this.adaptSplit, false);
+    UnifiedPreferences.flush();
+    BackgroundImage.refreshDisplay();
+    // 导航模式热更新：经AppStorage同步到各页面@StorageLink('isSplit')绑定的.mode()
+    AppStorage.setOrCreate('isSplit', this.adaptSplit);
+    // 不退出 this.pathStack.pop();
   }
 
   SelectImage() {

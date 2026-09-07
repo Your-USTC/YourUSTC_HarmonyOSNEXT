@@ -181,7 +181,7 @@ struct Webview {
           .darkMode(this.webAutoDarkMode ? WebDarkMode.Auto : WebDarkMode.Off)
           .forceDarkAccess(this.webAutoDarkMode)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#00d00721')
+          .backgroundColor(BackgroundImage.blurLevel === undefined ? undefined : '#0000')
           .onErrorReceive((event) => {
             // Only handle loading errors of the main framework to avoid duplicate processing of errors in sub-resources
             this.loadError = event.error.getErrorInfo();
@@ -319,10 +319,10 @@ struct Webview {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .title(this.customTitle(), {
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#00d00721')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
     })
     .hideBackButton(true)
-    .backgroundColor('#00d00721')
+    .backgroundColor('#0000')
     .backgroundBlurStyle(BackgroundImage.blurLevel)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -419,7 +419,7 @@ struct Webview {
       .bindSheet($$this.showSelectTerm, this.selectTerm(), {
         detents: [SheetSize.LARGE],
         preferType: SheetType.CENTER,
-        backgroundColor: '#00d00721',
+        backgroundColor: '#0000',
         blurStyle: BlurStyle.Regular,
         enableOutsideInteractive: false,
         enableFloatingDragBar: true,

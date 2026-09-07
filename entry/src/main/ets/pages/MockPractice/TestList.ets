@@ -250,7 +250,7 @@ struct MockPracticeList {
             detents: [SheetSize.FIT_CONTENT],
             preferType: SheetType.CENTER,
             showClose: false,
-            backgroundColor: '#00d00721',
+            backgroundColor: '#0000',
             blurStyle: BlurStyle.Regular,
             title: { title: '重命名题库' }
           })
@@ -263,7 +263,7 @@ struct MockPracticeList {
         preferType: SheetType.CENTER,
         showClose: false,
         scrollSizeMode: ScrollSizeMode.CONTINUOUS,
-        backgroundColor: '#00d00721',
+        backgroundColor: '#0000',
         blurStyle: BlurStyle.Regular,
         enableFloatingDragBar: true,
         title: { title: '导入自测卷', subtitle: '选择数据起始行并指定各列含义' }
@@ -275,7 +275,7 @@ struct MockPracticeList {
     })
     .menus(this.menuItems)
     .backButtonIcon($r('app.media.close'))
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
     })

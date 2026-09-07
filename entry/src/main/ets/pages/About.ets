@@ -95,7 +95,7 @@ struct About {
                 detents: [SheetSize.LARGE],
                 preferType: SheetType.CENTER,
                 title: { subtitle: $r('app.string.version', currentAppVersion), title: $r('app.string.update_log') },
-                backgroundColor: '#00d00721',
+                backgroundColor: '#0000',
                 blurStyle: BlurStyle.Regular
               })
 
@@ -253,7 +253,7 @@ struct About {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     }
     .hideTitleBar(true)
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
       this.getImage();

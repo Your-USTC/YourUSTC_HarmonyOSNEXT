@@ -1105,11 +1105,11 @@ struct Schedule {
         .onActionEnd(() => UnifiedPreferences.putSync('GridHeight', this.gridHeight))
       )
     }
-    .backgroundColor(BackgroundImage.showImage ? '#00d00721' : $r('app.color.normal_background'))
+    .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .hideBackButton(true)
     .title({ builder: this.customTitle(), height: 98 }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#00d00721')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
     })
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -1149,7 +1149,7 @@ struct Schedule {
               preferType: SheetType.CENTER,
               showClose: false,
               scrollSizeMode: ScrollSizeMode.CONTINUOUS,
-              backgroundColor: '#00d00721',
+              backgroundColor: '#0000',
               blurStyle: BlurStyle.Regular,
               onAppear: () => {
                 this.showColorHint = UnifiedPreferences.getBoolSync('ShowColorHint', true);
@@ -1192,7 +1192,7 @@ struct Schedule {
           preferType: SheetType.CENTER,
           showClose: false,
           scrollSizeMode: ScrollSizeMode.FOLLOW_DETENT,
-          backgroundColor: '#00d00721',
+          backgroundColor: '#0000',
           blurStyle: BlurStyle.Regular
         })
 
@@ -1211,7 +1211,7 @@ struct Schedule {
           .bindSheet($$this.showConflictClass, this.ConflictClass(), {
             detents: [SheetSize.LARGE, SheetSize.MEDIUM],
             preferType: SheetType.POPUP,
-            backgroundColor: '#00d00721',
+            backgroundColor: '#0000',
             blurStyle: BlurStyle.Regular,
             showClose: false,
             enableOutsideInteractive: false,
@@ -1641,7 +1641,7 @@ struct Schedule {
                 .width('100%')
                 .selectAll(true);
               Circle()
-                .fill(this.isColorLegal ? this.classColor : '#00d00721')
+                .fill(this.isColorLegal ? this.classColor : '#0000')
                 .width(32)
                 .height(32)
                 .offset({ x: -4 })
