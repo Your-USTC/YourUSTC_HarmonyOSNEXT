@@ -84,7 +84,7 @@ export struct GridComponent {
     .margin({ bottom: '16vp' })
     .borderRadius(20)
     .backgroundBlurStyle(BackgroundImage.blurLevel)
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
   }
 
   openMultiLink(linkDetail: MultiLink, linkIndex: number) {
@@ -271,7 +271,7 @@ export struct MostRecentComponent {
     .margin({ bottom: '8vp' })
     .borderRadius(20)
     .backgroundBlurStyle(BackgroundImage.blurLevel)
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
   }
 
 

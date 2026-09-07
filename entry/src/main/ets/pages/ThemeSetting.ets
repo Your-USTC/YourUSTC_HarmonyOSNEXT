@@ -73,7 +73,7 @@ function posToIndex(x: number, y: number): number {
 @Component
 struct ThemeSetting {
 
-  private sliderNum: number = BlurStyleToNum(BackgroundImage.blurLevel); // 模糊程度滑动条参数
+  @State sliderNum: number = BlurStyleToNum(BackgroundImage.blurLevel); // 模糊程度滑动条参数
   @State opacityNum: number = UnifiedPreferences.getNumberSync('OpacityLevel', 100); // 不透明度
   @State isShown: boolean = BackgroundImage.showImage; // 显示预览图片
   @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.confused') : fileUri.getUriFromPath(BackgroundImage.imgPath); //预览图片
@@ -187,7 +187,42 @@ struct ThemeSetting {
                 .layoutWeight(1)
                 .textAlign(TextAlign.Center)
                 .fontWeight(this.showBlurSlider ? FontWeight.Bold : FontWeight.Normal)
+
+              Select([{ value: '不透明' }, { value: '半透明' }, { value: '带模糊' }, { value: '纯享版' }, { value: '全覆盖' } ])
+                .controlSize(ControlSize.SMALL)
+                .value('选一个')
+                .onSelect((index: number) => {
+                  switch (index) {
+                    case 0:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 100;
+                      this.imgBrightness = 100;
+                      break;
+                    case 1:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 85;
+                      this.imgBrightness = 100;
+                      break;
+                    case 2:
+                      this.showBlurSlider = true;
+                      this.blurNum = BlurStyle.COMPONENT_REGULAR;
+                      this.sliderNum = 3;
+                      break;
+                    case 3:
+                      this.showBlurSlider = true;
+                      this.blurNum = BlurStyle.NONE;
+                      this.sliderNum = 0;
+                      this.autoDecBright = true;
+                      break;
+                    case 4:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 25;
+                      this.imgBrightness = 25;
+                      break;
+                  }
+                })
             }
+            .padding({ right: 16 })
 
             Row() {
               if (this.showBlurSlider) {
@@ -274,50 +309,12 @@ struct ThemeSetting {
             }
             .padding({ left: 16, right: 16 });
 
-            Row() {
-              Text('预设')
-                .layoutWeight(1)
-
-              Select([{ value: '不透明' }, { value: '半透明' }, { value: '模糊' }, { value: '纯享' }, { value: '背景一致' } ])
-                .onSelect((index: number) => {
-                  switch (index) {
-                    case 0:
-                      this.showBlurSlider = false;
-                      this.opacityNum = 100;
-                      this.imgBrightness = 100;
-                      break;
-                    case 1:
-                      this.showBlurSlider = false;
-                      this.opacityNum = 85;
-                      this.imgBrightness = 100;
-                      break;
-                    case 2:
-                      this.showBlurSlider = true;
-                      this.blurNum = BlurStyle.COMPONENT_REGULAR;
-                      this.sliderNum = 3;
-                      break;
-                    case 3:
-                      this.showBlurSlider = true;
-                      this.blurNum = BlurStyle.NONE;
-                      this.sliderNum = 0;
-                      this.autoDecBright = true;
-                      break;
-                    case 4:
-                      this.showBlurSlider = false;
-                      this.opacityNum = 25;
-                      this.imgBrightness = 25;
-                      break;
-                  }
-                })
-            }
-            .padding({ left: 16, right: 16 });
-
             Text($r('app.string.too_large_bg_image'))
               .fontColor($r('app.color.red'))
               .fontSize(15)
               .visibility(this.showWarning ? Visibility.Visible : Visibility.None);
           }
-          .padding({ bottom: 16 })
+          .padding({ bottom: 6 })
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .borderRadius(23)
 

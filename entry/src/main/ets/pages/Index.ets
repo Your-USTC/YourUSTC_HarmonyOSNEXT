@@ -190,7 +190,9 @@ struct Index {
     }
     .margin({ bottom: '8vp' })
     .padding({ left: '10vp', right: '10vp' })
-    .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+    .backgroundColor(BackgroundImage.showImage
+      ? (BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
+      : $r('app.color.normal_background'))
     .backgroundBlurStyle(BackgroundImage.blurLevel)
     .borderRadius(20)
   }
@@ -394,7 +396,7 @@ struct Index {
         }
         .width('100%')
         .borderRadius(20)
-        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
         .backgroundBlurStyle(BackgroundImage.blurLevel);
       }
 
@@ -620,7 +622,7 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5 })
-      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
       .backgroundBlurStyle(BackgroundImage.blurLevel);
 
       // 考试信息
@@ -734,7 +736,7 @@ struct Index {
       .width('100%')
       .borderRadius(20)
       .margin({ top: 5 })
-      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
       .backgroundBlurStyle(BackgroundImage.blurLevel);
 
       ListItem() {
@@ -890,7 +892,7 @@ struct Index {
         .padding(12)
       }
       .width('100%')
-      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
       .backgroundBlurStyle(BackgroundImage.blurLevel)
       .borderRadius(20)
 
@@ -910,7 +912,7 @@ struct Index {
           startMargin: '12vp',
           endMargin: '12vp'
         })
-        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : '#0000')
         .backgroundBlurStyle(BackgroundImage.blurLevel)
         .borderRadius(20)
 
@@ -1027,12 +1029,13 @@ struct Index {
 
   build() {
     Stack() {
-      Image(BackgroundImage.pic)
-        .height('100%')
-        .width('100%')
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        .autoResize(true)
-        .opacity(BackgroundImage.effectiveBrightness)
+      if (BackgroundImage.showImage)
+        Image(BackgroundImage.pic)
+          .height('100%')
+          .width('100%')
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .autoResize(true)
+          .opacity(BackgroundImage.effectiveBrightness)
 
       Navigation(this.pageInfo) {
         HdsTabs({ controller: this.tabsController }) {
