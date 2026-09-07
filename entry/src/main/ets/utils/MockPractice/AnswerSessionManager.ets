@@ -170,7 +170,8 @@ class AnswerSessionStore {
 
   /**
    * 错题重做（为后续错题本功能预留 starred 维度）：从某次记录中收集做错的题
-   * （同一题多次作答以最后一次为准），可选附加收藏题，生成一次部分题号的新练习。
+   * （以第一次作答为准，第一次答错即计为错题，重试做对也不改变），
+   * 可选附加收藏题，生成一次部分题号的新练习。
    */
   createRetrySession(bankId: string, sourceSessionId: string,
     includeStarred: boolean): string {
@@ -178,16 +179,13 @@ class AnswerSessionStore {
     if (source === null) {
       return '';
     }
-    const lastResult: Map<number, boolean> = new Map();
-    for (let i = 0; i < source.answers.length; i++) {
-      lastResult.set(source.answers[i].questionIndex, source.answers[i].isCorrect);
-    }
+    const firstAnswer = this.firstAnswerMap(source);
     const targets: number[] = [];
     for (let i = 0; i < source.questionNO.length; i++) {
       const no = source.questionNO[i];
-      const wrong = lastResult.get(no);
+      const record = firstAnswer.get(no);
       const starred = source.marks[no] !== undefined && source.marks[no].starred;
-      if ((wrong === false) || (includeStarred && starred)) {
+      if ((record !== undefined && !record.isCorrect) || (includeStarred && starred)) {
         targets.push(no);
       }
     }
@@ -213,7 +211,7 @@ class AnswerSessionStore {
     return this.sessions.get(bankId)!;
   }
 
-  /** 记录当前题的作答并推进进度（自动跳到下一题），返回是否答对 */
+  /** 记录当前题的作答；答对推进到下一题，答错留在原题可重试（同一题以最后一次作答为准），返回是否答对 */
   submitAnswer(bankId: string, sessionId: string, userAnswer: string): boolean {
     const session = this.getSession(bankId, sessionId);
     if (session === null || session.currentIndex >= session.questionNO.length) {
@@ -234,7 +232,9 @@ class AnswerSessionStore {
       isCorrect: isCorrect,
       timestamp: Date.now()
     });
-    session.currentIndex = Math.min(session.currentIndex + 1, session.questionNO.length);
+    if (isCorrect) {
+      session.currentIndex = Math.min(session.currentIndex + 1, session.questionNO.length);
+    }
     session.lastAnswerTime = Date.now();
     this.persist(bankId);
     return isCorrect;
@@ -296,6 +296,18 @@ class AnswerSessionStore {
     return session.currentIndex >= session.questionNO.length;
   }
 
+  /** 每题的首次作答记录：第一次答对/答错即定型，后续重试不改变判定 */
+  private firstAnswerMap(session: answerSession): Map<number, answerRecord> {
+    const firstAnswer: Map<number, answerRecord> = new Map();
+    for (let i = 0; i < session.answers.length; i++) {
+      const record = session.answers[i];
+      if (!firstAnswer.has(record.questionIndex)) {
+        firstAnswer.set(record.questionIndex, record);
+      }
+    }
+    return firstAnswer;
+  }
+
   getProgress(bankId: string, sessionId: string): sessionSummary {
     const session = this.getSession(bankId, sessionId);
     if (session === null) {
@@ -305,12 +317,13 @@ class AnswerSessionStore {
         wrong: 0, finished: true, position: 0
       };
     }
+    const firstAnswer = this.firstAnswerMap(session);
     let correct = 0;
-    for (let i = 0; i < session.answers.length; i++) {
-      if (session.answers[i].isCorrect) {
+    firstAnswer.forEach((record: answerRecord): void => {
+      if (record.isCorrect) {
         correct++;
       }
-    }
+    });
     return {
       sessionId: session.sessionId,
       bankId: session.bankId,
@@ -319,9 +332,9 @@ class AnswerSessionStore {
       createdAt: session.createdAt,
       lastAnswerTime: session.lastAnswerTime,
       total: session.questionNO.length,
-      answered: session.answers.length,
+      answered: firstAnswer.size,
       correct: correct,
-      wrong: session.answers.length - correct,
+      wrong: firstAnswer.size - correct,
       finished: session.currentIndex >= session.questionNO.length,
       position: session.currentIndex
     };
@@ -341,20 +354,17 @@ class AnswerSessionStore {
     return summaries;
   }
 
-  /** session 视角下每道题的状态（同一题多次作答以最后一次为准） */
+  /** session 视角下每道题的状态（以第一次作答为准：第一次答错即计为错题） */
   getQuestionStatus(bankId: string, sessionId: string): questionStatus[] {
     const session = this.getSession(bankId, sessionId);
     if (session === null) {
       return [];
     }
-    const lastAnswer: Map<number, answerRecord> = new Map();
-    for (let i = 0; i < session.answers.length; i++) {
-      lastAnswer.set(session.answers[i].questionIndex, session.answers[i]);
-    }
+    const firstAnswer = this.firstAnswerMap(session);
     const result: questionStatus[] = [];
     for (let pos = 0; pos < session.questionNO.length; pos++) {
       const qIndex = session.questionNO[pos];
-      const record = lastAnswer.get(qIndex);
+      const record = firstAnswer.get(qIndex);
       const status: AnswerStatus = record === undefined ? 'unanswered'
         : (record.isCorrect ? 'correct' : 'wrong');
       result.push({

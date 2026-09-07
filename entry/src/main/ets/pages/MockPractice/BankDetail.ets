@@ -313,51 +313,53 @@ struct BankDetail {
   build() {
     NavDestination() {
       Column() {
-        Scroll() {
-          Column() {
-            // 题库信息卡片
-            Column() {
-              Text(this.navParam.bankName)
-                .fontSize(20)
-                .fontWeight(FontWeight.Bold)
-                .width('100%')
-              Text(`题库共 ${this.questionCount} 题`)
-                .fontSize(13)
-                .fontColor($r('app.color.transparent_text'))
-                .width('100%')
-                .margin({ top: 6 })
-              Button('开始练习')
-                .buttonStyle(ButtonStyleMode.EMPHASIZED)
-                .width('100%')
-                .margin({ top: 12 })
-                .enabled(this.questionCount > 0)
-                .onClick(() => {
-                  this.showSetupSheet = true;
-                })
-            }
-            .alignItems(HorizontalAlign.Start)
+        // 题库信息卡片
+        Column() {
+          Text(this.navParam.bankName)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
             .width('100%')
-            .padding(16)
+          Text(`题库共 ${this.questionCount} 题`)
+            .fontSize(13)
+            .fontColor($r('app.color.transparent_text'))
+            .width('100%')
+            .margin({ top: 6 })
+          Button('开始新练习')
+            .buttonStyle(ButtonStyleMode.EMPHASIZED)
+            .width('100%')
             .margin({ top: 12 })
-            .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-            .backgroundBlurStyle(BackgroundImage.blurLevel)
-            .borderRadius(20)
+            .enabled(this.questionCount > 0)
+            .onClick(() => {
+              this.showSetupSheet = true;
+            })
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('100%')
+        .padding(16)
+        .margin({ top: 12 })
+        .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+        .backgroundBlurStyle(BackgroundImage.blurLevel)
+        .borderRadius(20)
 
-            Text('做题记录')
-              .fontSize(16)
-              .fontWeight(FontWeight.Bold)
-              .width('100%')
-              .margin({ top: 16, bottom: 4 })
+        Text('做题记录')
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .width('100%')
+          .margin({ top: 16, bottom: 4 })
 
-            if (this.summaries.length === 0) {
+        List() {
+          if (this.summaries.length === 0) {
+            ListItem() {
               Text('还没有做题记录，点击「开始练习」创建一次练习')
                 .fontSize(14)
                 .fontColor($r('app.color.transparent_text'))
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .padding({ top: 30, bottom: 30 })
-            } else {
-              ForEach(this.summaries, (summary: sessionSummary) => {
+            }
+          } else {
+            ForEach(this.summaries, (summary: sessionSummary) => {
+              ListItem() {
                 Column() {
                   Row() {
                     Text(`${this.originLabel(summary.origin)} · ${this.modeLabel(summary.mode)}`)
@@ -372,7 +374,8 @@ struct BankDetail {
 
                   Row() {
                     Text(`已答 ${summary.answered}/${summary.total} · 答对 ${summary.correct}` +
-                      (summary.answered > 0 ? ` · 正确率 ${Math.round(summary.correct * 100 / summary.answered)}%` : ''))
+                      (summary.answered > 0 ? ` · 正确率 ${Math.round(summary.correct * 100 / summary.answered)}%` :
+                        ''))
                       .fontSize(13)
                       .layoutWeight(1)
                     Text(this.formatDate(summary.lastAnswerTime || summary.createdAt))
@@ -403,20 +406,21 @@ struct BankDetail {
                   }
                 })
                 .bindContextMenu(this.sessionMenu(summary), ResponseType.LongPress)
-              }, (summary: sessionSummary) => summary.sessionId)
-            }
+              }
+            }, (summary: sessionSummary) => summary.sessionId)
           }
-          .width('100%')
-          .padding({ left: 12, right: 12, bottom: 12 })
         }
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
         .width('100%')
-        .height('100%')
+        .layoutWeight(1)
         .scrollBar(BarState.Auto)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+        .borderRadius({ topLeft: 16, topRight: 16 })
       }
       .width('100%')
       .height('100%')
+      .padding({ left: 12, right: 12 })
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .bindSheet($$this.showSetupSheet, this.setupSheet(), {
         detents: [SheetSize.FIT_CONTENT, SheetSize.MEDIUM],
         preferType: SheetType.CENTER,

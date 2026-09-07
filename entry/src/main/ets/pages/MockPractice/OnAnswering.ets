@@ -1,6 +1,12 @@
 import BackgroundImage from '../../utils/BgImageManager';
 import { answerStore } from '../../utils/MockPractice/AnswerSessionManager';
-import { sessionNavParam, sessionSummary, singleQuestion } from '../../utils/MockPractice/constants';
+import {
+  sessionNavParam,
+  sessionSummary,
+  singleQuestion,
+  questionStatus,
+  AnswerStatus
+} from '../../utils/MockPractice/constants';
 
 
 @Builder
@@ -14,8 +20,43 @@ const COLOR_RED = 1;
 const COLOR_YELLOW = 2;
 const COLOR_NONE = 3;
 
-/** 提交后选项/反馈的着色与动画时长 */
-const FLASH_MS: number = 400;
+/** 答题卡格子数据源：配合 LazyForEach 懒创建格子，避免题多时打开弹层一次性建满全部格子而掉帧 */
+class SheetStatusSource implements IDataSource {
+  private list: questionStatus[] = [];
+  private listeners: DataChangeListener[] = [];
+
+  totalCount(): number {
+    return this.list.length;
+  }
+
+  getData(index: number): questionStatus {
+    return this.list[index];
+  }
+
+  /** 整表替换数据并通知重建；答题卡每次打开前调用（弹层关闭期间无监听者，无需通知） */
+  refresh(list: questionStatus[]): void {
+    this.list = list;
+    for (let i = 0; i < this.listeners.length; i++) {
+      this.listeners[i].onDataReloaded();
+    }
+  }
+
+  registerDataChangeListener(listener: DataChangeListener): void {
+    if (!this.listeners.includes(listener)) {
+      this.listeners.push(listener);
+    }
+  }
+
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    const index = this.listeners.indexOf(listener);
+    if (index >= 0) {
+      this.listeners.splice(index, 1);
+    }
+  }
+}
+
+/** 答对后停留展示反馈的时长，之后切换到下一题 */
+const FLASH_MS: number = 500;
 
 @Entry
 @Component
@@ -33,14 +74,24 @@ struct MockPracticeMain {
   @State multiChoice: boolean[] = [];
   @State textAnswer: string = '';
   @State optionColor: number[] = [];
-  @State feedback: string = '';
-  @State feedbackCorrect: boolean = false;
-  // 作答后的扫过动画（覆盖在题目与选项上的色块）
-  @State rectHeight: number[] = [];
-  @State qHeight: number = 60;
-  @State rectOffset: number = 0;
-  @State initialized: boolean = false;
-  private optionWidth: number = 0;
+  /** 答题区横向位移：切题时旧题滑出、新题从另一侧滑入 */
+  @State slideX: number = 0;
+  /** 答题卡半模态是否展开 */
+  @State sheetOpen: boolean = false;
+  /** 各题作答状态数据源（以第一次作答为准），答题卡展示用 */
+  private sheetSource: SheetStatusSource = new SheetStatusSource();
+  /** 答题区宽度，用作滑动距离与切题阈值 */
+  private contentWidth: number = 0;
+  /** 滑动切换进行中，期间忽略新的切题与拖动 */
+  private swapping: boolean = false;
+  /** 答对后进入下一题的延时定时器 */
+  private flashTimer: number = -1;
+  /** 滑出→换内容→滑入的切换定时器 */
+  private swapTimer: number = -1;
+  /** 新题滑入前的短暂延时定时器 */
+  private enterTimer: number = -1;
+  /** 答对后的推进等待期，避免停留期间重复提交 */
+  private submitting: boolean = false;
   pathStack: NavPathStack = new NavPathStack();
 
   /** 拉取当前题并重置与单题相关的作答状态；进度（current/total）一并向 store 对齐 */
@@ -65,8 +116,8 @@ struct MockPracticeMain {
       this.optionColor.push(COLOR_NONE);
     }
     this.textAnswer = '';
-    this.feedback = '';
-    this.rectHeight = [];
+    clearTimeout(this.flashTimer);
+    this.submitting = false;
   }
 
   showFinish(): void {
@@ -78,7 +129,6 @@ struct MockPracticeMain {
   }
 
   clearFeedback(): void {
-    this.feedback = '';
     if (this.q !== null) {
       const optionCount = this.q.type === 'blank' ? 0 : this.q.optionCount;
       this.optionColor = [];
@@ -124,6 +174,15 @@ struct MockPracticeMain {
     }
   }
 
+  /** 选项背景：无反馈时保持原底色，有反馈时着对错色 */
+  optionBg(index: number): Resource | string | undefined {
+    const color = this.optionColor[index];
+    if (color === undefined || color === COLOR_NONE) {
+      return BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined;
+    }
+    return answerColor[color];
+  }
+
   buildUserAnswer(): string {
     const q = this.q;
     if (q === null) {
@@ -158,37 +217,91 @@ struct MockPracticeMain {
   }
 
   submit(): void {
+    if (this.submitting || this.swapping) {
+      return;
+    }
     const userAnswer = this.buildUserAnswer();
     if (userAnswer === '') {
       return;
     }
     const isCorrect = answerStore.submitAnswer(this.navParam.bankId, this.navParam.sessionId, userAnswer);
-    this.applyFeedback(isCorrect);
-    this.feedback = isCorrect ? '回答正确' : `回答错误，正确答案：${this.q?.answer || ''}`;
-    this.feedbackCorrect = isCorrect;
-
-    // 色块扫过动画
-    this.rectOffset = -this.optionWidth;
-    this.initialized = true;
-    this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 300 }, () => {
-      this.rectOffset = 0;
+    // 选项着色与反馈文本一同渐入
+    this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 200 }, () => {
+      this.applyFeedback(isCorrect);
     });
-    setTimeout(() => {
-      if (isCorrect) {
-        // 提交时进度已自动前进；没有下一题即完成本次练习
-        this.loadQuestion();
-      }
-      setTimeout(() => {
-        this.getUIContext().animateTo({ curve: Curve.EaseIn, duration: 300 }, () => {
-          this.rectOffset = this.optionWidth;
+    if (isCorrect) {
+      // 提交时进度已自动前进；没有下一题即完成本次练习
+      this.submitting = true;
+      this.flashTimer = setTimeout(() => {
+        this.slideSwap(1, () => this.loadQuestion());
+      }, FLASH_MS);
+    }
+  }
+
+  /** 按方向滑动切换：旧题滑出后换内容，新题从另一侧滑入；1=下一题，-1=上一题 */
+  slideSwap(direction: number, swap: () => void): void {
+    if (this.swapping) {
+      return;
+    }
+    this.swapping = true;
+    const w = this.contentWidth > 0 ? this.contentWidth : 480;
+    this.getUIContext().animateTo({ curve: Curve.EaseIn, duration: 150 }, () => {
+      this.slideX = direction === 1 ? -w : w;
+    });
+    this.swapTimer = setTimeout(() => {
+      swap();
+      this.slideX = direction === 1 ? w : -w;
+      this.enterTimer = setTimeout(() => {
+        this.getUIContext().animateTo({
+          curve: Curve.EaseOut,
+          duration: 220,
+          onFinish: () => {
+            this.swapping = false;
+          }
+        }, () => {
+          this.slideX = 0;
         });
-      }, 100);
-    }, FLASH_MS);
+      }, 30);
+    }, 170);
+  }
+
+  /** 拖动跟手：可切换方向整距跟随，不可切换方向给阻力 */
+  handlePanUpdate(dx: number): void {
+    if (this.swapping || this.submitting) {
+      return;
+    }
+    const allowed = dx < 0 ? this.current + 1 < this.total : this.current > 0;
+    this.slideX = allowed ? dx : dx * 0.25;
+  }
+
+  /** 松手：位移达到阈值且方向可用则切题，否则回弹 */
+  handlePanEnd(dx: number): void {
+    if (this.swapping || this.submitting || dx === 0) {
+      return;
+    }
+    const dir = dx < 0 ? 1 : -1;
+    const allowed = dir === 1 ? this.current + 1 < this.total : this.current > 0;
+    const w = this.contentWidth > 0 ? this.contentWidth : 480;
+    if (allowed && Math.abs(dx) >= w * 0.25) {
+      this.navigateTo(dir);
+    } else {
+      this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 200 }, () => {
+        this.slideX = 0;
+      });
+    }
   }
 
   navigateTo(delta: number): void {
-    answerStore.jumpTo(this.navParam.bankId, this.navParam.sessionId, this.current + delta);
-    this.loadQuestion();
+    const target = this.current + delta;
+    if (this.swapping || target < 0 || target >= this.total) {
+      return;
+    }
+    clearTimeout(this.flashTimer);
+    this.submitting = false;
+    this.slideSwap(delta, () => {
+      answerStore.jumpTo(this.navParam.bankId, this.navParam.sessionId, target);
+      this.loadQuestion();
+    });
   }
 
   openRecord(): void {
@@ -200,6 +313,118 @@ struct MockPracticeMain {
         sessionId: this.navParam.sessionId
       } as sessionNavParam
     });
+  }
+
+  /** 打开答题卡：先同步各题状态（答错重试不切题，状态只在此处刷新） */
+  openSheet(): void {
+    this.sheetSource.refresh(answerStore.getQuestionStatus(this.navParam.bankId, this.navParam.sessionId));
+    this.sheetOpen = true;
+  }
+
+  /** 跳转到答题卡选中的题目 */
+  jumpToPosition(pos: number): void {
+    if (pos === this.current || pos < 0 || pos >= this.total) {
+      return;
+    }
+    this.sheetOpen = false;
+    clearTimeout(this.flashTimer);
+    this.submitting = false;
+    this.slideSwap(pos > this.current ? 1 : -1, () => {
+      answerStore.jumpTo(this.navParam.bankId, this.navParam.sessionId, pos);
+      this.loadQuestion();
+    });
+  }
+
+  /** 答题卡格子配色下标：绿=答对，红=答错，无底色=未作答 */
+  statusColorIndex(status: AnswerStatus): number {
+    if (status === 'correct') {
+      return COLOR_GREEN;
+    }
+    if (status === 'wrong') {
+      return COLOR_RED;
+    }
+    return COLOR_NONE;
+  }
+
+  aboutToDisappear(): void {
+    clearTimeout(this.flashTimer);
+    clearTimeout(this.swapTimer);
+    clearTimeout(this.enterTimer);
+  }
+
+  @Builder
+  LegendItem(colorIndex: number, label: string) {
+    Row() {
+      Text('')
+        .width(12)
+        .height(12)
+        .borderRadius(4)
+        .backgroundColor(colorIndex === COLOR_NONE
+          ? $r('app.color.grid_background')
+          : answerColor[colorIndex])
+        .border({ width: 1, color: $r('app.color.grid_border') })
+      Text(label)
+        .fontSize(12)
+        .fontColor($r('app.color.transparent_text'))
+        .margin({ left: 5 })
+    }
+    .margin({ left: 8, right: 8 })
+  }
+
+  @Builder
+  SheetCell(st: questionStatus) {
+    Row() {
+      Text(`${st.position + 1}`)
+        .fontSize(14)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(st.status === 'unanswered' ? $r('app.color.normal_text') : '#FFFFFF')
+    }
+    .width('100%')
+    .height(36)
+    .justifyContent(FlexAlign.Center)
+    .borderRadius(12)
+    .backgroundColor(st.status === 'unanswered'
+      ? (BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+      : answerColor[this.statusColorIndex(st.status)])
+    .borderWidth(st.position === this.current ? 2 : (st.status === 'unanswered' ? 1 : 0))
+    .borderColor(st.position === this.current ? $r('app.color.active_text') : $r('app.color.grid_border'))
+    .onClick(() => {
+      this.jumpToPosition(st.position);
+    })
+  }
+
+  @Builder
+  AnswerSheetBuilder() {
+    Column() {
+      Row() {
+        this.LegendItem(COLOR_GREEN, '答对')
+        this.LegendItem(COLOR_RED, '答错')
+        this.LegendItem(COLOR_NONE, '未作答')
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .margin({ top: 4 })
+
+      Grid() {
+        LazyForEach(this.sheetSource, (st: questionStatus) => {
+          GridItem() {
+            this.SheetCell(st)
+          }
+        }, (st: questionStatus) => `${st.position}-${st.status}`)
+      }
+      .columnsTemplate('repeat(auto-fill, 48vp)')
+      .columnsGap(8)
+      .rowsGap(8)
+      .padding({ left: 12, right: 12, top: 12, bottom: 16 })
+      .width('100%')
+      .layoutWeight(1)
+      .cachedCount(8)
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
+      .margin({ top: 8 })
+    }
+    .width('100%')
+    .height('100%')
   }
 
   build() {
@@ -249,10 +474,11 @@ struct MockPracticeMain {
           .width('100%')
           .layoutWeight(1)
           .justifyContent(FlexAlign.Center)
+          .transition(TransitionEffect.OPACITY.animation({ duration: 250, curve: Curve.EaseOut }))
         } else {
-          Scroll() {
-            Column() {
-              Stack() {
+          Column() {
+            Scroll() {
+              Column() {
                 Text() {
                   Span(`${this.current + 1}/${this.total}  `)
                     .fontSize(20)
@@ -262,41 +488,28 @@ struct MockPracticeMain {
                 .width('100%')
                 .constraintSize({ minHeight: 60 })
                 .padding(12)
+                .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
+                .borderRadius(20)
 
-                Rect()
-                  .height(this.qHeight)
-                  .width('100%')
-                  .fill($r('app.color.green'))
-                  .visibility(this.initialized ? Visibility.Visible : Visibility.None)
-                  .offset({ x: this.rectOffset })
+                Blank().layoutWeight(1)
               }
-              .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-              .borderRadius(20)
-              .clip(true)
-              .onSizeChange((_oldValue: SizeOptions, newValue: SizeOptions) => {
-                this.qHeight = newValue.height as number;
-              })
-
-              Blank().layoutWeight(1)
+              .width('100%')
             }
-            .width('100%')
-          }
-          .width('calc(100% - 24vp)')
-          .borderRadius(20)
-          .margin({ top: 12, left: 12, right: 12 })
-          .layoutWeight(1)
+            .width('calc(100% - 24vp)')
+            .borderRadius(20)
+            .margin({ top: 12, left: 12, right: 12 })
+            .layoutWeight(1)
 
-          if (this.q?.type === 'blank') {
-            TextInput({ text: this.textAnswer, placeholder: '请输入答案' })
-              .margin({ left: 12, right: 12, top: 8 })
-              .onChange((value: string) => {
-                this.textAnswer = value;
-                this.clearFeedback();
-              })
-          } else {
-            Column() {
-              ForEach(this.q?.options || [], (optionContext: string, index: number) => {
-                Stack() {
+            if (this.q?.type === 'blank') {
+              TextInput({ text: this.textAnswer, placeholder: '请输入答案' })
+                .margin({ left: 12, right: 12, top: 8 })
+                .onChange((value: string) => {
+                  this.textAnswer = value;
+                  this.clearFeedback();
+                })
+            } else {
+              Column() {
+                ForEach(this.q?.options || [], (optionContext: string, index: number) => {
                   Row() {
                     Text(String.fromCharCode(65 + index))
                       .fontWeight(FontWeight.Bold)
@@ -311,6 +524,9 @@ struct MockPracticeMain {
                   .constraintSize({ minHeight: 40 })
                   .width('100%')
                   .justifyContent(FlexAlign.Start)
+                  .backgroundColor(this.optionBg(index))
+                  .borderRadius(20)
+                  .margin({ top: 8, bottom: 6 })
                   .onClick(() => {
                     if (this.q?.type === 'multiple') {
                       this.multiChoice[index] = !this.multiChoice[index];
@@ -319,42 +535,32 @@ struct MockPracticeMain {
                     }
                     this.clearFeedback();
                   })
-                  .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
-                    this.rectHeight[index] = newValue.height as number;
-                  })
-
-                  Rect()
-                    .height(this.rectHeight[index] || 40)
-                    .width('100%')
-                    .fill(answerColor[this.optionColor[index] === undefined ? COLOR_NONE : this.optionColor[index]])
-                    .visibility(this.initialized ? Visibility.Visible : Visibility.None)
-                    .offset({ x: this.rectOffset })
-                }
-                .clip(true)
-                .width('100%')
-                .margin({ top: 8, bottom: 6 })
-                .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-                .borderRadius(20)
-              }, (optionContext: string, index: number) => `${this.current}-${index}-${optionContext}`)
-            }
-            .padding({ left: 12, right: 12 })
-            .onSizeChange((_oldValue: SizeOptions, newValue: SizeOptions) => {
-              this.optionWidth = (newValue.width as number);
-            })
-            .width('100%')
-          }
-
-          if (this.feedback !== '') {
-            Text(this.feedback)
-              .fontSize(14)
-              .fontWeight(FontWeight.Medium)
-              .fontColor(this.feedbackCorrect ? $r('app.color.green') : $r('app.color.red'))
+                }, (optionContext: string, index: number) => `${this.current}-${index}-${optionContext}`)
+              }
+              .padding({ left: 12, right: 12 })
               .width('100%')
-              .textAlign(TextAlign.Center)
-              .margin({ top: 8 })
+            }
           }
+          .width('100%')
+          .layoutWeight(1)
+          .translate({ x: this.slideX })
+          .onSizeChange((_oldValue: SizeOptions, newValue: SizeOptions) => {
+            this.contentWidth = newValue.width as number;
+          })
+          .gesture(PanGesture({ direction: PanDirection.Horizontal, distance: 10 })
+            .onActionUpdate((event: GestureEvent) => {
+              this.handlePanUpdate(event.offsetX);
+            })
+            .onActionEnd((event: GestureEvent) => {
+              this.handlePanEnd(event.offsetX);
+            }))
 
           Row() {
+            Button('答题卡')
+              .buttonStyle(ButtonStyleMode.TEXTUAL)
+              .onClick(() => {
+                this.openSheet();
+              })
             Button('上一题')
               .buttonStyle(ButtonStyleMode.TEXTUAL)
               .enabled(this.current > 0)
@@ -380,6 +586,15 @@ struct MockPracticeMain {
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .width('100%')
           .padding({ top: 6, bottom: 6 })
+          .bindSheet(this.sheetOpen, this.AnswerSheetBuilder(), {
+            height: '45%',
+            showClose: true,
+            dragBar: false,
+            title: { title: '答题卡' },
+            onDisappear: (): void => {
+              this.sheetOpen = false;
+            }
+          })
         }
       }
       .width('100%')
@@ -397,6 +612,12 @@ struct MockPracticeMain {
     })
     .onShown(() => {
       // 从记录页返回时恢复到最新进度
+      clearTimeout(this.flashTimer);
+      clearTimeout(this.swapTimer);
+      clearTimeout(this.enterTimer);
+      this.submitting = false;
+      this.swapping = false;
+      this.slideX = 0;
       this.loadQuestion();
     })
   }
