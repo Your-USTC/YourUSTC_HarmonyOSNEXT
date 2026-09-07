@@ -77,7 +77,7 @@ struct ThemeSetting {
   @State opacityNum: number = UnifiedPreferences.getNumberSync('OpacityLevel', 100); // 不透明度
   @State isShown: boolean = BackgroundImage.showImage; // 显示预览图片
   @State imgPreview: ResourceStr = (BackgroundImage.imgPath == '') ? $r('app.media.confused') : fileUri.getUriFromPath(BackgroundImage.imgPath); //预览图片
-  @State blurNum: BlurStyle = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.Regular); // 模糊程度常数
+  @State blurNum: BlurStyle = UnifiedPreferences.getNumberSync('BlurLevel', BlurStyle.COMPONENT_REGULAR); // 模糊程度常数
   @State imgBrightness: number = UnifiedPreferences.getNumberSync('BackgroundBrightness', 100);
   private selectResult: string | undefined = undefined; // 选择图片的结果
   private oriImgPath: string = ''; // 原始图片路径
@@ -274,12 +274,50 @@ struct ThemeSetting {
             }
             .padding({ left: 16, right: 16 });
 
+            Row() {
+              Text('预设')
+                .layoutWeight(1)
+
+              Select([{ value: '不透明' }, { value: '半透明' }, { value: '模糊' }, { value: '纯享' }, { value: '背景一致' } ])
+                .onSelect((index: number) => {
+                  switch (index) {
+                    case 0:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 100;
+                      this.imgBrightness = 100;
+                      break;
+                    case 1:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 85;
+                      this.imgBrightness = 100;
+                      break;
+                    case 2:
+                      this.showBlurSlider = true;
+                      this.blurNum = BlurStyle.COMPONENT_REGULAR;
+                      this.sliderNum = 3;
+                      break;
+                    case 3:
+                      this.showBlurSlider = true;
+                      this.blurNum = BlurStyle.NONE;
+                      this.sliderNum = 0;
+                      this.autoDecBright = true;
+                      break;
+                    case 4:
+                      this.showBlurSlider = false;
+                      this.opacityNum = 25;
+                      this.imgBrightness = 25;
+                      break;
+                  }
+                })
+            }
+            .padding({ left: 16, right: 16 });
+
             Text($r('app.string.too_large_bg_image'))
               .fontColor($r('app.color.red'))
               .fontSize(15)
               .visibility(this.showWarning ? Visibility.Visible : Visibility.None);
           }
-          .padding({ bottom: 6 })
+          .padding({ bottom: 16 })
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .borderRadius(23)
 
@@ -589,8 +627,8 @@ struct ThemeSetting {
     UnifiedPreferences.putSync('AdaptSplit', this.adaptSplit, false);
     UnifiedPreferences.flush();
     BackgroundImage.refreshDisplay();
-    // 导航模式热更新：经AppStorage同步到各页面@StorageLink('isSplit')绑定的.mode()
-    AppStorage.setOrCreate('isSplit', this.adaptSplit);
+    // 导航模式热更新：写偏好键adaptSplit（Index的.mode()绑定），实际模式仍由onNavigationModeChange写入isSplit供Webview判断
+    AppStorage.setOrCreate('adaptSplit', this.adaptSplit);
     // 不退出 this.pathStack.pop();
   }
 

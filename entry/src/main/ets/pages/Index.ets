@@ -123,8 +123,8 @@ struct Index {
     this.checkedInToday = GeneratedDestructArray_1[2];
     this.checkInContent = this.checkedInToday ? GeneratedDestructArray_1[3] : '';
     this.refreshInfo();
-    // 初始化导航模式（热更新时经AppStorage('isSplit')同步到.mode()）
-    this.isSplit = UnifiedPreferences.getNumberSync('AdaptSplit', NavigationMode.Auto);
+    // 初始化导航模式偏好（热更新时经AppStorage('adaptSplit')同步到.mode()）
+    this.adaptSplit = UnifiedPreferences.getNumberSync('AdaptSplit', NavigationMode.Auto);
     // 初始化背景
     BackgroundImage.init(hostContext());
     this.avatar = BackgroundImage.avatar;
@@ -1020,6 +1020,9 @@ struct Index {
    */
   // defPlaceholder = new ComponentContent(this.getUIContext(), wrapBuilder(SplitPlaceholder));
   pageInfo: NavPathStack = new NavPathStack();
+  // 分栏模式偏好（自适应/强制单栏），.mode()绑定此值才能保持自适应；
+  // isSplit存onNavigationModeChange回报的实际模式，供Webview等页面判断
+  @StorageLink('adaptSplit') adaptSplit: NavigationMode = NavigationMode.Auto;
   @StorageLink('isSplit') isSplit: NavigationMode = NavigationMode.Auto;
 
   build() {
@@ -1088,7 +1091,7 @@ struct Index {
       .navBarWidthRange(['336vp', '50%'])
       .hideTitleBar(true)
       .hideToolBar(true)
-      .mode(this.isSplit)
+      .mode(this.adaptSplit)
       .onNavigationModeChange((mode: NavigationMode) => {
         this.isSplit = mode;
       })
