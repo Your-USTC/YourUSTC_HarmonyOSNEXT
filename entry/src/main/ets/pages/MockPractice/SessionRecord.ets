@@ -151,7 +151,7 @@ struct SessionRecord {
       this.getUIContext().getPromptAction().showToast({ message: '没有可重做的错题', duration: 1500 });
       return;
     }
-    this.pathStack.pushPath({
+    this.pathStack.replacePath({
       name: 'MockPracticeMain',
       param: {
         bankId: this.navParam.bankId,

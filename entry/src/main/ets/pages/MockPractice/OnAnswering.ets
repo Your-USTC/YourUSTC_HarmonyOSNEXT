@@ -83,6 +83,8 @@ struct MockPracticeMain {
   @State blankCount: number = 0;
   /** 答错后停留展示正确答案与解析（所有题型统一） */
   @State showReveal: boolean = false;
+  /** 背题模式：直接展示正确答案与解析，不可作答提交 */
+  @State reciteMode: boolean = false;
   /** 当前题的收藏状态 */
   @State starred: boolean = false;
   @State optionColor: number[] = [];
@@ -136,6 +138,9 @@ struct MockPracticeMain {
       this.blankColors.push(COLOR_NONE);
     }
     this.showReveal = false;
+    if (this.reciteMode) {
+      this.markCorrectOptions();
+    }
     clearTimeout(this.flashTimer);
     this.submitting = false;
   }
@@ -309,6 +314,29 @@ struct MockPracticeMain {
     return q.type === 'blank' ? blankAnswerText(q) : q.answer;
   }
 
+  /** 背题模式：把正确选项标绿，便于直接记忆（填空题答案在揭示卡片中展示） */
+  markCorrectOptions(): void {
+    const q = this.q;
+    if (q === null || q.type === 'blank') {
+      return;
+    }
+    const answer = q.answer.trim().toUpperCase();
+    for (let i = 0; i < q.optionCount; i++) {
+      const alphabet = String.fromCharCode(65 + i);
+      const inAnswer = q.type === 'single' ? answer === alphabet : answer.includes(alphabet);
+      this.optionColor[i] = inAnswer ? COLOR_GREEN : COLOR_NONE;
+    }
+  }
+
+  /** 切换背题模式：开启后直接展示答案并清掉作答反馈，关闭则恢复作答 */
+  toggleReciteMode(): void {
+    this.reciteMode = !this.reciteMode;
+    this.clearFeedback();
+    if (this.reciteMode) {
+      this.markCorrectOptions();
+    }
+  }
+
   toggleStarCurrent(): void {
     if (this.q === null || this.submitting || this.swapping) {
       return;
@@ -353,6 +381,10 @@ struct MockPracticeMain {
   }
 
   submit(): void {
+    if (this.reciteMode) {
+      this.getUIContext().getPromptAction().showToast({ message: '背题模式下无需作答', duration: 1500 });
+      return;
+    }
     if (this.submitting || this.swapping) {
       return;
     }
@@ -441,7 +473,7 @@ struct MockPracticeMain {
   }
 
   openRecord(): void {
-    this.pathStack.pushPath({
+    this.pathStack.replacePath({
       name: 'MockPracticeRecord',
       param: {
         bankId: this.navParam.bankId,
@@ -611,6 +643,7 @@ struct MockPracticeMain {
     .backgroundBlurStyle(BackgroundImage.blurLevel)
     .margin({ top: 10 })
     .transition(TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.EaseOut }))
+    .translate({ x: this.slideX })
   }
 
   menuItems: Array<NavigationMenuItem> = [
@@ -619,6 +652,13 @@ struct MockPracticeMain {
       icon: $r('app.media.history'),
       action: () => {
         this.openSheet();
+      }
+    },
+    {
+      value: '背题模式',
+      icon: $r('app.media.lightbulb'),
+      action: () => {
+        this.toggleReciteMode();
       }
     }
   ];
@@ -749,6 +789,7 @@ struct MockPracticeMain {
                               this.blankAnswers[index] = value;
                               this.clearFeedback();
                             })
+                            .enabled(!this.reciteMode)
                         }
                         .width('100%')
                         .alignItems(VerticalAlign.Center)
@@ -789,6 +830,9 @@ struct MockPracticeMain {
                         .borderWidth(2)
                         .borderColor(this.optionBorderColor(index))
                         .onClick(() => {
+                          if (this.reciteMode) {
+                            return;
+                          }
                           if (this.q?.type === 'multiple') {
                             this.multiChoice[index] = !this.multiChoice[index];
                           } else {
@@ -802,7 +846,7 @@ struct MockPracticeMain {
                     .translate({ x: this.slideX })
                   }
 
-                  if (this.showReveal) {
+                  if (this.showReveal || this.reciteMode) {
                     this.RevealCard()
                   }
                 }
