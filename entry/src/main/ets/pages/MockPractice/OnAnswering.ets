@@ -8,6 +8,8 @@ import {
   AnswerStatus
 } from '../../utils/MockPractice/constants';
 import { blankCountOf, judgeBlankAnswer, blankAnswerText, BLANK_JOINER } from '../../utils/MockPractice/BlankJudge';
+import { ActionBarButton, ActionBarStyle, HdsActionBar } from '@kit.UIDesignKit';
+import { LengthUnit } from '@kit.ArkUI';
 
 
 @Builder
@@ -559,7 +561,8 @@ struct MockPracticeMain {
       }
       .width('100%')
       .justifyContent(FlexAlign.Center)
-      .margin({ top: 4 })
+      .margin({ top: 3 })
+      .height('15vp')
 
       Grid() {
         LazyForEach(this.sheetSource, (st: questionStatus) => {
@@ -580,7 +583,7 @@ struct MockPracticeMain {
       .margin({ top: 8 })
     }
     .width('100%')
-    .height('100%')
+    .height('calc(100% - 14vp)')
   }
 
   /** 答错后的揭示卡片：正确答案与解析 */
@@ -609,6 +612,16 @@ struct MockPracticeMain {
     .margin({ top: 10 })
     .transition(TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.EaseOut }))
   }
+
+  menuItems: Array<NavigationMenuItem> = [
+    {
+      value: $r('app.string.refresh'),
+      icon: $r('app.media.history'),
+      action: () => {
+        this.openSheet();
+      }
+    }
+  ];
 
   build() {
     NavDestination() {
@@ -822,41 +835,18 @@ struct MockPracticeMain {
               this.handlePanEnd(event.offsetX);
             }))
 
-          Row() {
-            Button('答题卡')
-              .buttonStyle(ButtonStyleMode.TEXTUAL)
-              .onClick(() => {
-                this.openSheet();
-              })
-            Button('上一题')
-              .buttonStyle(ButtonStyleMode.TEXTUAL)
-              .enabled(this.current > 0)
-              .onClick(() => {
-                this.navigateTo(-1);
-              })
-
-            Button('提交')
-              .buttonStyle(ButtonStyleMode.EMPHASIZED)
-              .onClick(() => {
-                this.submit();
-              })
-            Button('下一题')
-              .buttonStyle(ButtonStyleMode.TEXTUAL)
-              .enabled(this.current + 1 < this.total)
-              .onClick(() => {
-                this.navigateTo(1);
-              })
-          }
-          .justifyContent(FlexAlign.SpaceBetween)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-          .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined)
-          .backgroundBlurStyle(BackgroundImage.blurLevel)
-          .width('100%')
-          .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+          HdsActionBar({
+            startButtons: [new ActionBarButton({ baseIcon: $r('app.media.arrow_left'), onClick: () => this.navigateTo(-1) })],
+            primaryButton: new ActionBarButton({ baseIcon: $r('app.media.send'), onClick: () => this.submit() }),
+            endButtons: [new ActionBarButton({ baseIcon: $r('app.media.arrow_right'), onClick: () => this.navigateTo(1) })],
+            isExpand: true,
+            actionBarStyle: new ActionBarStyle({ backgroundBlurStyle: BackgroundImage.blurLevel, margin: { value: 8, unit: LengthUnit.VP} })
+          })
           .bindSheet(this.sheetOpen, this.AnswerSheetBuilder(), {
-            height: '45%',
+            detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+            preferType: SheetType.SIDE,
             showClose: true,
-            dragBar: false,
+            dragBar: true,
             title: { title: '答题卡' },
             onDisappear: (): void => {
               this.sheetOpen = false;
@@ -871,6 +861,7 @@ struct MockPracticeMain {
       backgroundBlurStyle: BackgroundImage.blurLevel,
       backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
     })
+    .menus(this.menuItems)
     .backButtonIcon($r('app.media.close'))
     .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))
     .onReady((context: NavDestinationContext) => {
