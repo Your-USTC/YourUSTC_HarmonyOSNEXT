@@ -5,6 +5,7 @@ export default struct RenameDialog {
   controller: CustomDialogController;
   name: string = '';
   onConfirm: (newName: string) => void = () => {};
+  message: ResourceStr = '';
 
   build() {
     Column() {
@@ -21,7 +22,7 @@ export default struct RenameDialog {
       }
       .margin({ bottom: 5 })
 
-      Text($r('app.string.rename_semester', this.name))
+      Text(this.message)
         .margin({ bottom: 5 })
         .width('90%')
 

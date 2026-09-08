@@ -680,9 +680,11 @@ struct Schedule {
                 .height(40)
                 .width(40)
                 .onClick(() => {
+                  const semName = this.semesters[index].name;
                   this.renameController = new CustomDialogController({
                     builder: RenameDialog({
-                      name: this.semesters[index].name,
+                      name: semName,
+                      message: $r('app.string.rename_semester', semName),
                       onConfirm: (newName: string) => {
                         if (index === this.displayTerm) {
                           this.displayName = newName;
