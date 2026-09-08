@@ -7,6 +7,7 @@ import {
   questionStatus,
   AnswerStatus
 } from '../../utils/MockPractice/constants';
+import { blankCountOf, judgeBlankAnswer, blankAnswerText, BLANK_JOINER } from '../../utils/MockPractice/BlankJudge';
 
 
 @Builder
@@ -19,6 +20,8 @@ const COLOR_GREEN = 0;
 const COLOR_RED = 1;
 const COLOR_YELLOW = 2;
 const COLOR_NONE = 3;
+/** 收藏与答错反馈共用的强调色 */
+const STAR_COLOR: string = '#f59e0b';
 
 /** 答题卡格子数据源：配合 LazyForEach 懒创建格子，避免题多时打开弹层一次性建满全部格子而掉帧 */
 class SheetStatusSource implements IDataSource {
@@ -72,7 +75,14 @@ struct MockPracticeMain {
   @State summary: sessionSummary | null = null;
   @State singleChoice: number = -1;
   @State multiChoice: boolean[] = [];
-  @State textAnswer: string = '';
+  /** 填空题各空的输入与反馈着色（下标即空序），blankCount 为空数（非填空题为 0） */
+  @State blankAnswers: string[] = [];
+  @State blankColors: number[] = [];
+  @State blankCount: number = 0;
+  /** 答错后停留展示正确答案与解析（所有题型统一） */
+  @State showReveal: boolean = false;
+  /** 当前题的收藏状态 */
+  @State starred: boolean = false;
   @State optionColor: number[] = [];
   /** 答题区横向位移：切题时旧题滑出、新题从另一侧滑入 */
   @State slideX: number = 0;
@@ -106,6 +116,7 @@ struct MockPracticeMain {
     }
     const optionCount = question.type === 'blank' ? 0 : question.optionCount;
     this.q = question;
+    this.starred = answerStore.currentStarred(this.navParam.bankId, this.navParam.sessionId);
     this.singleChoice = -1;
     this.multiChoice = [];
     for (let i = 0; i < optionCount; i++) {
@@ -115,7 +126,14 @@ struct MockPracticeMain {
     for (let i = 0; i < optionCount; i++) {
       this.optionColor.push(COLOR_NONE);
     }
-    this.textAnswer = '';
+    this.blankCount = question.type === 'blank' ? blankCountOf(question.context) : 0;
+    this.blankAnswers = [];
+    this.blankColors = [];
+    for (let i = 0; i < this.blankCount; i++) {
+      this.blankAnswers.push('');
+      this.blankColors.push(COLOR_NONE);
+    }
+    this.showReveal = false;
     clearTimeout(this.flashTimer);
     this.submitting = false;
   }
@@ -129,12 +147,20 @@ struct MockPracticeMain {
   }
 
   clearFeedback(): void {
-    if (this.q !== null) {
-      const optionCount = this.q.type === 'blank' ? 0 : this.q.optionCount;
-      this.optionColor = [];
-      for (let i = 0; i < optionCount; i++) {
-        this.optionColor.push(COLOR_NONE);
+    if (this.q === null) {
+      return;
+    }
+    this.showReveal = false;
+    if (this.q.type === 'blank') {
+      this.blankColors = [];
+      for (let i = 0; i < this.blankCount; i++) {
+        this.blankColors.push(COLOR_NONE);
       }
+      return;
+    }
+    this.optionColor = [];
+    for (let i = 0; i < this.q.optionCount; i++) {
+      this.optionColor.push(COLOR_NONE);
     }
   }
 
@@ -171,7 +197,15 @@ struct MockPracticeMain {
           this.optionColor[i] = COLOR_NONE;
         }
       }
+    } else {
+      // 填空题：逐空着色
+      const result = judgeBlankAnswer(q, this.blankAnswers);
+      for (let i = 0; i < this.blankCount; i++) {
+        this.blankColors[i] = result.perBlank[i] ? COLOR_GREEN : COLOR_RED;
+      }
     }
+    // 答错时停留展示正确答案与解析
+    this.showReveal = !isCorrect;
   }
 
   /** 选项背景：无反馈时保持原底色，有反馈时着对错色 */
@@ -181,6 +215,103 @@ struct MockPracticeMain {
       return BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined;
     }
     return answerColor[color];
+  }
+
+  /** 选项边框颜色：选中时高亮，其余透明（保持恒定边宽避免选中时跳动） */
+  optionBorderColor(index: number): ResourceColor {
+    const q = this.q;
+    if (q === null) {
+      return Color.Transparent;
+    }
+    const selected = (q.type === 'multiple' && this.multiChoice[index] === true)
+      || (q.type === 'single' && this.singleChoice === index);
+    return selected ? $r('app.color.active_text') : Color.Transparent;
+  }
+
+  /** 选项文字颜色：绿/红反馈底色上改用白色保证对比度 */
+  optionFontColor(index: number): ResourceColor {
+    const color = this.optionColor[index];
+    if (color === COLOR_GREEN || color === COLOR_RED) {
+      return '#FFFFFF';
+    }
+    return $r('app.color.normal_text');
+  }
+
+  /** 填空输入框背景：无反馈时用输入框默认底色，有反馈时着对错色 */
+  blankBg(index: number): Resource | string | undefined {
+    const color = this.blankColors[index];
+    if (color === undefined || color === COLOR_NONE) {
+      return undefined;
+    }
+    return answerColor[color];
+  }
+
+  /** 填空输入文字颜色：绿/红反馈底色上改用白色保证对比度 */
+  blankFontColor(index: number): ResourceColor {
+    const color = this.blankColors[index];
+    if (color === COLOR_GREEN || color === COLOR_RED) {
+      return '#FFFFFF';
+    }
+    return $r('app.color.normal_text');
+  }
+
+  /** 题型标签 */
+  typeLabel(): string {
+    const q = this.q;
+    if (q === null) {
+      return '';
+    }
+    if (q.type === 'multiple') {
+      return '多选题';
+    }
+    if (q.type === 'blank') {
+      return '填空题';
+    }
+    return '单选题';
+  }
+
+  sectionText(): string {
+    const q = this.q;
+    return q !== null && q.section !== undefined ? q.section : '';
+  }
+
+  difficultyText(): string {
+    const q = this.q;
+    return q !== null && q.difficulty !== undefined ? q.difficulty : '';
+  }
+
+  knowledgePointText(): string {
+    const q = this.q;
+    return q !== null && q.knowledgePoint !== undefined ? q.knowledgePoint : '';
+  }
+
+  analysisText(): string {
+    const q = this.q;
+    return q !== null && q.analysis !== undefined ? q.analysis : '';
+  }
+
+  /** 头部进度条的完成百分比（与 1/total 计数一致）
+  progressPercent(): number {
+    if (this.total <= 0) {
+      return 0;
+    }
+    return Math.round(((this.current + 1) / this.total) * 100);
+  } */
+
+  /** 正确答案展示文本：填空题把选项字母引用替换为对应选项内容 */
+  correctAnswerText(): string {
+    const q = this.q;
+    if (q === null) {
+      return '';
+    }
+    return q.type === 'blank' ? blankAnswerText(q) : q.answer;
+  }
+
+  toggleStarCurrent(): void {
+    if (this.q === null || this.submitting || this.swapping) {
+      return;
+    }
+    this.starred = answerStore.toggleCurrentStar(this.navParam.bankId, this.navParam.sessionId);
   }
 
   buildUserAnswer(): string {
@@ -208,12 +339,15 @@ struct MockPracticeMain {
       }
       return picked.join('');
     }
-    const text = this.textAnswer.trim();
-    if (text === '') {
-      this.getUIContext().getPromptAction().showToast({ message: '请输入答案', duration: 1500 });
-      return '';
+    // 填空题：各空都填后以「；」拼接提交
+    for (let i = 0; i < this.blankCount; i++) {
+      if (this.blankAnswers[i].trim() === '') {
+        const tip = this.blankCount > 1 ? `请填写第 ${i + 1} 空` : '请输入答案';
+        this.getUIContext().getPromptAction().showToast({ message: tip, duration: 1500 });
+        return '';
+      }
     }
-    return text;
+    return this.blankAnswers.join(BLANK_JOINER);
   }
 
   submit(): void {
@@ -225,7 +359,7 @@ struct MockPracticeMain {
       return;
     }
     const isCorrect = answerStore.submitAnswer(this.navParam.bankId, this.navParam.sessionId, userAnswer);
-    // 选项着色与反馈文本一同渐入
+    // 选项着色、答错揭示正确答案与解析：一同渐入
     this.getUIContext().animateTo({ curve: Curve.EaseOut, duration: 200 }, () => {
       this.applyFeedback(isCorrect);
     });
@@ -352,6 +486,28 @@ struct MockPracticeMain {
     clearTimeout(this.enterTimer);
   }
 
+  /** 卡片底色：背景图模式下保持透明（配合毛玻璃），否则用不透明卡片色 */
+  cardBg(): Resource | string | undefined {
+    return BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined;
+  }
+
+  @Builder
+  MetaChip(text: string, highlight: boolean) {
+    Text(text)
+      .fontSize(11)
+      .fontWeight(FontWeight.Medium)
+      .fontColor(highlight ? $r('app.color.active_text') : $r('app.color.transparent_text'))
+      .maxLines(1)
+      .textOverflow({ overflow: TextOverflow.Ellipsis })
+      .constraintSize({ maxWidth: '100%' })
+      .padding({ left: 8, right: 8, top: 3, bottom: 3 })
+      .borderRadius(10)
+      .backgroundColor(highlight
+        ? $r('app.color.list_item_count_background')
+        : $r('app.color.grid_border'))
+      .margin({ right: 6, top: 4 })
+  }
+
   @Builder
   LegendItem(colorIndex: number, label: string) {
     Row() {
@@ -427,6 +583,33 @@ struct MockPracticeMain {
     .height('100%')
   }
 
+  /** 答错后的揭示卡片：正确答案与解析 */
+  @Builder
+  RevealCard() {
+    Column({ space: 6 }) {
+      Text(`正确答案：${this.correctAnswerText()}`)
+        .fontSize(14)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(STAR_COLOR)
+        .width('100%')
+      if (this.analysisText().trim() !== '') {
+        Text(`解析：${this.analysisText()}`)
+          .fontSize(13)
+          .lineHeight(19)
+          .fontColor($r('app.color.transparent_text'))
+          .width('100%')
+      }
+    }
+    .alignItems(HorizontalAlign.Start)
+    .width('100%')
+    .padding(14)
+    .borderRadius(16)
+    .backgroundColor(this.cardBg())
+    .backgroundBlurStyle(BackgroundImage.blurLevel)
+    .margin({ top: 10 })
+    .transition(TransitionEffect.OPACITY.animation({ duration: 200, curve: Curve.EaseOut }))
+  }
+
   build() {
     NavDestination() {
       Column() {
@@ -479,71 +662,155 @@ struct MockPracticeMain {
           Column() {
             Scroll() {
               Column() {
-                Text() {
-                  Span(`${this.current + 1}/${this.total}  `)
-                    .fontSize(20)
-                    .fontWeight(FontWeight.Bold)
-                  Span(this.q?.context || '')
-                }
-                .width('100%')
-                .constraintSize({ minHeight: 60 })
-                .padding(12)
-                .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
-                .borderRadius(20)
+                // 题目卡片：进度与收藏、元信息标签、题干、进度条
+                Column() {
+                  Row() {
+                    Text(`${this.current + 1}/${this.total}`)
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor($r('app.color.normal_text'))
+                      .layoutWeight(1)
+                    Text(this.starred ? '★' : '☆')
+                      .fontSize(22)
+                      .fontColor(this.starred ? STAR_COLOR : $r('app.color.transparent_text'))
+                      .padding({ left: 8, top: 2, bottom: 2 })
+                      .onClick(() => {
+                        this.toggleStarCurrent();
+                      })
+                  }
+                  .width('100%')
 
-                Blank().layoutWeight(1)
+                  Flex({ wrap: FlexWrap.Wrap }) {
+                    this.MetaChip(this.typeLabel(), true)
+                    if (this.sectionText().trim() !== '') {
+                      this.MetaChip(`章节：${this.sectionText()}`, false)
+                    }
+                    if (this.difficultyText().trim() !== '') {
+                      this.MetaChip(`难度：${this.difficultyText()}`, false)
+                    }
+                    if (this.knowledgePointText().trim() !== '') {
+                      this.MetaChip(`知识点：${this.knowledgePointText()}`, false)
+                    }
+                  }
+                  .width('100%')
+                  .margin({ top: 8 })
+
+                  Progress({ value: this.current + 1, total: this.total, type: ProgressType.Linear })
+                    .margin({ top: 12 })
+
+                  Text(this.q?.context || '')
+                    .fontSize(16)
+                    .lineHeight(24)
+                    .fontColor($r('app.color.normal_text'))
+                    .width('100%')
+                    .margin({ top: 10 })
+                }
+                .alignItems(HorizontalAlign.Start)
+                .width('100%')
+                .padding(14)
+                .borderRadius(20)
+                .backgroundColor(this.cardBg())
+                .backgroundBlurStyle(BackgroundImage.blurLevel)
+
+                Column() {
+                  if (this.q?.type === 'blank') {
+                    Column({ space: 8 }) {
+                      ForEach(this.blankAnswers, (_answer: string, index: number) => {
+                        Row() {
+                          if (this.blankCount > 1) {
+                            Text(`第${index + 1}空`)
+                              .fontSize(13)
+                              .fontWeight(FontWeight.Medium)
+                              .fontColor($r('app.color.transparent_text'))
+                          }
+                          TextInput({
+                            text: this.blankAnswers[index],
+                            placeholder: this.blankCount > 1 ? `第 ${index + 1} 空的答案` : '请输入答案'
+                          })
+                            .layoutWeight(1)
+                            .fontSize(15)
+                            .fontColor(this.blankFontColor(index))
+                            .backgroundColor(this.blankBg(index))
+                            .margin({ left: this.blankCount > 1 ? 8 : 0 })
+                            .onChange((value: string) => {
+                              this.blankAnswers[index] = value;
+                              this.clearFeedback();
+                            })
+                        }
+                        .width('100%')
+                        .alignItems(VerticalAlign.Center)
+                      }, (_answer: string, index: number) => `${this.current}-${index}-${this.blankCount}`)
+                    }
+                    .width('100%')
+                    .translate({ x: this.slideX })
+                  } else {
+                    Column({ space: 8 }) {
+                      ForEach(this.q?.options || [], (optionContext: string, index: number) => {
+                        Row() {
+                          Text(String.fromCharCode(65 + index))
+                            .width(24)
+                            .height(24)
+                            .borderRadius(12)
+                            .backgroundColor($r('app.color.grid_border'))
+                            .fontSize(13)
+                            .fontWeight(FontWeight.Bold)
+                            .fontColor($r('app.color.transparent_text'))
+                            .textAlign(TextAlign.Center)
+                          Text(optionContext)
+                            .fontSize(15)
+                            .lineHeight(21)
+                            .fontColor(this.optionFontColor(index))
+                            .layoutWeight(1)
+                            .margin({ left: 10 })
+                        }
+                        .width('100%')
+                        .padding({
+                          left: 14,
+                          right: 14,
+                          top: 9,
+                          bottom: 9
+                        })
+                        .borderRadius(16)
+                        .constraintSize({ minHeight: 44 })
+                        .backgroundColor(this.optionBg(index))
+                        .borderWidth(2)
+                        .borderColor(this.optionBorderColor(index))
+                        .onClick(() => {
+                          if (this.q?.type === 'multiple') {
+                            this.multiChoice[index] = !this.multiChoice[index];
+                          } else {
+                            this.singleChoice = index;
+                          }
+                          this.clearFeedback();
+                        })
+                      }, (optionContext: string, index: number) => `${this.current}-${index}-${optionContext}`)
+                    }
+                    .width('100%')
+                    .translate({ x: this.slideX })
+                  }
+
+                  if (this.showReveal) {
+                    this.RevealCard()
+                  }
+                }
+                .margin({ top: 10 })
+                .borderRadius(16)
+                .clip(true)
+                .width('100%')
               }
               .width('100%')
             }
             .width('calc(100% - 24vp)')
-            .borderRadius(20)
-            .margin({ top: 12, left: 12, right: 12 })
+            .height('100%')
+            .borderRadius(16)
+            .margin(12)
+            .align(Alignment.Top)
+            .scrollBar(BarState.Auto)
+            .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
             .layoutWeight(1)
-
-            if (this.q?.type === 'blank') {
-              TextInput({ text: this.textAnswer, placeholder: '请输入答案' })
-                .margin({ left: 12, right: 12, top: 8 })
-                .onChange((value: string) => {
-                  this.textAnswer = value;
-                  this.clearFeedback();
-                })
-            } else {
-              Column() {
-                ForEach(this.q?.options || [], (optionContext: string, index: number) => {
-                  Row() {
-                    Text(String.fromCharCode(65 + index))
-                      .fontWeight(FontWeight.Bold)
-                      .margin({ left: 10, right: 10 })
-                    Text(optionContext)
-                      .layoutWeight(1)
-                  }
-                  .padding(4)
-                  .borderWidth((this.q?.type === 'multiple' && this.multiChoice[index])
-                    || (this.q?.type === 'single' && this.singleChoice === index)
-                    ? 3 : undefined)
-                  .constraintSize({ minHeight: 40 })
-                  .width('100%')
-                  .justifyContent(FlexAlign.Start)
-                  .backgroundColor(this.optionBg(index))
-                  .borderRadius(20)
-                  .margin({ top: 8, bottom: 6 })
-                  .onClick(() => {
-                    if (this.q?.type === 'multiple') {
-                      this.multiChoice[index] = !this.multiChoice[index];
-                    } else {
-                      this.singleChoice = index;
-                    }
-                    this.clearFeedback();
-                  })
-                }, (optionContext: string, index: number) => `${this.current}-${index}-${optionContext}`)
-              }
-              .padding({ left: 12, right: 12 })
-              .width('100%')
-            }
           }
           .width('100%')
           .layoutWeight(1)
-          .translate({ x: this.slideX })
           .onSizeChange((_oldValue: SizeOptions, newValue: SizeOptions) => {
             this.contentWidth = newValue.width as number;
           })
@@ -585,7 +852,7 @@ struct MockPracticeMain {
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .width('100%')
-          .padding({ top: 6, bottom: 6 })
+          .padding({ left: 16, right: 16, top: 6, bottom: 6 })
           .bindSheet(this.sheetOpen, this.AnswerSheetBuilder(), {
             height: '45%',
             showClose: true,

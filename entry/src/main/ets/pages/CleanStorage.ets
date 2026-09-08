@@ -132,7 +132,7 @@ struct CleanStorage {
           .alignItems(HorizontalAlign.Start)
           .width('100%')
           .padding(16)
-          .borderRadius(23)
+          .borderRadius(20)
           .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.grid_background') : undefined)
           .backgroundBlurStyle(BackgroundImage.blurLevel)
 

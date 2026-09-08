@@ -19,6 +19,7 @@ import {
   SessionOrigin
 } from './constants';
 import { bankStore } from './QuestionBankManager';
+import { judgeBlankAnswer, BLANK_JOINER } from './BlankJudge';
 import { fileIo } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 
@@ -223,8 +224,14 @@ class AnswerSessionStore {
       return false;
     }
 
-    const correctAnswer = questions[qIndex].answer.trim().toUpperCase();
-    const isCorrect = userAnswer.trim().toUpperCase() === correctAnswer;
+    const question = questions[qIndex];
+    let isCorrect: boolean;
+    if (question.type === 'blank') {
+      // 填空题各空输入以「；」拼接提交，逐空判定
+      isCorrect = judgeBlankAnswer(question, userAnswer.split(BLANK_JOINER)).isCorrect;
+    } else {
+      isCorrect = userAnswer.trim().toUpperCase() === question.answer.trim().toUpperCase();
+    }
 
     session.answers.push({
       questionIndex: qIndex,
@@ -274,6 +281,27 @@ class AnswerSessionStore {
     }
     session.marks[questionIndex].starred = !session.marks[questionIndex].starred;
     this.persist(bankId);
+  }
+
+  /** 当前作答位置题目的收藏状态；无有效作答位置时为 false */
+  currentStarred(bankId: string, sessionId: string): boolean {
+    const session = this.getSession(bankId, sessionId);
+    if (session === null || session.currentIndex >= session.questionNO.length) {
+      return false;
+    }
+    const qIndex = session.questionNO[session.currentIndex];
+    return session.marks[qIndex] !== undefined && session.marks[qIndex].starred;
+  }
+
+  /** 收藏/取消收藏当前作答位置的题目，返回操作后的收藏状态 */
+  toggleCurrentStar(bankId: string, sessionId: string): boolean {
+    const session = this.getSession(bankId, sessionId);
+    if (session === null || session.currentIndex >= session.questionNO.length) {
+      return false;
+    }
+    const qIndex = session.questionNO[session.currentIndex];
+    this.toggleStar(bankId, sessionId, qIndex);
+    return session.marks[qIndex] !== undefined && session.marks[qIndex].starred;
   }
 
   deleteSession(bankId: string, sessionId: string): void {

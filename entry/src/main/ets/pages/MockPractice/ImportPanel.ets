@@ -9,6 +9,7 @@ import {
   getObjectFromCsv,
   parseCsvLine
 } from '../../utils/MockPractice/DataTransformer';
+import { blankAnswerText } from '../../utils/MockPractice/BlankJudge';
 
 const FIELD_KEYS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 const FIELD_LABELS: string[] = ['章节', '题型', '题目', '答案', '解析', '难度', '知识点', '选项个数', '选项起始列'];
@@ -180,7 +181,8 @@ export struct CsvImportPanel {
       }
       text += `\n选项：${optionTexts.join('　')}`;
     }
-    text += `\n答案：${q.answer === '' ? '（空）' : q.answer}`;
+    const answerText = q.type === 'blank' ? blankAnswerText(q) : q.answer;
+    text += `\n答案：${q.answer === '' ? '（空）' : answerText}`;
     return text;
   }
 
@@ -254,6 +256,12 @@ export struct CsvImportPanel {
           .width('100%')
 
           Text('「题目」与「答案」为必选；题型未指定时将按选项个数与答案格式自动判断')
+            .fontSize(12)
+            .fontColor($r('app.color.transparent_text'))
+            .width('100%')
+            .margin({ top: 4 })
+
+          Text('填空题：题干用 ___（三个及以上下划线）表示空；答案多空用「；」分隔、单空多解用「|」分隔；答案也可填选项字母（如 A）引用选项内容')
             .fontSize(12)
             .fontColor($r('app.color.transparent_text'))
             .width('100%')
