@@ -1,5 +1,5 @@
 
-import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { AbilityConstant, Configuration, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { router, window } from '@kit.ArkUI';
 
@@ -8,6 +8,7 @@ import * as FunctionOrder from '../utils/FunctionOrder';
 import * as ScheduleStorage from '../utils/ScheduleStorage';
 import * as ExamStorage from '../utils/ExamStorage';
 import { migrate } from '../utils/MigrationManager';
+import BackgroundImage from '../utils/BgImageManager';
 
 const DOMAIN = 0x0000;
 
@@ -19,15 +20,21 @@ export default class EntryAbility extends UIAbility {
     } catch (error) {
       console.error('onCreate ERROR: ' + JSON.stringify(error))
     }
-    UnifiedPreferences.init(this.context);
+    UnifiedPreferences.init(this.context); // 最先加载确保能读取配置
     FunctionOrder.init(this.context);
     ScheduleStorage.init(this.context);
     ExamStorage.init(this.context);
+    BackgroundImage.init(this.context);
     migrate();
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     if (want?.parameters?.router) {
       this.routerPath = want.parameters.router.toString();
     }
+  }
+
+  // 跟随系统时深浅色变化通过此回调同步darkMode缓存（手动setColorMode不触发，由ThemeSetting自行同步）
+  onConfigurationUpdate(newConfig: Configuration): void {
+    BackgroundImage.syncDarkMode(this.context);
   }
 
   onDestroy(): void {

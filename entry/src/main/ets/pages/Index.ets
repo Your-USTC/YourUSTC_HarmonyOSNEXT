@@ -158,13 +158,13 @@ struct Index {
           ListItem() {
             Column() {
               Text(item.title)
-                .fontColor(this.currentListIndex === index ? presetColor[BackgroundImage.themeColor][2] : $r('app.color.normal_text'))
+                .fontColor(this.currentListIndex === index ? presetColor[BackgroundImage.themeColor].accentColor : $r('app.color.normal_text'))
                 .fontSize('16fp')
                 .fontWeight(this.currentListIndex === index ? FontWeight.Bold : FontWeight.Normal)
                 .margin({ top: '15vp' })
 
               Divider()
-                .color(presetColor[BackgroundImage.themeColor][2])
+                .color(presetColor[BackgroundImage.themeColor].accentColor)
                 .strokeWidth(2)
                 .width(this.getUIContext().getMeasureUtils().measureText({ textContent: item.title, fontSize: '16fp' }).toString() + 'px')
                 .margin({ top: '4vp' })
@@ -221,31 +221,31 @@ struct Index {
           .draggable(false)
       } else if (item.id === 1) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showCheckIn })
-          .selectedColor(presetColor[BackgroundImage.themeColor][2])
+          .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onChange((value: boolean) => {
             UnifiedPreferences.putSync('showCheckIn', value);
           });
       } else if (item.id === 2) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.showRecentCourse })
-          .selectedColor(presetColor[BackgroundImage.themeColor][2])
+          .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onChange((value: boolean) => {
             UnifiedPreferences.putSync('showRecentCourse', value);
           });
       } else if (item.id === 3){
         Toggle({ type: ToggleType.Switch, isOn: $$this.showExamDetail })
-          .selectedColor(presetColor[BackgroundImage.themeColor][2])
+          .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onChange((value: boolean) => {
             UnifiedPreferences.putSync('showExamDetail', value);
           });
       } else if (item.id === 6) {
         Toggle({ type: ToggleType.Switch, isOn: $$this.webAutoDarkMode })
-          .selectedColor(presetColor[BackgroundImage.themeColor][2])
+          .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onChange((value: boolean) => {
             UnifiedPreferences.putSync('webAutoDarkMode', value);
           });
       } else { // item.id === 8
         Toggle({ type: ToggleType.Switch, isOn: $$this.webBackPress })
-          .selectedColor(presetColor[BackgroundImage.themeColor][2])
+          .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onChange((value: boolean) => {
             UnifiedPreferences.putSync('webBackPress', value);
           });

@@ -308,7 +308,7 @@ struct ExamDetail {
           Text($r('app.string.class_detail_priority'));
           Slider({ min: 0, max: 10, value: this.oriExamInfo.importance, step: 1, style: SliderStyle.InSet })
             .showSteps(true)
-            .selectedColor(presetColor[BackgroundImage.themeColor][2])
+            .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
             .layoutWeight(1)
             .onChange((value: number) => {
               this.newExamInfo.importance = value;
@@ -592,7 +592,7 @@ struct ExamDetail {
     }
     .title({ main: $r('app.string.exam_detail'), sub: '\udb80\udfd5 '+ this.currentTime.toLocaleString('zh-cn', FULL_TIME_FORMAT)}, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })
     .backButtonIcon($r('app.media.close'))
     .menus(this.menuItems)

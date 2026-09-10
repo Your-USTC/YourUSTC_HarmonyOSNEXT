@@ -21,66 +21,6 @@
       "value": "#AAF3F3F3"
     },
     {
-      "name": "shaded_background0",
-      "value": "#BEDCF0"
-    },
-    {
-      "name": "shaded_background1",
-      "value": "#D7CDF0"
-    },
-    {
-      "name": "shaded_background2",
-      "value": "#E6E6FA"
-    },
-    {
-      "name": "shaded_background3",
-      "value": "#ECEFF1"
-    },
-    {
-      "name": "shaded_background4",
-      "value": "#F8F9FA"
-    },
-    {
-      "name": "shaded_background5",
-      "value": "#F5D7D7"
-    },
-    {
-      "name": "shaded_background6",
-      "value": "#FFF0F6"
-    },
-    {
-      "name": "shaded_background7",
-      "value": "#FFD1D1"
-    },
-    {
-      "name": "shaded_background8",
-      "value": "#FFF4E0"
-    },
-    {
-      "name": "shaded_background9",
-      "value": "#FFDAB9"
-    },
-    {
-      "name": "shaded_background10",
-      "value": "#FFF9C4"
-    },
-    {
-      "name": "shaded_background11",
-      "value": "#FAFAD2"
-    },
-    {
-      "name": "shaded_background12",
-      "value": "#BEF0C8"
-    },
-    {
-      "name": "shaded_background13",
-      "value": "#F0FFF0"
-    },
-    {
-      "name": "shaded_background14",
-      "value": "#E0F7FA"
-    },
-    {
       "name": "grid_background",
       "value": "#FFFFFF"
     },

@@ -72,7 +72,7 @@ struct CheckinGallery {
                 .renderFit(RenderFit.RESIZE_COVER)
               Row()
                 .width(`${this.RPercent}%`)
-                .backgroundColor(presetColor[BackgroundImage.themeColor][2])
+                .backgroundColor(presetColor[BackgroundImage.themeColor].accentColor)
                 .height(70)
                 .renderFit(RenderFit.RESIZE_COVER)
             }
@@ -115,7 +115,7 @@ struct CheckinGallery {
     }
     .title({ main: $r('app.string.archive'), sub: $r('app.string.unlock_item_num', CheckInTools.getCollectionNumber(), CheckInTools.CHECK_IN_CONTENT_LIST.length) }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })
     .menus(this.menuItems)
     .backButtonIcon($r('app.media.close'))

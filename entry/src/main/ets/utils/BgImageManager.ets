@@ -6,23 +6,30 @@ import { image } from '@kit.ImageKit';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { resourceManager } from '@kit.LocalizationKit';
 
+export interface iPresetColor {
+  lightBgColor: string;
+  darkBgColor: string;
+  accentColor: string;
+  name: string;
+}
+
 // [浅色标题背景，深色标题背景，通用按钮和进度条背景]
-export const presetColor: string[][] = [
-  ['#BEDCF0', '#102542', '#4A90E2', '冰山蓝调'],
-  ['#D7CDF0', '#2A3166', '#6B5B9A', '深海回音'],
-  ['#E6E6FA', '#4B0082', '#9B6BB6', '薰衣草田'],
-  ['#ECEFF1', '#263238', '#5F7A8A', '冷石流云'],
-  ['#F8F9FA', '#202124', '#5F6368', '纸墨绘世'],
-  ['#F5D7D7', '#A11616', '#D81B60', '桃启绯英'],
-  ['#FFF0F6', '#831843', '#EC407A', '樱吹甜心'],
-  ['#FFD1D1', '#822727', '#B84D4D', '雪映残梅'],
-  ['#FFF4E0', '#8B4513', '#C37B4A', '古卷檀香'],
-  ['#FFDAB9', '#B94E2E', '#E07A4F', '落日熔金'],
-  ['#FFF9C4', '#F57F17', '#F9A825', '流光掠影'],
-  ['#FAFAD2', '#7A5B00', '#B8860B', '雨润杏帘'],
-  ['#BEF0C8', '#556B2F', '#7C9C5E', '森屿青柠'],
-  ['#F0FFF0', '#1B5E20', '#4C8B4C', '竹林月夜'],
-  ['#E0F7FA', '#006064', '#2C8B9A', '青琉碧落']
+export const presetColor: iPresetColor[] = [
+  { lightBgColor: '#BEDCF0', darkBgColor: '#102542', accentColor: '#4A90E2', name: '冰山蓝调'},
+  { lightBgColor: '#D7CDF0', darkBgColor: '#2A3166', accentColor: '#6B5B9A', name: '深海回音'},
+  { lightBgColor: '#E6E6FA', darkBgColor: '#4B0082', accentColor: '#9B6BB6', name: '薰衣草田'},
+  { lightBgColor: '#ECEFF1', darkBgColor: '#263238', accentColor: '#5F7A8A', name: '冷石流云'},
+  { lightBgColor: '#F8F9FA', darkBgColor: '#202124', accentColor: '#5F6368', name: '纸墨绘世'},
+  { lightBgColor: '#F5D7D7', darkBgColor: '#A11616', accentColor: '#D81B60', name: '桃启绯英'},
+  { lightBgColor: '#FFF0F6', darkBgColor: '#831843', accentColor: '#EC407A', name: '樱吹甜心'},
+  { lightBgColor: '#FFD1D1', darkBgColor: '#822727', accentColor: '#B84D4D', name: '雪映残梅'},
+  { lightBgColor: '#FFF4E0', darkBgColor: '#8B4513', accentColor: '#C37B4A', name: '古卷檀香'},
+  { lightBgColor: '#FFDAB9', darkBgColor: '#B94E2E', accentColor: '#E07A4F', name: '落日熔金'},
+  { lightBgColor: '#FFF9C4', darkBgColor: '#F57F17', accentColor: '#F9A825', name: '流光掠影'},
+  { lightBgColor: '#FAFAD2', darkBgColor: '#7A5B00', accentColor: '#B8860B', name: '雨润杏帘'},
+  { lightBgColor: '#BEF0C8', darkBgColor: '#556B2F', accentColor: '#7C9C5E', name: '森屿青柠'},
+  { lightBgColor: '#F0FFF0', darkBgColor: '#1B5E20', accentColor: '#4C8B4C', name: '竹林月夜'},
+  { lightBgColor: '#E0F7FA', darkBgColor: '#006064', accentColor: '#2C8B9A', name: '青琉碧落'}
 ];
 
 // 深色模式下背景图的目标平均亮度（0-255）与自动调节系数下限
@@ -33,19 +40,28 @@ const DARK_MIN_FACTOR: number = 0.3;
 @ObservedV2
 class BackgroundImage {
   @Trace pic: ResourceStr | undefined = undefined;
-  @Trace showImage: boolean = UnifiedPreferences.getBoolSync('ShowImage', false); // 是否展示
-  @Trace imgPath: string = UnifiedPreferences.getSync('ImagePath', ''); // 图片路径
+  @Trace showImage: boolean = false; // 是否展示
+  @Trace imgPath: string = ''; // 图片路径
   basicDir: string = '/data/storage/el2/base/files';
   @Trace blurLevel: BlurStyle | undefined = undefined;
   @Trace opacityLevel: number = 1;
-  @Trace backgroundBlur: boolean = UnifiedPreferences.getBoolSync('BackgroundBlur', true); // 选择背景模糊
-  @Trace themeColor: number = UnifiedPreferences.getNumberSync('ThemeColor', 0);
-  @Trace autoDecBright: boolean = UnifiedPreferences.getBoolSync('AutoDecBright', true); // 深色模式自动降低背景亮度
+  @Trace backgroundBlur: boolean = true; // 选择背景模糊
+  @Trace themeColor: number = 0;
+  @Trace autoDecBright: boolean = true; // 深色模式自动降低背景亮度
   @Trace brightness: number = 1;
   @Trace effectiveBrightness: number = 1; // 实际显示亮度，深色模式自动调节后可能小于手动亮度
-  @Trace avgBrightness: number = UnifiedPreferences.getNumberSync('ImageAvgBrightness', -1); // 图片平均亮度（0-255），-1表示未测量
+  @Trace avgBrightness: number = -1; // 图片平均亮度（0-255），-1表示未测量
   @Trace darkMode: boolean = false; // 是否处于深色模式，init/syncDarkMode时确定
-  @Trace colorMode: number = UnifiedPreferences.getNumberSync('ColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+  @Trace colorMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+
+  /**
+   * 标题栏背景色：按当前主题索引与深浅色模式取presetColor对应列，索引钳制防越界。
+   * themeColor与darkMode均为@Trace，主题或深浅色变化时UI自动刷新
+   */
+  get titleBackgroundColor(): string {
+    const index: number = Math.min(presetColor.length - 1, Math.max(0, Math.trunc(this.themeColor)));
+    return this.darkMode ? presetColor[index].darkBgColor : presetColor[index].lightBgColor;
+  }
 
   @Trace avatar: ResourceStr = $r('app.media.avatar_placeholder');
   avatarPath: string = UnifiedPreferences.getSync('AvatarPath', '');
@@ -54,6 +70,16 @@ class BackgroundImage {
    * @param context 传入上下文
    */
   async init(context: Context) {
+    // 变量初始化
+    this.showImage = UnifiedPreferences.getBoolSync('ShowImage', false);
+    this.imgPath = UnifiedPreferences.getSync('ImagePath', '');
+    this.backgroundBlur = UnifiedPreferences.getBoolSync('BackgroundBlur', true);
+    this.themeColor = UnifiedPreferences.getNumberSync('ThemeColor', 0);
+    this.autoDecBright = UnifiedPreferences.getBoolSync('AutoDecBright', true);
+    this.avgBrightness = UnifiedPreferences.getNumberSync('ImageAvgBrightness', -1);
+    this.colorMode = UnifiedPreferences.getNumberSync('ColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+
+    // 路径检验
     try {
       if (this.imgPath === '' || !fileIo.accessSync(this.imgPath))
         this.showImage = false;

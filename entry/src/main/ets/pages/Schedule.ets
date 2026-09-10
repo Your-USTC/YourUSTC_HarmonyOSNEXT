@@ -662,7 +662,7 @@ struct Schedule {
                   Image($r('app.media.default_semester'))
                     .height(22)
                     .width(22)
-                    .fillColor(this.defaultSemester === index ? presetColor[BackgroundImage.themeColor][2] : undefined)
+                    .fillColor(this.defaultSemester === index ? presetColor[BackgroundImage.themeColor].accentColor : undefined)
                 }
                 .height(40)
                 .width(40)
@@ -750,14 +750,14 @@ struct Schedule {
                   .buttonStyle(ButtonStyleMode.NORMAL)
                   .height(30)
                   .borderRadius(15)
-                  .fontColor(presetColor[BackgroundImage.themeColor][2])
+                  .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
                   .onClick(() => {
                     this.getUIContext().showDatePickerDialog({
                       start: new Date(0),
                       end: new Date(4133865600000),
                       selected: new Date(semester.beginTime),
                       showTime: false,
-                      selectedTextStyle: { color: presetColor[BackgroundImage.themeColor][2] },
+                      selectedTextStyle: { color: presetColor[BackgroundImage.themeColor].accentColor },
                       onDateAccept: (value: Date) => {
                         ScheduleManager.changeSemesterStartTime(index, value.setHours(0, 0, 0, 0) - 86400000 * value.getDay());
                         if (this.displayTerm === index) {
@@ -789,7 +789,7 @@ struct Schedule {
             .alignItems(HorizontalAlign.Start)
             .padding(this.displayTerm === index ? 7 : 10)
             .borderRadius(20)
-            .borderColor(this.displayTerm === index ? presetColor[BackgroundImage.themeColor][2] : undefined)
+            .borderColor(this.displayTerm === index ? presetColor[BackgroundImage.themeColor].accentColor : undefined)
             .borderWidth(this.displayTerm === index ? 3 : undefined)
             .backgroundColor($r('app.color.grid_background'))
             .onClick(() => {
@@ -1111,7 +1111,7 @@ struct Schedule {
     .hideBackButton(true)
     .title({ builder: this.customTitle(), height: 98 }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000')
     })
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -1717,7 +1717,7 @@ struct Schedule {
               .textOverflow({ overflow: TextOverflow.Ellipsis });
             CheckboxGroup({ group: `checkboxGroup${this.checkBoxGroup}` })
               .checkboxShape(CheckBoxShape.ROUNDED_SQUARE)
-              .selectedColor(presetColor[BackgroundImage.themeColor][2])
+              .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
               .onChange((itemName: CheckboxGroupResult) => {
                 let selectAny: boolean = false;
                 this.weekOfTerm = [];
@@ -1739,7 +1739,7 @@ struct Schedule {
                 Checkbox({ name: checkboxId.toString(), group: `checkboxGroup${this.checkBoxGroup}` })
                   .shape(CheckBoxShape.ROUNDED_SQUARE)
                   .select(this.rectifyWeekOfTerm[checkboxId])
-                  .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                  .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                   .onChange((value: boolean) => {
                     this.rectifyWeekOfTerm[checkboxId] = value;
                   });
@@ -1752,7 +1752,7 @@ struct Schedule {
             Text($r('app.string.class_detail_priority'))
             Slider({ min: 0, max: 10, value: this.oriClassInfo.priority, step: 1, style: SliderStyle.InSet })
               .showSteps(true)
-              .selectedColor(presetColor[BackgroundImage.themeColor][2])
+              .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
               .layoutWeight(1)
               .onChange((value: number) => {
                 this.classInfo.priority = value;

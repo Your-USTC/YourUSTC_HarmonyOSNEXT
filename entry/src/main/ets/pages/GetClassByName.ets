@@ -174,7 +174,7 @@ struct GetClassByName {
                       Text() {
                         Span('教师  ')
                           .fontWeight(FontWeight.Bold)
-                          .fontColor(presetColor[BackgroundImage.themeColor][2])
+                          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
                         Span(item.item.teacherAssignmentList?.map(item => item.cn).join('，') || '无数据')
                       }
                       .wordBreak(WordBreak.BREAK_ALL)
@@ -182,7 +182,7 @@ struct GetClassByName {
                       Text() {
                         Span('时间  ')
                           .fontWeight(FontWeight.Bold)
-                          .fontColor(presetColor[BackgroundImage.themeColor][2])
+                          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
                         Span(item.item.dateTimePlacePersonText.cn || '无数据')
                       }
                       .wordBreak(WordBreak.BREAK_ALL)
@@ -267,7 +267,7 @@ struct GetClassByName {
       .width('100%')
     }
     .title(this.customTitle(), {
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000'
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000'
     })
     .backButtonIcon($r('app.media.close'))
     .backgroundBlurStyle(BackgroundImage.blurLevel)

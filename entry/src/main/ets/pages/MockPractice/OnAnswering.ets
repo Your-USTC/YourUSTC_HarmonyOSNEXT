@@ -910,7 +910,7 @@ struct MockPracticeMain {
     }
     .title(this.navParam.bankName, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })
     .menus(this.menuItems)
     .backButtonIcon($r('app.media.close'))

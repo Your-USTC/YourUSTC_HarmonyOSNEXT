@@ -319,7 +319,7 @@ struct Webview {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
     .title(this.customTitle(), {
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000')
     })
     .hideBackButton(true)
     .backgroundColor('#0000')
@@ -507,7 +507,7 @@ struct Webview {
       Row() {
         Button($r('app.string.append'))
           .buttonStyle(ButtonStyleMode.NORMAL)
-          .fontColor(presetColor[BackgroundImage.themeColor][2])
+          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
           .width('25%')
           .onClick(() => {
             ScheduleManager.coverExistSemester(this.selectIndex, ScheduleManager.parseOnlineSchedule(JSON.parse(this.timetable) as classAttribute[][][]), COVER_MODE.APPEND, true);
@@ -516,7 +516,7 @@ struct Webview {
 
         Button($r('app.string.cover'))
           .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .fontColor(presetColor[BackgroundImage.themeColor][2])
+          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
           .width('25%')
           .onClick(() => {
             ScheduleManager.coverExistSemester(this.selectIndex, ScheduleManager.parseOnlineSchedule(JSON.parse(this.timetable) as classAttribute[][][]), COVER_MODE.COVER, true);
@@ -525,7 +525,7 @@ struct Webview {
 
         Button($r('app.string.cover_duplicate'))
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
-          .backgroundColor(presetColor[BackgroundImage.themeColor][2])
+          .backgroundColor(presetColor[BackgroundImage.themeColor].accentColor)
           .width('50%')
           .onClick(() => {
             ScheduleManager.coverExistSemester(this.selectIndex, ScheduleManager.parseOnlineSchedule(JSON.parse(this.timetable) as classAttribute[][][]), COVER_MODE.COVER_DUPLICATE, true);

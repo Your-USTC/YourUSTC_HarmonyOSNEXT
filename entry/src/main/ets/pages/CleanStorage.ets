@@ -256,7 +256,7 @@ struct CleanStorage {
     .onReady(() => this.getStorageSize())
     .title($r('app.string.storage_stat'), {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000')
     })
     .backButtonIcon($r('app.media.close'))
     .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))

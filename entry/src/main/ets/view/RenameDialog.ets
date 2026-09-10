@@ -35,13 +35,13 @@ export default struct RenameDialog {
       Row() {
         Button($r('app.string.cancel'))
           .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .fontColor(presetColor[BackgroundImage.themeColor][2])
+          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
           .width('50%')
           .onClick(() => this.controller.close())
 
         Button($r('app.string.ok'))
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
-          .backgroundColor(presetColor[BackgroundImage.themeColor][2])
+          .backgroundColor(presetColor[BackgroundImage.themeColor].accentColor)
           .width('50%')
           .onClick(() => {
             this.onConfirm(this.name);

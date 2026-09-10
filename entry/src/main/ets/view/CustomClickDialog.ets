@@ -51,12 +51,12 @@ export default struct CustomClick {
           .buttonStyle(ButtonStyleMode.TEXTUAL)
           .width('50%')
           .onClick(() => this.dialogController.close())
-          .fontColor(presetColor[BackgroundImage.themeColor][2])
+          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
 
         Button($r('app.string.ok'))
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
           .width('50%')
-          .backgroundColor(presetColor[BackgroundImage.themeColor][2])
+          .backgroundColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onClick(() => {
             customizeClick(this.gridIndex, this.index, this.clickTimes);
             refreshFunc(); // 刷新点击次数显示

@@ -167,7 +167,7 @@ struct AddCard {
 
           Row({ space: 5 }) {
             Image($r('app.media.exam_card'))
-              .fillColor(presetColor[BackgroundImage.themeColor][2])
+              .fillColor(presetColor[BackgroundImage.themeColor].accentColor)
               .height(30);
             Text('快捷方式')
               .fontSize(20)
@@ -201,7 +201,7 @@ struct AddCard {
     }
     .title($r('app.string.add_desktop_form'), {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000')
     })
     .backButtonIcon($r('app.media.close'))
     .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))

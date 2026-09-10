@@ -553,7 +553,7 @@ struct Webview {
       .layoutWeight(1)
     }
     .title(this.customTitle(), {
-      backgroundColor: (BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000')
+      backgroundColor: (BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000')
     })
     .hideBackButton(true)
     .backgroundBlurStyle(BackgroundImage.blurLevel)

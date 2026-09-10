@@ -343,7 +343,7 @@ struct SessionRecord {
     }
     .title('做题记录', {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : undefined
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })
     .backButtonIcon($r('app.media.close'))
     .backgroundColor(BackgroundImage.showImage ? '#0000' : $r('app.color.normal_background'))

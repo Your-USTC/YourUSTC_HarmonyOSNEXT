@@ -236,7 +236,7 @@ struct Webview {
       .id('header')
       .width('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
-      .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + BackgroundImage.themeColor) : undefined)
+      .backgroundColor(BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined)
 
       Stack({ alignContent: Alignment.TopStart }) {
         Web({ src: this.url, controller: this.webviewController })

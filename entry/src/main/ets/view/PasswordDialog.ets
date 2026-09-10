@@ -185,7 +185,7 @@ export default struct PasswordDialog {
         if (!this.isFromSetting) {
           Button($r('app.string.no_reminding'))
             .buttonStyle(ButtonStyleMode.NORMAL)
-            .fontColor(presetColor[BackgroundImage.themeColor][2])
+            .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
             .onClick(() => {
               UnifiedPreferences.putSync(REMIND_KEY, false);
               this.getUIContext().getPromptAction().showToast({ message: $r('app.string.input_later'), duration: 2000 });
@@ -195,13 +195,13 @@ export default struct PasswordDialog {
         }
         Button($r('app.string.cancel'))
           .buttonStyle(ButtonStyleMode.TEXTUAL)
-          .fontColor(presetColor[BackgroundImage.themeColor][2])
+          .fontColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onClick(() => {
             this.controller.close();
           })
           .layoutWeight(1)
         Button($r('app.string.ok'))
-          .backgroundColor(presetColor[BackgroundImage.themeColor][2])
+          .backgroundColor(presetColor[BackgroundImage.themeColor].accentColor)
           .onClick(() => {
             if (this.inputUID === '')
               UnifiedPreferences.deleteSync(UID_KEY);
@@ -226,12 +226,12 @@ export default struct PasswordDialog {
                   title: '╮(๑•́ ₃•̀๑)╭',
                   message: $r('app.string.password_incomplete'),
                   autoCancel: true, gridCount: 4, alignment: DialogAlignment.Center, cancel: () => {},
-                  primaryButton: { value: $r('app.string.back'), action: () => {}, fontColor: presetColor[BackgroundImage.themeColor][2] },
+                  primaryButton: { value: $r('app.string.back'), action: () => {}, fontColor: presetColor[BackgroundImage.themeColor].accentColor },
                   secondaryButton: {
                     enabled: true,
                     defaultFocus: true,
                     style: DialogButtonStyle.HIGHLIGHT,
-                    backgroundColor: presetColor[BackgroundImage.themeColor][2],
+                    backgroundColor: presetColor[BackgroundImage.themeColor].accentColor,
                     value: $r('app.string.ok'),
                     action: () => {
                       this.onConfirm();

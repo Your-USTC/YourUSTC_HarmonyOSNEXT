@@ -29,12 +29,12 @@ export default struct MessageDialog {
             this.onCancel();
             this.controller.close();
           })
-          .fontColor(this.cancelColor || presetColor[BackgroundImage.themeColor][2])
+          .fontColor(this.cancelColor || presetColor[BackgroundImage.themeColor].accentColor)
 
         Button($r('app.string.ok'))
           .buttonStyle(ButtonStyleMode.EMPHASIZED)
           .width('50%')
-          .backgroundColor(this.confirmColor || presetColor[BackgroundImage.themeColor][2])
+          .backgroundColor(this.confirmColor || presetColor[BackgroundImage.themeColor].accentColor)
           .onClick(() => {
             this.onConfirm();
             this.controller.close();

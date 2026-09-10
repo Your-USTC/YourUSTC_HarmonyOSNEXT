@@ -4,7 +4,7 @@ import { fileIo, fileUri } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import BackgroundImage, { presetColor } from '../utils/BgImageManager';
+import BackgroundImage, { iPresetColor, presetColor } from '../utils/BgImageManager';
 
 @Builder
 export function ThemeBuilder(name: string, param?: number[]) {
@@ -66,7 +66,7 @@ function posToIndex(x: number, y: number): number {
   if (angle < 0)
     angle += 2 * Math.PI;
   angle += Math.PI / colorNum;
-  return Math.trunc(angle * colorNum / (2 * Math.PI)) % 15;
+  return Math.trunc(angle * colorNum / (2 * Math.PI)) % colorNum;
 }
 
 @Entry
@@ -120,7 +120,7 @@ struct ThemeSetting {
               Divider()
                 .layoutWeight(1);
               Toggle({ isOn: $$this.isShown, type: ToggleType.Switch })
-                .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                 .onChange((value: boolean) => {
                   if (BackgroundImage.imgPath == '' && this.selectResult == undefined && value) {
                     this.isShown = false;
@@ -181,8 +181,8 @@ struct ThemeSetting {
                 .textAlign(TextAlign.Center)
                 .fontWeight(this.showBlurSlider ? FontWeight.Normal : FontWeight.Bold)
               Toggle({ isOn: $$this.showBlurSlider, type: ToggleType.Switch })
-                .switchStyle({ unselectedColor: presetColor[BackgroundImage.themeColor][2] })
-                .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                .switchStyle({ unselectedColor: presetColor[BackgroundImage.themeColor].accentColor })
+                .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
               Text($r('app.string.background_blur'))
                 .layoutWeight(1)
                 .textAlign(TextAlign.Center)
@@ -190,7 +190,7 @@ struct ThemeSetting {
 
               Select([{ value: '不透明' }, { value: '半透明' }, { value: '带模糊' }, { value: '纯享版' }, { value: '全覆盖' } ])
                 .controlSize(ControlSize.SMALL)
-                .value('选一个')
+                .value('选预设')
                 .onSelect((index: number) => {
                   switch (index) {
                     case 0:
@@ -218,6 +218,7 @@ struct ThemeSetting {
                       this.showBlurSlider = false;
                       this.opacityNum = 25;
                       this.imgBrightness = 25;
+                      this.autoDecBright = false;
                       break;
                   }
                 })
@@ -236,7 +237,7 @@ struct ThemeSetting {
                 })
                   .showSteps(true)
                   .layoutWeight(1)
-                  .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                  .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                   .onChange((value: number) => {
                     this.sliderNum = value;
                     switch (value) {
@@ -271,7 +272,7 @@ struct ThemeSetting {
                 })
                   .showTips(true, `${this.opacityNum}%`)
                   .layoutWeight(1)
-                  .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                  .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                   .onChange((value: number) => {
                     this.opacityNum = value;
                   });
@@ -292,7 +293,7 @@ struct ThemeSetting {
                 .showSteps(false)
                 .showTips(true)
                 .layoutWeight(1)
-                .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                 .onChange((value: number) => {
                   this.imgBrightness = value;
                 });
@@ -304,7 +305,7 @@ struct ThemeSetting {
                 .layoutWeight(1)
 
               Toggle({ isOn: $$this.autoDecBright, type: ToggleType.Checkbox })
-                .selectedColor(presetColor[BackgroundImage.themeColor][2])
+                .selectedColor(presetColor[BackgroundImage.themeColor].accentColor)
                 .padding({ right: 16 })
             }
             .padding({ left: 16, right: 16 });
@@ -328,7 +329,7 @@ struct ThemeSetting {
                 .fontWeight(FontWeight.Bold)
                 .layoutWeight(1)
                 .fontColor('#000');
-              Text(presetColor[this.selectedColor][3])
+              Text(presetColor[this.selectedColor].name)
                 .fontSize(16)
                 .margin({ right: 7 })
                 .fontColor('#fff');
@@ -337,7 +338,7 @@ struct ThemeSetting {
             .borderRadius(BackgroundImage.blurLevel === undefined ? 23 : undefined)
             .linearGradient({
               angle: 90,
-              colors: [[presetColor[this.selectedColor][0], 0.0], [presetColor[this.selectedColor][1], 1.0]]
+              colors: [[presetColor[this.selectedColor].lightBgColor, 0.0], [presetColor[this.selectedColor].darkBgColor, 1.0]]
             })
 
             Text(this.isShown && this.showBlurSlider ? $r('app.string.custom_theme_color_into') : $r('app.string.click_slide_change_color'))
@@ -348,14 +349,14 @@ struct ThemeSetting {
               .margin({ bottom: 5, top: 5 })
 
             Stack({ alignContent: Alignment.Center }) {
-              ForEach(presetColor, (singleColor: string[], index: number) => {
+              ForEach(presetColor, (singleColor: iPresetColor, index: number) => {
                 Progress({
                   value: calculateProgress(colorNum, this.selectedColor, index),
                   type: ProgressType.Eclipse
                 })
                   .width(diameter)
-                  .color(singleColor[0])
-                  .backgroundColor(singleColor[1])
+                  .color(singleColor.lightBgColor)
+                  .backgroundColor(singleColor.darkBgColor)
                   .offset({
                     x: distance * Math.sin(360 * index / colorNum * (Math.PI / 180)),
                     y: -distance * Math.cos(360 * index / colorNum * (Math.PI / 180))
@@ -553,7 +554,7 @@ struct ThemeSetting {
     }
     .title({ main: $r('app.string.theme_setting'), sub: $r('app.string.theme_setting_intro') }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
-      backgroundColor: BackgroundImage.blurLevel === undefined ? $r('app.color.shaded_background' + String(BackgroundImage.themeColor)) : '#0000'
+      backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : '#0000'
     })
     .backButtonIcon($r('app.media.close'))
     .menus(this.menuItems)

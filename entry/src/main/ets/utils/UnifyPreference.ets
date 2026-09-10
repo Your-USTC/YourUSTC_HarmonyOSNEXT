@@ -40,7 +40,7 @@ class UnifiedPreferences {
 
   getSync(key: string, defaultValue: string = ''): string {
     try {
-      return this.preferences?.getSync(key, defaultValue) as string;
+      return (this.preferences?.getSync(key, defaultValue) ?? defaultValue) as string;
     } catch (error) {
       console.error(`getSync ERROR: [${error.name}] ${error.message}`);
       return '';
@@ -49,7 +49,7 @@ class UnifiedPreferences {
 
   getBoolSync(key: string, defaultValue: boolean): boolean {
     try {
-      return this.preferences?.getSync(key, defaultValue) as boolean;
+      return (this.preferences?.getSync(key, defaultValue) ?? defaultValue) as boolean;
     } catch (error) {
       console.error(`getSync ERROR: [${error.name}] ${error.message}`);
       return defaultValue;
@@ -58,7 +58,7 @@ class UnifiedPreferences {
 
   getNumberSync(key: string, defaultValue: number): number {
     try {
-      return this.preferences?.getSync(key, defaultValue) as number;
+      return (this.preferences?.getSync(key, defaultValue) ?? defaultValue) as number;
     } catch (error) {
       console.error(`getSync ERROR: [${error.name}] ${error.message}`);
       return defaultValue;
