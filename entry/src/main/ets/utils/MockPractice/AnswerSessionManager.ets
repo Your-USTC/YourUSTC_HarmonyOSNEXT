@@ -4,10 +4,13 @@
  * 作答与进度即时写盘（写穿），因此无需手动保存；session 数据存放在所属题库的目录内，
  * 题库被删除时记录一并丢失（见 QuestionBankManager.removeBank）。
  * 题目内容一律通过 QuestionBankManager 读取，本模块不持久化题目。
+ * 收藏本采用题库级持久化计数器（StarredCounters.json）：每个题号记录当前
+ * 收藏它的 session 数，收藏/取消/删除记录时增量维护，避免每次汇总全量遍历。
  */
 import {
   BasicDir,
   SessionFileName,
+  StarredFileName,
   singleQuestion,
   answerMark,
   answerRecord,
@@ -16,7 +19,8 @@ import {
   questionStatus,
   AnswerStatus,
   PracticeMode,
-  SessionOrigin
+  SessionOrigin,
+  starredCounter
 } from './constants';
 import { bankStore } from './QuestionBankManager';
 import { judgeBlankAnswer, BLANK_JOINER } from './BlankJudge';
@@ -94,6 +98,8 @@ function normalizeQuestionNO(questionNO: number[], bankCount: number): number[] 
 
 class AnswerSessionStore {
   private sessions: Map<string, answerSession[]> = new Map();
+  /** 题库级收藏计数缓存：bankId -> (questionIndex -> 收藏它的 session 数) */
+  private starred: Map<string, Map<number, number>> = new Map();
 
   private ensureLoaded(bankId: string): void {
     if (!this.sessions.has(bankId)) {
@@ -113,6 +119,53 @@ class AnswerSessionStore {
       fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
     fileIo.writeSync(file.fd, JSON.stringify(list));
     fileIo.closeSync(file);
+  }
+
+  private ensureStarredLoaded(bankId: string): void {
+    if (this.starred.has(bankId)) {
+      return;
+    }
+    const map: Map<number, number> = new Map();
+    try {
+      const text = fileIo.readTextSync(BasicDir + bankId + '/' + StarredFileName);
+      const list = JSON.parse(text) as starredCounter[];
+      for (let i = 0; i < list.length; i++) {
+        map.set(list[i].questionIndex, list[i].count);
+      }
+    } catch (e) {
+      // 文件不存在时从空计数开始
+    }
+    this.starred.set(bankId, map);
+  }
+
+  private persistStarred(bankId: string): void {
+    const map = this.starred.get(bankId);
+    if (map === undefined) {
+      return;
+    }
+    ensureDir(bankId);
+    const list: starredCounter[] = [];
+    map.forEach((count: number, no: number): void => {
+      list.push({ questionIndex: no, count: count });
+    });
+    list.sort((a: starredCounter, b: starredCounter): number => a.questionIndex - b.questionIndex);
+    const filePath = BasicDir + bankId + '/' + StarredFileName;
+    const file = fileIo.openSync(filePath,
+      fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
+    fileIo.writeSync(file.fd, JSON.stringify(list));
+    fileIo.closeSync(file);
+  }
+
+  /** 收藏计数增减（不落盘，由调用方随 session 变更一并 persistStarred）：归零即移出收藏本 */
+  private adjustStar(bankId: string, questionIndex: number, delta: number): void {
+    this.ensureStarredLoaded(bankId);
+    const map = this.starred.get(bankId)!;
+    const next = (map.get(questionIndex) || 0) + delta;
+    if (next <= 0) {
+      map.delete(questionIndex);
+    } else {
+      map.set(questionIndex, next);
+    }
   }
 
   private newSession(bankId: string, origin: SessionOrigin, mode: PracticeMode,
@@ -194,6 +247,27 @@ class AnswerSessionStore {
       return '';
     }
     return this.createSession(bankId, 'ordered', 'retry', targets);
+  }
+
+  /** 题库级收藏本：当前被任一 session 收藏的题号（升序），直接读持久化计数器的键集合 */
+  starredQuestionNos(bankId: string): number[] {
+    this.ensureStarredLoaded(bankId);
+    const result: number[] = [];
+    this.starred.get(bankId)!.forEach((_count: number, no: number): void => {
+      result.push(no);
+    });
+    result.sort((a: number, b: number): number => a - b);
+    return result;
+  }
+
+  /** 收藏题专项练习：以题库级收藏本中的题号生成一次新练习，返回 sessionId；无收藏时返回 ''。
+   *  新练习不播种收藏标记（收藏计数只由真实收藏操作与删除记录驱动），避免反复生成练习使计数膨胀 */
+  createStarredSession(bankId: string): string {
+    const nos = this.starredQuestionNos(bankId);
+    if (nos.length === 0) {
+      return '';
+    }
+    return this.createSession(bankId, 'ordered', 'custom', nos);
   }
 
   getSession(bankId: string, sessionId: string): answerSession | null {
@@ -280,7 +354,10 @@ class AnswerSessionStore {
       return;
     }
     session.marks[questionIndex].starred = !session.marks[questionIndex].starred;
+    // 同步维护题库级收藏计数，并随 session 一起写盘
+    this.adjustStar(bankId, questionIndex, session.marks[questionIndex].starred ? 1 : -1);
     this.persist(bankId);
+    this.persistStarred(bankId);
   }
 
   /** 当前作答位置题目的收藏状态；无有效作答位置时为 false */
@@ -309,8 +386,21 @@ class AnswerSessionStore {
     const list = this.sessions.get(bankId)!;
     for (let i = 0; i < list.length; i++) {
       if (list[i].sessionId === sessionId) {
+        const session = list[i];
+        // 该记录中被收藏的题计数减一，可能使部分题移出收藏本
+        let starredChanged = false;
+        for (let j = 0; j < session.questionNO.length; j++) {
+          const no = session.questionNO[j];
+          if (session.marks[no] !== undefined && session.marks[no].starred) {
+            this.adjustStar(bankId, no, -1);
+            starredChanged = true;
+          }
+        }
         list.splice(i, 1);
         this.persist(bankId);
+        if (starredChanged) {
+          this.persistStarred(bankId);
+        }
         return;
       }
     }
@@ -406,9 +496,10 @@ class AnswerSessionStore {
     return result;
   }
 
-  /** 题库被删除时丢弃其内存中的 session 缓存 */
+  /** 题库被删除时丢弃其内存中的 session 与收藏计数缓存 */
   forget(bankId: string): void {
     this.sessions.delete(bankId);
+    this.starred.delete(bankId);
   }
 }
 

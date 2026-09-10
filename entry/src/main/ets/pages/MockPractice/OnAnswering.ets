@@ -568,6 +568,13 @@ struct MockPracticeMain {
         .fontSize(14)
         .fontWeight(FontWeight.Bold)
         .fontColor(st.status === 'unanswered' ? $r('app.color.normal_text') : '#FFFFFF')
+      // 收藏标记：星标在答题卡上可见
+      if (st.starred) {
+        Text('★')
+          .fontSize(10)
+          .fontColor(STAR_COLOR)
+          .margin({ left: 2 })
+      }
     }
     .width('100%')
     .height(36)
@@ -601,7 +608,7 @@ struct MockPracticeMain {
           GridItem() {
             this.SheetCell(st)
           }
-        }, (st: questionStatus) => `${st.position}-${st.status}`)
+        }, (st: questionStatus) => `${st.position}-${st.status}-${st.starred ? 's' : ''}`)
       }
       .columnsTemplate('repeat(auto-fill, 48vp)')
       .columnsGap(8)

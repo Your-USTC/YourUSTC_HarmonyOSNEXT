@@ -40,6 +40,8 @@ struct MockPracticeList {
   /** 该题库下的做题记录列表（做题记录模块） */
   @State summaries: sessionSummary[] = [];
   @State questionCount: number = 0;
+  /** 当前详情题库下所有记录中收藏过的题数 */
+  @State starredCount: number = 0;
   /** 详情半模态内是否切换到选题视图 */
   @State detailSetupView: boolean = false;
   @State rangeType: number = RANGE_ALL;
@@ -108,6 +110,7 @@ struct MockPracticeList {
     this.detailBankId = bank.uuid;
     this.detailBankName = bank.name;
     this.questionCount = bankStore.getQuestionCount(bank.uuid);
+    this.starredCount = answerStore.starredQuestionNos(bank.uuid).length;
     this.summaries = answerStore.getSummaries(bank.uuid);
     this.detailSetupView = false;
     this.rangeType = RANGE_ALL;
@@ -121,6 +124,21 @@ struct MockPracticeList {
   refreshDetail(): void {
     this.summaries = answerStore.getSummaries(this.detailBankId);
     this.questionCount = bankStore.getQuestionCount(this.detailBankId);
+    this.starredCount = answerStore.starredQuestionNos(this.detailBankId).length;
+  }
+
+  /** 收藏题专项练习：汇总题库内所有记录中收藏过的题号开始一次新练习 */
+  startStarredPractice(): void {
+    const sessionId = answerStore.createStarredSession(this.detailBankId);
+    if (sessionId === '') {
+      this.getUIContext().getPromptAction().showToast(
+        { message: '还没有收藏任何题目', duration: 1500 });
+      return;
+    }
+    bankStore.touchBank(this.detailBankId);
+    this.detailSetupView = false;
+    this.showDetailSheet = false;
+    this.pushAnswering(sessionId);
   }
 
   originLabel(origin: SessionOrigin): string {
@@ -357,25 +375,32 @@ struct MockPracticeList {
       if (this.detailSetupView) {
         this.setupForm()
       } else {
-        Row() {
-          Button('重命名')
-            .buttonStyle(ButtonStyleMode.NORMAL)
-            .onClick(() => {
-              this.openRenameDialog();
-            })
-          Button('开始练习')
-            .buttonStyle(ButtonStyleMode.EMPHASIZED)
-            .layoutWeight(1)
-            .margin({ left: 8, right: 8 })
-            .enabled(this.questionCount > 0)
-            .onClick(() => {
-              this.detailSetupView = true;
-            })
+        Row({ space: 6 }) {
           Button('删除')
-            .buttonStyle(ButtonStyleMode.NORMAL)
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
             .fontColor($r('app.color.red'))
             .onClick(() => {
               this.confirmRemoveBank();
+            })
+          Button('重命名')
+            .buttonStyle(ButtonStyleMode.TEXTUAL)
+            .onClick(() => {
+              this.openRenameDialog();
+            })
+          if (this.starredCount > 0) {
+            Button(`练习收藏题（${this.starredCount}）`)
+              .buttonStyle(ButtonStyleMode.NORMAL)
+              .layoutWeight(2)
+              .onClick(() => {
+                this.startStarredPractice();
+              })
+          }
+          Button('新练习')
+            .buttonStyle(ButtonStyleMode.EMPHASIZED)
+            .layoutWeight(1)
+            .enabled(this.questionCount > 0)
+            .onClick(() => {
+              this.detailSetupView = true;
             })
         }
         .width('100%')

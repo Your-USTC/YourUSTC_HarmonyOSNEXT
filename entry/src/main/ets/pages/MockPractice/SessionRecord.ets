@@ -11,6 +11,9 @@ import {
   PracticeMode
 } from '../../utils/MockPractice/constants';
 
+/** 收藏标记星标色（与答题页保持一致） */
+const STAR_COLOR: string = '#f59e0b';
+
 
 @Builder
 export function MPRBuilder(name: string, param?: Object) {
@@ -62,6 +65,8 @@ struct SessionRecord {
   @State questions: singleQuestion[] = [];
   /** 列表筛选：只看错题 */
   @State onlyWrong: boolean = true;
+  /** 错题重做是否附加收藏题 */
+  @State retryIncludeStarred: boolean = false;
   /** 懒加载列表的数据源，内容随筛选结果整表替换 */
   private source: RecordStatusSource = new RecordStatusSource();
   pathStack: NavPathStack = new NavPathStack();
@@ -144,11 +149,13 @@ struct SessionRecord {
     return q.type === 'blank' ? blankAnswerText(q) : q.answer;
   }
 
-  /** 错题重做：以本次记录中做错的题号生成一次新练习（为错题本功能预留收藏维度） */
+  /** 错题重做：以本次记录中做错的题号生成一次新练习，可选附加收藏题 */
   retryWrong(): void {
-    const sessionId = answerStore.createRetrySession(this.navParam.bankId, this.navParam.sessionId, false);
+    const sessionId = answerStore.createRetrySession(this.navParam.bankId,
+      this.navParam.sessionId, this.retryIncludeStarred);
     if (sessionId === '') {
-      this.getUIContext().getPromptAction().showToast({ message: '没有可重做的错题', duration: 1500 });
+      this.getUIContext().getPromptAction().showToast(
+        { message: '没有可重做的错题或收藏题', duration: 1500 });
       return;
     }
     this.pathStack.replacePath({
@@ -178,6 +185,12 @@ struct SessionRecord {
             .fontSize(12)
             .fontColor($r('app.color.transparent_text'))
             .margin({ left: 8 })
+          if (st.starred) {
+            Text('★')
+              .fontSize(13)
+              .fontColor(STAR_COLOR)
+              .margin({ left: 4 })
+          }
           Blank()
           Text(this.statusLabel(st.status))
             .fontSize(13)
@@ -305,13 +318,23 @@ struct SessionRecord {
         .borderRadius(20)
 
         if (this.wrongCount() > 0) {
-          Button(`重做本次错题（${this.wrongCount()} 题）`)
-            .buttonStyle(ButtonStyleMode.EMPHASIZED)
-            .width('100%')
-            .margin({ top: 8, bottom: 12 })
-            .onClick(() => {
-              this.retryWrong();
-            })
+          Row() {
+            Toggle({ type: ToggleType.Button, isOn: $$this.retryIncludeStarred }) {
+              Text('含收藏题')
+                .fontSize(13)
+            }
+            .selectedColor($r('app.color.active_text'))
+
+            Button(`重做本次错题（${this.wrongCount()} 题）`)
+              .buttonStyle(ButtonStyleMode.EMPHASIZED)
+              .layoutWeight(1)
+              .margin({ left: 8 })
+              .onClick(() => {
+                this.retryWrong();
+              })
+          }
+          .width('100%')
+          .margin({ top: 8, bottom: 12 })
         }
       }
       .width('100%')

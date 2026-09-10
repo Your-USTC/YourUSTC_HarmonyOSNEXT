@@ -12,6 +12,8 @@ export const BankAttributeFileName = 'Attributes.json';
 export const QuestionFileName = 'QuestionList.json';
 /** 做题记录文件，存放在所属题库的目录内，随题库一起删除 */
 export const SessionFileName = 'AnswerRounds.json';
+/** 收藏题计数文件：记录每个题号被多少个 session 收藏，同样随题库一起删除 */
+export const StarredFileName = 'StarredCounters.json';
 
 /**
  * 目录结构：
@@ -20,6 +22,7 @@ export const SessionFileName = 'AnswerRounds.json';
  *     - Attributes.json   // 题库基本属性
  *     - QuestionList.json // 题目列表
  *     - AnswerRounds.json // 该题库下的做题记录（session 列表）
+ *     - StarredCounters.json // 收藏题计数（题库级收藏本）
  *   - bankUuid2
  */
 
@@ -88,6 +91,12 @@ export type SessionOrigin = 'full' | 'custom' | 'retry'
 export interface answerMark {
   starred: boolean,
   ignore: boolean
+}
+
+/** 收藏题计数项：questionIndex 当前被多少个 session 收藏（count 归零即移出收藏本） */
+export interface starredCounter {
+  questionIndex: number,
+  count: number
 }
 
 /** 一次作答记录；questionIndex 为题库中的题号（从 0 开始） */
