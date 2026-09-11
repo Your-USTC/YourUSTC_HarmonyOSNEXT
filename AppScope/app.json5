@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "com.nic.dailynic",
     "vendor": "$string:developer",
-    "versionCode": 2002001,
-    "versionName": "2.2.1",
+    "versionCode": 2002002,
+    "versionName": "2.2.2",
     "icon": "$media:layered_image",
     "label": "$string:app_name"
   }

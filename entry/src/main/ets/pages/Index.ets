@@ -135,7 +135,6 @@ struct Index {
       this.getUIContext().getRouter().pushUrl({ url: 'pages/Declaration' })
         .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
     } else if (UnifiedPreferences.getSync('AppVersion') !== currentAppVersion) {
-      UnifiedPreferences.putSync('ShowPinchHint', true); // Ver 2.2.1 新增了提示，因此重置提示
       this.getUIContext().getRouter().pushUrl({ url: 'pages/UpdateLog' })
         .catch((err: Error) => { console.error(`Router ERROR: [${err.name}] ${err.message}`) });
     }
