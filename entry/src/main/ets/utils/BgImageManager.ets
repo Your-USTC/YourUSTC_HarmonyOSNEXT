@@ -3,6 +3,7 @@ import UnifiedPreferences from './UnifyPreference';
 import { fileIo, fileUri, ListFileOptions } from "@kit.CoreFileKit";
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { image } from '@kit.ImageKit';
+import { effectKit } from '@kit.ArkGraphics2D';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { resourceManager } from '@kit.LocalizationKit';
 
@@ -36,6 +37,98 @@ export const presetColor: iPresetColor[] = [
 const DARK_TARGET_LUMINANCE: number = 90;
 const DARK_MIN_FACTOR: number = 0.3;
 
+/**
+ * 解析'#RRGGBB'格式的颜色字符串
+ * @returns [r, g, b] 分量数组，各分量取值0-255
+ */
+function hexToRgb(hex: string): number[] {
+  const value: number = parseInt(hex.slice(1), 16);
+  return [(value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF];
+}
+
+/**
+ * RGB分量（0-255）转'#RRGGBB'颜色字符串
+ */
+function rgbToHex(r: number, g: number, b: number): string {
+  const toHex = (v: number): string => {
+    const hex: string = Math.round(Math.min(255, Math.max(0, v))).toString(16);
+    return hex.length === 1 ? `0${hex}` : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+/**
+ * RGB（0-255）转HSL，h/s/l分量取值均为0-1
+ */
+function rgbToHsl(r: number, g: number, b: number): number[] {
+  const rn: number = r / 255;
+  const gn: number = g / 255;
+  const bn: number = b / 255;
+  const max: number = Math.max(rn, gn, bn);
+  const min: number = Math.min(rn, gn, bn);
+  const l: number = (max + min) / 2;
+  let h: number = 0;
+  let s: number = 0;
+  if (max !== min) {
+    const d: number = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === rn)
+      h = (gn - bn) / d + (gn < bn ? 6 : 0);
+    else if (max === gn)
+      h = (bn - rn) / d + 2;
+    else
+      h = (rn - gn) / d + 4;
+    h /= 6;
+  }
+  return [h, s, l];
+}
+
+/**
+ * HSL（h/s/l分量取值0-1）转'#RRGGBB'颜色字符串
+ */
+function hslToHex(h: number, s: number, l: number): string {
+  const clampedL: number = Math.min(1, Math.max(0, l));
+  const clampedS: number = Math.min(1, Math.max(0, s));
+  const q: number = clampedL < 0.5 ? clampedL * (1 + clampedS) : clampedL + clampedS - clampedL * clampedS;
+  const p: number = 2 * clampedL - q;
+  const channel = (t: number): number => {
+    let tn: number = t;
+    if (tn < 0)
+      tn += 1;
+    if (tn > 1)
+      tn -= 1;
+    if (tn < 1 / 6)
+      return p + (q - p) * 6 * tn;
+    if (tn < 1 / 2)
+      return q;
+    if (tn < 2 / 3)
+      return p + (q - p) * (2 / 3 - tn) * 6;
+    return p;
+  };
+  return rgbToHex(channel(h + 1 / 3) * 255, channel(h) * 255, channel(h - 1 / 3) * 255);
+}
+
+// 自定义取色主题的缺省值：从未提取过主色时色环与各处主题色展示该缺省配色
+const CUSTOM_PRESET_DEFAULT: iPresetColor = {
+  lightBgColor: '#F0F4F8', darkBgColor: '#1C2833', accentColor: '#78909C', name: '图色天成'// 自定义色/随心取色/画境随心
+};
+
+/**
+ * 自定义取色主题项：字段为@Trace，提取主色后全应用读取这些颜色的UI即时刷新
+ */
+@ObservedV2
+class CustomPresetColor implements iPresetColor {
+  @Trace lightBgColor: string = CUSTOM_PRESET_DEFAULT.lightBgColor;
+  @Trace darkBgColor: string = CUSTOM_PRESET_DEFAULT.darkBgColor;
+  @Trace accentColor: string = CUSTOM_PRESET_DEFAULT.accentColor;
+  @Trace name: string = CUSTOM_PRESET_DEFAULT.name;
+}
+
+export const customPreset: CustomPresetColor = new CustomPresetColor();
+presetColor.push(customPreset);
+// 自定义取色项固定在presetColor末尾，持久化的ThemeColor索引可能指向它
+export const customPresetIndex: number = presetColor.length - 1;
+
 // 响应式单例：字段变化直接刷新全应用读取这些字段的UI（设置页热更新的基础）
 @ObservedV2
 class BackgroundImage {
@@ -64,7 +157,7 @@ class BackgroundImage {
   }
 
   @Trace avatar: ResourceStr = $r('app.media.avatar_placeholder');
-  avatarPath: string = UnifiedPreferences.getSync('AvatarPath', '');
+  avatarPath: string = '';
   /**
    * 初始化
    * @param context 传入上下文
@@ -75,9 +168,11 @@ class BackgroundImage {
     this.imgPath = UnifiedPreferences.getSync('ImagePath', '');
     this.backgroundBlur = UnifiedPreferences.getBoolSync('BackgroundBlur', true);
     this.themeColor = UnifiedPreferences.getNumberSync('ThemeColor', 0);
+    this.restoreCustomPreset();
     this.autoDecBright = UnifiedPreferences.getBoolSync('AutoDecBright', true);
     this.avgBrightness = UnifiedPreferences.getNumberSync('ImageAvgBrightness', -1);
     this.colorMode = UnifiedPreferences.getNumberSync('ColorMode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+    this.avatarPath = UnifiedPreferences.getSync('AvatarPath', '');
 
     // 路径检验
     try {
@@ -305,6 +400,67 @@ class BackgroundImage {
     } finally {
       // 确保释放ImageSource内存
       await imageSource.release();
+    }
+  }
+
+  /**
+   * 提取图片主色调：下采样解码后用effectKit创建ColorPicker，
+   * getMainColor通过图像缩放算法将原图缩小到1像素加权计算得到主色
+   * @param filePath 图片完整路径
+   * @returns 主色调Color（RGBA分量各0-255），失败时抛出异常
+   */
+  async extractMainColor(filePath: string): Promise<effectKit.Color> {
+    const imageSource: image.ImageSource = image.createImageSource(filePath);
+    try {
+      // 下采样解码，主色计算无需原图分辨率，显著减少内存占用
+      const decodingOptions: image.DecodingOptions = {
+        desiredSize: { width: 200, height: 200 },
+        desiredPixelFormat: image.PixelMapFormat.RGBA_8888,
+      };
+      const pixelMap: image.PixelMap = await imageSource.createPixelMap(decodingOptions);
+      try {
+        const colorPicker: effectKit.ColorPicker = await effectKit.createColorPicker(pixelMap);
+        return await colorPicker.getMainColor();
+      } finally {
+        await pixelMap.release();
+      }
+    } finally {
+      await imageSource.release();
+    }
+  }
+
+  /**
+   * 用提取到的主色更新自定义取色主题项（HSL变换派生深浅背景色）：
+   * 适中色（accentColor）为主色本身；
+   * 浅色背景提高明度、略降饱和度：L_light = L + (1 - L) * 0.65，S_light = S * 0.85；
+   * 深色背景降低明度、略升饱和度：L_dark = L * 0.45，S_dark = min(1, S * 1.1)
+   * @param r 主色红色分量（0-255）
+   * @param g 主色绿色分量（0-255）
+   * @param b 主色蓝色分量（0-255）
+   */
+  applyCustomThemeColor(r: number, g: number, b: number) {
+    const hsl: number[] = rgbToHsl(r, g, b);
+    const h: number = hsl[0];
+    const s: number = hsl[1];
+    const l: number = hsl[2];
+    customPreset.accentColor = rgbToHex(r, g, b);
+    customPreset.lightBgColor = hslToHex(h, s * 0.85, l + (1 - l) * 0.65);
+    customPreset.darkBgColor = hslToHex(h, Math.min(1, s * 1.1), l * 0.45);
+  }
+
+  /**
+   * 从持久化设置恢复自定义取色主题项：应用初始化与退出主题设置页时调用，
+   * 保证自定义项与最后一次应用的取色一致（未应用的提取结果随离开设置页作废）
+   */
+  restoreCustomPreset() {
+    const accent: string = UnifiedPreferences.getSync('CustomThemeAccent', '');
+    if (accent !== '') {
+      const rgb: number[] = hexToRgb(accent);
+      this.applyCustomThemeColor(rgb[0], rgb[1], rgb[2]);
+    } else {
+      customPreset.lightBgColor = CUSTOM_PRESET_DEFAULT.lightBgColor;
+      customPreset.darkBgColor = CUSTOM_PRESET_DEFAULT.darkBgColor;
+      customPreset.accentColor = CUSTOM_PRESET_DEFAULT.accentColor;
     }
   }
 }

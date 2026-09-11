@@ -313,6 +313,26 @@
       "value": "启用「自定义背景图片」并选择「组件模糊」时，标题栏主题色不可用；你仍然可以更改其他区域的主题色"
     },
     {
+      "name": "extract_theme_color",
+      "value": "从背景图提取"
+    },
+    {
+      "name": "extracting_theme_color",
+      "value": "正在提取主题色…"
+    },
+    {
+      "name": "no_bg_image_to_extract",
+      "value": "请先选择一张背景图片"
+    },
+    {
+      "name": "extract_theme_color_done",
+      "value": "已提取主题色 %s，点击右上角「应用更改」生效"
+    },
+    {
+      "name": "extract_theme_color_failed",
+      "value": "提取主题色失败"
+    },
+    {
       "name": "ok_and_apply",
       "value": "应用更改"
     },

@@ -3,8 +3,9 @@ import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { fileIo, fileUri } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
+import { effectKit } from '@kit.ArkGraphics2D';
 import UnifiedPreferences from '../utils/UnifyPreference';
-import BackgroundImage, { iPresetColor, presetColor } from '../utils/BgImageManager';
+import BackgroundImage, { customPreset, customPresetIndex, iPresetColor, presetColor } from '../utils/BgImageManager';
 
 @Builder
 export function ThemeBuilder(name: string, param?: number[]) {
@@ -57,7 +58,7 @@ function calculateProgress(n: number, given: number, target: number): number {
 }
 
 const diameter: number = 35;
-const distance: number = 90;
+const distance: number = 100;
 const halfSize: number = (diameter >> 1) + distance + 10;
 const colorNum: number = presetColor.length;
 
@@ -93,6 +94,7 @@ struct ThemeSetting {
   @State adaptSplit: number = UnifiedPreferences.getNumberSync('AdaptSplit', NavigationMode.Auto);
 
   @State selectedColor: number = BackgroundImage.themeColor;
+  @State extractingColor: boolean = false; // 正在从背景图提取主题色（防重入并展示加载态）
   readonly singleRotate: number = 360 / colorNum;
 
   pathStack: NavPathStack = new NavPathStack();
@@ -105,6 +107,11 @@ struct ThemeSetting {
       }
     }
   ];
+
+  aboutToDisappear() {
+    // 离开设置页时丢弃未应用的提取结果，自定义取色项恢复为最后一次应用的值
+    BackgroundImage.restoreCustomPreset();
+  }
 
   build() {
     NavDestination() {
@@ -394,6 +401,17 @@ struct ThemeSetting {
                   })
               )
             )
+
+            Row({ space: 6 }) {
+              Text("或者")
+              Button(this.extractingColor ? $r('app.string.extracting_theme_color') : $r('app.string.extract_theme_color'))
+                .buttonStyle(ButtonStyleMode.NORMAL)
+                .enabled(!this.extractingColor)
+                .onClick(() => {
+                  this.extractThemeFromImage();
+                })
+            }
+            .margin({ bottom: 6 })
           }
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .borderRadius(BackgroundImage.blurLevel === undefined ? undefined : 23)
@@ -574,6 +592,38 @@ struct ThemeSetting {
   }
 
   /**
+   * 从背景图提取主色调并写入自定义取色主题项（effectKit ColorPicker）：
+   * 主色作为适中色，HSL派生浅色/深色标题背景。
+   * 优先使用新选择但未确认的图片，否则使用当前已生效的背景图；
+   * 仅更新内存与selectedColor供预览，持久化仍需点击右上角"应用更改"
+   */
+  private async extractThemeFromImage(): Promise<void> {
+    if (this.extractingColor)
+      return;
+    const sourcePath: string = this.selectResult !== undefined ? this.oriImgPath : BackgroundImage.imgPath;
+    if (sourcePath === '') {
+      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.no_bg_image_to_extract') });
+      return;
+    }
+    this.extractingColor = true;
+    try {
+      const mainColor: effectKit.Color = await BackgroundImage.extractMainColor(sourcePath);
+      // @Trace字段更新后，色环与全应用读取自定义项的UI即时刷新
+      BackgroundImage.applyCustomThemeColor(mainColor.red, mainColor.green, mainColor.blue);
+      this.selectedColor = customPresetIndex;
+      this.getUIContext().getPromptAction().showToast({
+        message: $r('app.string.extract_theme_color_done', customPreset.accentColor),
+        duration: 2500
+      });
+    } catch (error) {
+      console.error(`Extract theme color failed: ${JSON.stringify(error)}`);
+      this.getUIContext().getPromptAction().showToast({ message: $r('app.string.extract_theme_color_failed') });
+    } finally {
+      this.extractingColor = false;
+    }
+  }
+
+  /**
    * 应用并持久化全部设置。不重启应用：BackgroundImage 为响应式单例，
    * 持久化并同步字段后调用 refreshDisplay() 即可让全应用UI热更新
    */
@@ -620,6 +670,9 @@ struct ThemeSetting {
     UnifiedPreferences.putSync('BlurLevel', this.blurNum, false);
     UnifiedPreferences.putSync('OpacityLevel', this.opacityNum, false);
     UnifiedPreferences.putSync('ThemeColor', this.selectedColor, false);
+    // 选中自定义取色主题时持久化主色，供应用重启后恢复自定义项的派生配色
+    if (this.selectedColor === customPresetIndex)
+      UnifiedPreferences.putSync('CustomThemeAccent', customPreset.accentColor, false);
     UnifiedPreferences.putSync('BackgroundBrightness', this.imgBrightness, false);
     UnifiedPreferences.putSync('AutoDecBright', this.autoDecBright, false);
     UnifiedPreferences.putSync('AdaptSplit', this.adaptSplit, false);
