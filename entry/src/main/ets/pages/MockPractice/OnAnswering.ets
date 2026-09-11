@@ -79,6 +79,8 @@ struct MockPracticeMain {
   @State multiChoice: boolean[] = [];
   /** 填空题各空的输入与反馈着色（下标即空序），blankCount 为空数（非填空题为 0） */
   @State blankAnswers: string[] = [];
+  /** 填空各空的占位提示：回看已作答的题时展示上次提交的答案 */
+  @State blankHints: string[] = [];
   @State blankColors: number[] = [];
   @State blankCount: number = 0;
   /** 答错后停留展示正确答案与解析（所有题型统一） */
@@ -132,17 +134,48 @@ struct MockPracticeMain {
     }
     this.blankCount = question.type === 'blank' ? blankCountOf(question.context) : 0;
     this.blankAnswers = [];
+    this.blankHints = [];
     this.blankColors = [];
     for (let i = 0; i < this.blankCount; i++) {
       this.blankAnswers.push('');
+      this.blankHints.push('');
       this.blankColors.push(COLOR_NONE);
     }
     this.showReveal = false;
+    // 回看已作答的题：恢复用户上次的提交（选择题高亮选项，填空题占位显示）
+    const record = answerStore.currentAnswerRecord(this.navParam.bankId, this.navParam.sessionId);
+    if (record !== null) {
+      this.restoreAnswer(record.userAnswer);
+    }
     if (this.reciteMode) {
       this.markCorrectOptions();
     }
     clearTimeout(this.flashTimer);
     this.submitting = false;
+  }
+
+  /** 恢复当前题上次的作答：选择题还原选中态（边框高亮），填空题把答案放入占位符 */
+  restoreAnswer(userAnswer: string): void {
+    const q = this.q;
+    if (q === null) {
+      return;
+    }
+    if (q.type === 'blank') {
+      const parts = userAnswer.split(BLANK_JOINER);
+      for (let i = 0; i < this.blankCount && i < parts.length; i++) {
+        this.blankHints[i] = parts[i];
+      }
+      return;
+    }
+    const answer = userAnswer.trim().toUpperCase();
+    for (let i = 0; i < q.optionCount; i++) {
+      const alphabet = String.fromCharCode(65 + i);
+      if (q.type === 'multiple') {
+        this.multiChoice[i] = answer.includes(alphabet);
+      } else if (answer === alphabet) {
+        this.singleChoice = i;
+      }
+    }
   }
 
   showFinish(): void {
@@ -688,34 +721,46 @@ struct MockPracticeMain {
           .justifyContent(FlexAlign.Center)
         } else if (this.finished) {
           Column() {
-            Text('🎉')
-              .fontSize(40)
-            Text('本次练习已完成')
-              .fontSize(20)
-              .fontWeight(FontWeight.Bold)
-              .margin({ top: 12 })
-            if (this.summary !== null) {
-              Text(`答对 ${this.summary.correct} / 共 ${this.summary.total} 题` +
-                (this.summary.answered > 0 ? ` · 正确率 ${Math.round(this.summary.correct * 100 / this.summary.answered)}%` : ''))
-                .fontSize(15)
-                .margin({ top: 8 })
+            Column() {
+              Text('🎉')
+                .fontSize(40)
+              Text('本次练习已完成')
+                .fontSize(20)
+                .fontWeight(FontWeight.Bold)
+                .margin({ top: 12 })
+              if (this.summary !== null) {
+                Text(`答对 ${this.summary.correct} / 共 ${this.summary.total} 题` +
+                  (this.summary.answered > 0 ?
+                    ` · 正确率 ${Math.round(this.summary.correct * 100 / this.summary.answered)}%` : ''))
+                  .fontSize(15)
+                  .margin({ top: 8 })
+              }
+              Row() {
+                Button('查看做题记录')
+                  .buttonStyle(ButtonStyleMode.EMPHASIZED)
+                  .onClick(() => {
+                    this.openRecord();
+                  })
+                Button('返回')
+                  .buttonStyle(ButtonStyleMode.TEXTUAL)
+                  .onClick(() => {
+                    this.pathStack.pop();
+                  })
+              }
+              .margin({ top: 20 })
             }
-            Row() {
-              Button('查看做题记录')
-                .buttonStyle(ButtonStyleMode.EMPHASIZED)
-                .onClick(() => {
-                  this.openRecord();
-                })
-              Button('返回')
-                .buttonStyle(ButtonStyleMode.TEXTUAL)
-                .onClick(() => {
-                  this.pathStack.pop();
-                })
-            }
-            .margin({ top: 20 })
+            .backgroundBlurStyle(BackgroundImage.blurLevel)
+            .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
+            .padding({
+              top: 5,
+              left: 10,
+              right: 10,
+              bottom: 10
+            })
+            .borderRadius(12);
           }
           .width('100%')
-          .layoutWeight(1)
+          .height('80%')
           .justifyContent(FlexAlign.Center)
           .transition(TransitionEffect.OPACITY.animation({ duration: 250, curve: Curve.EaseOut }))
         } else {
@@ -785,7 +830,9 @@ struct MockPracticeMain {
                           }
                           TextInput({
                             text: this.blankAnswers[index],
-                            placeholder: this.blankCount > 1 ? `第 ${index + 1} 空的答案` : '请输入答案'
+                            placeholder: this.blankHints[index] !== undefined && this.blankHints[index] !== ''
+                              ? this.blankHints[index]
+                              : (this.blankCount > 1 ? `第 ${index + 1} 空的答案` : '请输入答案')
                           })
                             .layoutWeight(1)
                             .fontSize(15)
@@ -867,7 +914,7 @@ struct MockPracticeMain {
             .width('calc(100% - 24vp)')
             .height('100%')
             .borderRadius(16)
-            .margin(12)
+            .margin({ left: 12, right: 12, top: 12, bottom: 4 }) // 4是因为下面的HdsActionBar自带8
             .align(Alignment.Top)
             .scrollBar(BarState.Auto)
             .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: false })
@@ -908,7 +955,7 @@ struct MockPracticeMain {
       .width('100%')
       .height('100%')
     }
-    .title(this.navParam.bankName, {
+    .title({ main: this.navParam.bankName, sub: '妮可之记·机考自测' }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
       backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })

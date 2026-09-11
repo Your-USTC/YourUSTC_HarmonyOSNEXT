@@ -14,6 +14,8 @@ import { answerStore } from '../../utils/MockPractice/AnswerSessionManager';
 import { hostContext } from '../../constants/BasicConstants';
 import { CsvImportPanel } from './ImportPanel';
 import RenameDialog from '../../view/RenameDialog';
+import { WantAbility } from '../../utils/WantAbility';
+import { common } from '@kit.AbilityKit';
 
 
 @Builder
@@ -57,6 +59,13 @@ struct MockPracticeList {
   }
 
   menuItems: Array<NavigationMenuItem> = [
+    {
+      value: $r('app.string.join_qq_group'),
+      icon: $r('app.media.message_on_message'),
+      action: () => {
+        WantAbility.StartQQ(this.getUIContext().getHostContext() as common.UIAbilityContext);
+      }
+    },
     {
       value: 'import',
       icon: $r('app.media.import'),
@@ -601,7 +610,7 @@ struct MockPracticeList {
                   .fontColor('#fff')
                   .offset({ x: -5, y: 26 })
               }
-              Text('打开教师提供的 xlsx 文件\n另存为 CSV 并从右上角\n导入 CSV 以创建题库').fontSize(18).textAlign(TextAlign.Center);
+              Text('打开教师提供的 xlsx 文件另存为 CSV\n并从右上角导入 CSV 以创建题库\n你也可以在右上角加入群聊咨询').fontSize(18).textAlign(TextAlign.Center);
             }
             .backgroundBlurStyle(BackgroundImage.blurLevel)
             .backgroundColor(BackgroundImage.blurLevel === undefined ? $r('app.color.normal_background') : undefined)
@@ -682,7 +691,7 @@ struct MockPracticeList {
         title: { title: '导入自测卷', subtitle: '选择数据起始行并指定各列含义' }
       })
     }
-    .title('自测', {
+    .title({ main: '题目列表', sub: '妮可之记·机考自测' }, {
       backgroundBlurStyle: BackgroundImage.blurLevel,
       backgroundColor: BackgroundImage.blurLevel === undefined ? BackgroundImage.titleBackgroundColor : undefined
     })

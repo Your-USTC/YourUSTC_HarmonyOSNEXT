@@ -306,7 +306,7 @@
     },
     {
       "name": "click_slide_change_color",
-      "value": "在虚线框内滑动或轻触任意位置，可以选中对应方向上的颜色"
+      "value": "也可在虚线框内滑动或轻触任意位置"
     },
     {
       "name": "custom_theme_color_into",

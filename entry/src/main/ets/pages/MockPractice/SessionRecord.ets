@@ -10,6 +10,7 @@ import {
   SessionOrigin,
   PracticeMode
 } from '../../utils/MockPractice/constants';
+import { FULL_TIME_FORMAT } from '../../constants/BasicConstants';
 
 /** 收藏标记星标色（与答题页保持一致） */
 const STAR_COLOR: string = '#f59e0b';
@@ -254,7 +255,8 @@ struct SessionRecord {
                 .fontWeight(FontWeight.Bold)
               Text(`答对 ${this.summary.correct} / 共 ${this.summary.total} 题` +
                 (this.summary.answered > 0 ?
-                  ` · 正确率 ${Math.round(this.summary.correct * 100 / this.summary.answered)}%` : ''))
+                  ` · 正确率 ${Math.round(this.summary.correct * 100 / this.summary.answered)}%` : '')
+                + `\n${new Date(this.summary.createdAt).toLocaleString('zh-cn', FULL_TIME_FORMAT)} ~ ${new Date(this.summary.lastAnswerTime).toLocaleString('zh-cn', FULL_TIME_FORMAT)}`)
                 .fontSize(13)
                 .fontColor($r('app.color.transparent_text'))
                 .margin({ top: 6 })
@@ -266,7 +268,6 @@ struct SessionRecord {
             Text('只看错题')
               .fontSize(13)
           }
-          .selectedColor($r('app.color.active_text'))
           .onChange((value: boolean) => {
             this.onlyWrong = value;
             this.applyFilter();
@@ -320,10 +321,9 @@ struct SessionRecord {
         if (this.wrongCount() > 0) {
           Row() {
             Toggle({ type: ToggleType.Button, isOn: $$this.retryIncludeStarred }) {
-              Text('含收藏题')
+              Text('也重做收藏题')
                 .fontSize(13)
             }
-            .selectedColor($r('app.color.active_text'))
 
             Button(`重做本次错题（${this.wrongCount()} 题）`)
               .buttonStyle(ButtonStyleMode.EMPHASIZED)

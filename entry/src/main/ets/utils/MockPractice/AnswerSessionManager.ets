@@ -370,6 +370,22 @@ class AnswerSessionStore {
     return session.marks[qIndex] !== undefined && session.marks[qIndex].starred;
   }
 
+  /** 当前题最近一次作答记录（答错重试时取最后一次），尚未作答时为 null */
+  currentAnswerRecord(bankId: string, sessionId: string): answerRecord | null {
+    const session = this.getSession(bankId, sessionId);
+    if (session === null || session.currentIndex >= session.questionNO.length) {
+      return null;
+    }
+    const qIndex = session.questionNO[session.currentIndex];
+    let record: answerRecord | null = null;
+    for (let i = 0; i < session.answers.length; i++) {
+      if (session.answers[i].questionIndex === qIndex) {
+        record = session.answers[i];
+      }
+    }
+    return record;
+  }
+
   /** 收藏/取消收藏当前作答位置的题目，返回操作后的收藏状态 */
   toggleCurrentStar(bankId: string, sessionId: string): boolean {
     const session = this.getSession(bankId, sessionId);

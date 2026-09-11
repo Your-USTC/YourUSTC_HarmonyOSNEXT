@@ -3,8 +3,11 @@ import { resetWebName } from "../view/MultiPageMenu";
 import { gIndex_to_pic, recordClick, refreshFunc } from './FunctionOrder';
 
 function pushNewPage(pageName: string, pageInfo: NavPathStack) {
-  pageInfo.popToName(pageName);
-  pageInfo.pushPath({ name: pageName });
+  if (pageInfo.getAllPathName().includes(pageName)) pageInfo.popToName(pageName);
+  else {
+    pageInfo.clear();
+    pageInfo.pushPath({ name: pageName });
+  }
 }
 
 function pushNewUrl(title: ResourceStr, url: string | Resource, pageInfo: NavPathStack) {

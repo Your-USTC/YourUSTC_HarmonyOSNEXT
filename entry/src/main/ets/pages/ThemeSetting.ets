@@ -348,12 +348,25 @@ struct ThemeSetting {
               colors: [[presetColor[this.selectedColor].lightBgColor, 0.0], [presetColor[this.selectedColor].darkBgColor, 1.0]]
             })
 
-            Text(this.isShown && this.showBlurSlider ? $r('app.string.custom_theme_color_into') : $r('app.string.click_slide_change_color'))
+            Row({ space: 6 }) {
+              Button(this.extractingColor ? $r('app.string.extracting_theme_color') : $r('app.string.extract_theme_color'))
+                .buttonStyle(ButtonStyleMode.NORMAL)
+                .enabled(!this.extractingColor)
+                .onClick(() => {
+                  this.extractThemeFromImage();
+                })
+              Text($r('app.string.click_slide_change_color'))
+                .fontSize(13)
+            }
+            .margin({ top: 6, bottom: 6 })
+
+            Text($r('app.string.custom_theme_color_into'))
               .fontSize(13)
-              .fontColor(this.isShown && this.showBlurSlider ? $r('app.color.red') : undefined)
+              .visibility(this.isShown && this.showBlurSlider ? Visibility.Visible : Visibility.None)
+              .fontColor($r('app.color.red'))
               .padding({ left: 16, right: 16 })
               .textAlign(TextAlign.Center)
-              .margin({ bottom: 5, top: 5 })
+              .margin({ bottom: 6 })
 
             Stack({ alignContent: Alignment.Center }) {
               ForEach(presetColor, (singleColor: iPresetColor, index: number) => {
@@ -401,17 +414,6 @@ struct ThemeSetting {
                   })
               )
             )
-
-            Row({ space: 6 }) {
-              Text("或者")
-              Button(this.extractingColor ? $r('app.string.extracting_theme_color') : $r('app.string.extract_theme_color'))
-                .buttonStyle(ButtonStyleMode.NORMAL)
-                .enabled(!this.extractingColor)
-                .onClick(() => {
-                  this.extractThemeFromImage();
-                })
-            }
-            .margin({ bottom: 6 })
           }
           .backgroundBlurStyle(BackgroundImage.blurLevel)
           .borderRadius(BackgroundImage.blurLevel === undefined ? undefined : 23)

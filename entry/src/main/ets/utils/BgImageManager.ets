@@ -37,6 +37,9 @@ export const presetColor: iPresetColor[] = [
 const DARK_TARGET_LUMINANCE: number = 90;
 const DARK_MIN_FACTOR: number = 0.3;
 
+// 中色目标明度（HSL的L取值0-1）：主色过亮/过暗时先校准到此值，再派生深浅背景色
+const MID_TARGET_LIGHTNESS: number = 0.55;
+
 /**
  * 解析'#RRGGBB'格式的颜色字符串
  * @returns [r, g, b] 分量数组，各分量取值0-255
